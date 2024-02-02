@@ -8,12 +8,7 @@ const basePlayerVisualJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'ba
 const allCoachVisuals = JSON.parse(fs.readFileSync(path.join(__dirname, 'coachVisualsLookup.json'), 'utf8'));
 const baseCoachVisualJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'baseCoachVisualLookup.json'), 'utf8'));
 const ZERO_REF = '00000000000000000000000000000000';
-
-
-async function bin2Dec(binary) {
-  return parseInt(binary, 2);
-};
-
+const FranchiseUtils = require('../FranchiseUtils');
 
 
 async function getPlayerHeadValues(playerTable, row,allPlayerVisuals) {
@@ -389,7 +384,7 @@ async function updateAllCharacterVisuals(franchise) {
 
     
     let characterVisualsRef = coachTable.records[i]['CharacterVisuals'];
-    let characterVisualsRow = await bin2Dec(characterVisualsRef.slice(15));
+    let characterVisualsRow = await FranchiseUtils.bin2Dec(characterVisualsRef.slice(15));
 
     if (characterVisualsRef === ZERO_REF) { // If it's all zeroes, we need to set a new reference
       characterVisualsRow = characterVisuals.header.nextRecordToUse; // Get the first empty row
@@ -403,7 +398,7 @@ async function updateAllCharacterVisuals(franchise) {
       coachTable.records[i]['CharacterVisuals'] = characterVisualsRef;
     }
     else { //Else, simply convert the binary ref to the row number value
-      characterVisualsRow = await bin2Dec(characterVisualsRef.slice(15));
+      characterVisualsRow = await FranchiseUtils.bin2Dec(characterVisualsRef.slice(15));
     }
 
     characterVisuals.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
@@ -475,7 +470,7 @@ async function updateAllCharacterVisuals(franchise) {
     }
 
     else { //Else, simply convert the binary ref to the row number value
-      characterVisualsRow = await bin2Dec(characterVisualsRef.slice(15));
+      characterVisualsRow = await FranchiseUtils.bin2Dec(characterVisualsRef.slice(15));
     }
 
     characterVisuals.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON

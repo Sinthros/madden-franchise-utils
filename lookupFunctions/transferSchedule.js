@@ -12,15 +12,9 @@ const REGULAR_SEASON_WEEKS = 18;
 const PRESEASON_WEEKS = 4;
 const VALID_WEEK_TYPES = ['RegularSeason','PreSeason','OffSeason'];
 const ZERO_REF = '00000000000000000000000000000000';
+const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 
-function dec2bin(dec) {
-    return (dec >>> 0).toString(2);
-};
 
-async function bin2Dec(binary) {
-  return parseInt(binary, 2);
-  
-};
   
 
 function findGameEventBinary(seasonRowBinary,gameEventTable) {
@@ -81,10 +75,10 @@ async function handleOriginalCurrentTeamBin(currentTable, rows, currentCol) {
 
   const teamRowBinaryRef = currentTeamBinVal.slice(15);
 
-  const actualRowRef = await bin2Dec(teamRowBinaryRef);
+  const actualRowRef = await FranchiseUtils.bin2Dec(teamRowBinaryRef);
   const targetRowRef = targetIndices[actualRowRef];
 
-  const updatedBinaryRef = zeroPad(dec2bin(targetRowRef), 17);
+  const updatedBinaryRef = zeroPad(FranchiseUtils.dec2bin(targetRowRef), 17);
 
   const finalBinary = currentTeamBinVal.replace(teamRowBinaryRef, updatedBinaryRef);
 
@@ -182,7 +176,7 @@ function replaceTeamNames(sourceRecord, mergedTableMappings) {
   let homeTeam = sourceRecord["HomeTeam"];
   let awayTeam = sourceRecord["AwayTeam"];
 
-  const outputBin = zeroPad(dec2bin(sourceRecord.fields["HomeTeam"]["referenceData"]["tableId"]), 15);
+  const outputBin = zeroPad(FranchiseUtils.dec2bin(sourceRecord.fields["HomeTeam"]["referenceData"]["tableId"]), 15);
   const currentTableDict = mergedTableMappings.find((table) => table.sourceIdBinary === outputBin);
 
   if (!currentTableDict) {
@@ -228,7 +222,7 @@ async function processSeasonGameRequests(seasonGameRequest, pendingGames, franch
     let assignedSeasonGame = ZERO_REF;
 
     if (currentUser !== ZERO_REF) {
-      const franchiseUserRow = await bin2Dec(currentUser.slice(15));
+      const franchiseUserRow = await FranchiseUtils.bin2Dec(currentUser.slice(15));
       const userTeam = franchiseUser.records[franchiseUserRow]['Team'];
 
       if (userTeam !== ZERO_REF) {
@@ -259,7 +253,7 @@ async function processGame(sourceRecord, sourceSeasonGameTable,mergedTableMappin
   let homeTeam = sourceRecord["HomeTeam"];
   let awayTeam = sourceRecord['AwayTeam'];
 
-  const outputBin = zeroPad(dec2bin(sourceRecord.fields["HomeTeam"]["referenceData"]["tableId"]), 15);
+  const outputBin = zeroPad(FranchiseUtils.dec2bin(sourceRecord.fields["HomeTeam"]["referenceData"]["tableId"]), 15);
   const currentTableDict = mergedTableMappings.find(table => table.sourceIdBinary === outputBin);
 
   if (!currentTableDict) {
@@ -374,7 +368,7 @@ async function convertSchedule(sourceSeasonGameTable, seasonGameTable, mergedTab
   const pendingGames = await Promise.all(
     Array.from({ length: pendingSeasonGames.header.recordCapacity }, (_, i) => i)
       .filter(i => !pendingSeasonGames.records[i].isEmpty)
-      .map(async i => await bin2Dec(pendingSeasonGames.records[i]['SeasonGame'].slice(15)))
+      .map(async i => await FranchiseUtils.bin2Dec(pendingSeasonGames.records[i]['SeasonGame'].slice(15)))
   );
   
 
