@@ -1,0 +1,188 @@
+[
+  {
+    "coachTalent": "Inside 3-4",
+    "binaryReference": "10000000100000110000110101011001",
+    "assetId": 2156072281,
+    "assetBinReference": 73400320
+  },
+  {
+    "coachTalent": "Standard 3-4",
+    "binaryReference": "10000000100000110000110100110110",
+    "assetId": 2156072246,
+    "assetBinReference": 73400321
+  },
+  {
+    "coachTalent": "Inside 4-3",
+    "binaryReference": "10000000100000110000110100001011",
+    "assetId": 2156072203,
+    "assetBinReference": 73400322
+  },
+  {
+    "coachTalent": "Standard 4-3",
+    "binaryReference": "10000000100000110000110011100011",
+    "assetId": 2156072163,
+    "assetBinReference": 73400323
+  },
+  {
+    "coachTalent": "Full Blitz",
+    "binaryReference": "10000000100000110000110110110010",
+    "assetId": 2156072370,
+    "assetBinReference": 73400324
+  },
+  {
+    "coachTalent": "Defensive Back Guru",
+    "binaryReference": "10000000011111011000101000111110",
+    "assetId": 2155711038,
+    "assetBinReference": 73400325
+  },
+  {
+    "coachTalent": "Defensive Line Guru",
+    "binaryReference": "10000000100000110000110010111110",
+    "assetId": 2156072126,
+    "assetBinReference": 73400326
+  },
+  {
+    "coachTalent": "Linebacker Guru",
+    "binaryReference": "10000000011111011000101001101010",
+    "assetId": 2155711082,
+    "assetBinReference": 73400327
+  },
+  {
+    "coachTalent": "Man Secondary",
+    "binaryReference": "10000000100000110000111000100000",
+    "assetId": 2156072480,
+    "assetBinReference": 73400328
+  },
+  {
+    "coachTalent": "Second Level",
+    "binaryReference": "10000000100000110000110111010111",
+    "assetId": 2156072407,
+    "assetBinReference": 73400329
+  },
+  {
+    "coachTalent": "Stacked Box",
+    "binaryReference": "10000000100000110000110110000001",
+    "assetId": 2156072321,
+    "assetBinReference": 73400330
+  },
+  {
+    "coachTalent": "Zone Secondary",
+    "binaryReference": "10000000100000110000111000000001",
+    "assetId": 2156072449,
+    "assetBinReference": 73400331
+  },
+  {
+    "coachTalent": "Defensive Development",
+    "binaryReference": "10000000011101100100011111010100",
+    "assetId": 2155235284,
+    "assetBinReference": 73400332
+  },
+  {
+    "coachTalent": "Offensive Development",
+    "binaryReference": "10000000011101100100011111010011",
+    "assetId": 2155235283,
+    "assetBinReference": 73400333
+  },
+  {
+    "coachTalent": "Staff Modifications",
+    "binaryReference": "10000000000000100001001011000110",
+    "assetId": 2147619526,
+    "assetBinReference": 73400334
+  },
+  {
+    "coachTalent": "Secure The Line",
+    "binaryReference": "10000000011111011000011110110101",
+    "assetId": 2155710389,
+    "assetBinReference": 73400335
+  },
+  {
+    "coachTalent": "Vertical Threat",
+    "binaryReference": "10000000011111011000100001010100",
+    "assetId": 2155710548,
+    "assetBinReference": 73400336
+  },
+  {
+    "coachTalent": "Open Field Moves",
+    "binaryReference": "10000000011111011000011110001101",
+    "assetId": 2155710349,
+    "assetBinReference": 73400337
+  },
+  {
+    "coachTalent": "Run Pass Option",
+    "binaryReference": "10000000011111011000100001101011",
+    "assetId": 2155710571,
+    "assetBinReference": 73400338
+  },
+  {
+    "coachTalent": "Outside Running",
+    "binaryReference": "10000000011111011000011111010100",
+    "assetId": 2155710420,
+    "assetBinReference": 73400339
+  },
+  {
+    "coachTalent": "Pocket Passing",
+    "binaryReference": "10000000011111011000100001000001",
+    "assetId": 2155710529,
+    "assetBinReference": 73400340
+  },
+  {
+    "coachTalent": "Power Running",
+    "binaryReference": "10000000011111011000100000000001",
+    "assetId": 2155710465,
+    "assetBinReference": 73400341
+  },
+  {
+    "coachTalent": "Quick Throws",
+    "binaryReference": "10000000011111011000100000110100",
+    "assetId": 2155710516,
+    "assetBinReference": 73400342
+  },
+  {
+    "coachTalent": "Halfback Guru",
+    "binaryReference": "10000000011111011000011011010100",
+    "assetId": 2155710164,
+    "assetBinReference": 73400343
+  },
+  {
+    "coachTalent": "Offensive Line Guru",
+    "binaryReference": "10000000011111011000011100110001",
+    "assetId": 2155710257,
+    "assetBinReference": 73400344
+  },
+  {
+    "coachTalent": "Quarterback Guru",
+    "binaryReference": "10000000011111011000011010100111",
+    "assetId": 2155710119,
+    "assetBinReference": 73400345
+  },
+  {
+    "coachTalent": "Receiver Guru",
+    "binaryReference": "10000000011111011000011100110000",
+    "assetId": 2155710256,
+    "assetBinReference": 73400346
+  },
+  {
+    "coachTalent": "Contracts",
+    "binaryReference": "10000000010000011011011100000100",
+    "assetId": 2151790340,
+    "assetBinReference": 73400347
+  },
+  {
+    "coachTalent": "Defense Recruitment",
+    "binaryReference": "10000000100000110001000000110010",
+    "assetId": 2156073010,
+    "assetBinReference": 73400348
+  },
+  {
+    "coachTalent": "Offense Recruitment",
+    "binaryReference": "10000000100000110001000000110001",
+    "assetId": 2156073009,
+    "assetBinReference": 73400349
+  },
+  {
+    "coachTalent": "Trades",
+    "binaryReference": "10000000010000011011011100000011",
+    "assetId": 2151790339,
+    "assetBinReference": 73400350
+  }
+]

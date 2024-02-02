@@ -1,0 +1,17 @@
+{
+	"HeadCoach": {
+      "first": ["Staff Modifications"],
+	  "second": ["Offensive Development"],
+	  "third": ["Defensive Development"]
+	},
+	"OffensiveCoordinator": {
+	  "first": ["Vertical Threat","Open Field Moves","Outside Running","Run Pass Option","Pocket Passing","Quick Throws"],
+	  "second": ["Secure The Line","Power Running","Pocket Passing"],
+	  "third": ["Halfback Guru","Offensive Line Guru","Quarterback Guru","Receiver Guru"]
+	},
+	"DefensiveCoordinator": {
+	  "first": ["Inside 3-4", "Standard 3-4", "Inside 4-3", "Standard 4-3", "Stacked Box", "Full Blitz"],
+	  "second": ["Second Level","Zone Secondary", "Man Secondary", "Stacked Box", "Full Blitz"],
+	  "third": ["Defensive Line Guru", "Defensive Back Guru", "Linebacker Guru"]
+	}
+}
