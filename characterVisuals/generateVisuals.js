@@ -4,10 +4,10 @@ const { getBinaryReferenceData } = require('madden-franchise/services/utilServic
 const fs = require('fs');
 const ZERO_REF = '00000000000000000000000000000000';
 const allPlayerVisuals = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/playerVisualsLookup.json', 'utf8')); //Get the JSONs we need and parse them
-
 const basePlayerVisualJson = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/basePlayerVisualLookup.json', 'utf8'));
 const allCoachVisuals = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/coachVisualsLookup.json', 'utf8'));
 const baseCoachVisualJson = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/baseCoachVisualLookup.json', 'utf8'));
+
 const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 
