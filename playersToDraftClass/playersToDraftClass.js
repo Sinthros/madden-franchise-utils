@@ -7,8 +7,6 @@
 const Franchise = require('madden-franchise');
 const prompt = require('prompt-sync')();
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
-const path = require('path');
-const os = require('os');
 const fs = require('fs');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const genericHeadLookup = JSON.parse(fs.readFileSync('genericHeadLookup.json', 'utf-8'));
@@ -16,9 +14,10 @@ const genericHeadLookup = JSON.parse(fs.readFileSync('genericHeadLookup.json', '
 console.log("In this program, you can convert a specific year of players in your Franchise File into Draft Class players.")
 console.log("This should NOT be used on a file you intend to keep playing on. Make a backup of your file first, because it won't be able to be played after doing this.")
 console.log("This will delete all current Draft Class players and replace them with up to 450 new Draft Class players in your file. Then, you'll go inside the franchise file and export the Draft Class.")
-const gameYear = "24"
+const gameYear = "24";
+const autoUnempty = true;
 
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
 async function deleteCurrentDraftClass(franchise) {
   const playerTable = franchise.getTableByUniqueId(1612938518);

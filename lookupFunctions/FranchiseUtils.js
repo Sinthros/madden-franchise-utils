@@ -4,7 +4,7 @@ const os = require('os');
 const fs = require('fs');
 const prompt = require('prompt-sync')();
 
-function selectFranchiseFile(gameYear) {
+function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false) {
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
   const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
   let default_path = documentsDir; // Set to default dir first
@@ -25,9 +25,9 @@ function selectFranchiseFile(gameYear) {
           fileName = fileName.trim(); // Remove leading/trailing spaces
           
           if (fileName.startsWith("CAREER-")) {
-              franchise = new Franchise(path.join(default_path, fileName));
+              franchise = new Franchise(path.join(default_path, fileName), {'autoUnempty': isAutoUnemptyEnabled});
           } else {
-              franchise = new Franchise(fileName.replace(new RegExp('/', 'g'), '\\'));
+              franchise = new Franchise(fileName.replace(new RegExp('/', 'g'), '\\'), {'autoUnempty': isAutoUnemptyEnabled});
           }
 
           return franchise;
@@ -80,6 +80,10 @@ async function bin2Dec(binary) {
 function dec2bin(dec) {
     return (dec >>> 0).toString(2);
 };
+
+async function hasNumber(myString) {
+    return /\d/.test(myString);
+};
   
 
 
@@ -88,5 +92,6 @@ module.exports = {
     saveFranchiseFile,
     getGameYear,
     bin2Dec,
-    dec2bin
+    dec2bin,
+    hasNumber
   };

@@ -35,6 +35,7 @@ const ZERO_REF = '00000000000000000000000000000000';
 
 
 const gameYear = '24';
+const autoUnempty = true;
 const dir = './coachPreviews';
 const headsDirName = 'coachHeads'
 
@@ -47,7 +48,7 @@ if (!fs.existsSync(dir)){
 };
 
 
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear)
+const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
 async function adjustPresentationId (getPresentationId) {
   try {

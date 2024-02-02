@@ -7,6 +7,7 @@
   "license": "ISC",
   "dependencies": {
     "madden-franchise": "^3.2.6",
-    "prompt-sync": "^4.2.0"
+    "prompt-sync": "^4.2.0",
+    "xlsx": "^0.18.5"
   }
 }

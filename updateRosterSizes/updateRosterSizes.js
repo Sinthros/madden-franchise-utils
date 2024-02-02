@@ -8,8 +8,9 @@ const validGameYears = ['22','23','24'];
 
 console.log("This program will calculate all roster sizes for all teams.")
 const gameYear = FranchiseUtils.getGameYear(validGameYears);
+const autoUnempty = false;
 
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
 async function setRosterSizes(playerTable,teamTable) {
 

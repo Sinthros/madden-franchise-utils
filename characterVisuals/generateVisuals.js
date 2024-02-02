@@ -13,8 +13,9 @@ const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 
 console.log("This program will regenerate Character Visuals for ALL players and coaches. This is only applicable for Madden 24 Franchise Files.")
 const gameYear = '24';
+const autoUnempty = true;
 
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
 
 franchise.on('ready', async function () {

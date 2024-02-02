@@ -11,12 +11,13 @@ const directoryPath = path.join(__dirname, 'schedules');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const TRANSFER_SCHEDULE_FUNCTIONS = require('./transferScheduleFromJson');
 const gameYear = '24';
+const autoUnempty = true;
 
 console.log("In this program, you can insert any previous year's NFL schedule into your Franchise File.");
 console.log("This only works with Madden 24 Franchise Files, and if your Franchise file is in the PreSeason.");
 
 
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear)
+const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
 async function promptUser() {
   let selectedYear;

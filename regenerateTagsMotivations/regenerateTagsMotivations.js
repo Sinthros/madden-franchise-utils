@@ -27,7 +27,8 @@ const playerMotivationsM24 = [
 
 console.log("This program will remove all Player Tags and regenerate all Player Motivations in your Madden 24 Franchise File. Player Tags regenerate once you enter the Regular Season.")
 const gamePrompt = '24';
-const franchise = FranchiseUtils.selectFranchiseFile(gamePrompt);
+const autoUnempty = false;
+const franchise = FranchiseUtils.selectFranchiseFile(gamePrompt,autoUnempty);
 
 
 async function generatePlayerMotivations(franchise) {
