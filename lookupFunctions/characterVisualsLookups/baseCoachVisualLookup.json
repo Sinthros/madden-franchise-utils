@@ -1,0 +1,112 @@
+{
+  "assetName": "",
+  "genericHeadName": "",
+  "firstName": "",
+  "lastName": "",
+  "containerId": 0,
+  "genericHead": 0,
+  "heightInches": 0,
+  "loadouts": [
+    {
+      "loadoutType": "CoachOnField",
+      "loadoutCategory": "CoachApparel",
+      "loadoutElements": [
+        {
+          "slotType": "LeftShoe",
+          "itemAssetName": "CoachWardrobe_Shoe"
+        },
+        {
+          "slotType": "RightShoe",
+          "itemAssetName": "CoachWardrobe_Shoe"
+        },
+        {
+          "slotType": "JerseyStyle",
+          "itemAssetName": "CoachWardrobe_Polo"
+        },
+        {
+          "slotType": "PantsGear",
+          "itemAssetName": "CoachWardrobe_Pants"
+        },
+        {
+          "slotType": "Hat",
+          "itemAssetName": "CoachWardrobe_Hat"
+        },
+        {
+          "slotType": "Headset",
+          "itemAssetName": "UC_Headset_1"
+        }
+      ]
+    },
+    {
+      "loadoutType": "Base",
+      "loadoutCategory": "Base",
+      "loadoutElements": [
+        {
+          "slotType": "ArmSize",
+          "blends": [
+            {
+              "barycentricBlend": 0.0,
+              "baseBlend": 0.0
+            }
+          ]
+        },
+        {
+          "slotType": "CalfBlend",
+          "blends": [
+            {
+              "barycentricBlend": 0.0,
+              "baseBlend": 0.0
+            }
+          ]
+        },
+        {
+          "slotType": "Chest",
+          "blends": [
+            {
+              "barycentricBlend": 0.0,
+              "baseBlend": 0.0
+            }
+          ]
+        },
+        {
+          "slotType": "Feet",
+          "blends": [
+            {
+              "barycentricBlend": 0.0,
+              "baseBlend": 0.0
+            }
+          ]
+        },
+        {
+          "slotType": "Glute",
+          "blends": [
+            {
+              "barycentricBlend": 0.0,
+              "baseBlend": 0.0
+            }
+          ]
+        },
+        {
+          "slotType": "Gut",
+          "blends": [
+            {
+              "barycentricBlend": 0.0,
+              "baseBlend": 0.0
+            }
+          ]
+        },
+        {
+          "slotType": "Thighs",
+          "blends": [
+            {
+              "barycentricBlend": 0.0,
+              "baseBlend": 0.0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "skinTone": 1,
+  "weightPounds": 200
+}

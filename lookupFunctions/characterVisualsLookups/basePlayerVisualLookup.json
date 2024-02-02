@@ -1,0 +1,72 @@
+{
+  "genericHeadName": "",
+  "genericHead": 0,
+  "loadouts": [
+    {
+      "loadoutCategory": "Base",
+      "loadoutElements": [
+        {
+          "blends": [{"barycentricBlend": 0.0, "baseBlend": 0.0}],
+          "slotType": "ArmSize"
+        },
+        {
+          "blends": [{"barycentricBlend": 0.0, "baseBlend": 0.0}],
+          "slotType": "CalfBlend"
+        },
+        {
+          "blends": [{"barycentricBlend": 0.0, "baseBlend": 0.0}],
+          "slotType": "Chest"
+        },
+        {
+          "blends": [{"barycentricBlend": 0.0, "baseBlend": 0.0}],
+          "slotType": "Feet"
+        },
+        {
+          "blends": [{"barycentricBlend": 0.0, "baseBlend": 0.0}],
+          "slotType": "Glute"
+        },
+        {
+          "blends": [{"barycentricBlend": 0.0, "baseBlend": 0.0}],
+          "slotType": "Gut"
+        },
+        {
+          "blends": [{"barycentricBlend": 0.0, "baseBlend": 0.0}],
+          "slotType": "Thighs"
+        }
+      ]
+    },
+    {
+      "loadoutType": "PlayerOnField",
+      "loadoutElements": [
+        {"itemAssetName": "G_ArmTape_Short_TeamColor", "slotType": "LeftArm"},
+        {"itemAssetName": "ArmSleeve_None", "slotType": "RightArm"},
+        {"itemAssetName": "ElbowGear_None", "slotType": "LeftElbowGear"},
+        {"itemAssetName": "ElbowGear_None", "slotType": "RightElbowGear"},
+        {"itemAssetName": "GearHand_None", "slotType": "LeftHandgear"},
+        {"itemAssetName": "GearHand_None", "slotType": "RightHandgear"},
+        {"itemAssetName": "Handwarmer_Standard", "slotType": "HandWarmer"},
+        {"itemAssetName": "GearFaceMask_Speedflex_2_Bar_WR", "slotType": "Facemask"},
+        {"itemAssetName": "GearHelmet_Speed_Flex", "slotType": "GearHelmet"},
+        {"itemAssetName": "FaceMarks_EyePaint2", "slotType": "FacePaint"},
+        {"itemAssetName": "GearVisor_visorOakley_Prizm", "slotType": "Visor"},
+        {"itemAssetName": "Gear_JerseyStyle_SleeveTight", "slotType": "JerseyStyle"},
+        {"itemAssetName": "GearMouthpiece_None", "slotType": "Mouthpiece"},
+        {"itemAssetName": "GearNeckpad_None", "slotType": "Neckpad"},
+        {"itemAssetName": "GearFootwear_shoe_mid_AdidasAdizeroPrimeKnit", "slotType": "LeftShoe"},
+        {"itemAssetName": "GearFootwear_shoe_mid_AdidasAdizeroPrimeKnit", "slotType": "RightShoe"},
+        {"itemAssetName": "Gear_Socks_Low", "slotType": "GearSocks"},
+        {"itemAssetName": "GearSpats_spatThin_White", "slotType": "LeftSpat"},
+        {"itemAssetName": "GearSpats_spatThin_White", "slotType": "RightSpat"},
+        {"itemAssetName": "Towel_East", "slotType": "Towel"},
+        {"itemAssetName": "GearWrist_None", "slotType": "LeftWristGear"},
+        {"itemAssetName": "GearWrist_wristBandDouble_White", "slotType": "RightWristGear"},
+        {"itemAssetName": "ThighPad_Regular", "slotType": "ThighGear"},
+        {"itemAssetName": "KneePad_Regular", "slotType": "KneeItem"},
+        {"blends": [{"barycentricBlend": 0.0, "baseBlend": 0.0}], "itemAssetName": "Flakjacket_On", "slotType": "FlakJacket"},
+        {"blends": [{"barycentricBlend": 0.0, "baseBlend": 0.0}], "itemAssetName": "Backplate_Standard", "slotType": "Backplate"},
+        {"itemAssetName": "Medium_Pads", "slotType": "Shoulderpads"}
+      ]
+    }
+  ],
+  "skinTone": 1
+}

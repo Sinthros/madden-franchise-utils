@@ -1,0 +1,12 @@
+{
+  "name": "madden-franchise-utils",
+  "version": "1.0.0",
+  "description": "Collection of utility scripts for Madden, utilizing the madden-franchise API.",
+  "main": "index.js",
+  "author": "Sinthros",
+  "license": "ISC",
+  "dependencies": {
+    "madden-franchise": "^3.2.6",
+    "prompt-sync": "^4.2.0"
+  }
+}
