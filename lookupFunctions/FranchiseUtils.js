@@ -56,6 +56,23 @@ async function saveFranchiseFile(franchise) {
     }
 }
 
+function getGameYear(validGameYears) {
+    let gameYear;
+
+    while (true) {
+        console.log(`Select the version of Madden your franchise file uses. Valid inputs are ${validGameYears.join(', ')}`);
+        gameYear = prompt();
+
+        if (validGameYears.includes(gameYear)) {
+            break;
+        } else {
+            console.log("Invalid option. Please try again.");
+        }
+    }
+
+    return gameYear;
+}
+
 async function bin2Dec(binary) {
     return parseInt(binary, 2);
   };
@@ -68,7 +85,8 @@ function dec2bin(dec) {
 
 module.exports = {
     selectFranchiseFile,
+    saveFranchiseFile,
+    getGameYear,
     bin2Dec,
-    dec2bin,
-    saveFranchiseFile
+    dec2bin
   };
