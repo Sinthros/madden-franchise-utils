@@ -26,7 +26,7 @@ franchise.on('ready', async function () {
     await teamTable.readRecords();
     const numRowsTeam = teamTable.header.recordCapacity //Number of rows in the team table
     for (i=0; i < numRowsTeam; i++) { //Iterate through the team table
-        if (teamTable.records[i].isEmpty == true) { // If an empty row, continue
+        if (teamTable.records[i].isEmpty) { // If an empty row, continue
           continue
         }
 
