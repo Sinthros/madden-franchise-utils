@@ -60,6 +60,7 @@ franchise.on('ready', async function () {
 	
 	console.log("\nPlayoff format updated successfully.\n");
     await FranchiseUtils.saveFranchiseFile(franchise);
+	console.log("Enter anything to exit.");
     prompt();
   
 });
