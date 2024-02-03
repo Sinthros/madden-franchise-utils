@@ -45,13 +45,13 @@ async function saveFranchiseFile(franchise) {
     
         if (finalPrompt.toUpperCase() === 'YES') {
             await franchise.save();
-            console.log("Franchise file successfully saved! Enter anything to exit.");
+            console.log("Franchise file successfully saved!");
             break;
         } else if (finalPrompt.toUpperCase() === 'NO') {
-            console.log("Exiting program without saving your changes. Enter anything to exit.");
+            console.log("Your Franchise File has not been saved.");
             break;
         } else {
-            console.log("Invalid input. Please enter 'yes' to save or 'no' to quit without saving.");
+            console.log("Invalid input. Please enter 'yes' to save or 'no' to not save.");
         }
     }
 }

@@ -126,6 +126,11 @@
     "Elastic": "Gear_JerseyStyle_SleeveTight",
     "DefaultValue": "Gear_JerseyStyle_SleeveTight"
   },
+  "JerseyState": {
+    "TuckedIn": "",
+    "UntuckedUndershirt": "Undershirt_Untucked",
+    "DefaultValue": ""
+  },
   "LeftSpat": {
     "None": "GearSpats_none",
     "WhiteThin": "GearSpats_spatThin_White",

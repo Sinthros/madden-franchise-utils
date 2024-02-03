@@ -3,6 +3,51 @@ const prompt = require('prompt-sync')();
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const fs = require('fs');
 const ZERO_REF = '00000000000000000000000000000000';
+const playerContractStatusIgnore = ['None','Deleted']; //If the player has either of these statuses, don't generate visuals
+
+// Visual keys for gear (for players) and morphs
+const visualGearKeys = [
+  "LeftArm",
+  "RightArm",
+  "LeftElbowGear",
+  "RightElbowGear",
+  "LeftHandgear",
+  "RightHandgear",
+  "HandWarmer",
+  "Facemask",
+  "GearHelmet",
+  "FacePaint",
+  "Visor",
+  "JerseyStyle",
+  "Mouthpiece",
+  "Neckpad",
+  "LeftShoe",
+  "RightShoe",
+  "GearSocks",
+  "LeftSpat",
+  "RightSpat",
+  "Towel",
+  "LeftWristGear",
+  "RightWristGear",
+  "ThighGear",
+  "KneeItem",
+  "FlakJacket",
+  "Backplate",
+  "Shoulderpads",
+  "JerseyState"
+];
+
+// Visual morph keys for players and coaches
+const visualMorphKeys = [
+  "ArmSize",
+  "CalfBlend",
+  "Chest",
+  "Feet",
+  "Glute",
+  "Gut",
+  "Thighs"
+];
+
 const allPlayerVisuals = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/playerVisualsLookup.json', 'utf8')); //Get the JSONs we need and parse them
 const basePlayerVisualJson = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/basePlayerVisualLookup.json', 'utf8'));
 const allCoachVisuals = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/coachVisualsLookup.json', 'utf8'));
@@ -31,59 +76,14 @@ franchise.on('ready', async function () {
 
     // This entire block is pretty gross and can probably be optimized...
 
-    const characterVisuals = franchise.getTableByUniqueId(1429178382); //Grab the tables we need and read them
+    const mainCharacterVisualsTable = franchise.getTableByUniqueId(1429178382); //Grab the tables we need and read them
     const playerTable = franchise.getTableByUniqueId(1612938518);
     const coachTable = franchise.getTableByUniqueId(1860529246);
-    await characterVisuals.readRecords();
+    await mainCharacterVisualsTable.readRecords();
     await playerTable.readRecords();
     await coachTable.readRecords();
 
-    const visualsRecordCapcity = characterVisuals.header.recordCapacity;
-
-
-    // Visual keys for gear (for players) and morphs
-    const visualGearKeys = [
-      "LeftArm",
-      "RightArm",
-      "LeftElbowGear",
-      "RightElbowGear",
-      "LeftHandgear",
-      "RightHandgear",
-      "HandWarmer",
-      "Facemask",
-      "GearHelmet",
-      "FacePaint",
-      "Visor",
-      "JerseyStyle",
-      "Mouthpiece",
-      "Neckpad",
-      "LeftShoe",
-      "RightShoe",
-      "GearSocks",
-      "LeftSpat",
-      "RightSpat",
-      "Towel",
-      "LeftWristGear",
-      "RightWristGear",
-      "ThighGear",
-      "KneeItem",
-      "FlakJacket",
-      "Backplate",
-      "Shoulderpads"
-    ];
-
-    // Visual morph keys for players and coaches
-    const visualMorphKeys = [
-      "ArmSize",
-      "CalfBlend",
-      "Chest",
-      "Feet",
-      "Glute",
-      "Gut",
-      "Thighs"
-    ];
-
-    const playerContractStatusIgnore = ['None','Deleted']; //If the player has either of these statuses, don't generate visuals
+    const mainCharacterVisualsId = mainCharacterVisualsTable.header.tableId;
     
     for (let i = 0; i < coachTable.header.recordCapacity;i++) {
       // If empty OR empty offensive playbook/defensive playbook (not a real coach), don't set visuals
@@ -94,38 +94,21 @@ franchise.on('ready', async function () {
       let jsonToUpdate = JSON.parse(JSON.stringify(baseCoachVisualJson)); // Get our current base JSON
 
       const coachValues = await characterVisualFunctions.getCoachValues(coachTable, i);
-
       jsonToUpdate = await characterVisualFunctions.updateCoachVisuals(coachValues,allCoachVisuals,jsonToUpdate,visualMorphKeys)
-
       jsonToUpdate = await characterVisualFunctions.removeEmptyCoachBlends(jsonToUpdate)
 
-      
-      let characterVisualsRef = coachTable.records[i]['CharacterVisuals'];
-      
-      let characterVisualsRow = await FranchiseUtils.bin2Dec(characterVisualsRef.slice(15));
-
-      if (characterVisualsRef === ZERO_REF) { // If it's all zeroes, we need to set a new reference
-        characterVisualsRow = characterVisuals.header.nextRecordToUse; // Get the first empty row
-        if (characterVisualsRow >= visualsRecordCapcity) {
-          console.log("ERROR - The CharacterVisuals table has run out of space. Your changes have not been saved.");
-          console.log(`This means that the amount of players + coaches in your Franchise File exceeds ${visualsRecordCapcity}. Enter anything to exit.`)
-          prompt();
-          process.exit(0);
-        }
-        characterVisualsRef = getBinaryReferenceData(characterVisuals.header.tableId,characterVisualsRow); //Convert to binary
-        coachTable.records[i]['CharacterVisuals'] = characterVisualsRef;
+      const { currentCharacterVisualsTable, characterVisualsRow, characterVisualsTableId } = await characterVisualFunctions.getCharacterVisualsTable(franchise,coachTable,mainCharacterVisualsTable,i)
+      if (characterVisualsTableId !== mainCharacterVisualsId) { // If a different table besides the main one, we need to read it
+        await currentCharacterVisualsTable.readRecords();
       }
-      else { //Else, simply convert the binary ref to the row number value
-        characterVisualsRow = await FranchiseUtils.bin2Dec(characterVisualsRef.slice(15));
-      }
-
-
-      characterVisuals.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
+  
+      currentCharacterVisualsTable.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
 
       //Uncomment this if you want to print out the json
       //test = JSON.parse(JSON.stringify(characterVisuals.records[characterVisualsRow]['RawData'])); // Get our current base JSON
       //console.log(test)
     }
+    console.log("Successfully generated Character Visuals for all coaches.");
 
 
     for (let i = 0; i < playerTable.header.recordCapacity;i++ ) { // Iterate through the player table
@@ -133,8 +116,6 @@ franchise.on('ready', async function () {
       if (playerTable.records[i].isEmpty === true || playerContractStatusIgnore.includes(playerTable.records[i]['ContractStatus'])) { //If empty or invalid contract status, continue
         continue
       }
-
-      const position = playerTable.records[i]['Position'];
 
       //This is a roundabout way to get a unique version of the base player JSON for each player, since we'll be editing it
       let jsonToUpdate = JSON.parse(JSON.stringify(basePlayerVisualJson));
@@ -173,31 +154,15 @@ franchise.on('ready', async function () {
 
       jsonToUpdate = await characterVisualFunctions.removeEmptyPlayerBlends(jsonToUpdate);
 
-      let characterVisualsRef = playerTable.records[i]['CharacterVisuals']; //Next, get the current row reference to the Charactervisuals table
-      let characterVisualsRow;
-      
-      if (characterVisualsRef === ZERO_REF) { // If it's all zeroes, we need to set a new reference
-        characterVisualsRow = characterVisuals.header.nextRecordToUse; // Get the first empty rowc
-
-        if (characterVisualsRow >= visualsRecordCapcity) {
-          console.log("ERROR - The CharacterVisuals table has run out of space. Your changes have not been saved.");
-          console.log(`This means that the amount of players + coaches in your Franchise File exceeds ${visualsRecordCapcity}. Enter anything to exit.`)
-          prompt();
-          process.exit(0);
-        }
-        characterVisualsRef = getBinaryReferenceData(characterVisuals.header.tableId,characterVisualsRow); //Convert to binary
-        playerTable.records[i]['CharacterVisuals'] = characterVisualsRef;
+      const { currentCharacterVisualsTable, characterVisualsRow, characterVisualsTableId } = await characterVisualFunctions.getCharacterVisualsTable(franchise,playerTable,mainCharacterVisualsTable,i)
+      if (characterVisualsTableId !== mainCharacterVisualsId) {
+        await currentCharacterVisualsTable.readRecords();
       }
-
-      else { //Else, simply convert the binary ref to the row number value
-        characterVisualsRow = await FranchiseUtils.bin2Dec(characterVisualsRef.slice(15));
-      }
-      characterVisuals.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
+      currentCharacterVisualsTable.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
     }
-
-
-    console.log("Successfully generated Character Visuals for all players/coaches.");
+    console.log("Successfully generated Character Visuals for all players");
     await FranchiseUtils.saveFranchiseFile(franchise);
+    console.log("Enter anything to exit.");
     prompt();
 
 });  
