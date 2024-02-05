@@ -114,6 +114,6 @@ const tables = {
     schedulerAppointmentTable: 1395135267
 }
 
-export default {
+module.exports = {
     tables
 }

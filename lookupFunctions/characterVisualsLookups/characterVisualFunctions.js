@@ -9,6 +9,7 @@ const allCoachVisuals = JSON.parse(fs.readFileSync(path.join(__dirname, 'coachVi
 const baseCoachVisualJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'baseCoachVisualLookup.json'), 'utf8'));
 const ZERO_REF = '00000000000000000000000000000000';
 const FranchiseUtils = require('../FranchiseUtils');
+const { tables } = require('../FranchiseTableId');
 
 
 async function getPlayerHeadValues(playerTable, row,allPlayerVisuals) {
@@ -361,9 +362,9 @@ async function getCharacterVisualsTable(franchise,currentTable,mainCharacterVisu
 async function updateAllCharacterVisuals(franchise) {
   // This entire block is pretty gross and can probably be optimized...
 
-  const mainCharacterVisualsTable = franchise.getTableByUniqueId(1429178382); //Grab the tables we need and read them
-  const playerTable = franchise.getTableByUniqueId(1612938518);
-  const coachTable = franchise.getTableByUniqueId(1860529246);
+  const mainCharacterVisualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable); //Grab the tables we need and read them
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  const coachTable = franchise.getTableByUniqueId(tables.coachTable);
   await mainCharacterVisualsTable.readRecords();
   await playerTable.readRecords();
   await coachTable.readRecords();

@@ -1,6 +1,6 @@
 const Franchise = require('madden-franchise');
 const prompt = require('prompt-sync')();
-const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
+const { tables } = require('../lookupFunctions/FranchiseTableId');
 const fs = require('fs');
 const ZERO_REF = '00000000000000000000000000000000';
 const playerContractStatusIgnore = ['None','Deleted']; //If the player has either of these statuses, don't generate visuals
@@ -76,9 +76,9 @@ franchise.on('ready', async function () {
 
     // This entire block is pretty gross and can probably be optimized...
 
-    const mainCharacterVisualsTable = franchise.getTableByUniqueId(1429178382); //Grab the tables we need and read them
-    const playerTable = franchise.getTableByUniqueId(1612938518);
-    const coachTable = franchise.getTableByUniqueId(1860529246);
+    const mainCharacterVisualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable); //Grab the tables we need and read them
+    const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+    const coachTable = franchise.getTableByUniqueId(tables.coachTable);
     await mainCharacterVisualsTable.readRecords();
     await playerTable.readRecords();
     await coachTable.readRecords();
