@@ -1276,33 +1276,6 @@ async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreCo
 
 async function getPlayerTables() {
   const player = targetFranchise.getTableByUniqueId(PLAYER_TABLE);
-  
-  
-    await player.readRecords();
-    for (let currentRow = 0; currentRow < player.header.recordCapacity;currentRow++) {
-    if (player.records[currentRow].isEmpty === true)  {
-      var test = false;
-      referencedRow = targetFranchise.getReferencesToRecord(player.header.tableId,currentRow)
-      
-      
-
-
-      referencedRow.forEach((table) => {
-        console.log(`${table.tableId}: ${table.name}: ${currentRow}`)
-        if (table.name === 'Player[]') {
-          test = true;
-        }
-        
-      })
-      if (test === false) {
-
-        referencedRow.forEach((table) => {
-
-        console.log(`${table.tableId}: ${table.name}: ${currentRow}`)
-        })
-      }
-    }
-  }
   const freeagents = targetFranchise.getTableByUniqueId(4201237426);
   const playerArray = targetFranchise.getTableByUniqueId(4062699918);
   const playerPracticeSquads = targetFranchise.getTableByUniqueId(3892093744);
