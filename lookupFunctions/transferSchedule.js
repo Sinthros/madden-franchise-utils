@@ -13,9 +13,8 @@ const PRESEASON_WEEKS = 4;
 const VALID_WEEK_TYPES = ['RegularSeason','PreSeason','OffSeason'];
 const ZERO_REF = '00000000000000000000000000000000';
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const { tables } = require('../lookupFunctions/FranchiseTableId');
 
-
-  
 
 function findGameEventBinary(seasonRowBinary,gameEventTable) {
   for (let n = 0; n < gameEventTable.header.recordCapacity; n++) {
@@ -86,8 +85,8 @@ async function handleOriginalCurrentTeamBin(currentTable, rows, currentCol) {
 }
 
 async function getAllStartOccurrences(targetFranchise) {
-  const currentTimeTable = targetFranchise.getTableByUniqueId(2446261029);
-  const seasonInfoTable = targetFranchise.getTableByUniqueId(3123991521);
+  const currentTimeTable = targetFranchise.getTableByUniqueId(tables.schedulerTable);
+  const seasonInfoTable = targetFranchise.getTableByUniqueId(tables.seasonInfoTable);
 
   await currentTimeTable.readRecords();
   await seasonInfoTable.readRecords();
@@ -332,13 +331,13 @@ async function convertSchedule(sourceSeasonGameTable, seasonGameTable, mergedTab
     gameEventTable,
     schedulerTable,
   ] = await Promise.all([
-    targetFranchise.getTableByUniqueId(2877284424).readRecords(),
-    targetFranchise.getTableByUniqueId(1009707988).readRecords(),
-    targetFranchise.getTableByUniqueId(3123991521).readRecords(),
-    targetFranchise.getTableByUniqueId(2943829712).readRecords(),
-    targetFranchise.getTableByUniqueId(3429237668).readRecords(),
-    targetFranchise.getTableByUniqueId(987800642).readRecords(),
-    targetFranchise.getTableByUniqueId(1395135267).readRecords()
+    targetFranchise.getTableByUniqueId(tables.pendingSeasonGamesTable).readRecords(),
+    targetFranchise.getTableByUniqueId(tables.practiceEvalTable).readRecords(),
+    targetFranchise.getTableByUniqueId(tables.seasonInfoTable).readRecords(),
+    targetFranchise.getTableByUniqueId(tables.seasonGameRequestTable).readRecords(),
+    targetFranchise.getTableByUniqueId(tables.franchiseUserTable).readRecords(),
+    targetFranchise.getTableByUniqueId(tables.gameEventTable).readRecords(),
+    targetFranchise.getTableByUniqueId(tables.schedulerAppointmentTable).readRecords()
   ]);
 
   const {weekStartOccurrences,preseasonStartOccurrences} = await getAllStartOccurrences(targetFranchise);
@@ -476,8 +475,8 @@ async function transferSchedule(sourceFranchise,targetFranchise,mergedTableMappi
     sourceSeasonGameTable,
     seasonGameTable,
   ] = await Promise.all([
-    sourceFranchise.getTableByUniqueId(1607878349).readRecords(),
-    targetFranchise.getTableByUniqueId(1607878349).readRecords()
+    sourceFranchise.getTableByUniqueId(tables.seasonGameTable).readRecords(),
+    targetFranchise.getTableByUniqueId(tables.seasonGameTable).readRecords()
   ]);
 
   const sourceGameYear = sourceFranchise.schema.meta.gameYear // Get the game year of the source file

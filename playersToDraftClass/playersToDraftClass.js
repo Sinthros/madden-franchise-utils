@@ -9,6 +9,7 @@ const prompt = require('prompt-sync')();
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const fs = require('fs');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const { tables } = require('../lookupFunctions/FranchiseTableId');
 const genericHeadLookup = JSON.parse(fs.readFileSync('genericHeadLookup.json', 'utf-8'));
 
 console.log("In this program, you can convert a specific year of players in your Franchise File into Draft Class players.");
@@ -21,12 +22,12 @@ const autoUnempty = true;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
 async function deleteCurrentDraftClass(franchise) {
-  const playerTable = franchise.getTableByUniqueId(1612938518);
-  const draftPlayerTable = franchise.getTableByUniqueId(786598926);
-  const branchingStoryArray = franchise.getTableByUniqueId(4109008792);
-  const draftBoardEvalArray = franchise.getTableByUniqueId(2939766573);
-  const scoutFocusArray = franchise.getTableByUniqueId(249904460);
-  const scoutPrivateArray = franchise.getTableByUniqueId(621078202);
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  const draftPlayerTable = franchise.getTableByUniqueId(tables.draftClassTable);
+  const branchingStoryArray = franchise.getTableByUniqueId(tables.branchingStoryArrayTable);
+  const draftBoardEvalArray = franchise.getTableByUniqueId(tables.draftBoardEvalArrayTable);
+  const scoutFocusArray = franchise.getTableByUniqueId(tables.scoutFocusArrayTable);
+  const scoutPrivateArray = franchise.getTableByUniqueId(tables.scoutPrivateArrayTable);
   await playerTable.readRecords();
   await draftPlayerTable.readRecords();
   await branchingStoryArray.readRecords();
@@ -199,10 +200,10 @@ async function fillDraftPlayerRow(draftPlayerTable,index,draftPlayerRow,playerPo
 
 }
 async function createNewDraftClass(franchise,draftTableArrayId) {
-  const playerTable = franchise.getTableByUniqueId(1612938518);
-  const draftPlayerTable = franchise.getTableByUniqueId(786598926);
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  const draftPlayerTable = franchise.getTableByUniqueId(tables.draftClassTable);
   const draftPlayerArray = franchise.getTableById(draftTableArrayId);
-  const seasonInfoTable = franchise.getTableByUniqueId(3123991521);
+  const seasonInfoTable = franchise.getTableByUniqueId(tables.seasonInfoTable);
 
   await seasonInfoTable.readRecords();
 

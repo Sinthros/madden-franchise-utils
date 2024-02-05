@@ -21,10 +21,10 @@ const tables = {
     practiceSquadTable: 3892093744,
     // Draft Info
     draftClassTable: 786598926,
-    branchingStoryArray: 4109008792,
-    draftBoardEvalArray: 2939766573,
-    scoutFocusArray: 249904460,
-    scoutPrivateArray: 621078202,
+    branchingStoryArrayTable: 4109008792,
+    draftBoardEvalArrayTable: 2939766573,
+    scoutFocusArrayTable: 249904460,
+    scoutPrivateArrayTable: 621078202,
     //Character Visuals
     characterVisualsTable: 1429178382,
     // Team Related
