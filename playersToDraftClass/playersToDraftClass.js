@@ -11,9 +11,10 @@ const fs = require('fs');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const genericHeadLookup = JSON.parse(fs.readFileSync('genericHeadLookup.json', 'utf-8'));
 
-console.log("In this program, you can convert a specific year of players in your Franchise File into Draft Class players.")
-console.log("This should NOT be used on a file you intend to keep playing on. Make a backup of your file first, because it won't be able to be played after doing this.")
-console.log("This will delete all current Draft Class players and replace them with up to 450 new Draft Class players in your file. Then, you'll go inside the franchise file and export the Draft Class.")
+console.log("In this program, you can convert a specific year of players in your Franchise File into Draft Class players.");
+console.log("For this to work, your Franchise File MUST be in the Regular Season/Playoffs. It will not work during the Preseason.");
+console.log("This should NOT be used on a file you intend to keep playing on. Make a backup of your file first, because it won't be able to be played after doing this.");
+console.log("This will delete all current Draft Class players and replace them with up to 450 new Draft Class players in your file. Then, you'll go inside the franchise file and export the Draft Class.");
 const gameYear = "24";
 const autoUnempty = true;
 
@@ -201,13 +202,26 @@ async function createNewDraftClass(franchise,draftTableArrayId) {
   const playerTable = franchise.getTableByUniqueId(1612938518);
   const draftPlayerTable = franchise.getTableByUniqueId(786598926);
   const draftPlayerArray = franchise.getTableById(draftTableArrayId);
+  const seasonInfoTable = franchise.getTableByUniqueId(3123991521);
+
+  await seasonInfoTable.readRecords();
+
+  const currentStage = seasonInfoTable.records[0]['CurrentStage'];
+
+  if (currentStage !== 'NFLSeason') {
+    const currentWeekType = seasonInfoTable.records[0]['CurrentWeekType'];
+    console.log(`ERROR! Your file MUST be in the Regular Season/Playoffs to execute this program. Your file is currently in the ${currentWeekType}.`);
+    console.log("Ensure your file is in the Regular Season/Playoffs before using this program. Enter anything to exit.");
+    prompt();
+    process.exit(0);
+  }
 
   await playerTable.readRecords();
   await draftPlayerTable.readRecords();
   await draftPlayerArray.readRecords();
 
   console.log("Enter the YearsPro value of the players you want to convert into Draft Class players.")
-  console.log("For example, if you wanted to convert rookies into DC players, you'd enter 0. Or, for second year players, you'd enter 1, etc.")
+  console.log("For example, if you wanted to convert rookies into Draft Class players, you'd enter 0. Or, for second year players, you'd enter 1, etc.")
   console.log("Once converted to Draft Class players, they will have their YearsPro set to 0 after AND their age will be retroactively calculated.")
   var yearsProNumber;
   while (true) {
@@ -329,7 +343,7 @@ franchise.on('ready', async function () {
 
   const draftTableArrayId = await deleteCurrentDraftClass(franchise);
 
-  [yearsProNumber,targetPlayersAmount] = await createNewDraftClass(franchise,draftTableArrayId);
+  const [yearsProNumber,targetPlayersAmount] = await createNewDraftClass(franchise,draftTableArrayId);
 
   console.log(`Successfully deleted current Draft Class players and converted ${targetPlayersAmount} players with YearsPro = ${yearsProNumber} into Draft Class players.`);
   await FranchiseUtils.saveFranchiseFile(franchise);
