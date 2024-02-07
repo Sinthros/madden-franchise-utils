@@ -2,6 +2,7 @@
 const prompt = require('prompt-sync')();
 const Franchise = require('madden-franchise');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const { tables } = require('../lookupFunctions/FranchiseTableId');
 
 // Print tool header message
 console.log("This program will update all presentation IDs based on player asset name to fix commentary lines.")
@@ -12,7 +13,7 @@ const gameYear = FranchiseUtils.getGameYear(validGames);
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 franchise.on('ready', async function () {
-    const playerTable = franchise.getTableByUniqueId(1612938518);
+    const playerTable = franchise.getTableByUniqueId(tables.playerTable);
     
 	// Types of players that are not relevant for our purposes and can be skipped
 	const invalidStatuses = ['Draft','Retired','Deleted','None','Created'];
