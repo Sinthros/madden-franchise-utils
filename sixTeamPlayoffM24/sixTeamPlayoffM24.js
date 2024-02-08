@@ -2,6 +2,7 @@ const fs = require('fs');
 const prompt = require('prompt-sync')();
 const Franchise = require('madden-franchise');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const { tables } = require('../lookupFunctions/FranchiseTableId');
 
 console.log("This program will update your Madden 24 franchise file to use the 6 team playoff format. This tool must be run during wildcard week.\n")
 const gameYear = '24';
@@ -9,8 +10,8 @@ const gameYear = '24';
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 franchise.on('ready', async function () {
-    const teamTable = franchise.getTableByUniqueId(502886486);
-	const seasonInfoTable = franchise.getTableByUniqueId(3123991521);
+    const teamTable = franchise.getTableByUniqueId(tables.teamTable);
+	const seasonInfoTable = franchise.getTableByUniqueId(tables.seasonInfoTable);
 	await seasonInfoTable.readRecords();
 	const currentWeek = parseInt(seasonInfoTable.records[0]['CurrentWeek']);
 	
@@ -37,7 +38,7 @@ franchise.on('ready', async function () {
 		}
     }
 	
-	const seasonGameTable = franchise.getTableByUniqueId(1607878349);
+	const seasonGameTable = franchise.getTableByUniqueId(tables.seasonGameTable);
 	await seasonGameTable.readRecords();
 	const numRowsSeasonGame = seasonGameTable.header.recordCapacity;
 	for (j=0; j < numRowsSeasonGame; j++) { //Iterate through the schedule table
