@@ -12,17 +12,19 @@ const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 const validWeekTypes = ['RegularSeason','WildcardPlayoff','DivisionalPlayoff','ConferencePlayoff','SuperBowl'];
 const zeroRef = '00000000000000000000000000000000';
 
-const windOptions = ['Invalid_', 'LightBreeze', 'Moderate', 'VeryWindy'];
+const windOptions = ['Calm', 'LightBreeze', 'Moderate', 'VeryWindy'];
 const snowRand = getRandomNumber(2,3);
 const rainRand = getRandomNumber(1,3);
 const clearRand = getRandomNumber(0,3);
 
-const weatherOptions = ['Snow', 'Rain (Warm)', 'Rain (Cold)', 'Clear (Warm)', 'Clear (Cold)'];
+const weatherOptions = ['Snow', 'Rain (Warm)', 'Rain (Cold)', 'Clear (Warm)', 'Clear (Cold)', 'Overcast (Warm)', 'Overcast (Cold)'];
 const snowValues = [windOptions[snowRand], 'Heavy', 'Overcast', 'Snow', 0]; // In order of Wind, Precipitation, CloudCover, Weather, and Temperature values
 const rainWarmValues = [windOptions[rainRand], 'Heavy', 'Overcast', 'Rain', 70];
 const rainColdValues = [windOptions[rainRand], 'Heavy', 'Overcast', 'Rain', 35];
-const clearWarmValues = [windOptions[clearRand], 'Invalid_', 'Invalid_', 'Clear', 70];
-const clearColdValues = [windOptions[clearRand], 'Invalid_', 'Invalid_', 'Clear', 30];
+const clearWarmValues = [windOptions[clearRand], 'None', 'None', 'Clear', 70];
+const clearColdValues = [windOptions[clearRand], 'None', 'None', 'Clear', 30];
+const overcastWarmValues = [windOptions[clearRand], 'None', 'Overcast', 'Overcast', 70];
+const overcastColdValues = [windOptions[clearRand], 'None', 'Overcast', 'Overcast', 30];
 
 function getRandomNumber(floor, ceiling) 
 {
@@ -259,6 +261,14 @@ franchise.on('ready', async function () {
 	else if(weatherChoice === 'Clear (Cold)')
 	{
 		await adjustWeather(clearColdValues, gameRow);
+	}
+	else if(weatherChoice === 'Overcast (Warm)')
+	{
+		await adjustWeather(overcastWarmValues, gameRow);
+	}
+	else if(weatherChoice === 'Overcast (Cold)')
+	{
+		await adjustWeather(overcastColdValues, gameRow);
 	}
 	
 	console.log("\nWeather updated successfully.\n");
