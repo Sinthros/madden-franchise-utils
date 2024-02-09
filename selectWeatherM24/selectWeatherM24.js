@@ -12,7 +12,7 @@ const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 const validWeekTypes = ['RegularSeason','WildcardPlayoff','DivisionalPlayoff','ConferencePlayoff','SuperBowl'];
 const zeroRef = '00000000000000000000000000000000';
 
-const windOptions = ['Invalid_', 'LightBreeze', 'Moderate', 'VeryWindy'];
+const windOptions = ['Calm', 'LightBreeze', 'Moderate', 'VeryWindy'];
 const snowRand = getRandomNumber(2,3);
 const rainRand = getRandomNumber(1,3);
 const clearRand = getRandomNumber(0,3);
