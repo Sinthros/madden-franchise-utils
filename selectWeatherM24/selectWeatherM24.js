@@ -21,8 +21,8 @@ const weatherOptions = ['Snow', 'Rain (Warm)', 'Rain (Cold)', 'Clear (Warm)', 'C
 const snowValues = [windOptions[snowRand], 'Heavy', 'Overcast', 'Snow', 0]; // In order of Wind, Precipitation, CloudCover, Weather, and Temperature values
 const rainWarmValues = [windOptions[rainRand], 'Heavy', 'Overcast', 'Rain', 70];
 const rainColdValues = [windOptions[rainRand], 'Heavy', 'Overcast', 'Rain', 35];
-const clearWarmValues = [windOptions[clearRand], 'Invalid_', 'Invalid_', 'Clear', 70];
-const clearColdValues = [windOptions[clearRand], 'Invalid_', 'Invalid_', 'Clear', 30];
+const clearWarmValues = [windOptions[clearRand], 'None', 'None', 'Clear', 70];
+const clearColdValues = [windOptions[clearRand], 'None', 'None', 'Clear', 30];
 
 function getRandomNumber(floor, ceiling) 
 {
