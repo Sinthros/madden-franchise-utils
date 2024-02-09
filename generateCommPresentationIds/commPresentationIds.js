@@ -36,12 +36,23 @@ franchise.on('ready', async function () {
         const firstName = playerTable.records[i]['FirstName'];
         const lastName = playerTable.records[i]['LastName'];
         let commentId;
+        let hasAssetId = false
 
         // Remove specified characters from the first name and last name
         const cleanedFirstName = firstName.replace(/[.'`\- ]/g, '');
         const cleanedLastName = lastName.replace(/[.'`\- ]/g, '');
-        playerTable.records[i]['PresentationId'] = currentPresentationId;
-        playerTable.records[i]['PLYR_ASSETNAME'] = `${cleanedLastName}${cleanedFirstName}_${currentPresentationId}`;
+
+        //If an existing asset name, we don't need to get a new presentation ID
+        if (playerTable.records[i]['PLYR_ASSETNAME'] !== '') {
+            hasAssetId = true;
+        }
+        else { // Else, set the current presentation ID
+            playerTable.records[i]['PresentationId'] = currentPresentationId;
+        }
+
+        //We'll ALWAYS generate a new asset name (what if their name has changed, etc)
+        playerTable.records[i]['PLYR_ASSETNAME'] = `${cleanedLastName}${cleanedFirstName}_${playerTable.records[i]['PresentationId']}`;
+
         // Check if the exact last name exists in the commentaryLookup
         if (commentaryLookup.hasOwnProperty(lastName)) {
             commentId = commentaryLookup[lastName];
@@ -55,7 +66,11 @@ franchise.on('ready', async function () {
             }
         }
         playerTable.records[i]['PLYR_COMMENT'] = commentId;
-        currentPresentationId++;
+
+        //Increment our currentPresentationId IF we've used it this loop
+        if (!hasAssetId) {
+            currentPresentationId++;
+        }
     }
 	
     // Update the presentationIdLookup JSON with the new currentPresentationId
