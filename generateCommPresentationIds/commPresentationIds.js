@@ -24,6 +24,7 @@ franchise.on('ready', async function () {
 	// Number of rows in the player table
     const numRows = playerTable.header.recordCapacity; 
     var currentPresentationId = presentationIdLookup['PresentationId']; //Change this value in the json if needed
+    console.log(`Initial presentation ID is: ${currentPresentationId}`);
 	
 	// Iterate through the player table
     for (i = 0; i < numRows; i++) 
@@ -48,6 +49,7 @@ franchise.on('ready', async function () {
         }
         else { // Else, set the current presentation ID
             playerTable.records[i]['PresentationId'] = currentPresentationId;
+            console.log(`${firstName} ${lastName}`)
         }
 
         //We'll ALWAYS generate a new asset name (what if their name has changed, etc)
@@ -74,6 +76,7 @@ franchise.on('ready', async function () {
     }
 	
     // Update the presentationIdLookup JSON with the new currentPresentationId
+    console.log(`Final presentation ID is: ${currentPresentationId}`);
     presentationIdLookup['PresentationId'] = currentPresentationId;
     try {
         fs.writeFileSync('presentationIdLookup.json', JSON.stringify(presentationIdLookup, null, 2), 'utf8');
