@@ -3,6 +3,7 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const prompt = require('prompt-sync')();
+const zeroRef = '00000000000000000000000000000000';
 
 function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false) {
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
@@ -93,5 +94,6 @@ module.exports = {
     getGameYear,
     bin2Dec,
     dec2bin,
-    hasNumber
+    hasNumber,
+    zeroRef
   };

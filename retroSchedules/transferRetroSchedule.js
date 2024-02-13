@@ -9,6 +9,7 @@ const prompt = require('prompt-sync')();
 const fs = require('fs');
 const directoryPath = path.join(__dirname, 'schedules');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const { tables } = require('../lookupFunctions/FranchiseTableId');
 const TRANSFER_SCHEDULE_FUNCTIONS = require('./transferScheduleFromJson');
 const gameYear = '24';
 const autoUnempty = true;
@@ -63,7 +64,7 @@ async function processSelectedYear(year) {
 franchise.on('ready', async function () {
   // Start the user prompt
   const sourceScheduleJson = await promptUser();
-  const seasonInfoTable = franchise.getTableByUniqueId(3123991521);
+  const seasonInfoTable = franchise.getTableByUniqueId(tables.seasonInfoTable);
   await seasonInfoTable.readRecords();
   const currentStage = seasonInfoTable.records[0]['CurrentStage'];
 

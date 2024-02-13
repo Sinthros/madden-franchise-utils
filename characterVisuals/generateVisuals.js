@@ -1,9 +1,16 @@
 const Franchise = require('madden-franchise');
 const prompt = require('prompt-sync')();
-const { tables } = require('../lookupFunctions/FranchiseTableId');
 const fs = require('fs');
 const ZERO_REF = '00000000000000000000000000000000';
 const playerContractStatusIgnore = ['None','Deleted']; //If the player has either of these statuses, don't generate visuals
+const allPlayerVisuals = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/playerVisualsLookup.json', 'utf8')); //Get the JSONs we need and parse them
+const basePlayerVisualJson = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/basePlayerVisualLookup.json', 'utf8'));
+const allCoachVisuals = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/coachVisualsLookup.json', 'utf8'));
+const baseCoachVisualJson = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/baseCoachVisualLookup.json', 'utf8'));
+
+const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
+const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const { tables } = require('../lookupFunctions/FranchiseTableId');
 
 // Visual keys for gear (for players) and morphs
 const visualGearKeys = [
@@ -47,14 +54,6 @@ const visualMorphKeys = [
   "Gut",
   "Thighs"
 ];
-
-const allPlayerVisuals = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/playerVisualsLookup.json', 'utf8')); //Get the JSONs we need and parse them
-const basePlayerVisualJson = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/basePlayerVisualLookup.json', 'utf8'));
-const allCoachVisuals = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/coachVisualsLookup.json', 'utf8'));
-const baseCoachVisualJson = JSON.parse(fs.readFileSync('../lookupFunctions/characterVisualsLookups/baseCoachVisualLookup.json', 'utf8'));
-
-const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 
 console.log("This program will regenerate Character Visuals for ALL players and coaches. This is only applicable for Madden 24 Franchise Files.")
 const gameYear = '24';
