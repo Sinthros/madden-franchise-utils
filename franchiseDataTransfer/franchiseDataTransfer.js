@@ -248,7 +248,9 @@ async function emptyCharacterVisualsTable(targetFranchise) {
   await characterVisuals.readRecords();
 
   for (let rows = 0; rows < characterVisuals.header.recordCapacity;rows++) {
-      await characterVisuals.records[rows].empty();
+      if (characterVisuals.records[rows].isEmpty) {
+        await characterVisuals.records[rows].empty();
+      }
   }
 };
 
