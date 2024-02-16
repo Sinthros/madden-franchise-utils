@@ -107,14 +107,13 @@ franchise.on('ready', async function () {
 			continue;
         }
 		
+		// If it's a draft class player, add to list of draft players
 		if (playerTable.records[i]['ContractStatus'] === 'Draft')
 		{
 			draftRows.push(i);
 		}
 		else
-		{
-			const presentationId = parseInt(playerTable.records[i]['PresentationId']);
-			
+		{	
 			// Check if player is a real NFL player
 			if (allAssetNames.includes(playerTable.records[i]['PLYR_ASSETNAME']))
 			{
