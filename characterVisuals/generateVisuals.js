@@ -61,7 +61,6 @@ const autoUnempty = true;
 
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
-
 franchise.on('ready', async function () {
 
     //THIS IS HOW WE CAN TELL WHAT GAME WE'RE WORKING WITH
@@ -81,31 +80,14 @@ franchise.on('ready', async function () {
     await mainCharacterVisualsTable.readRecords();
     await playerTable.readRecords();
     await coachTable.readRecords();
-
-    const mainCharacterVisualsId = mainCharacterVisualsTable.header.tableId;
     
     for (let i = 0; i < coachTable.header.recordCapacity;i++) {
       // If empty OR empty offensive playbook/defensive playbook (not a real coach), don't set visuals
       if (coachTable.records[i].isEmpty || (coachTable.records[i]['OffensivePlaybook'] === ZERO_REF && coachTable.records[i]['DefensivePlaybook'] === ZERO_REF )) {
         continue
       };
+      await characterVisualFunctions.regenerateCoachVisual(franchise,coachTable,mainCharacterVisualsTable,i);
 
-      let jsonToUpdate = JSON.parse(JSON.stringify(baseCoachVisualJson)); // Get our current base JSON
-
-      const coachValues = await characterVisualFunctions.getCoachValues(coachTable, i);
-      jsonToUpdate = await characterVisualFunctions.updateCoachVisuals(coachValues,allCoachVisuals,jsonToUpdate,visualMorphKeys)
-      jsonToUpdate = await characterVisualFunctions.removeEmptyCoachBlends(jsonToUpdate)
-
-      const { currentCharacterVisualsTable, characterVisualsRow, characterVisualsTableId } = await characterVisualFunctions.getCharacterVisualsTable(franchise,coachTable,mainCharacterVisualsTable,i)
-      if (characterVisualsTableId !== mainCharacterVisualsId) { // If a different table besides the main one, we need to read it
-        await currentCharacterVisualsTable.readRecords();
-      }
-  
-      currentCharacterVisualsTable.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
-
-      //Uncomment this if you want to print out the json
-      //test = JSON.parse(JSON.stringify(characterVisuals.records[characterVisualsRow]['RawData'])); // Get our current base JSON
-      //console.log(test)
     }
     console.log("Successfully generated Character Visuals for all coaches.");
 
@@ -116,48 +98,7 @@ franchise.on('ready', async function () {
         continue
       }
 
-      //This is a roundabout way to get a unique version of the base player JSON for each player, since we'll be editing it
-      let jsonToUpdate = JSON.parse(JSON.stringify(basePlayerVisualJson));
-      const gearValues = await characterVisualFunctions.getPlayerGearValues(playerTable, i); //Get all the gear values for this player
-
-      for (let j = 0; j < visualGearKeys.length; j++) { //Iterate over the keys of the visual gear
-        if (visualGearKeys[j] === 'FlakJacket') { //If it's FlakJacket or BackPlate, we have to utilize an optional parameter for its morph
-          const flakJacketAmount = parseFloat(playerTable.records[i]['MetaMorph_FlakJacketAmount'].toFixed(2)); //In the player table it can be several digits, but here we only want 2 digits
-          jsonToUpdate = await characterVisualFunctions.updateGearVisuals(visualGearKeys[j], gearValues[j], allPlayerVisuals, jsonToUpdate, flakJacketAmount);
-        }
-        else if (visualGearKeys[j] === 'Backplate') {
-          const backPlateAmount = parseFloat(playerTable.records[i]['MetaMorph_BackPlateAmount'].toFixed(2));
-          jsonToUpdate = await characterVisualFunctions.updateGearVisuals(visualGearKeys[j], gearValues[j], allPlayerVisuals, jsonToUpdate, backPlateAmount);
-        }
-        else { //Otherwise, update the gear normally
-          jsonToUpdate = await characterVisualFunctions.updateGearVisuals(visualGearKeys[j], gearValues[j], allPlayerVisuals, jsonToUpdate);
-        }
-        
-      }
-
-      const [genericHeadName,genericHead,skinTone] = await characterVisualFunctions.getPlayerHeadValues(playerTable, i,allPlayerVisuals); //Get head name/head/skin tone dynamically
-      jsonToUpdate.genericHeadName = genericHeadName; //Setting these is very simple in the JSON
-      jsonToUpdate.genericHead = genericHead;
-      jsonToUpdate.skinTone = skinTone;
-
-      const morphValues = await characterVisualFunctions.getPlayerMorphValues(playerTable,i) //Now we need to get the morph values
-
-      for (let j = 0; j < visualMorphKeys.length; j++) { //Iterate over the visual morph keys
-        const characterVisualsKey = visualMorphKeys[j]; 
-        const baseMorph = morphValues[j * 2]; //Each morph key has 2 values back to back - This logic allows us to get both
-        const barycentricMorph = morphValues[j * 2 + 1];
-      
-        // Update the morphs in the JSON
-        jsonToUpdate = await characterVisualFunctions.updateMorphValues(characterVisualsKey, baseMorph, barycentricMorph, jsonToUpdate);
-      }
-
-      jsonToUpdate = await characterVisualFunctions.removeEmptyPlayerBlends(jsonToUpdate);
-
-      const { currentCharacterVisualsTable, characterVisualsRow, characterVisualsTableId } = await characterVisualFunctions.getCharacterVisualsTable(franchise,playerTable,mainCharacterVisualsTable,i)
-      if (characterVisualsTableId !== mainCharacterVisualsId) {
-        await currentCharacterVisualsTable.readRecords();
-      }
-      currentCharacterVisualsTable.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
+      await characterVisualFunctions.regeneratePlayerVisual(franchise,playerTable,mainCharacterVisualsTable,i);
     }
     console.log("Successfully generated Character Visuals for all players");
     await FranchiseUtils.saveFranchiseFile(franchise);
