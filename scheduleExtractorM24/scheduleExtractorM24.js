@@ -14,6 +14,8 @@ const scheduleObject = {
 	weeks: []
 };
 
+const teamLookup = JSON.parse(fs.readFileSync('teamLookup.json', 'utf8'));
+
 const validWeekTypes = ['PreSeason'];
 const zeroRef = '00000000000000000000000000000000';
 
@@ -81,11 +83,11 @@ async function parseGameData(seasonGameTable, j, indGameData, teamTable)
 
 	let homeTeamRef = seasonGameTable.records[j]['HomeTeam'];
 	let homeTeamRow = await FranchiseUtils.bin2Dec(homeTeamRef.slice(15));
-	let homeTeamName = teamTable.records[homeTeamRow]['LongName'] + ' ' + teamTable.records[homeTeamRow]['DisplayName'];
+	let homeTeamName = teamLookup[homeTeamRow][0];
 
 	let awayTeamRef = seasonGameTable.records[j]['AwayTeam'];
 	let awayTeamRow = await FranchiseUtils.bin2Dec(awayTeamRef.slice(15));
-	let awayTeamName = teamTable.records[awayTeamRow]['LongName'] + ' ' + teamTable.records[awayTeamRow]['DisplayName'];
+	let awayTeamName = teamLookup[awayTeamRow][0];
 
 	indGameData.day = convertedDay;
 	indGameData.time = convertedTime;
