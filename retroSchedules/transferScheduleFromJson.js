@@ -374,7 +374,9 @@ async function transferSchedule(sourceScheduleJson,targetFranchise) {
   if (TOTAL_GAMES < SOURCE_TOTAL_GAMES) { //If too many reg season games, quit
     console.log("ERROR! Json file has too many Regular Season games.");
     console.log(`Your Json file has ${SOURCE_TOTAL_GAMES} Regular Season games and your target file has ${TOTAL_GAMES}. The schedule CANNOT be transferred.`);
-    return
+    console.log("Enter anything to exit the program.");
+    prompt();
+    process.exit(0);
   }
 
   if (TOTAL_GAMES > SOURCE_TOTAL_GAMES) {
