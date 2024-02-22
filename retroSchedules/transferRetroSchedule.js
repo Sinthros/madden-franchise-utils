@@ -105,10 +105,16 @@ franchise.on('ready', async function () {
 
   }
 
-  await TRANSFER_SCHEDULE_FUNCTIONS.transferSchedule(sourceScheduleJson,franchise);
-
-  console.log("Successfully inserted schedule into your franchise file.");
-  await FranchiseUtils.saveFranchiseFile(franchise);
+  let transferStatus = await TRANSFER_SCHEDULE_FUNCTIONS.transferSchedule(sourceScheduleJson,franchise);
+  if(!transferStatus)
+  {
+    console.log("Unable to transfer schedule.");
+  }
+  else
+  {
+    console.log("Successfully inserted schedule into your franchise file.");
+    await FranchiseUtils.saveFranchiseFile(franchise);
+  }
   console.log("Program completed. Enter anything to exit the program.");
   prompt();
   
