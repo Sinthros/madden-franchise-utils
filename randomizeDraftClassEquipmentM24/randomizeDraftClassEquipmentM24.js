@@ -170,8 +170,15 @@ franchise.on('ready', async function () {
 		}
 	}
 	
-	console.log("\nRegenerating all Character Visuals for players/coaches...");
-	await characterVisualFunctions.updateAllCharacterVisuals(franchise);
+	console.log("\nRegenerating Character Visuals for draft class players...");
+
+	const visualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable);
+	visualsTable.readRecords();
+	// Iterate through draft rows array and regenerate visuals for each
+	for (let i = 0; i < draftRows.length; i++)
+    {
+        await characterVisualFunctions.regeneratePlayerVisual(franchise, playerTable, visualsTable, draftRows[i]);
+    }
 	
 	// Program complete, so print success message, save the franchise file, and exit
 	console.log("\nRookie equipment updated successfully.\n");
