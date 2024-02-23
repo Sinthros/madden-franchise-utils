@@ -20,12 +20,12 @@ const playerMotivationsM24 = [
 ];
 
 
-console.log("This program will remove all Player Tags and regenerate all Player Motivations in your Madden 24 Franchise File. Player Tags regenerate once you enter the Regular Season. You will be prompted to choose if you wish to remove player tags or not and if you want to regenerate motivations for all players or just for rookies.\n\n")
+console.log("This program will remove all player Tags (if desired) but they will regenerate once you enter the Regular Season. It will also regenerate the player Motivations to make them more realistic by using a formula along with a variety of factors including overall, age and position to dynamically generate motivations. This tool can be ran at any time but should only be ran once per season. It's recommended to run this tool AFTER running the Progression Tool in MyFranchise, ideally doing both in Preseason Week 1. If you are using StartToday, it's recommended to run this tool during Staff week or Resign week. Please follow the prompts below and read carefully!\n\n")
 const gamePrompt = '24';
 const autoUnempty = false;
 const franchise = FranchiseUtils.selectFranchiseFile(gamePrompt,autoUnempty);
 
-async function generatePlayerMotivations(franchise, removeTags, allPlayers, excludeSchemeFit) {
+async function generatePlayerMotivations(franchise, removeTags, excludeSchemeFit, includeCurrent) {
   console.log("Doing the stuff...")
   const playerTable = franchise.getTableByUniqueId(PLAYER_TABLE);
   await playerTable.readRecords();
@@ -39,11 +39,16 @@ async function generatePlayerMotivations(franchise, removeTags, allPlayers, excl
         yrs: playerTable.records[i]['YearsPro']
       };
 
-      if (!allPlayers && player.yrs > 1) {
-        continue;
+      var currentMotivations = []
+      if (includeCurrent){
+        currentMotivations = [
+          playerTable.records[i]['Motivation1'],
+          playerTable.records[i]['Motivation2'],
+          playerTable.records[i]['Motivation3']
+        ]
       }
 
-      const motivationsArray = await buildMotivationsArray(player, excludeSchemeFit);
+      const motivationsArray = await buildMotivationsArray(player, excludeSchemeFit, currentMotivations, player.yrs > 1);
 
       playerTable.records[i]['Motivation1'] = motivationsArray[0];
       playerTable.records[i]['Motivation2'] = motivationsArray[1];
@@ -66,33 +71,41 @@ async function shuffleArray(array) {
   }
 }
 
-async function buildMotivationsArray(player, excludeSchemeFit) {
-  var schemeFitWeight = 10;
+async function buildMotivationsArray(player, excludeSchemeFit, currentMotivations, playerIsNotRookieOrProspect) {
+  var schemeFitWeight = 6;
   if (excludeSchemeFit) {
     schemeFitWeight = 0;
   }
   var motivationWeights = {
-    'HighestOffer': 20,
-    'ChampionshipContender': 20,
+    'HighestOffer': 21,
+    'ChampionshipContender': 15,
+    'HeadCoachHistoricRecord': 10,
     'TeamHasFranchiseQB': 10,
     'CloseToHome': 10,
-    'HeadCoachHistoricRecord': 10,
-    'BigMarket': 5,
-    'ToptheDepthChart': 5,
-    'NoIncomeTax': 5,
-    'WarmWeatherState': 5,
-    'MentoratPosition': 5,
-    'TeamPrestige': 5,
+    'ToptheDepthChart': 10,
+    'BigMarket': 6,
+    'WarmWeatherState': 6,
+    'TeamPrestige': 6,
+    'MentoratPosition': 3,
+    'NoIncomeTax': 3,
     'SchemeFit': schemeFitWeight
   };
+
+  // User chose to consider the current motivations, do so if the player is not a rookie or draft class prospect
+  if (!currentMotivations.isEmpty && playerIsNotRookieOrProspect) {
+    for (let i = 0; i < currentMotivations.length; i++) {
+      const value = currentMotivations[i];
+      motivationWeights[value] = 30;
+    }
+  }
 
   // QB, remove TeamHasFranchiseQB
   if (player.pos === 'QB'){
     motivationWeights['TeamHasFranchiseQB'] = 0;
   }
 
-  // Overall below 75, remove ToptheDepthChart
-  if (player.ovr < 75) {
+  // Overall below 73, remove ToptheDepthChart
+  if (player.ovr < 73) {
     motivationWeights['ToptheDepthChart'] = 0;
   }
 
@@ -103,15 +116,14 @@ async function buildMotivationsArray(player, excludeSchemeFit) {
 
   // Overall above 80, boost several motivations and reduce/remove others
   if (player.ovr > 79) {
-    motivationWeights['HighestOffer'] *= 3;
+    motivationWeights['HighestOffer'] *= 4;
     motivationWeights['ChampionshipContender'] *= 2;
     motivationWeights['BigMarket'] *= 2;
-    motivationWeights['HeadCoachHistoricRecord'] *= 2;
     motivationWeights['MentoratPosition'] = 0;
   }
 
-  // Age 28 and above, boost several motivations and reduce/remove others
-  if (player.age > 27) {
+  // Age 29 and above, boost several motivations and reduce/remove others
+  if (player.age > 28) {
     motivationWeights['ChampionshipContender'] *= 3;
     motivationWeights['CloseToHome'] *= 2;
     motivationWeights['MentoratPosition'] = 0;
@@ -126,9 +138,14 @@ async function buildMotivationsArray(player, excludeSchemeFit) {
     motivationWeights['HighestOffer'] *= 2;
   }
 
-  // Special handling for higher rated QBs to want to be the starter
-  if (player.pos === 'QB' && player.ovr > 74) {
-    motivationWeights['ToptheDepthChart'] *= 40;
+  // Special handling for fringe QBs (75-81 overall) to want to be the starter
+  if (player.pos === 'QB' && player.ovr >= 75 && player.ovr <= 81) {
+    motivationWeights['ToptheDepthChart'] *= 60;
+  }
+
+  // Special handling for good players to assume to be the starter already and remove it as a motivation
+  if (player.ovr >= 82) {
+    motivationWeights['ToptheDepthChart'] = 0;
   }
 
   // Randomly pick the motivations based on the weights
@@ -172,16 +189,24 @@ function selectThreeValues(x1, locationMotivations) {
         if (locationMotivations.includes(value)) {
           hasUsedLocation = true;
         }
-
         break;
       }
     }
   }
 
+  // Sort by value
+  // let selectedValuesSorted = sortDictionaryByValueDescending(selectedValues);
+
   // Extract only the values without weights
   const result = selectedValues.map(({ value }) => value);
 
   return result;
+}
+
+function sortDictionaryByValueDescending(inputArray) {
+  inputArray.sort((a, b) => b.weight - a.weight);
+
+  return inputArray;
 }
 
 franchise.on('ready', async function () {
@@ -197,55 +222,55 @@ franchise.on('ready', async function () {
     
     try {
       var removeTags = false;
-      var allPlayers = false;
       var excludeSchemeFit = false;
+      var includeCurrent = false;
 
       while (true) {
-        console.log("\nDo you want to remove all player Tags? This will negatively effect resigning players and free agency signings and is therefore generally not recommended. Type 'remove' if you want to continue removing all tags for all players or 'skip' if not.");
+        console.log("\nDo you want to remove all player Tags? This will negatively effect resigning players and free agency signings and is therefore generally not recommended unless you know what you're doing and have a specific reason for doing so. Type 'skip' to skip this and continue, or 'removetags' if you want to remove all tags for all players.");
         let finalPrompt = prompt().trim();
-        if (finalPrompt.toUpperCase() === 'REMOVE') {
+        if (finalPrompt.toUpperCase() === 'REMOVETAGS') {
             removeTags = true;
             break;
         } else if (finalPrompt.toUpperCase() === 'SKIP') {
             removeTags = false;
             break;
         } else {
-            console.log("\nInvalid input. Please enter 'remove' or 'skip' to continue (don't include the quotes).\n");
+            console.log("\nInvalid input. Please enter 'REMOVETAGS' or 'skip' to continue (don't include the quotes).\n");
         }
       }
       console.log("\n")
       
       while (true) {
-        console.log("Do you want to remove Scheme Fit from being a player Motivation? Due to most people using the Progression Tool instead of the in-game XP system and the in-game Schemes and Archetypes system not being very good overall, it's recommended to exclude Scheme Fit. Type 'exclude' if you want to exclude Scheme Fit from showing as a Motivation and 'include' if you want to keep it.");
+        console.log("Do you want to remove Scheme Fit from being a player Motivation? Due to most people using the Progression Tool instead of the in-game XP system and the in-game Schemes & Archetypes system not being the best, it's recommended to exclude Scheme Fit. Type 'exclude' if you want to exclude Scheme Fit from showing as a Motivation, or 'includeschemefit' if you want to keep it.");
         let finalPrompt = prompt().trim();
         if (finalPrompt.toUpperCase() === 'EXCLUDE') {
           excludeSchemeFit = true;
             break;
-        } else if (finalPrompt.toUpperCase() === 'INCLUDE') {
+        } else if (finalPrompt.toUpperCase() === 'INCLUDESCHEMEFIT') {
           excludeSchemeFit = false;
             break;
         } else {
-            console.log("\nInvalid input. Please enter 'exclude' or 'include' to continue (don't include the quotes).\n");
+            console.log("\nInvalid input. Please enter 'exclude' or 'includeschemefit' to continue (don't include the quotes).\n");
         }
       }
       console.log("\n")
 
       while (true) {
-        console.log("Do you want to regenerate motivations for all players or just for rookies and the current draft class? If this is your first time running the tool in your current franchise, its recommended to do it for all players. If youve already ran this tool in your current franchise, its recommended to only do it for the rookie class. For all players, type 'all' or for just rookies and the current draft class, type 'rookies'.");
+        console.log("Do you want to factor in each player's current motivations to the formulas or wipe them completely? If this is your first time running this tool for the current franchise, its recommended to wipe them to ensure a good foundation. If you are running this on the same franchise but a different league year, you should include them. Note: Rookies will always be completely regnerated in order to properly apply the formulas and so you'll be able to include their generated motivations in subsequent seasons. Type 'include' to include each player's current motivations in the calculations, or 'wipecurrent' to wipe all current motivations for all players completely.");
         let finalPrompt = prompt().trim();
-        if (finalPrompt.toUpperCase() === 'ALL') {
-            allPlayers = true;
+        if (finalPrompt.toUpperCase() === 'INCLUDE') {
+            includeCurrent = true;
             break;
-        } else if (finalPrompt.toUpperCase() === 'ROOKIES') {
-            allPlayers = false;
+        } else if (finalPrompt.toUpperCase() === 'WIPECURRENT') {
+            includeCurrent = false;
             break;
         } else {
-            console.log("\nInvalid input. Please enter 'all' or 'rookies' to continue (don't include the quotes).\n");
+            console.log("\nInvalid input. Please enter 'include' or 'wipecurrent' to continue (don't include the quotes).\n");
         }
       }
       console.log("\n")
 
-      await generatePlayerMotivations(franchise, removeTags, allPlayers, excludeSchemeFit);
+      await generatePlayerMotivations(franchise, removeTags, excludeSchemeFit, includeCurrent);
     } catch (e) {
       console.log("******************************************************************************************")
       console.log(`FATAL ERROR!! Please report this message to Sinthros IMMEDIATELY - ${e}`)
@@ -253,13 +278,10 @@ franchise.on('ready', async function () {
       console.log("******************************************************************************************")
       prompt();
       process.exit(0);
-
     }
-
     
   console.log("Successfully deleted all Player Tags (if chosen) and regenerated Player Motivations based on previous responses.");
   await FranchiseUtils.saveFranchiseFile(franchise);
   console.log("Program completed. Enter anything to exit the program.");
-
   prompt();
 });
