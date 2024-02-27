@@ -166,6 +166,30 @@ franchise.on('ready', async function () {
 		scheduleObject.weeks.push(indWeekData);
     }
 
+	// Iterate through each week
+	scheduleObject.weeks.forEach(week => {
+		// Sort games within the week
+		week.games.sort((game1, game2) => {
+			// Compare days
+			const dayOrder = ["Wed", "Thu", "Fri", "Sat", "Sun", "Mon", "Tue"];
+			const day1Index = dayOrder.indexOf(game1.day);
+			const day2Index = dayOrder.indexOf(game2.day);
+			if (day1Index !== day2Index) {
+				return day1Index - day2Index;
+			}
+
+			// If days are the same, compare times
+			const [hour1, minute1] = game1.time.split(":").map(Number);
+			const [hour2, minute2] = game2.time.split(":").map(Number);
+
+			if (hour1 !== hour2) {
+				return hour1 - hour2;
+			}
+
+			return minute1 - minute2;
+		});
+	});
+
 	// Convert object to string
 	const jsonString = JSON.stringify(scheduleObject, null, 2);
 
