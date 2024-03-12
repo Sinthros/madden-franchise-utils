@@ -34,7 +34,7 @@ async function generatePlayerMotivations(franchise, removeTags, excludeSchemeFit
     if (!playerTable.records[i].isEmpty) {
       var player = {
         pos: playerTable.records[i]['Position'],
-        age: playerTable.records[i]['Age'] ,
+        age: playerTable.records[i]['Age'],
         ovr: playerTable.records[i]['OverallRating'],
         yrs: playerTable.records[i]['YearsPro']
       };
@@ -50,9 +50,33 @@ async function generatePlayerMotivations(franchise, removeTags, excludeSchemeFit
 
       const motivationsArray = await buildMotivationsArray(player, excludeSchemeFit, currentMotivations, player.yrs > 1);
 
-      playerTable.records[i]['Motivation1'] = motivationsArray[0];
-      playerTable.records[i]['Motivation2'] = motivationsArray[1];
-      playerTable.records[i]['Motivation3'] = motivationsArray[2];
+      var needsTopDepthChart = false;
+      needsTopDepthChart = await determineNeedTopDepthChart(player, motivationsArray);
+
+      // Player hits the overall threshold for their position, assign ToptheDepthChart as their top motivation then use top 2 motivations for #2 and #3
+      if (needsTopDepthChart === true){
+        playerTable.records[i]['Motivation1'] = "ToptheDepthChart";
+
+        // Ensure they don't have ToptheDepthChart as one of their top 2 motivations before assigning them
+        if (motivationsArray[0] === "ToptheDepthChart") {
+          playerTable.records[i]['Motivation2'] = motivationsArray[1];
+          playerTable.records[i]['Motivation3'] = motivationsArray[2];
+        }
+        else if (motivationsArray[1] === "ToptheDepthChart") {
+          playerTable.records[i]['Motivation2'] = motivationsArray[0];
+          playerTable.records[i]['Motivation3'] = motivationsArray[2];
+        }
+        else {
+          playerTable.records[i]['Motivation2'] = motivationsArray[0];
+          playerTable.records[i]['Motivation3'] = motivationsArray[1];
+        }
+      }
+      // Player doesn't hit overall threshold for their position, continue as normal
+      else {
+        playerTable.records[i]['Motivation1'] = motivationsArray[0];
+        playerTable.records[i]['Motivation2'] = motivationsArray[1];
+        playerTable.records[i]['Motivation3'] = motivationsArray[2];
+      }
 
       if (removeTags) {
         playerTable.records[i]['Tag1'] = 'NoRole';
@@ -71,18 +95,60 @@ async function shuffleArray(array) {
   }
 }
 
+// Based on their position and overall, determine if they should have TopDepthChart be their #1 motivation or not
+async function determineNeedTopDepthChart(player) {
+  switch (player.pos) {
+    case 'QB':
+      return player.ovr >= 75;
+    case 'HB':
+      return player.ovr >= 80;
+    case 'WR':
+      return player.ovr >= 88;
+    case 'TE':
+      return player.ovr >= 76;
+    case 'LT':
+      return player.ovr >= 74;
+    case 'LG':
+    case 'C':
+    case 'RG':
+    case 'RT':
+      return player.ovr >= 72;
+    case 'LE':
+    case 'RE':
+      return player.ovr >= 75;
+    case 'DT':
+      return player.ovr >= 82;
+    case 'LOLB':
+    case 'ROLB':
+      return player.ovr >= 74;
+    case 'MLB':
+      return player.ovr >= 82;
+    case 'CB':
+      return player.ovr >= 88;
+    case 'FS':
+    case 'SS':
+      return player.ovr >= 77;
+    case 'K':
+    case 'P':
+      return player.ovr >= 72;
+    default:
+      return false;
+  }
+}
+
 async function buildMotivationsArray(player, excludeSchemeFit, currentMotivations, playerIsNotRookieOrProspect) {
   var schemeFitWeight = 6;
   if (excludeSchemeFit) {
     schemeFitWeight = 0;
   }
+  // Base motivation weights
   var motivationWeights = {
-    'HighestOffer': 21,
+    'HighestOffer': 25,
     'ChampionshipContender': 15,
     'HeadCoachHistoricRecord': 10,
     'TeamHasFranchiseQB': 10,
     'CloseToHome': 10,
-    'ToptheDepthChart': 10,
+    'ToptheDepthChart': 6,
     'BigMarket': 6,
     'WarmWeatherState': 6,
     'TeamPrestige': 6,
@@ -95,7 +161,7 @@ async function buildMotivationsArray(player, excludeSchemeFit, currentMotivation
   if (!currentMotivations.isEmpty && playerIsNotRookieOrProspect) {
     for (let i = 0; i < currentMotivations.length; i++) {
       const value = currentMotivations[i];
-      motivationWeights[value] = 30;
+      motivationWeights[value] = 40;
     }
   }
 
@@ -104,8 +170,8 @@ async function buildMotivationsArray(player, excludeSchemeFit, currentMotivation
     motivationWeights['TeamHasFranchiseQB'] = 0;
   }
 
-  // Overall below 73, remove ToptheDepthChart
-  if (player.ovr < 73) {
+  // Overall below 70, remove ToptheDepthChart
+  if (player.ovr < 70) {
     motivationWeights['ToptheDepthChart'] = 0;
   }
 
@@ -133,19 +199,8 @@ async function buildMotivationsArray(player, excludeSchemeFit, currentMotivation
   if (player.pos === 'K' || player.pos === 'P'){
     motivationWeights['SchemeFit'] = 0;
     motivationWeights['MentoratPosition'] = 0;
-    motivationWeights['ToptheDepthChart'] = 0;
     motivationWeights['TeamHasFranchiseQB'] = 0;
     motivationWeights['HighestOffer'] *= 2;
-  }
-
-  // Special handling for fringe QBs (75-81 overall) to want to be the starter
-  if (player.pos === 'QB' && player.ovr >= 75 && player.ovr <= 81) {
-    motivationWeights['ToptheDepthChart'] *= 60;
-  }
-
-  // Special handling for good players to assume to be the starter already and remove it as a motivation
-  if (player.ovr >= 82) {
-    motivationWeights['ToptheDepthChart'] = 0;
   }
 
   // Randomly pick the motivations based on the weights
