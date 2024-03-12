@@ -7,6 +7,7 @@
 const Franchise = require('madden-franchise');
 const prompt = require('prompt-sync')();
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
+const { tables } = require('../lookupFunctions/FranchiseTableId');
 const fs = require('fs');
 const teamLookup = JSON.parse(fs.readFileSync('teamLookup.json', 'utf8'));
 
@@ -105,8 +106,8 @@ function countTargetRowsWithSeasonWeekType(table) {
 
 
 async function getAllStartOccurrences(targetFranchise) {
-  const currentTimeTable = targetFranchise.getTableByUniqueId(2446261029);
-  const seasonInfoTable = targetFranchise.getTableByUniqueId(3123991521);
+  const currentTimeTable = targetFranchise.getTableByUniqueId(tables.schedulerTable);
+  const seasonInfoTable = targetFranchise.getTableByUniqueId(tables.seasonInfoTable);
 
   await currentTimeTable.readRecords();
   await seasonInfoTable.readRecords();
@@ -270,14 +271,14 @@ async function convertSchedule(sourceScheduleJson, seasonGameTable, TOTAL_GAMES,
     schedulerTable,
     teamTable
   ] = await Promise.all([
-    targetFranchise.getTableByUniqueId(2877284424).readRecords(),
-    targetFranchise.getTableByUniqueId(1009707988).readRecords(),
-    targetFranchise.getTableByUniqueId(3123991521).readRecords(),
-    targetFranchise.getTableByUniqueId(2943829712).readRecords(),
-    targetFranchise.getTableByUniqueId(3429237668).readRecords(),
-    targetFranchise.getTableByUniqueId(987800642).readRecords(),
-    targetFranchise.getTableByUniqueId(1395135267).readRecords(),
-    targetFranchise.getTableByUniqueId(502886486).readRecords()
+    targetFranchise.getTableByUniqueId(tables.pendingSeasonGamesTable).readRecords(),
+    targetFranchise.getTableByUniqueId(tables.practiceEvalTable).readRecords(),
+    targetFranchise.getTableByUniqueId(tables.seasonInfoTable).readRecords(),
+    targetFranchise.getTableByUniqueId(tables.seasonGameRequestTable).readRecords(),
+    targetFranchise.getTableByUniqueId(tables.franchiseUserTable).readRecords(),
+    targetFranchise.getTableByUniqueId(tables.gameEventTable).readRecords(),
+    targetFranchise.getTableByUniqueId(tables.schedulerAppointmentTable).readRecords(),
+    targetFranchise.getTableByUniqueId(tables.teamTable).readRecords()
   ]);
 
   const {weekStartOccurrences,preseasonStartOccurrences} = await getAllStartOccurrences(targetFranchise);
@@ -358,7 +359,7 @@ async function transferSchedule(sourceScheduleJson,targetFranchise) {
   const [
     seasonGameTable,
   ] = await Promise.all([
-    targetFranchise.getTableByUniqueId(1607878349).readRecords()
+    targetFranchise.getTableByUniqueId(tables.seasonGameTable).readRecords()
   ]);
 
   const TOTAL_GAMES = countTargetRowsWithSeasonWeekType(seasonGameTable);
@@ -373,7 +374,7 @@ async function transferSchedule(sourceScheduleJson,targetFranchise) {
   if (TOTAL_GAMES < SOURCE_TOTAL_GAMES) { //If too many reg season games, quit
     console.log("ERROR! Json file has too many Regular Season games.");
     console.log(`Your Json file has ${SOURCE_TOTAL_GAMES} Regular Season games and your target file has ${TOTAL_GAMES}. The schedule CANNOT be transferred.`);
-    return
+    return false;
   }
 
   if (TOTAL_GAMES > SOURCE_TOTAL_GAMES) {
@@ -382,7 +383,7 @@ async function transferSchedule(sourceScheduleJson,targetFranchise) {
   }  
   
   await convertSchedule(sourceScheduleJson, seasonGameTable, TOTAL_GAMES, targetFranchise);
-
+  return true;
 };
 
 module.exports = {

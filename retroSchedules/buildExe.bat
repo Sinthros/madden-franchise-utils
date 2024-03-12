@@ -1,1 +1,1 @@
-nexe --build -i transferRetroSchedule.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "transferScheduleFromJson.js" -r "*.json" -r "./schedules/*.json" -r "../lookupFunctions/FranchiseUtils.js" -o "transferRetroSchedule.exe" --verbose
+nexe --build -i transferRetroSchedule.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "transferScheduleFromJson.js" -r "*.json" -r "./schedules/*.json" -r "../lookupFunctions/FranchiseUtils.js" -r "../lookupFunctions/FranchiseTableId.js" -o "transferRetroSchedule.exe" --verbose

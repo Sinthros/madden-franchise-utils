@@ -1,0 +1,1 @@
+nexe --build -i randomizeDraftClassEquipmentM24.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "../lookupFunctions/FranchiseUtils.js" -r "./lookupFiles/*.json" -r "../lookupFunctions/FranchiseTableId.js" -r "../lookupFunctions/**/characterVisualsLookups/*" -o "randomizeDraftClassEquipmentM24.exe" --verbose 

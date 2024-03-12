@@ -1,6 +1,7 @@
 const Franchise = require('madden-franchise');
 const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const { tables } = require('../lookupFunctions/FranchiseTableId');
 
 const invalidTeams = ['AFC','NFC'];
 const invalidStatuses = ['Draft','Retired','Deleted','None','Created','PracticeSquad'];
@@ -14,7 +15,7 @@ const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
 async function setRosterSizes(playerTable,teamTable) {
 
-  for (let i = 0;i<teamTable.header.recordCapacity;i++) {
+  for (let i = 0; i < teamTable.header.recordCapacity; i++) {
     let activeRosterSize = 0; // Current active players
     let salCapRosterSize = 0; // Total rostered players (does NOT include Practice Squad guys)
     let salCapNextYearRosterSize = 0; // Guys slated to be rostered next season
@@ -23,15 +24,17 @@ async function setRosterSizes(playerTable,teamTable) {
       continue;
     }
     const currentTeamIndex = teamTable.records[i]['TeamIndex']
-    for (let j = 0;j<playerTable.header.recordCapacity;j++) {
-      if (playerTable.records[j].isEmpty || invalidStatuses.includes(playerTable.records[j]['ContractStatus']) || playerTable.records[j]['TeamIndex'] === '32') { // If an empty row/invalid, continue
+    for (let j = 0; j<playerTable.header.recordCapacity; j++) {
+      if (playerTable.records[j].isEmpty || invalidStatuses.includes(playerTable.records[j]['ContractStatus']) || playerTable.records[j]['TeamIndex'] === 32) { // If an empty row/invalid, continue
         continue;
       }
       const playerTeamIndex = playerTable.records[j]['TeamIndex'];
       const isOnIR = playerTable.records[j]['IsInjuredReserve'];
       const contractLength = playerTable.records[j]['ContractLength'];
+
       if (playerTeamIndex === currentTeamIndex) { // If we have a match, always increment salCapRosterSize
         salCapRosterSize++;
+        
         if (!isOnIR) { // If not on IR, increment activeRosterSize
           activeRosterSize++;
         }
@@ -52,8 +55,8 @@ async function setRosterSizes(playerTable,teamTable) {
 
 franchise.on('ready', async function () {
 
-  const playerTable = franchise.getTableByUniqueId(1612938518);
-  const teamTable = franchise.getTableByUniqueId(502886486);
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  const teamTable = franchise.getTableByUniqueId(tables.teamTable);
   await teamTable.readRecords();
   await playerTable.readRecords();
 

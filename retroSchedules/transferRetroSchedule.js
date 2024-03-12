@@ -9,6 +9,7 @@ const prompt = require('prompt-sync')();
 const fs = require('fs');
 const directoryPath = path.join(__dirname, 'schedules');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const { tables } = require('../lookupFunctions/FranchiseTableId');
 const TRANSFER_SCHEDULE_FUNCTIONS = require('./transferScheduleFromJson');
 const gameYear = '24';
 const autoUnempty = true;
@@ -28,7 +29,11 @@ async function promptUser() {
 
     // Parse the input as an integer
     selectedYear = parseInt(inputYear, 10);
-
+    if (selectedYear === 0)
+    {
+        // Move to special custom JSON case
+        break;
+    }
     // Check if the input is a valid year
     if (!Number.isNaN(selectedYear) && selectedYear >= 1970 && selectedYear <= 2023) {
       break; // Exit the loop if the input is valid
@@ -37,9 +42,26 @@ async function promptUser() {
     console.log('Invalid input. Please enter a year between 1970 and 2023.');
   }
 
+  if (selectedYear === 0)
+  {
+      // Custom JSON file case
+      const customJsonPath = prompt('Enter the full path of the custom JSON file: ');
+      try
+      {
+         const customJson = JSON.parse(fs.readFileSync(customJsonPath, 'utf8'));
+         return customJson;
+      }
+      catch (error)
+      {
+         console.error(`Error reading or parsing custom JSON file: `, error);
+      }
+  }
+  else
+  {
+     const sourceScheduleJson = await processSelectedYear(selectedYear);
+     return sourceScheduleJson;
+  }
   // Valid input, process the selected year
-  const sourceScheduleJson = await processSelectedYear(selectedYear);
-  return sourceScheduleJson;
 }
 
 // Function to process the selected year
@@ -55,6 +77,9 @@ async function processSelectedYear(year) {
 
   } catch (error) {
     console.error(`Error reading or parsing JSON file ${fileName}:`, error);
+    console.log("Enter anything to exit the program.");
+    prompt();
+    process.exit(0);
   }
 }
 
@@ -63,7 +88,7 @@ async function processSelectedYear(year) {
 franchise.on('ready', async function () {
   // Start the user prompt
   const sourceScheduleJson = await promptUser();
-  const seasonInfoTable = franchise.getTableByUniqueId(3123991521);
+  const seasonInfoTable = franchise.getTableByUniqueId(tables.seasonInfoTable);
   await seasonInfoTable.readRecords();
   const currentStage = seasonInfoTable.records[0]['CurrentStage'];
 
@@ -80,10 +105,16 @@ franchise.on('ready', async function () {
 
   }
 
-  await TRANSFER_SCHEDULE_FUNCTIONS.transferSchedule(sourceScheduleJson,franchise);
-
-  console.log("Successfully inserted schedule into your franchise file.");
-  await FranchiseUtils.saveFranchiseFile(franchise);
+  let transferStatus = await TRANSFER_SCHEDULE_FUNCTIONS.transferSchedule(sourceScheduleJson,franchise);
+  if(!transferStatus)
+  {
+    console.log("Unable to transfer schedule.");
+  }
+  else
+  {
+    console.log("Successfully inserted schedule into your franchise file.");
+    await FranchiseUtils.saveFranchiseFile(franchise);
+  }
   console.log("Program completed. Enter anything to exit the program.");
   prompt();
   
