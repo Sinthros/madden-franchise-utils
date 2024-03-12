@@ -57,6 +57,25 @@ async function adjustWeather(weatherValues, game)
 	seasonGameTable.records[game]['Temperature'] = weatherValues[4];
 };
 
+async function handleRoof(state, game, homeTeam)
+{
+	const seasonGameTable = franchise.getTableByUniqueId(tables.seasonGameTable);
+	await seasonGameTable.readRecords();
+
+	let teamTable;
+
+	if(state === 'Open')
+	{
+		teamTable = franchise.getTableByUniqueId(tables.teamTable);
+		await teamTable.readRecords();
+		const openStadiumRef = teamTable.records[homeTeam]['AltStadium'];
+		seasonGameTable.records[game]['Stadium'] = openStadiumRef;
+		return;
+	}
+
+	seasonGameTable.records[game]['Stadium'] = zeroRef;
+};
+
 
 franchise.on('ready', async function () {
     const teamTable = franchise.getTableByUniqueId(tables.teamTable);
@@ -219,6 +238,22 @@ franchise.on('ready', async function () {
 		console.log("Invalid selection.");
 	}
 	const gameRow = parseInt(selectedGame);
+
+
+	// Special case for teams with hybrid stadiums
+	let homeTeamBinVal = seasonGameTable.records[gameRow]['HomeTeam'];
+	const homeTeamRowBinVal = homeTeamBinVal.slice(15);
+	const homeTeamRowNum = await FranchiseUtils.bin2Dec(homeTeamRowBinVal);
+	const validStadiums = [teamTable.records[homeTeamRowNum]['AltStadium'], zeroRef];
+
+	// Make sure the home team has a retractable stadium and that the game is not at a neutral site (ex: international games) or Super Bowl
+	if(teamTable.records[homeTeamRowNum]['AltStadium'] !== zeroRef && validStadiums.includes(seasonGameTable.records[gameRow]['Stadium']) && currentWeekType !== 'SuperBowl')
+	{
+		weatherOptions.push("Closed Roof");
+		weatherOptions.push("Open Roof");
+
+		console.log("\nThis game is in a stadium with a retractable roof. You can also choose to have the roof open or closed.");
+	}
 	
 	console.log("\nAvailable Weather Options:");
 	
@@ -269,6 +304,14 @@ franchise.on('ready', async function () {
 	else if(weatherChoice === 'Overcast (Cold)')
 	{
 		await adjustWeather(overcastColdValues, gameRow);
+	}
+	else if(weatherChoice === 'Closed Roof')
+	{
+		await handleRoof('Closed', gameRow, homeTeamRowNum);
+	}
+	else if(weatherChoice === 'Open Roof')
+	{
+		await handleRoof('Open', gameRow, homeTeamRowNum);
 	}
 	
 	console.log("\nWeather updated successfully.\n");
