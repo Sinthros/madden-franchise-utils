@@ -3,29 +3,13 @@ const Franchise = require('madden-franchise');
 const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const PLAYER_TABLE = 1612938518;
-
-const playerMotivationsM24 = [
-  "NoIncomeTax",
-  "WarmWeatherState",
-  "BigMarket",
-  "ChampionshipContender",
-  "TeamPrestige",
-  "SchemeFit",
-  "ToptheDepthChart",
-  "TeamHasFranchiseQB",
-  "MentoratPosition",
-  "HeadCoachHistoricRecord",
-  "CloseToHome",
-  "HighestOffer",
-];
-
-
-console.log("This program will remove all player Tags (if desired) but they will regenerate once you enter the Regular Season. It will also regenerate the player Motivations to make them more realistic by using a formula along with a variety of factors including overall, age and position to dynamically generate motivations. This tool can be ran at any time but should only be ran once per season. It's recommended to run this tool AFTER running the Progression Tool in MyFranchise, ideally doing both in Preseason Week 1. If you are using StartToday, it's recommended to run this tool during Staff week or Resign week. Please follow the prompts below and read carefully!\n\n")
 const gamePrompt = '24';
 const autoUnempty = false;
 const franchise = FranchiseUtils.selectFranchiseFile(gamePrompt,autoUnempty);
 
-async function generatePlayerMotivations(franchise, removeTags, excludeSchemeFit, includeCurrent) {
+console.log("This program will will regenerate the player Motivations to make them more realistic by using a formula along with a variety of factors including overall, age and position to dynamically generate motivations. This tool can be ran at any time but should only be ran once per season. It's recommended to run this tool AFTER running the Progression Tool in MyFranchise, ideally doing both in Preseason Week 1. If you are using StartToday, it's recommended to run this tool during Staff week or Resign week. Please follow the prompts below and read carefully!\n\n")
+
+async function generatePlayerMotivations(franchise, excludeSchemeFit, includeCurrent) {
   console.log("Doing the stuff...")
   const playerTable = franchise.getTableByUniqueId(PLAYER_TABLE);
   await playerTable.readRecords();
@@ -76,11 +60,6 @@ async function generatePlayerMotivations(franchise, removeTags, excludeSchemeFit
         playerTable.records[i]['Motivation1'] = motivationsArray[0];
         playerTable.records[i]['Motivation2'] = motivationsArray[1];
         playerTable.records[i]['Motivation3'] = motivationsArray[2];
-      }
-
-      if (removeTags) {
-        playerTable.records[i]['Tag1'] = 'NoRole';
-        playerTable.records[i]['Tag2'] = 'NoRole';
       }
     }
   }
@@ -276,27 +255,11 @@ franchise.on('ready', async function () {
     }
     
     try {
-      var removeTags = false;
       var excludeSchemeFit = false;
       var includeCurrent = false;
-
-      while (true) {
-        console.log("\nDo you want to remove all player Tags? This will negatively effect resigning players and free agency signings and is therefore generally not recommended unless you know what you're doing and have a specific reason for doing so. Type 'skip' to skip this and continue, or 'removetags' if you want to remove all tags for all players.");
-        let finalPrompt = prompt().trim();
-        if (finalPrompt.toUpperCase() === 'REMOVETAGS') {
-            removeTags = true;
-            break;
-        } else if (finalPrompt.toUpperCase() === 'SKIP') {
-            removeTags = false;
-            break;
-        } else {
-            console.log("\nInvalid input. Please enter 'REMOVETAGS' or 'skip' to continue (don't include the quotes).\n");
-        }
-      }
-      console.log("\n")
       
       while (true) {
-        console.log("Do you want to remove Scheme Fit from being a player Motivation? Due to most people using the Progression Tool instead of the in-game XP system and the in-game Schemes & Archetypes system not being the best, it's recommended to exclude Scheme Fit. Type 'exclude' if you want to exclude Scheme Fit from showing as a Motivation, or 'includeschemefit' if you want to keep it.");
+        console.log("\nDo you want to remove Scheme Fit from being a player Motivation? Due to most people using the Progression Tool instead of the in-game XP system and the in-game Schemes & Archetypes system not being the best, it's recommended to exclude Scheme Fit. Type 'exclude' if you want to exclude Scheme Fit from showing as a Motivation, or 'includeschemefit' if you want to keep it.");
         let finalPrompt = prompt().trim();
         if (finalPrompt.toUpperCase() === 'EXCLUDE') {
           excludeSchemeFit = true;
@@ -325,7 +288,7 @@ franchise.on('ready', async function () {
       }
       console.log("\n")
 
-      await generatePlayerMotivations(franchise, removeTags, excludeSchemeFit, includeCurrent);
+      await generatePlayerMotivations(franchise, excludeSchemeFit, includeCurrent);
     } catch (e) {
       console.log("******************************************************************************************")
       console.log(`FATAL ERROR!! Please report this message to Sinthros IMMEDIATELY - ${e}`)
