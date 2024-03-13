@@ -1,4 +1,5 @@
 // Required modules
+const fs = require('fs');
 const prompt = require('prompt-sync')();
 const Franchise = require('madden-franchise');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
@@ -14,6 +15,38 @@ const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 franchise.on('ready', async function () {
     const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+
+	// Special logic for files with custom cyberfaces
+	let fingerprintTable;
+	let fingerprint;
+	let customMeshFile = false;
+	let overrideAssetNames;
+	const customMeshFingerprints = ['WiiMaster2015', 'WiiMaster2017'];
+	if(gameYear === '24')
+	{
+		// Get the fingerprint from the file, if it's in the list, then set the bool to true and read the override file
+		fingerprintTable = franchise.getTableByUniqueId(4212179270);
+		await fingerprintTable.readRecords();
+		fingerprint = fingerprintTable.records[0]['SideActivityToForce'];
+		if(customMeshFingerprints.includes(fingerprint))
+		{
+			customMeshFile = true;
+			try
+			{
+				overrideAssetNames = JSON.parse(fs.readFileSync(`lookupFiles/${fingerprint}.json`, 'utf-8'));
+			}
+			catch(error)
+			{
+				console.error(`Error reading override assetname file: `, error);
+				console.log("Enter anything to exit the program.");
+    			prompt();
+    			process.exit(0);
+			}
+		}
+	}
+
+	
+
     
 	// Types of players that are not relevant for our purposes and can be skipped
 	const invalidStatuses = ['Draft','Retired','Deleted','None','Created'];
@@ -32,8 +65,16 @@ franchise.on('ready', async function () {
 			continue;
         }
 		
-		// Get player's assetname value and check if it has an underscore
+		// Get player's assetname value
         var playerAssetName = playerTable.records[i]['PLYR_ASSETNAME'];
+		
+		// If this is a file with custom cyberfaces and this assetname is one that has an override, use the override assetname instead
+		if(customMeshFile && overrideAssetNames.hasOwnProperty(playerAssetName))
+		{
+			playerAssetName = overrideAssetNames[playerAssetName];
+		}
+
+		// Check if the assetname has an underscore
 		var underscoreIndex = playerAssetName.indexOf('_');
 		var newPresentationId;
 
