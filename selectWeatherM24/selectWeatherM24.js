@@ -17,14 +17,14 @@ const snowRand = getRandomNumber(2,3);
 const rainRand = getRandomNumber(1,3);
 const clearRand = getRandomNumber(0,3);
 
-const weatherOptions = ['Snow', 'Rain (Warm)', 'Rain (Cold)', 'Clear (Warm)', 'Clear (Cold)', 'Overcast (Warm)', 'Overcast (Cold)'];
-const snowValues = [windOptions[snowRand], 'Heavy', 'Overcast', 'Snow', 0]; // In order of Wind, Precipitation, CloudCover, Weather, and Temperature values
-const rainWarmValues = [windOptions[rainRand], 'Heavy', 'Overcast', 'Rain', 70];
-const rainColdValues = [windOptions[rainRand], 'Heavy', 'Overcast', 'Rain', 35];
-const clearWarmValues = [windOptions[clearRand], 'None', 'None', 'Clear', 70];
-const clearColdValues = [windOptions[clearRand], 'None', 'None', 'Clear', 30];
-const overcastWarmValues = [windOptions[clearRand], 'None', 'Overcast', 'Overcast', 70];
-const overcastColdValues = [windOptions[clearRand], 'None', 'Overcast', 'Overcast', 30];
+let weatherOptions = ['Snow', 'Rain (Warm)', 'Rain (Cold)', 'Clear (Warm)', 'Clear (Cold)', 'Overcast (Warm)', 'Overcast (Cold)'];
+let snowValues = [windOptions[snowRand], 'Heavy', 'Overcast', 'Snow', 0]; // In order of Wind, Precipitation, CloudCover, Weather, and Temperature values
+let rainWarmValues = [windOptions[rainRand], 'Heavy', 'Overcast', 'Rain', 70];
+let rainColdValues = [windOptions[rainRand], 'Heavy', 'Overcast', 'Rain', 35];
+let clearWarmValues = [windOptions[clearRand], 'None', 'None', 'Clear', 70];
+let clearColdValues = [windOptions[clearRand], 'None', 'None', 'Clear', 30];
+let overcastWarmValues = [windOptions[clearRand], 'None', 'Overcast', 'Overcast', 70];
+let overcastColdValues = [windOptions[clearRand], 'None', 'Overcast', 'Overcast', 30];
 
 function getRandomNumber(floor, ceiling) 
 {
@@ -42,6 +42,31 @@ function getRandomNumber(floor, ceiling)
   const result = Math.floor(randomInRange);
 
   return result;
+}
+
+function temperatureChoice(weatherValues, lowerBound, upperBound)
+{
+	while(true)
+	{
+		console.log(`\nPlease enter a temperature between ${lowerBound} and ${upperBound} degrees or enter nothing to keep the default of ${weatherValues[4]} degrees: `);
+		let tempChoice = prompt();
+		if(tempChoice === '')
+		{
+			console.log("Using default temperature.");
+			break;
+		}
+		tempChoice = parseInt(tempChoice);
+		if(tempChoice >= lowerBound && tempChoice <= upperBound)
+		{
+			weatherValues[4] = tempChoice;
+			break;
+		}
+		else
+		{
+			console.log("Invalid temperature. Please try again.");
+			continue;
+		}
+	}
 }
 
 async function adjustWeather(weatherValues, game)
@@ -249,10 +274,20 @@ franchise.on('ready', async function () {
 	// Make sure the home team has a retractable stadium and that the game is not at a neutral site (ex: international games) or Super Bowl
 	if(teamTable.records[homeTeamRowNum]['AltStadium'] !== zeroRef && validStadiums.includes(seasonGameTable.records[gameRow]['Stadium']) && currentWeekType !== 'SuperBowl')
 	{
-		weatherOptions.push("Closed Roof");
-		weatherOptions.push("Open Roof");
+		if(seasonGameTable.records[gameRow]['Stadium'] === zeroRef)
+		{
+			console.log("\nThis game is in a stadium with a retractable roof. The roof is currently closed, so you can only choose between closed and open roof.");
+			weatherOptions = [];
+			weatherOptions.push("Closed Roof");
+			weatherOptions.push("Open Roof");
+		}
+		else
+		{
+			weatherOptions.push("Closed Roof");
+			weatherOptions.push("Open Roof");
 
-		console.log("\nThis game is in a stadium with a retractable roof. You can also choose to have the roof open or closed.");
+			console.log("\nThis game is in a stadium with a retractable roof. You can also choose to have the roof open or closed.");
+		}
 	}
 	
 	console.log("\nAvailable Weather Options:");
@@ -276,33 +311,40 @@ franchise.on('ready', async function () {
 	}
 	
 	const weatherChoice = weatherOptions[parseInt(selectedWeather)];
-	
+
 	if(weatherChoice === 'Snow')
 	{
+		temperatureChoice(snowValues, -100, 31);
 		await adjustWeather(snowValues, gameRow);
 	}
 	else if(weatherChoice === 'Rain (Warm)')
 	{
+		temperatureChoice(rainWarmValues, 51, 100);
 		await adjustWeather(rainWarmValues, gameRow);
 	}
 	else if(weatherChoice === 'Rain (Cold)')
 	{
+		temperatureChoice(rainColdValues, 32, 50);
 		await adjustWeather(rainColdValues, gameRow);
 	}
 	else if(weatherChoice === 'Clear (Warm)')
 	{
+		temperatureChoice(clearWarmValues, 32, 100);
 		await adjustWeather(clearWarmValues, gameRow);
 	}
 	else if(weatherChoice === 'Clear (Cold)')
 	{
+		temperatureChoice(clearColdValues, -100, 31);
 		await adjustWeather(clearColdValues, gameRow);
 	}
 	else if(weatherChoice === 'Overcast (Warm)')
 	{
+		temperatureChoice(overcastWarmValues, 32, 100);
 		await adjustWeather(overcastWarmValues, gameRow);
 	}
 	else if(weatherChoice === 'Overcast (Cold)')
 	{
+		temperatureChoice(overcastColdValues, -100, 31);
 		await adjustWeather(overcastColdValues, gameRow);
 	}
 	else if(weatherChoice === 'Closed Roof')
