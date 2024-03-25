@@ -6,7 +6,7 @@
   "author": "Sinthros",
   "license": "ISC",
   "dependencies": {
-    "madden-franchise": "^3.2.6",
+    "madden-franchise": "^3.3.0",
     "prompt-sync": "^4.2.0",
     "xlsx": "^0.18.5"
   }
