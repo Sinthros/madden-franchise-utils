@@ -39,6 +39,40 @@ function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false) {
   }
 };
 
+async function selectFranchiseFileAsync(gameYear,isAutoUnemptyEnabled = false) {
+    const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
+    const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
+    let default_path = documentsDir; // Set to default dir first
+    let franchise;
+    
+    if (fs.existsSync(documentsDir)) {
+        default_path = documentsDir;
+    } else if (fs.existsSync(oneDriveDir)) {
+        default_path = oneDriveDir;
+    } else {
+        console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`);
+    }
+  
+    while (true) {
+        try {
+            console.log("Please enter the name of your franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder.");
+            let fileName = prompt();
+            fileName = fileName.trim(); // Remove leading/trailing spaces
+            
+            if (fileName.startsWith("CAREER-")) {
+                franchise = await Franchise.create(path.join(default_path, fileName), {'autoUnempty': isAutoUnemptyEnabled});
+            } else {
+                franchise = await Franchise.create(fileName.replace(new RegExp('/', 'g'), '\\'), {'autoUnempty': isAutoUnemptyEnabled});
+            }
+  
+            return franchise;
+        } catch (e) {
+            console.log("Invalid franchise file name/path given. Please provide a valid name or path and try again.");
+            continue;
+        }
+    }
+};
+
 async function saveFranchiseFile(franchise) {
     while (true) {
         console.log("Would you like to save your changes? Enter yes to save your changes, or no to quit without saving.");
@@ -90,6 +124,7 @@ async function hasNumber(myString) {
 
 module.exports = {
     selectFranchiseFile,
+    selectFranchiseFileAsync,
     saveFranchiseFile,
     getGameYear,
     bin2Dec,
