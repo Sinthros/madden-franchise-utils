@@ -177,7 +177,7 @@ franchise.on('ready', async function () {
 	// Iterate through draft rows array and regenerate visuals for each
 	for (let i = 0; i < draftRows.length; i++)
     {
-        await characterVisualFunctions.regeneratePlayerVisual(franchise, playerTable, visualsTable, draftRows[i]);
+        await characterVisualFunctions.regeneratePlayerVisual(franchise, playerTable, visualsTable, draftRows[i],false);
     }
 	
 	// Program complete, so print success message, save the franchise file, and exit

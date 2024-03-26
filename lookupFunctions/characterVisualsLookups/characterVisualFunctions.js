@@ -418,7 +418,7 @@ async function regenerateCoachVisual(franchise,coachTable,mainCharacterVisualsTa
   currentCharacterVisualsTable.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
 }
 
-async function regeneratePlayerVisual(franchise,playerTable,mainCharacterVisualsTable,row) {
+async function regeneratePlayerVisual(franchise,playerTable,mainCharacterVisualsTable,row,regenerateUpdatedPlayers = false) {
 
   const mainCharacterVisualsId = mainCharacterVisualsTable.header.tableId;
   //This is a roundabout way to get a unique version of the base player JSON for each player, since we'll be editing it
@@ -462,6 +462,15 @@ async function regeneratePlayerVisual(franchise,playerTable,mainCharacterVisuals
   if (characterVisualsTableId !== mainCharacterVisualsId) {
     await currentCharacterVisualsTable.readRecords();
   }
+
+  if (!regenerateUpdatedPlayers) {
+    try { // Check if 
+      JSON.parse((currentCharacterVisualsTable.records[characterVisualsRow]['RawData']));
+    } catch (e) {
+        return;
+    }
+  }
+
   currentCharacterVisualsTable.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
 
 };
@@ -494,7 +503,7 @@ async function updateAllCharacterVisuals(franchise) {
       continue
     }
 
-    await regeneratePlayerVisual(franchise,playerTable,mainCharacterVisualsTable,row);
+    await regeneratePlayerVisual(franchise,playerTable,mainCharacterVisualsTable,row,false);
   }
 }
 
