@@ -1,0 +1,123 @@
+{
+  "Ankle": [
+    "AnkleAchillesSprain",
+    "AnkleBruise",
+    "AnkleSprain",
+    "AnkleHighSprain",
+    "AnkleBroken",
+    "AnkleAchillesTear",
+    "AnkleDislocated",
+    "AnkleDislocatedSeveralGames"
+  ],
+  "Arm": [
+    "ArmForearmBruise",
+    "ArmForearmStrain",
+    "ArmStrainedBicep",
+    "ArmStrainedTricep",
+    "ArmForearmFracture",
+    "ArmTornBicep",
+    "ArmTornTricep",
+    "ArmUpperBruise",
+    "ArmUpperFracture"
+  ],
+  "Back": [
+    "BackStrain",
+    "BackRupturedDisk",
+    "BackRupturedDiskCouple",
+    "BackVertebraeBroken",
+    "BackSpasms"
+  ],
+  "Elbow": [
+    "ElbowBruised",
+    "ElbowDislocate",
+    "ElbowDislocatedSeveralGames",
+    "ElbowFracture",
+    "ElbowBursitis",
+    "ElbowSprain"
+  ],
+  "Foot": [
+    "FootSprain",
+    "FootBrokenToe",
+    "FootFractureCoupleGames",
+    "FootFracture",
+    "FootTurfToe",
+    "FootContusion",
+    "FootStressFracture"
+  ],
+  "Hand": [
+    "HandBruise",
+    "HandFingerBroken",
+    "HandFingerDislocated",
+    "HandThumbBroken",
+    "HandBroken",
+    "HandThumbDislocated",
+    "HandWristDislocated",
+    "HandWristBroken",
+    "HandWristSprain"
+  ],
+  "Head": [
+    "HeadJawBroken"
+  ],
+  "Neck": [
+    "NeckPinchedNerver"
+  ],
+  "Hip": [
+    "HipBursitis",
+    "HipDislocation",
+    "HipDislocationCoupleGames",
+    "HipPointer",
+    "HipFracture",
+    "HipTailboneBroken"
+  ],
+  "Knee": [
+    "KneeBruise",
+    "KneeACLSprain",
+    "KneeBursitis",
+    "KneeMCLSprain",
+    "KneeACLPartialTear",
+    "KneeCartilageTear",
+    "KneeDislocated",
+    "KneeMCLPartialTear",
+    "KneeACLCompleteTear",
+    "KneePCLPartialTear",
+    "KneePCLSprain",
+    "KneeKneecapFracture",
+    "KneeMCLCompleteTear",
+    "KneePCLCompleteTear",
+    "KneeStrain"
+  ],
+  "Leg": [
+    "LegCalfStrain",
+    "LegCramp",
+    "LegHamstringPull",
+    "LegQuadBruise",
+    "LegGroinPull",
+    "LegFibulaBroken",
+    "LegGroinTear",
+    "LegHamstringTear",
+    "LegQuadStrain",
+    "LegQuadTear",
+    "LegBrokenFemur",
+    "LegTibiaBroken"
+  ],
+  "Rib": [
+    "RibBruisedRibs",
+    "RibAbdominalStrain",
+    "RibBruiseSternum",
+    "RibPectoralStrain",
+    "RibAbdominalTear",
+    "RibBrokenRibs",
+    "RibCollarboneBroken",
+    "RibPectoralTear",
+    "RibWindKnockedOut"
+  ],
+  "Shoulder": [
+    "ShoulderBruise",
+    "ShoulderDislocation",
+    "ShoulderStrain",
+    "ShoulderTear",
+    "ShoulderBladeFracture",
+    "ShoulderRotatorCuffTear",
+    "ShoulderTearSeveralGames"
+  ]
+}
