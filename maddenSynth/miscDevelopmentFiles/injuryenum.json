@@ -1,0 +1,752 @@
+{
+    "index": "4",
+    "name": "InjuryType",
+    "type": "InjuryType",
+    "default": "InjuryType:AnkleAchillesSprain",
+    "enum": {
+        "_name": "InjuryType",
+        "_assetId": "464",
+        "_isRecordPersistent": "true",
+        "_members": [
+            {
+                "_name": "AnkleAchillesSprain",
+                "_index": 0,
+                "_value": 0,
+                "_unformattedValue": "0000000"
+            },
+            {
+                "_name": "First_",
+                "_index": 1,
+                "_value": 0,
+                "_unformattedValue": "0000000"
+            },
+            {
+                "_name": "FirstAnkle_",
+                "_index": 2,
+                "_value": 0,
+                "_unformattedValue": "0000000"
+            },
+            {
+                "_name": "AnkleBruise",
+                "_index": 3,
+                "_value": 1,
+                "_unformattedValue": "0000001"
+            },
+            {
+                "_name": "AnkleSprain",
+                "_index": 4,
+                "_value": 2,
+                "_unformattedValue": "0000010"
+            },
+            {
+                "_name": "AnkleHighSprain",
+                "_index": 5,
+                "_value": 3,
+                "_unformattedValue": "0000011"
+            },
+            {
+                "_name": "AnkleBroken",
+                "_index": 6,
+                "_value": 4,
+                "_unformattedValue": "0000100"
+            },
+            {
+                "_name": "AnkleAchillesTear",
+                "_index": 7,
+                "_value": 5,
+                "_unformattedValue": "0000101"
+            },
+            {
+                "_name": "AnkleDislocated",
+                "_index": 8,
+                "_value": 6,
+                "_unformattedValue": "0000110"
+            },
+            {
+                "_name": "AnkleDislocatedSeveralGames",
+                "_index": 9,
+                "_value": 7,
+                "_unformattedValue": "0000111"
+            },
+            {
+                "_name": "LastAnkle_",
+                "_index": 10,
+                "_value": 7,
+                "_unformattedValue": "0000111"
+            },
+            {
+                "_name": "ArmForearmBruise",
+                "_index": 11,
+                "_value": 8,
+                "_unformattedValue": "0001000"
+            },
+            {
+                "_name": "FirstArm_",
+                "_index": 12,
+                "_value": 8,
+                "_unformattedValue": "0001000"
+            },
+            {
+                "_name": "ArmForearmStrain",
+                "_index": 13,
+                "_value": 9,
+                "_unformattedValue": "0001001"
+            },
+            {
+                "_name": "ArmStrainedBicep",
+                "_index": 14,
+                "_value": 10,
+                "_unformattedValue": "0001010"
+            },
+            {
+                "_name": "ArmStrainedTricep",
+                "_index": 15,
+                "_value": 11,
+                "_unformattedValue": "0001011"
+            },
+            {
+                "_name": "ArmForearmFracture",
+                "_index": 16,
+                "_value": 12,
+                "_unformattedValue": "0001100"
+            },
+            {
+                "_name": "ArmTornBicep",
+                "_index": 17,
+                "_value": 13,
+                "_unformattedValue": "0001101"
+            },
+            {
+                "_name": "ArmTornTricep",
+                "_index": 18,
+                "_value": 14,
+                "_unformattedValue": "0001110"
+            },
+            {
+                "_name": "ArmUpperBruise",
+                "_index": 19,
+                "_value": 15,
+                "_unformattedValue": "0001111"
+            },
+            {
+                "_name": "ArmUpperFracture",
+                "_index": 20,
+                "_value": 16,
+                "_unformattedValue": "0010000"
+            },
+            {
+                "_name": "LastArm_",
+                "_index": 21,
+                "_value": 16,
+                "_unformattedValue": "0010000"
+            },
+            {
+                "_name": "BackStrain",
+                "_index": 22,
+                "_value": 17,
+                "_unformattedValue": "0010001"
+            },
+            {
+                "_name": "FirstBack_",
+                "_index": 23,
+                "_value": 17,
+                "_unformattedValue": "0010001"
+            },
+            {
+                "_name": "BackRupturedDisk",
+                "_index": 24,
+                "_value": 18,
+                "_unformattedValue": "0010010"
+            },
+            {
+                "_name": "BackRupturedDiskCouple",
+                "_index": 25,
+                "_value": 19,
+                "_unformattedValue": "0010011"
+            },
+            {
+                "_name": "BackVertebraeBroken",
+                "_index": 26,
+                "_value": 20,
+                "_unformattedValue": "0010100"
+            },
+            {
+                "_name": "BackSpasms",
+                "_index": 27,
+                "_value": 21,
+                "_unformattedValue": "0010101"
+            },
+            {
+                "_name": "LastBack_",
+                "_index": 28,
+                "_value": 21,
+                "_unformattedValue": "0010101"
+            },
+            {
+                "_name": "ElbowBruised",
+                "_index": 29,
+                "_value": 22,
+                "_unformattedValue": "0010110"
+            },
+            {
+                "_name": "FirstElbow_",
+                "_index": 30,
+                "_value": 22,
+                "_unformattedValue": "0010110"
+            },
+            {
+                "_name": "ElbowDislocate",
+                "_index": 31,
+                "_value": 23,
+                "_unformattedValue": "0010111"
+            },
+            {
+                "_name": "ElbowDislocatedSeveralGames",
+                "_index": 32,
+                "_value": 24,
+                "_unformattedValue": "0011000"
+            },
+            {
+                "_name": "ElbowFracture",
+                "_index": 33,
+                "_value": 25,
+                "_unformattedValue": "0011001"
+            },
+            {
+                "_name": "ElbowBursitis",
+                "_index": 34,
+                "_value": 26,
+                "_unformattedValue": "0011010"
+            },
+            {
+                "_name": "ElbowSprain",
+                "_index": 35,
+                "_value": 27,
+                "_unformattedValue": "0011011"
+            },
+            {
+                "_name": "LastElbow_",
+                "_index": 36,
+                "_value": 27,
+                "_unformattedValue": "0011011"
+            },
+            {
+                "_name": "FirstFoot_",
+                "_index": 37,
+                "_value": 28,
+                "_unformattedValue": "0011100"
+            },
+            {
+                "_name": "FootSprain",
+                "_index": 38,
+                "_value": 28,
+                "_unformattedValue": "0011100"
+            },
+            {
+                "_name": "FootBrokenToe",
+                "_index": 39,
+                "_value": 29,
+                "_unformattedValue": "0011101"
+            },
+            {
+                "_name": "FootFractureCoupleGames",
+                "_index": 40,
+                "_value": 30,
+                "_unformattedValue": "0011110"
+            },
+            {
+                "_name": "FootFracture",
+                "_index": 41,
+                "_value": 31,
+                "_unformattedValue": "0011111"
+            },
+            {
+                "_name": "FootTurfToe",
+                "_index": 42,
+                "_value": 32,
+                "_unformattedValue": "0100000"
+            },
+            {
+                "_name": "FootContusion",
+                "_index": 43,
+                "_value": 33,
+                "_unformattedValue": "0100001"
+            },
+            {
+                "_name": "FootStressFracture",
+                "_index": 44,
+                "_value": 34,
+                "_unformattedValue": "0100010"
+            },
+            {
+                "_name": "LastFoot_",
+                "_index": 45,
+                "_value": 34,
+                "_unformattedValue": "0100010"
+            },
+            {
+                "_name": "FirstHand_",
+                "_index": 46,
+                "_value": 35,
+                "_unformattedValue": "0100011"
+            },
+            {
+                "_name": "HandBruise",
+                "_index": 47,
+                "_value": 35,
+                "_unformattedValue": "0100011"
+            },
+            {
+                "_name": "HandFingerBroken",
+                "_index": 48,
+                "_value": 36,
+                "_unformattedValue": "0100100"
+            },
+            {
+                "_name": "HandFingerDislocated",
+                "_index": 49,
+                "_value": 37,
+                "_unformattedValue": "0100101"
+            },
+            {
+                "_name": "HandThumbBroken",
+                "_index": 50,
+                "_value": 38,
+                "_unformattedValue": "0100110"
+            },
+            {
+                "_name": "HandBroken",
+                "_index": 51,
+                "_value": 39,
+                "_unformattedValue": "0100111"
+            },
+            {
+                "_name": "HandThumbDislocated",
+                "_index": 52,
+                "_value": 40,
+                "_unformattedValue": "0101000"
+            },
+            {
+                "_name": "HandWristDislocated",
+                "_index": 53,
+                "_value": 41,
+                "_unformattedValue": "0101001"
+            },
+            {
+                "_name": "HandWristBroken",
+                "_index": 54,
+                "_value": 42,
+                "_unformattedValue": "0101010"
+            },
+            {
+                "_name": "HandWristSprain",
+                "_index": 55,
+                "_value": 43,
+                "_unformattedValue": "0101011"
+            },
+            {
+                "_name": "LastHand_",
+                "_index": 56,
+                "_value": 43,
+                "_unformattedValue": "0101011"
+            },
+            {
+                "_name": "DoNotUse",
+                "_index": 57,
+                "_value": 44,
+                "_unformattedValue": "0101100"
+            },
+            {
+                "_name": "FirstHead_",
+                "_index": 58,
+                "_value": 44,
+                "_unformattedValue": "0101100"
+            },
+            {
+                "_name": "HeadJawBroken",
+                "_index": 59,
+                "_value": 45,
+                "_unformattedValue": "0101101"
+            },
+            {
+                "_name": "LastHead_",
+                "_index": 60,
+                "_value": 46,
+                "_unformattedValue": "0101110"
+            },
+            {
+                "_name": "NeckPinchedNerver",
+                "_index": 61,
+                "_value": 46,
+                "_unformattedValue": "0101110"
+            },
+            {
+                "_name": "FirstHip_",
+                "_index": 62,
+                "_value": 47,
+                "_unformattedValue": "0101111"
+            },
+            {
+                "_name": "HipBursitis",
+                "_index": 63,
+                "_value": 47,
+                "_unformattedValue": "0101111"
+            },
+            {
+                "_name": "HipDislocation",
+                "_index": 64,
+                "_value": 48,
+                "_unformattedValue": "0110000"
+            },
+            {
+                "_name": "HipDislocationCoupleGames",
+                "_index": 65,
+                "_value": 49,
+                "_unformattedValue": "0110001"
+            },
+            {
+                "_name": "HipPointer",
+                "_index": 66,
+                "_value": 50,
+                "_unformattedValue": "0110010"
+            },
+            {
+                "_name": "HipFracture",
+                "_index": 67,
+                "_value": 51,
+                "_unformattedValue": "0110011"
+            },
+            {
+                "_name": "HipTailboneBroken",
+                "_index": 68,
+                "_value": 52,
+                "_unformattedValue": "0110100"
+            },
+            {
+                "_name": "LastHip_",
+                "_index": 69,
+                "_value": 52,
+                "_unformattedValue": "0110100"
+            },
+            {
+                "_name": "FirstKnee_",
+                "_index": 70,
+                "_value": 53,
+                "_unformattedValue": "0110101"
+            },
+            {
+                "_name": "KneeBruise",
+                "_index": 71,
+                "_value": 53,
+                "_unformattedValue": "0110101"
+            },
+            {
+                "_name": "KneeACLSprain",
+                "_index": 72,
+                "_value": 54,
+                "_unformattedValue": "0110110"
+            },
+            {
+                "_name": "KneeBursitis",
+                "_index": 73,
+                "_value": 55,
+                "_unformattedValue": "0110111"
+            },
+            {
+                "_name": "KneeMCLSprain",
+                "_index": 74,
+                "_value": 56,
+                "_unformattedValue": "0111000"
+            },
+            {
+                "_name": "KneeACLPartialTear",
+                "_index": 75,
+                "_value": 57,
+                "_unformattedValue": "0111001"
+            },
+            {
+                "_name": "KneeCartilageTear",
+                "_index": 76,
+                "_value": 58,
+                "_unformattedValue": "0111010"
+            },
+            {
+                "_name": "KneeDislocated",
+                "_index": 77,
+                "_value": 59,
+                "_unformattedValue": "0111011"
+            },
+            {
+                "_name": "KneeMCLPartialTear",
+                "_index": 78,
+                "_value": 60,
+                "_unformattedValue": "0111100"
+            },
+            {
+                "_name": "KneeACLCompleteTear",
+                "_index": 79,
+                "_value": 61,
+                "_unformattedValue": "0111101"
+            },
+            {
+                "_name": "KneePCLPartialTear",
+                "_index": 80,
+                "_value": 62,
+                "_unformattedValue": "0111110"
+            },
+            {
+                "_name": "KneePCLSprain",
+                "_index": 81,
+                "_value": 63,
+                "_unformattedValue": "0111111"
+            },
+            {
+                "_name": "KneeKneecapFracture",
+                "_index": 82,
+                "_value": 64,
+                "_unformattedValue": "1000000"
+            },
+            {
+                "_name": "KneeMCLCompleteTear",
+                "_index": 83,
+                "_value": 65,
+                "_unformattedValue": "1000001"
+            },
+            {
+                "_name": "KneePCLCompleteTear",
+                "_index": 84,
+                "_value": 66,
+                "_unformattedValue": "1000010"
+            },
+            {
+                "_name": "KneeStrain",
+                "_index": 85,
+                "_value": 67,
+                "_unformattedValue": "1000011"
+            },
+            {
+                "_name": "LastKnee_",
+                "_index": 86,
+                "_value": 67,
+                "_unformattedValue": "1000011"
+            },
+            {
+                "_name": "FirstLeg_",
+                "_index": 87,
+                "_value": 68,
+                "_unformattedValue": "1000100"
+            },
+            {
+                "_name": "LegCalfStrain",
+                "_index": 88,
+                "_value": 68,
+                "_unformattedValue": "1000100"
+            },
+            {
+                "_name": "LegCramp",
+                "_index": 89,
+                "_value": 69,
+                "_unformattedValue": "1000101"
+            },
+            {
+                "_name": "LegHamstringPull",
+                "_index": 90,
+                "_value": 70,
+                "_unformattedValue": "1000110"
+            },
+            {
+                "_name": "LegQuadBruise",
+                "_index": 91,
+                "_value": 71,
+                "_unformattedValue": "1000111"
+            },
+            {
+                "_name": "LegGroinPull",
+                "_index": 92,
+                "_value": 72,
+                "_unformattedValue": "1001000"
+            },
+            {
+                "_name": "LegFibulaBroken",
+                "_index": 93,
+                "_value": 73,
+                "_unformattedValue": "1001001"
+            },
+            {
+                "_name": "LegGroinTear",
+                "_index": 94,
+                "_value": 74,
+                "_unformattedValue": "1001010"
+            },
+            {
+                "_name": "LegHamstringTear",
+                "_index": 95,
+                "_value": 75,
+                "_unformattedValue": "1001011"
+            },
+            {
+                "_name": "LegQuadStrain",
+                "_index": 96,
+                "_value": 76,
+                "_unformattedValue": "1001100"
+            },
+            {
+                "_name": "LegQuadTear",
+                "_index": 97,
+                "_value": 77,
+                "_unformattedValue": "1001101"
+            },
+            {
+                "_name": "LegBrokenFemur",
+                "_index": 98,
+                "_value": 78,
+                "_unformattedValue": "1001110"
+            },
+            {
+                "_name": "LastLeg_",
+                "_index": 99,
+                "_value": 79,
+                "_unformattedValue": "1001111"
+            },
+            {
+                "_name": "LegTibiaBroken",
+                "_index": 100,
+                "_value": 79,
+                "_unformattedValue": "1001111"
+            },
+            {
+                "_name": "FirstRib_",
+                "_index": 101,
+                "_value": 80,
+                "_unformattedValue": "1010000"
+            },
+            {
+                "_name": "RibBruisedRibs",
+                "_index": 102,
+                "_value": 80,
+                "_unformattedValue": "1010000"
+            },
+            {
+                "_name": "RibAbdominalStrain",
+                "_index": 103,
+                "_value": 81,
+                "_unformattedValue": "1010001"
+            },
+            {
+                "_name": "RibBruiseSternum",
+                "_index": 104,
+                "_value": 82,
+                "_unformattedValue": "1010010"
+            },
+            {
+                "_name": "RibPectoralStrain",
+                "_index": 105,
+                "_value": 83,
+                "_unformattedValue": "1010011"
+            },
+            {
+                "_name": "RibAbdominalTear",
+                "_index": 106,
+                "_value": 84,
+                "_unformattedValue": "1010100"
+            },
+            {
+                "_name": "RibBrokenRibs",
+                "_index": 107,
+                "_value": 85,
+                "_unformattedValue": "1010101"
+            },
+            {
+                "_name": "RibCollarboneBroken",
+                "_index": 108,
+                "_value": 86,
+                "_unformattedValue": "1010110"
+            },
+            {
+                "_name": "RibPectoralTear",
+                "_index": 109,
+                "_value": 87,
+                "_unformattedValue": "1010111"
+            },
+            {
+                "_name": "LastRib_",
+                "_index": 110,
+                "_value": 88,
+                "_unformattedValue": "1011000"
+            },
+            {
+                "_name": "RibWindKnockedOut",
+                "_index": 111,
+                "_value": 88,
+                "_unformattedValue": "1011000"
+            },
+            {
+                "_name": "FirstShoulder_",
+                "_index": 112,
+                "_value": 89,
+                "_unformattedValue": "1011001"
+            },
+            {
+                "_name": "ShoulderBruise",
+                "_index": 113,
+                "_value": 89,
+                "_unformattedValue": "1011001"
+            },
+            {
+                "_name": "ShoulderDislocation",
+                "_index": 114,
+                "_value": 90,
+                "_unformattedValue": "1011010"
+            },
+            {
+                "_name": "ShoulderStrain",
+                "_index": 115,
+                "_value": 91,
+                "_unformattedValue": "1011011"
+            },
+            {
+                "_name": "ShoulderTear",
+                "_index": 116,
+                "_value": 92,
+                "_unformattedValue": "1011100"
+            },
+            {
+                "_name": "ShoulderBladeFracture",
+                "_index": 117,
+                "_value": 93,
+                "_unformattedValue": "1011101"
+            },
+            {
+                "_name": "ShoulderRotatorCuffTear",
+                "_index": 118,
+                "_value": 94,
+                "_unformattedValue": "1011110"
+            },
+            {
+                "_name": "LastShoulder_",
+                "_index": 119,
+                "_value": 95,
+                "_unformattedValue": "1011111"
+            },
+            {
+                "_name": "ShoulderTearSeveralGames",
+                "_index": 120,
+                "_value": 95,
+                "_unformattedValue": "1011111"
+            },
+            {
+                "_name": "Max_",
+                "_index": 121,
+                "_value": 96,
+                "_unformattedValue": "1100000"
+            },
+            {
+                "_name": "Invalid_",
+                "_index": 122,
+                "_value": 97,
+                "_unformattedValue": "1100001"
+            }
+        ],
+        "_maxLength": 7
+    }
+}
