@@ -55,7 +55,7 @@ const { tables } = require('../FranchiseTableId');
   ];
 
 
-async function getPlayerHeadValues(playerTable, row,allPlayerVisuals) {
+async function getPlayerHeadValues(playerTable, row) {
   let genericHeadName = playerTable.records[row]["PLYR_GENERICHEAD"];
   let genericHead = allPlayerVisuals["genericHead"][genericHeadName] || allPlayerVisuals["genericHead"]["DefaultValue"];
   let skinTone;
@@ -137,7 +137,7 @@ async function getCoachValues(coachTable, i) {
   return [assetName, genericHeadName, firstName, lastName, height, skinTone];
 };
 
-async function updateCoachVisuals(coachValues, allCoachVisuals, jsonToUpdate,visualMorphKeys, size = "N/A") {
+async function updateCoachVisuals(coachValues, jsonToUpdate,visualMorphKeys, size = "N/A") {
   const [assetName, genericHeadName, firstName, lastName, height, skinTone] = coachValues;
 
   // Get lookup values if they exist for this coach, OR get the default lookup values
@@ -262,7 +262,7 @@ async function getPlayerGearValues(playerTable, row) {
     sockHeight, leftSpat, rightSpat, towel, leftWristGear, rightWristGear, thighGear, kneeGear, flakJacket, backPlate, shoulderPads,jerseyState];
 }
 
-async function updateGearVisuals(characterVisualsKey, playerTableValue, allPlayerVisuals, jsonToUpdate, morphVal = 0) {
+async function updateGearVisuals(characterVisualsKey, playerTableValue, jsonToUpdate, morphVal = 0) {
   // Get the current lookup value OR the default value if we can't find it
   const lookupValue = allPlayerVisuals[characterVisualsKey][playerTableValue] || allPlayerVisuals[characterVisualsKey]["DefaultValue"];
 
@@ -407,7 +407,7 @@ async function regenerateCoachVisual(franchise,coachTable,mainCharacterVisualsTa
   let jsonToUpdate = JSON.parse(JSON.stringify(baseCoachVisualJson)); // Get our current base JSON
 
   const coachValues = await getCoachValues(coachTable, row);
-  jsonToUpdate = await updateCoachVisuals(coachValues,allCoachVisuals,jsonToUpdate,visualMorphKeys)
+  jsonToUpdate = await updateCoachVisuals(coachValues,jsonToUpdate,visualMorphKeys)
   jsonToUpdate = await removeEmptyCoachBlends(jsonToUpdate)
 
   const { currentCharacterVisualsTable, characterVisualsRow, characterVisualsTableId } = await getCharacterVisualsTable(franchise,coachTable,mainCharacterVisualsTable,row)
@@ -428,19 +428,19 @@ async function regeneratePlayerVisual(franchise,playerTable,mainCharacterVisuals
   for (let j = 0; j < visualGearKeys.length; j++) { //Iterate over the keys of the visual gear
     if (visualGearKeys[j] === 'FlakJacket') { //If it's FlakJacket or BackPlate, we have to utilize an optional parameter for its morph
       const flakJacketAmount = parseFloat(playerTable.records[row]['MetaMorph_FlakJacketAmount'].toFixed(2)); //In the player table it can be several digits, but here we only want 2 digits
-      jsonToUpdate = await updateGearVisuals(visualGearKeys[j], gearValues[j], allPlayerVisuals, jsonToUpdate, flakJacketAmount);
+      jsonToUpdate = await updateGearVisuals(visualGearKeys[j], gearValues[j], jsonToUpdate, flakJacketAmount);
     }
     else if (visualGearKeys[j] === 'Backplate') {
       const backPlateAmount = parseFloat(playerTable.records[row]['MetaMorph_BackPlateAmount'].toFixed(2));
-      jsonToUpdate = await updateGearVisuals(visualGearKeys[j], gearValues[j], allPlayerVisuals, jsonToUpdate, backPlateAmount);
+      jsonToUpdate = await updateGearVisuals(visualGearKeys[j], gearValues[j], jsonToUpdate, backPlateAmount);
     }
     else { //Otherwise, update the gear normally
-      jsonToUpdate = await updateGearVisuals(visualGearKeys[j], gearValues[j], allPlayerVisuals, jsonToUpdate);
+      jsonToUpdate = await updateGearVisuals(visualGearKeys[j], gearValues[j], jsonToUpdate);
     }
     
   }
 
-  const [genericHeadName,genericHead,skinTone] = await getPlayerHeadValues(playerTable, row,allPlayerVisuals); //Get head name/head/skin tone dynamically
+  const [genericHeadName,genericHead,skinTone] = await getPlayerHeadValues(playerTable, row); //Get head name/head/skin tone dynamically
   jsonToUpdate.genericHeadName = genericHeadName; //Setting these is very simple in the JSON
   jsonToUpdate.genericHead = genericHead;
   jsonToUpdate.skinTone = skinTone;

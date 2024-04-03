@@ -8,7 +8,6 @@ const { getBinaryReferenceData } = require('madden-franchise/services/utilServic
 const fs = require('fs');
 const CHARACTER_VISUALS_FUNCTIONS = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
 const COACH_BASE_JSON = CHARACTER_VISUALS_FUNCTIONS.baseCoachVisualJson;
-const ALL_COACH_VISUALS = CHARACTER_VISUALS_FUNCTIONS.allCoachVisuals;
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const ZERO_REF = '00000000000000000000000000000000';
 
@@ -656,7 +655,7 @@ async function updateCoachVisual(coachTable,characterVisuals,nextCoachRecord, co
 
   const coachValues = await CHARACTER_VISUALS_FUNCTIONS.getCoachValues(coachTable, nextCoachRecord);
 
-  jsonToUpdate = await CHARACTER_VISUALS_FUNCTIONS.updateCoachVisuals(coachValues,ALL_COACH_VISUALS,jsonToUpdate,visualMorphKeys, coachSize)
+  jsonToUpdate = await CHARACTER_VISUALS_FUNCTIONS.updateCoachVisuals(coachValues,jsonToUpdate,visualMorphKeys, coachSize)
 
   jsonToUpdate = await CHARACTER_VISUALS_FUNCTIONS.removeEmptyCoachBlends(jsonToUpdate)
 
