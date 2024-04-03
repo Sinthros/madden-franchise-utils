@@ -1,0 +1,37 @@
+{
+  "Skill Positions (including defense)": [
+    "QB",
+    "HB",
+    "WR",
+    "TE",
+    "CB",
+    "FS",
+    "SS"
+  ],
+  "O-Line": [
+    "LT",
+    "LG",
+    "C",
+    "RG",
+    "RT"
+  ],
+  "D-Line": [
+    "LE",
+    "DT",
+    "RE"
+  ],
+  "Linebackers": [
+    "LOLB",
+    "MLB",
+    "ROLB"
+  ],
+  "DBs": [
+    "CB",
+    "FS",
+    "SS"
+  ],
+  "Special Teams": [
+    "K",
+    "P"
+  ]
+}

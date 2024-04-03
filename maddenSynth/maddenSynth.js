@@ -6,6 +6,8 @@ const path = require('path');
 const Franchise = require('madden-franchise');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
+const ratingTypes = (JSON.parse(fs.readFileSync(`lookupFiles/ratingTypes.json`, 'utf-8')));
+const positionGroups = (JSON.parse(fs.readFileSync(`lookupFiles/positionGroups.json`, 'utf-8')));
 
 const versionNum = 'ALPHA v0.1';
 
@@ -24,6 +26,8 @@ await playerTable.readRecords();
 
 const validWeekTypes = ['PreSeason','RegularSeason','WildcardPlayoff','DivisionalPlayoff','ConferencePlayoff','SuperBowl'];
 const zeroRef = '00000000000000000000000000000000';
+const invalidPlayerStatuses = ['Draft','Retired','Deleted','None','Created','PracticeSquad'];
+
 const teamsList = [];
 let scenarios = [];
 
@@ -151,6 +155,12 @@ function loadScenarios()
 
 async function generateScenario()
 {
+	if(scenarios.length === 0)
+	{
+		console.log("\nThere are no scenarios loaded. Create one first to get started.");
+		return;
+	}
+	
 	// Shuffle the scenarios array
 	await shuffleArray(scenarios);
 
@@ -159,6 +169,14 @@ async function generateScenario()
 	if(selectedScenario.type === 'Injury')
 	{
 		await handleInjuryScenario(selectedScenario);
+	}
+	else if(selectedScenario.type === 'Rating Change')
+	{
+		await handleRatingChangeScenario(selectedScenario);
+	}
+	else if(selectedScenario.type === 'Suspension')
+	{
+		await handleSuspensionScenario(selectedScenario);
 	}
 }
 
@@ -176,7 +194,7 @@ async function handleInjuryScenario(scenario)
 	while(playerTable.records[randPlayerRow]['InjuryStatus'] !== 'Uninjured');
 
 	console.log(`\n${randTeam.teamName} - ${playerTable.records[randPlayerRow]['Position']} ${playerTable.records[randPlayerRow]['FirstName']} ${playerTable.records[randPlayerRow]['LastName']} (${playerTable.records[randPlayerRow]['OverallRating']} OVR)`);
-	console.log(`\n${scenario.title}`);
+	console.log(`\n${scenario.title}:`);
 	console.log(scenario.description);
 	console.log(`\nResult: ${playerTable.records[randPlayerRow]['LastName']} will be out for ${scenario.weeksOut} weeks.`);
 
@@ -188,12 +206,95 @@ async function handleInjuryScenario(scenario)
 
 }
 
+async function handleRatingChangeScenario(scenario)
+{
+	let randTeam = teamsList[getRandomNumber(0, teamsList.length - 1)];
+	let randTeamRow = randTeam.teamRowNum;
+	let teamIndex = teamTable.records[randTeamRow]['TeamIndex'];
+
+	let randPlayerRow;
+	
+	if(scenario.usePositionGroup)
+	{
+		do
+		{
+			randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+		}
+		while(!scenario.positionGroup.includes(playerTable.records[randPlayerRow]['Position']));
+	}
+	else
+	{
+		randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+	}
+
+	let ratingChangeSign;
+
+	if(scenario.ratingChange < 0)
+	{
+		ratingChangeSign = 'decrease';
+	}
+	else
+	{
+		ratingChangeSign = 'increase';
+	}
+
+	// Store the column header for the original (non-morale affected) rating
+	const originalRatingHeader = `Original${scenario.rating}`;
+
+	// Store the morale boost amount
+	let moraleDiff = playerTable.records[randPlayerRow][scenario.rating] - playerTable.records[randPlayerRow][originalRatingHeader];
+
+	// Calculate the new original rating and normalize to be between 0 and 99
+	let newOriginalRating = Math.max(Math.min(playerTable.records[randPlayerRow][originalRatingHeader] + scenario.ratingChange, 99), 0);
+
+	// Calculate the new morale affected rating and normalize to be between 0 and 99
+	let newRating = Math.max(Math.min(newOriginalRating + moraleDiff, 99), 0);
+
+	// Update the original rating and set the morale affected rating to the new rating + the morale boost amount
+	playerTable.records[randPlayerRow][originalRatingHeader] = newOriginalRating;
+	playerTable.records[randPlayerRow][scenario.rating] = newRating;
+
+	console.log(`\n${randTeam.teamName} - ${playerTable.records[randPlayerRow]['Position']} ${playerTable.records[randPlayerRow]['FirstName']} ${playerTable.records[randPlayerRow]['LastName']} (${playerTable.records[randPlayerRow]['OverallRating']} OVR)`);
+	console.log(`\n${scenario.title}:`);
+	console.log(scenario.description);
+	console.log(`\nResult: ${playerTable.records[randPlayerRow]['LastName']}'s ${scenario.ratingPrettyName} rating will ${ratingChangeSign} by ${Math.abs(scenario.ratingChange)} (${playerTable.records[randPlayerRow][originalRatingHeader] - scenario.ratingChange} -> ${playerTable.records[randPlayerRow][originalRatingHeader]}).`);
+
+	// TODO: add overall recalculation once Sinthros adds the function to FranchiseUtils
+
+}
+
+async function handleSuspensionScenario(scenario)
+{
+	let randTeam = teamsList[getRandomNumber(0, teamsList.length - 1)];
+	let randTeamRow = randTeam.teamRowNum;
+	let teamIndex = teamTable.records[randTeamRow]['TeamIndex'];
+
+	let randPlayerRow;
+	do
+	{
+		randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+	}
+	while(playerTable.records[randPlayerRow]['InjuryStatus'] !== 'Uninjured');
+
+	console.log(`\n${randTeam.teamName} - ${playerTable.records[randPlayerRow]['Position']} ${playerTable.records[randPlayerRow]['FirstName']} ${playerTable.records[randPlayerRow]['LastName']} (${playerTable.records[randPlayerRow]['OverallRating']} OVR)`);
+	console.log(`\n${scenario.title}:`);
+	console.log(scenario.description);
+	console.log(`\nResult: ${playerTable.records[randPlayerRow]['LastName']} is suspended for ${scenario.suspensionLength} weeks.`);
+
+	// Set injury status to Injured, set InjuryType, and set both MinInjuryDuration and MaxInjuryDuration to the number of weeks
+	playerTable.records[randPlayerRow]['InjuryStatus'] = 'Injured';
+	playerTable.records[randPlayerRow]['InjuryType'] = 'ElbowDislocatedSeveralGames';
+	playerTable.records[randPlayerRow]['MinInjuryDuration'] = scenario.suspensionLength;
+	playerTable.records[randPlayerRow]['MaxInjuryDuration'] = scenario.suspensionLength;
+
+}
+
 async function getRandomPlayerOnTeam(teamIndex)
 {
 	let playerRows = [];
 	for(let i = 0; i < playerTable.header.recordCapacity; i++)
 	{
-		if(playerTable.records[i].isEmpty || playerTable.records[i]['TeamIndex'] !== teamIndex)
+		if(playerTable.records[i].isEmpty || playerTable.records[i]['TeamIndex'] !== teamIndex || invalidPlayerStatuses.includes(playerTable.records[i]['ContractStatus']))
 		{
 			continue;
 		}
@@ -265,7 +366,7 @@ async function createScenario()
 
 async function createInjuryScenario()
 {
-	console.log("Injury Scenario Creator");
+	console.log("\nInjury Scenario Creator");
 	let newInjScenario = {
 		injuryType: '',
 		weeksOut: 0
@@ -273,9 +374,9 @@ async function createInjuryScenario()
 
 	newInjScenario.injuryType = await getInjurySelection();
 
-	console.log("\nEnter the number of weeks the player should be out: ");
 	do
 	{
+		console.log("\nEnter the number of weeks the player should be out: ");
 		newInjScenario.weeksOut = parseInt(prompt());
 		if(newInjScenario.weeksOut < 0)
 		{
@@ -292,16 +393,85 @@ async function createInjuryScenario()
 
 async function createSuspensionScenario()
 {
-	console.log("Suspension Scenario Creation");
+	console.log("\nSuspension Scenario Creator");
 
-	return null; // Placeholder
+	let newSuspScenario = {
+		suspensionLength: 0
+	};
+
+	do
+	{
+		console.log("\nEnter the number of weeks the player should be suspended: ");
+		newSuspScenario.suspensionLength = parseInt(prompt());
+		if(newSuspScenario.suspensionLength < 0)
+		{
+			console.log("Please enter a positive number.");
+		}
+	}
+	while(newSuspScenario.suspensionLength < 0);
+
+	newSuspScenario.type = 'Suspension';
+
+	return newSuspScenario;
 }
 
 async function createRatingChangeScenario()
 {
-	console.log("Rating Change Scenario Creation");
+	console.log("\nRating Change Scenario Creator");
 
-	return null; // Placeholder
+	let newRatingScenario = {
+		rating: '',
+		ratingPrettyName: '',
+		ratingChange: 0,
+		usePositionGroup: false,
+		positionGroup: []
+	};
+
+	newRatingScenario.usePositionGroup = getYesOrNo("\nDo you want to apply this rating change to a specific position group? (yes/no)");
+
+	if(newRatingScenario.usePositionGroup)
+	{
+		newRatingScenario.positionGroup = getPositionGroupSelection();
+	}
+
+	newRatingScenario.ratingPrettyName = await getRatingSelection();
+	newRatingScenario.rating = ratingTypes[newRatingScenario.ratingPrettyName];
+
+	console.log("\nEnter how much the rating should change by (positive for increase, negative for decrease): ");
+	newRatingScenario.ratingChange = parseInt(prompt());
+
+	newRatingScenario.type = 'Rating Change';
+
+	return newRatingScenario;
+}
+
+function getPositionGroupSelection()
+{
+	let positionGroupKeys = Object.keys(positionGroups);
+
+	console.log("\nPosition Groups:");
+	positionGroupKeys.forEach((group, index) => {
+		console.log(`${index} - ${group}`);
+	});
+
+	let inputNumber;
+
+	while(true)
+	{
+		console.log("\nEnter the number for the position group you want to edit: ");
+		inputNumber = parseInt(prompt());
+		if(inputNumber < 0 || inputNumber >= positionGroupKeys.length)
+		{
+			console.log("Invalid choice. Please try again.");
+		}
+		else
+		{
+			break;
+		}
+	}
+	const positionGroupChoice = positionGroupKeys[inputNumber];
+
+	return positionGroups[positionGroupChoice];
 }
 
 async function getInjurySelection()
@@ -358,6 +528,36 @@ async function getInjurySelection()
 	// Convert sorted injury object to string and save to file
 	fs.writeFileSync(`injuryTypes.json`, JSON.stringify(injuryValuesSorted, null, 2));
 	*/
+}
+
+async function getRatingSelection()
+{
+	let ratingTypeKeys = Object.keys(ratingTypes);
+
+	console.log("\nRating Types:");
+	ratingTypeKeys.forEach((type, index) => {
+		console.log(`${index} - ${type}`);
+	});
+
+	let inputNumber;
+
+	while(true)
+	{
+		console.log("\nEnter the number for the rating you want to edit: ");
+		inputNumber = parseInt(prompt());
+		if(inputNumber < 0 || inputNumber >= ratingTypeKeys.length)
+		{
+			console.log("Invalid choice. Please try again.");
+		}
+		else
+		{
+			break;
+		}
+	}
+	const ratingTypeChoice = ratingTypeKeys[inputNumber];
+
+	return ratingTypeChoice;
+
 }
 
 const currentWeekType = seasonInfoTable.records[0]['CurrentWeekType'];
