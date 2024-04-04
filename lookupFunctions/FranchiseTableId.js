@@ -111,7 +111,16 @@ const tables = {
     //Scheduler tables: Don't touch these unless you know what you're doing
     schedulerTable: 2446261029,
     gameEventTable: 987800642,
-    schedulerAppointmentTable: 1395135267
+    schedulerAppointmentTable: 1395135267,
+
+    //FTC Tables
+    talentSubTreeFtcTable: 3439205175,
+    talentNodeFtcTable: 2361769831,
+    talentNodeArrayFtcTable: 4261606212,
+    talentFtcTable: 2347346465
+
+
+
 }
 
 module.exports = {
