@@ -4,6 +4,8 @@ const os = require('os');
 const fs = require('fs');
 const prompt = require('prompt-sync')();
 const zeroRef = '00000000000000000000000000000000';
+const ovrWeights = JSON.parse(fs.readFileSync(path.join(__dirname, 'JsonLookups/ovrweights.json'), 'utf8'));
+const ovrWeightsPosMap = JSON.parse(fs.readFileSync(path.join(__dirname, 'JsonLookups/ovrweightsPosMap.json'), 'utf8'));
 
 function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false, isFtcFile = false) {
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
@@ -127,8 +129,59 @@ function getGameYear(validGameYears) {
     }
 
     return gameYear;
-}
+};
 
+// Function to calculate the Best Overall and Best Archetype for a player
+// This takes in a player record object; For example, if you're iterating through the player table and are working
+// with row i, pass through playerTable.records[i]
+// Call it exactly like this:
+// const player = playerTable.records[i];
+// const {newOverall, newArchetype} = FranchiseUtils.calculateBestOverall(player);
+
+// Afterwards, you can set the overall/archetype like this:
+// playerTable.records[i]['OverallRating;] = newOverall;
+// playerTable.records[i]['PlayerType'] = newArchetype;
+function calculateBestOverall(player) {
+    let newOverall = 0;
+    let newArchetype = "";
+
+    const position = ovrWeightsPosMap[player.Position]; //Get position
+    for (const archetype of ovrWeights) { // Iterate to find the highest archetype
+        if (archetype.Pos === position) {
+            const ovrObj = ovrWeights.find(weight => weight.Archetype == archetype.Archetype);
+            let sum = 0;
+            const properties = archetype ? Object.keys(archetype).slice(4,55) : null;
+
+            if (properties.length > 0) {
+                if (player.fields != null) {
+                    for (const attr in player.fields) {
+                        if (properties.includes(attr)) {
+                            const attrValue = ((player[attr] - ovrObj.DesiredLow) / (ovrObj.DesiredHigh - ovrObj.DesiredLow)) * (ovrObj[attr] / ovrObj.Sum);
+                            sum += attrValue;
+                        }
+                    }
+                } else {
+                    for (const attr in player) {
+                        if (properties.includes(attr)) {
+                            const attrValue = ((player[attr] - ovrObj.DesiredLow) / (ovrObj.DesiredHigh - ovrObj.DesiredLow)) * (ovrObj[attr] / ovrObj.Sum);
+                            sum += attrValue;
+                        }
+                    }
+                }
+            }
+
+            const overall = Math.round(Math.min(sum * 99, 99));
+
+            if (overall > newOverall) {
+                newOverall = overall;
+                newArchetype = archetype.Archetype;
+            }
+        }
+    }
+
+    // Return the highest overall/archetype
+    return { newOverall, newArchetype };
+};
 async function bin2Dec(binary) {
     return parseInt(binary, 2);
   };
@@ -152,5 +205,6 @@ module.exports = {
     dec2bin,
     hasNumber,
     readTableRecords,
+    calculateBestOverall,
     zeroRef
   };

@@ -1,0 +1,23 @@
+{
+    "QB": "QB",
+    "HB": "HB",
+    "FB": "FB",
+    "WR": "WR",
+    "TE": "TE",
+    "LT": "OT",
+    "RT": "OT",
+    "LG": "G",
+    "RG": "G",
+    "C": "C",
+    "DT": "DT",
+    "LE": "DE",
+    "RE": "DE",
+    "LOLB": "OLB",
+    "ROLB": "OLB",
+    "MLB": "MLB",
+    "CB": "CB",
+    "FS": "S",
+    "SS": "S",
+    "K": "KP",
+    "P": "KP"
+}
