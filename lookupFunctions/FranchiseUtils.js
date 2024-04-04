@@ -5,11 +5,18 @@ const fs = require('fs');
 const prompt = require('prompt-sync')();
 const zeroRef = '00000000000000000000000000000000';
 
-function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false) {
+function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false, isFtcFile = false) {
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
   const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
   let default_path = documentsDir; // Set to default dir first
   let franchise;
+  let filePrefix;
+  if (isFtcFile) {
+    filePrefix = 'franchise-';
+  }
+  else {
+    filePrefix = 'CAREER-'
+  }
   
   if (fs.existsSync(documentsDir)) {
       default_path = documentsDir;
@@ -25,7 +32,7 @@ function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false) {
           let fileName = prompt();
           fileName = fileName.trim(); // Remove leading/trailing spaces
           
-          if (fileName.startsWith("CAREER-")) {
+          if (fileName.startsWith(filePrefix)) {
               franchise = new Franchise(path.join(default_path, fileName), {'autoUnempty': isAutoUnemptyEnabled});
           } else {
               franchise = new Franchise(fileName.replace(new RegExp('/', 'g'), '\\'), {'autoUnempty': isAutoUnemptyEnabled});
@@ -39,11 +46,19 @@ function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false) {
   }
 };
 
-async function selectFranchiseFileAsync(gameYear,isAutoUnemptyEnabled = false) {
+async function selectFranchiseFileAsync(gameYear,isAutoUnemptyEnabled = false, isFtcFile = false) {
     const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
     const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
     let default_path = documentsDir; // Set to default dir first
     let franchise;
+    let filePrefix;
+
+    if (isFtcFile) {
+        filePrefix = 'franchise-';
+    }
+    else {
+        filePrefix = 'CAREER-'
+    }
     
     if (fs.existsSync(documentsDir)) {
         default_path = documentsDir;
@@ -59,7 +74,7 @@ async function selectFranchiseFileAsync(gameYear,isAutoUnemptyEnabled = false) {
             let fileName = prompt();
             fileName = fileName.trim(); // Remove leading/trailing spaces
             
-            if (fileName.startsWith("CAREER-")) {
+            if (fileName.startsWith(filePrefix)) {
                 franchise = await Franchise.create(path.join(default_path, fileName), {'autoUnempty': isAutoUnemptyEnabled});
             } else {
                 franchise = await Franchise.create(fileName.replace(new RegExp('/', 'g'), '\\'), {'autoUnempty': isAutoUnemptyEnabled});
@@ -88,6 +103,12 @@ async function saveFranchiseFile(franchise) {
         } else {
             console.log("Invalid input. Please enter 'yes' to save or 'no' to not save.");
         }
+    }
+};
+
+async function readTableRecords(tablesList) {
+    for (const table of tablesList) {
+        await table.readRecords();
     }
 }
 
@@ -130,5 +151,6 @@ module.exports = {
     bin2Dec,
     dec2bin,
     hasNumber,
+    readTableRecords,
     zeroRef
   };
