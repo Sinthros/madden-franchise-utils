@@ -14,13 +14,15 @@ const versionNum = 'v2 ALPHA 0.1';
 console.log(`Welcome to MaddenSynth ${versionNum}! This is a customizable franchise scenario generator for Madden 24.\n`)
 const gameYear = '24';
 const franchise = await FranchiseUtils.selectFranchiseFileAsync(gameYear);
+
+/*
 if(franchise.schema.meta.gameYear !== gameYear)
 {
 	console.log(`\nERROR: Selected file is not a Madden ${gameYear} franchise file. Enter anything to exit.`);
 	prompt();
 	process.exit(0);
 
-}
+}*/
 
 
 const teamTable = franchise.getTableByUniqueId(tables.teamTable);
