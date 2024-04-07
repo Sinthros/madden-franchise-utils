@@ -1632,7 +1632,7 @@
             "Lockdown Machine"
           ],
           "Exclusions": [
-            "Jack of All Trades"
+            "Fortify the Line"
           ]
         },
         {
@@ -1642,10 +1642,10 @@
           "Description": "Increase XP gains for Left and Right Outside Linebackers in training by <talent_value>%",
           "maxUpgrades": 3,
           "Dependencies": [
-            "Lockdown Machine"
+            "Man in the Middle"
           ],
           "Exclusions": [
-            "Man in the Middle"
+            "Fortify the Line"
           ]
         },
         {
@@ -1655,10 +1655,10 @@
           "Description": "Increase XP gains for Defensive Tackles in training by <talent_value>%",
           "maxUpgrades": 3,
           "Dependencies": [
-            "Man in the Middle"
+            "Lockdown Machine"
           ],
           "Exclusions": [
-            "Jack of All Trades"
+            "Man in the Middle"
           ]
         },
         {
@@ -1668,7 +1668,7 @@
           "Description": "Increase XP gains for Left and Right Ends in training by <talent_value>%",
           "maxUpgrades": 3,
           "Dependencies": [
-            "Jack of All Trades"
+            "Fortify the Line"
           ],
           "Exclusions": [
             "Man in the Middle"
@@ -1681,7 +1681,7 @@
           "Description": "All players on your team count as Scheme Fits during training",
           "maxUpgrades": 0,
           "Dependencies": [
-            "Fortify the Line",
+            "Jack of All Trades",
             "Royal Rush"
           ],
           "Exclusions": []
@@ -1748,7 +1748,7 @@
             "Secret Stuff"
           ],
           "Exclusions": [
-            "Steady Hands"
+            "Road Grader"
           ]
         },
         {
@@ -1758,10 +1758,10 @@
           "Description": "Increase XP gains for Wide Receivers in training by <talent_value>%",
           "maxUpgrades": 3,
           "Dependencies": [
-            "Secret Stuff"
+            "Two Way TE"
           ],
           "Exclusions": [
-            "Two Way TE"
+            "Road Grader"
           ]
         },
         {
@@ -1771,10 +1771,10 @@
           "Description": "Increase XP gains for Left and Right Guards in training by <talent_value>%",
           "maxUpgrades": 3,
           "Dependencies": [
-            "Two Way TE"
+            "Secret Stuff"
           ],
           "Exclusions": [
-            "Steady Hands"
+            "Two Way TE"
           ]
         },
         {
@@ -1784,7 +1784,7 @@
           "Description": "Increase XP gains for Left and Right Tackles in training by <talent_value>%",
           "maxUpgrades": 3,
           "Dependencies": [
-            "Steady Hands"
+            "Road Grader"
           ],
           "Exclusions": [
             "Two Way TE"
@@ -1797,7 +1797,7 @@
           "Description": "Increase XP gains for Centers in training by <talent_value>%",
           "maxUpgrades": 3,
           "Dependencies": [
-            "Road Grader",
+            "Steady Hands",
             "Pocket Setter"
           ],
           "Exclusions": []

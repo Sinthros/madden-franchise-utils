@@ -12,7 +12,7 @@ const coachTalentPositions = JSON.parse(fs.readFileSync(path.join(__dirname, '..
 const coachTalentDependencies = JSON.parse(fs.readFileSync(path.join(__dirname, 'coach_talents_dependencies.json'), 'utf8'));
 const ZERO_REF = '00000000000000000000000000000000';
 const twoUpgradeTalentTrees = ['Staff Modifications','Trades','Offense Recruitment','Defense Recruitment'];
-const threeUpgradeTalents = ['After School Tutoring'];
+const threeUpgradeTalents = ['After School Tutoring']; // We need to specficially define this talent as having 3 upgrades because it's in Staff Modifications, which has all other talents as 2 upgrade talents
 const nonUpgradableTalentTypes = ['Regular','Selection'];
 
 const gamePrompt = '24';
