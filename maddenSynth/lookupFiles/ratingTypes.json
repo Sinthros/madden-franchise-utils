@@ -23,7 +23,6 @@
   "LeadBlock": "LeadBlockRating",
   "ManCoverage": "ManCoverageRating",
   "MediumRouteRunning": "MediumRouteRunningRating",
-  "Morale": "ConfidenceRating",
   "PassBlockFinesse": "PassBlockFinesseRating",
   "PassBlockPower": "PassBlockPowerRating",
   "PassBlock": "PassBlockRating",
