@@ -122,13 +122,12 @@ franchise.on('ready', async function () {
       const finalBin = FranchiseUtils.dec2bin(assetId, 2);
     
       finalArray.push({
-        [talentTreeName]: {
+          talentTreeName: talentTreeName,
           binaryReference: finalBin,
           assetId: assetId,
           treeIconId: treeIconId,
           talents: talentNodes
           
-        }
       });
     }
     
