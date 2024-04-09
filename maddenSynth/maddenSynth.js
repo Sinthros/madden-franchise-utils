@@ -9,11 +9,21 @@ const { tables } = require('../lookupFunctions/FranchiseTableId');
 const ratingTypes = (JSON.parse(fs.readFileSync(`lookupFiles/ratingTypes.json`, 'utf-8')));
 const positionGroups = (JSON.parse(fs.readFileSync(`lookupFiles/positionGroups.json`, 'utf-8')));
 
-const versionNum = 'ALPHA v0.1';
+const versionNum = 'v2 ALPHA 0.1';
 
 console.log(`Welcome to MaddenSynth ${versionNum}! This is a customizable franchise scenario generator for Madden 24.\n`)
 const gameYear = '24';
 const franchise = await FranchiseUtils.selectFranchiseFileAsync(gameYear);
+
+/*
+if(franchise.schema.meta.gameYear !== gameYear)
+{
+	console.log(`\nERROR: Selected file is not a Madden ${gameYear} franchise file. Enter anything to exit.`);
+	prompt();
+	process.exit(0);
+
+}*/
+
 
 const teamTable = franchise.getTableByUniqueId(tables.teamTable);
 await teamTable.readRecords();
@@ -131,6 +141,14 @@ function loadScenarios()
 			loadErrorCount++;
 			return;
 		}
+
+		if(scenario.type === 'Rating Change')
+		{
+			scenario = convertLegacyRatingScenario(scenario);
+			// Save file after conversion
+			fs.writeFileSync(path.join(scenariosDir, file), JSON.stringify(scenario, null, 2));
+		}
+
 		scenarios.push(scenario);
 	});
 
@@ -151,6 +169,22 @@ function loadScenarios()
 	{
 		console.log("\nNo scenarios loaded. Create one to get started.");
 	}
+}
+
+function convertLegacyRatingScenario(scenario)
+{
+	if(scenario.hasOwnProperty('rating'))
+	{
+		scenario.ratings = [{
+			rating: scenario.rating,
+			ratingPrettyName: scenario.ratingPrettyName,
+			ratingChange: scenario.ratingChange
+		}];
+		delete scenario.rating;
+		delete scenario.ratingChange;
+	}
+
+	return scenario;
 }
 
 async function generateScenario()
@@ -196,7 +230,7 @@ async function handleInjuryScenario(scenario)
 	console.log(`\n${randTeam.teamName} - ${playerTable.records[randPlayerRow]['Position']} ${playerTable.records[randPlayerRow]['FirstName']} ${playerTable.records[randPlayerRow]['LastName']} (${playerTable.records[randPlayerRow]['OverallRating']} OVR)`);
 	console.log(`\n${scenario.title}:`);
 	console.log(scenario.description);
-	console.log(`\nResult: ${playerTable.records[randPlayerRow]['LastName']} will be out for ${scenario.weeksOut} weeks.`);
+	console.log(`\nResult - ${playerTable.records[randPlayerRow]['LastName']} will be out for ${scenario.weeksOut} weeks.`);
 
 	// Set injury status to Injured, set InjuryType, and set both MinInjuryDuration and MaxInjuryDuration to the number of weeks
 	playerTable.records[randPlayerRow]['InjuryStatus'] = 'Injured';
@@ -227,39 +261,66 @@ async function handleRatingChangeScenario(scenario)
 		randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
 	}
 
-	let ratingChangeSign;
-
-	if(scenario.ratingChange < 0)
-	{
-		ratingChangeSign = 'decrease';
-	}
-	else
-	{
-		ratingChangeSign = 'increase';
-	}
-
-	// Store the column header for the original (non-morale affected) rating
-	const originalRatingHeader = `Original${scenario.rating}`;
-
-	// Store the morale boost amount
-	let moraleDiff = playerTable.records[randPlayerRow][scenario.rating] - playerTable.records[randPlayerRow][originalRatingHeader];
-
-	// Calculate the new original rating and normalize to be between 0 and 99
-	let newOriginalRating = Math.max(Math.min(playerTable.records[randPlayerRow][originalRatingHeader] + scenario.ratingChange, 99), 0);
-
-	// Calculate the new morale affected rating and normalize to be between 0 and 99
-	let newRating = Math.max(Math.min(newOriginalRating + moraleDiff, 99), 0);
-
-	// Update the original rating and set the morale affected rating to the new rating + the morale boost amount
-	playerTable.records[randPlayerRow][originalRatingHeader] = newOriginalRating;
-	playerTable.records[randPlayerRow][scenario.rating] = newRating;
-
 	console.log(`\n${randTeam.teamName} - ${playerTable.records[randPlayerRow]['Position']} ${playerTable.records[randPlayerRow]['FirstName']} ${playerTable.records[randPlayerRow]['LastName']} (${playerTable.records[randPlayerRow]['OverallRating']} OVR)`);
 	console.log(`\n${scenario.title}:`);
 	console.log(scenario.description);
-	console.log(`\nResult: ${playerTable.records[randPlayerRow]['LastName']}'s ${scenario.ratingPrettyName} rating will ${ratingChangeSign} by ${Math.abs(scenario.ratingChange)} (${playerTable.records[randPlayerRow][originalRatingHeader] - scenario.ratingChange} -> ${playerTable.records[randPlayerRow][originalRatingHeader]}).`);
+	console.log(`\nResult - ${playerTable.records[randPlayerRow]['LastName']}'s ratings will change as listed below:`);
 
-	// TODO: add overall recalculation once Sinthros adds the function to FranchiseUtils
+
+	// Iterate through each rating in the scenario's ratings array and apply the change to the player
+	scenario.ratings.forEach(rating => {
+		
+		let ratingPrettyName = rating.ratingPrettyName;
+		let originalRatingHeader = `Original${rating.rating}`;
+
+		// Store the morale boost amount
+		let moraleDiff = playerTable.records[randPlayerRow][rating.rating] - playerTable.records[randPlayerRow][originalRatingHeader];
+
+		// Calculate the new original rating and normalize to be between 0 and 99
+		let newOriginalRating = Math.max(Math.min(playerTable.records[randPlayerRow][originalRatingHeader] + rating.ratingChange, 99), 0);
+
+		// Calculate the new morale affected rating and normalize to be between 0 and 99
+		let newRating = Math.max(Math.min(newOriginalRating + moraleDiff, 99), 0);
+
+		// Update the original rating and set the morale affected rating to the new rating + the morale boost amount
+		playerTable.records[randPlayerRow][originalRatingHeader] = newOriginalRating;
+		playerTable.records[randPlayerRow][rating.rating] = newRating;
+
+		let ratingChangeSign;
+
+		if(rating.ratingChange < 0)
+		{
+			ratingChangeSign = '-';
+		}
+		else
+		{
+			ratingChangeSign = '+';
+		}
+
+		console.log(`${ratingPrettyName}: ${ratingChangeSign}${Math.abs(rating.ratingChange)} (${playerTable.records[randPlayerRow][originalRatingHeader] - rating.ratingChange} -> ${playerTable.records[randPlayerRow][originalRatingHeader]})`);
+
+	});
+
+	// Store current overall and archetype for comparison
+	const currentOverall = playerTable.records[randPlayerRow]['OverallRating'];
+	const currentArchetype = playerTable.records[randPlayerRow]['PlayerType'];
+
+	// Recalculate overall and archetype to account for new ratings
+	const {newOverall, newArchetype} = FranchiseUtils.calculateBestOverall(playerTable.records[randPlayerRow]);
+	playerTable.records[randPlayerRow]['OverallRating'] = newOverall;
+	playerTable.records[randPlayerRow]['PlayerType'] = newArchetype;
+
+	// Display new overall if it is different from before
+	if(newOverall !== currentOverall)
+	{
+		console.log(`\nNew Overall: ${newOverall} OVR`);
+	}
+
+	// Display new archetype if it is different from before
+	if(newArchetype !== currentArchetype)
+	{
+		console.log(`New Archetype: ${newArchetype}`);
+	}
 
 }
 
@@ -279,7 +340,7 @@ async function handleSuspensionScenario(scenario)
 	console.log(`\n${randTeam.teamName} - ${playerTable.records[randPlayerRow]['Position']} ${playerTable.records[randPlayerRow]['FirstName']} ${playerTable.records[randPlayerRow]['LastName']} (${playerTable.records[randPlayerRow]['OverallRating']} OVR)`);
 	console.log(`\n${scenario.title}:`);
 	console.log(scenario.description);
-	console.log(`\nResult: ${playerTable.records[randPlayerRow]['LastName']} is suspended for ${scenario.suspensionLength} weeks.`);
+	console.log(`\nResult - ${playerTable.records[randPlayerRow]['LastName']} is suspended for ${scenario.suspensionLength} weeks.`);
 
 	// Set injury status to Injured, set InjuryType, and set both MinInjuryDuration and MaxInjuryDuration to the number of weeks
 	playerTable.records[randPlayerRow]['InjuryStatus'] = 'Injured';
@@ -420,9 +481,7 @@ async function createRatingChangeScenario()
 	console.log("\nRating Change Scenario Creator");
 
 	let newRatingScenario = {
-		rating: '',
-		ratingPrettyName: '',
-		ratingChange: 0,
+		ratings: [],
 		usePositionGroup: false,
 		positionGroup: []
 	};
@@ -434,11 +493,42 @@ async function createRatingChangeScenario()
 		newRatingScenario.positionGroup = getPositionGroupSelection();
 	}
 
-	newRatingScenario.ratingPrettyName = await getRatingSelection();
-	newRatingScenario.rating = ratingTypes[newRatingScenario.ratingPrettyName];
+	let numRatings;
+	do
+	{
+		console.log(`\nEnter how many ratings you want to change (1-${Object.keys(ratingTypes).length}): `);
+		try
+		{
+			numRatings = parseInt(prompt());
+		}
+		catch(error)
+		{
+			console.log("Invalid choice. Please try again.");
+			continue;
+		}
+		if(numRatings < 1 || numRatings > ratingTypes.length)
+		{
+			console.log("Invalid choice. Please try again.");
+		}
+	}
+	while(numRatings < 1 || numRatings > ratingTypes.length);
 
-	console.log("\nEnter how much the rating should change by (positive for increase, negative for decrease): ");
-	newRatingScenario.ratingChange = parseInt(prompt());
+	for(let i = 0; i < numRatings; i++)
+	{
+		let newRating = {
+			rating: '',
+			ratingPrettyName: '',
+			ratingChange: 0
+		};
+
+		newRating.ratingPrettyName = await getRatingSelection();
+		newRating.rating = ratingTypes[newRating.ratingPrettyName];
+
+		console.log("\nEnter how much the rating should change by (positive for increase, negative for decrease): ");
+		newRating.ratingChange = parseInt(prompt());
+
+		newRatingScenario.ratings.push(newRating);
+	}
 
 	newRatingScenario.type = 'Rating Change';
 
