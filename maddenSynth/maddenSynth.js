@@ -8,8 +8,9 @@ const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 const ratingTypes = (JSON.parse(fs.readFileSync(`lookupFiles/ratingTypes.json`, 'utf-8')));
 const positionGroups = (JSON.parse(fs.readFileSync(`lookupFiles/positionGroups.json`, 'utf-8')));
+const allPositions = (JSON.parse(fs.readFileSync(`lookupFiles/allPositions.json`, 'utf-8')));
 
-const versionNum = 'v2 ALPHA 0.1';
+const versionNum = 'v2 ALPHA 0.2';
 
 console.log(`Welcome to MaddenSynth ${versionNum}! This is a customizable franchise scenario generator for Madden 24.\n`)
 const gameYear = '24';
@@ -148,6 +149,12 @@ function loadScenarios()
 			// Save file after conversion
 			fs.writeFileSync(path.join(scenariosDir, file), JSON.stringify(scenario, null, 2));
 		}
+		else if(scenario.type === 'Injury')
+		{
+			scenario = convertLegacyInjuryScenario(scenario);
+			// Save file after conversion
+			fs.writeFileSync(path.join(scenariosDir, file), JSON.stringify(scenario, null, 2));
+		}
 
 		scenarios.push(scenario);
 	});
@@ -187,6 +194,16 @@ function convertLegacyRatingScenario(scenario)
 	return scenario;
 }
 
+function convertLegacyInjuryScenario(scenario)
+{
+	if(!scenario.hasOwnProperty('usePositionGroup'))
+	{
+		scenario.usePositionGroup = false;
+	}
+
+	return scenario;
+}
+
 async function generateScenario()
 {
 	if(scenarios.length === 0)
@@ -195,22 +212,44 @@ async function generateScenario()
 		return;
 	}
 	
-	// Shuffle the scenarios array
-	await shuffleArray(scenarios);
-
-	let selectedScenario = scenarios[getRandomNumber(0, scenarios.length - 1)];
-
-	if(selectedScenario.type === 'Injury')
+	// Get from user how many scenarios they want to generate, then generate that many
+	let numScenarios;
+	do
 	{
-		await handleInjuryScenario(selectedScenario);
+		console.log("\nEnter how many scenarios you want to generate: ");
+		numScenarios = parseInt(prompt());
+		if(numScenarios < 1)
+		{
+			console.log("Please enter a number greater than 0.");
+		}
 	}
-	else if(selectedScenario.type === 'Rating Change')
+	while(numScenarios < 1);
+
+	for(let i = 0; i < numScenarios; i++)
 	{
-		await handleRatingChangeScenario(selectedScenario);
-	}
-	else if(selectedScenario.type === 'Suspension')
-	{
-		await handleSuspensionScenario(selectedScenario);
+		// Shuffle the scenarios array
+		await shuffleArray(scenarios);
+
+		let selectedScenario = scenarios[getRandomNumber(0, scenarios.length - 1)];
+
+		// Print a separator between scenarios if it's not the first one
+		if(i > 0)
+		{
+			console.log("\n----------------------------------------");
+		}
+
+		if(selectedScenario.type === 'Injury')
+		{
+			await handleInjuryScenario(selectedScenario);
+		}
+		else if(selectedScenario.type === 'Rating Change')
+		{
+			await handleRatingChangeScenario(selectedScenario);
+		}
+		else if(selectedScenario.type === 'Suspension')
+		{
+			await handleSuspensionScenario(selectedScenario);
+		}
 	}
 }
 
@@ -221,11 +260,23 @@ async function handleInjuryScenario(scenario)
 	let teamIndex = teamTable.records[randTeamRow]['TeamIndex'];
 
 	let randPlayerRow;
-	do
+
+	if(scenario.usePositionGroup)
 	{
-		randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+		do
+		{
+			randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+		}
+		while(!scenario.positionGroup.includes(playerTable.records[randPlayerRow]['Position']) && playerTable.records[randPlayerRow]['InjuryStatus'] !== 'Uninjured');
 	}
-	while(playerTable.records[randPlayerRow]['InjuryStatus'] !== 'Uninjured');
+	else
+	{
+		do
+		{
+			randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+		}
+		while(playerTable.records[randPlayerRow]['InjuryStatus'] !== 'Uninjured');
+	}
 
 	console.log(`\n${randTeam.teamName} - ${playerTable.records[randPlayerRow]['Position']} ${playerTable.records[randPlayerRow]['FirstName']} ${playerTable.records[randPlayerRow]['LastName']} (${playerTable.records[randPlayerRow]['OverallRating']} OVR)`);
 	console.log(`\n${scenario.title}:`);
@@ -266,9 +317,53 @@ async function handleRatingChangeScenario(scenario)
 	console.log(scenario.description);
 	console.log(`\nResult - ${playerTable.records[randPlayerRow]['LastName']}'s ratings will change as listed below:`);
 
+	const singleHeaderRatings = ['Morale', 'Weight']
 
 	// Iterate through each rating in the scenario's ratings array and apply the change to the player
 	scenario.ratings.forEach(rating => {
+		
+		// Separately Handle ratings that only have one header
+		if(singleHeaderRatings.includes(rating.ratingPrettyName))
+		{
+			let ratingPrettyName = rating.ratingPrettyName;
+			
+			let newOriginalRating;
+
+			if(ratingPrettyName === 'Morale')
+			{
+				newOriginalRating = Math.max(Math.min(playerTable.records[randPlayerRow][rating.rating] + rating.ratingChange, 100), 0);
+			}
+			else if (ratingPrettyName === 'Weight')
+			{
+				newOriginalRating = Math.max(Math.min(playerTable.records[randPlayerRow][rating.rating] + rating.ratingChange, 240), 0);
+			}
+			else
+			{
+				newOriginalRating = Math.max(Math.min(playerTable.records[randPlayerRow][rating.rating] + rating.ratingChange, 99), 0);
+			}
+
+			let ratingChangeSign;
+
+			if(rating.ratingChange < 0)
+			{
+				ratingChangeSign = '-';
+			}
+			else
+			{
+				ratingChangeSign = '+';
+			}
+
+			if(ratingPrettyName === 'Weight')
+			{
+				console.log(`${ratingPrettyName}: ${ratingChangeSign}${Math.abs(rating.ratingChange)} (${(playerTable.records[randPlayerRow][rating.rating] - rating.ratingChange) + 160} -> ${playerTable.records[randPlayerRow][rating.rating] + 160})`);
+			}
+			else
+			{
+				console.log(`${ratingPrettyName}: ${ratingChangeSign}${Math.abs(rating.ratingChange)} (${playerTable.records[randPlayerRow][rating.rating] - rating.ratingChange} -> ${playerTable.records[randPlayerRow][rating.rating]})`);
+			}
+
+			return;
+		}
 		
 		let ratingPrettyName = rating.ratingPrettyName;
 		let originalRatingHeader = `Original${rating.rating}`;
@@ -430,8 +525,17 @@ async function createInjuryScenario()
 	console.log("\nInjury Scenario Creator");
 	let newInjScenario = {
 		injuryType: '',
-		weeksOut: 0
+		weeksOut: 0,
+		usePositionGroup: false,
+		positionGroup: []
 	};
+
+	newInjScenario.usePositionGroup = getYesOrNo("\nDo you want to apply this injury to a specific position group? (yes/no)");
+
+	if(newInjScenario.usePositionGroup)
+	{
+		newInjScenario.positionGroup = getPositionGroupSelection();
+	}
 
 	newInjScenario.injuryType = await getInjurySelection();
 
@@ -538,6 +642,8 @@ async function createRatingChangeScenario()
 function getPositionGroupSelection()
 {
 	let positionGroupKeys = Object.keys(positionGroups);
+	positionGroupKeys.push('Custom');
+
 
 	console.log("\nPosition Groups:");
 	positionGroupKeys.forEach((group, index) => {
@@ -559,7 +665,47 @@ function getPositionGroupSelection()
 			break;
 		}
 	}
+
 	const positionGroupChoice = positionGroupKeys[inputNumber];
+
+	if(positionGroupChoice === 'Custom')
+	{
+		let customPositionGroup = [];
+		let allPositionsList = allPositions['List'];
+
+		let numPositions;
+		do
+		{
+			console.log("\nEnter how many positions you want to include in the custom group: ");
+			numPositions = parseInt(prompt());
+			if(numPositions < 1)
+			{
+				console.log("Please enter a number greater than 0.");
+			}
+		}
+		while(numPositions < 1);
+
+		for(let i = 0; i < numPositions; i++)
+		{
+			let positionChoice;
+
+			do
+			{
+				console.log(`\nEnter position ${i + 1} (ex: QB): `);
+				positionChoice = prompt().toUpperCase();
+				if(!allPositionsList.includes(positionChoice))
+				{
+					console.log("Invalid position. Please try again.");
+				}
+			}
+			while(!allPositionsList.includes(positionChoice));
+
+			customPositionGroup.push(positionChoice);
+		}
+
+		return customPositionGroup;
+	
+	}
 
 	return positionGroups[positionGroupChoice];
 }
