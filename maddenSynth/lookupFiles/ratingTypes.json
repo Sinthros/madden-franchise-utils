@@ -23,6 +23,7 @@
   "LeadBlock": "LeadBlockRating",
   "ManCoverage": "ManCoverageRating",
   "MediumRouteRunning": "MediumRouteRunningRating",
+  "Morale": "ConfidenceRating",
   "PassBlockFinesse": "PassBlockFinesseRating",
   "PassBlockPower": "PassBlockPowerRating",
   "PassBlock": "PassBlockRating",
@@ -51,5 +52,6 @@
   "ThrowUnderPressure": "ThrowUnderPressureRating",
   "Toughness": "ToughnessRating",
   "Trucking": "TruckingRating",
+  "Weight": "Weight",
   "ZoneCoverage": "ZoneCoverageRating"
 }
