@@ -10,7 +10,7 @@ const ratingTypes = (JSON.parse(fs.readFileSync(`lookupFiles/ratingTypes.json`, 
 const positionGroups = (JSON.parse(fs.readFileSync(`lookupFiles/positionGroups.json`, 'utf-8')));
 const allPositions = (JSON.parse(fs.readFileSync(`lookupFiles/allPositions.json`, 'utf-8')));
 
-const versionNum = 'v2 ALPHA 0.2';
+const versionNum = 'v2 ALPHA 0.3';
 
 console.log(`Welcome to MaddenSynth ${versionNum}! This is a customizable franchise scenario generator for Madden 24.\n`)
 const gameYear = '24';
@@ -220,17 +220,52 @@ async function generateScenario()
 		numScenarios = parseInt(prompt());
 		if(numScenarios < 1)
 		{
-			console.log("Please enter a number greater than 0.");
+			console.log(`Please enter a number from 1-${scenarios.length}.`);
+		}
+
+		if(numScenarios > scenarios.length)
+		{
+			if(scenarios.length === 1)
+			{
+				console.log("There is only 1 scenario loaded. Please enter 1.");
+			}
+			else
+			{
+				console.log(`There are only ${scenarios.length} scenarios loaded. Please enter a number less than or equal to that.`);
+			}
 		}
 	}
-	while(numScenarios < 1);
+	while(numScenarios < 1 || numScenarios > scenarios.length);
 
 	for(let i = 0; i < numScenarios; i++)
 	{
 		// Shuffle the scenarios array
 		await shuffleArray(scenarios);
 
-		let selectedScenario = scenarios[getRandomNumber(0, scenarios.length - 1)];
+		let selectedScenario;
+
+		while(true)
+		{
+			selectedScenario = scenarios[getRandomNumber(0, scenarios.length - 1)];
+
+			if(selectedScenario.hasOwnProperty('useRandomThreshold') && selectedScenario.useRandomThreshold)
+			{
+				const randomThreshold = selectedScenario.randomThreshold;
+				const randomNum = getRandomNumber(1, 50);
+				if(randomNum < randomThreshold)
+				{
+					continue;
+				}
+				else
+				{
+					break;
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
 
 		// Print a separator between scenarios if it's not the first one
 		if(i > 0)
@@ -255,28 +290,35 @@ async function generateScenario()
 
 async function handleInjuryScenario(scenario)
 {
-	let randTeam = teamsList[getRandomNumber(0, teamsList.length - 1)];
-	let randTeamRow = randTeam.teamRowNum;
-	let teamIndex = teamTable.records[randTeamRow]['TeamIndex'];
+	let randTeam; 
+	let randTeamRow; 
+	let teamIndex;
 
 	let randPlayerRow;
+	do
+	{
+		randTeam = teamsList[getRandomNumber(0, teamsList.length - 1)];
+		randTeamRow = randTeam.teamRowNum;
+		teamIndex = teamTable.records[randTeamRow]['TeamIndex'];
 
-	if(scenario.usePositionGroup)
-	{
-		do
+		if(scenario.usePositionGroup)
 		{
-			randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+			do
+			{
+				randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+			}
+			while(!scenario.positionGroup.includes(playerTable.records[randPlayerRow]['Position']) && playerTable.records[randPlayerRow]['InjuryStatus'] !== 'Uninjured');
 		}
-		while(!scenario.positionGroup.includes(playerTable.records[randPlayerRow]['Position']) && playerTable.records[randPlayerRow]['InjuryStatus'] !== 'Uninjured');
-	}
-	else
-	{
-		do
+		else
 		{
-			randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+			do
+			{
+				randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+			}
+			while(playerTable.records[randPlayerRow]['InjuryStatus'] !== 'Uninjured');
 		}
-		while(playerTable.records[randPlayerRow]['InjuryStatus'] !== 'Uninjured');
 	}
+	while(randPlayerRow === -1)
 
 	console.log(`\n${randTeam.teamName} - ${playerTable.records[randPlayerRow]['Position']} ${playerTable.records[randPlayerRow]['FirstName']} ${playerTable.records[randPlayerRow]['LastName']} (${playerTable.records[randPlayerRow]['OverallRating']} OVR)`);
 	console.log(`\n${scenario.title}:`);
@@ -293,24 +335,49 @@ async function handleInjuryScenario(scenario)
 
 async function handleRatingChangeScenario(scenario)
 {
-	let randTeam = teamsList[getRandomNumber(0, teamsList.length - 1)];
-	let randTeamRow = randTeam.teamRowNum;
-	let teamIndex = teamTable.records[randTeamRow]['TeamIndex'];
+	let randTeam; 
+	let randTeamRow; 
+	let teamIndex;
 
 	let randPlayerRow;
-	
-	if(scenario.usePositionGroup)
+	do
 	{
-		do
+		randTeam = teamsList[getRandomNumber(0, teamsList.length - 1)];
+		randTeamRow = randTeam.teamRowNum;
+		teamIndex = teamTable.records[randTeamRow]['TeamIndex'];
+
+		if(scenario.hasOwnProperty('hasSelectionParameters') && scenario.hasSelectionParameters)
 		{
-			randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+			if(scenario.usePositionGroup)
+			{
+				do
+				{
+					randPlayerRow = await getRandomPlayerOnTeamWithParameters(teamIndex, scenario.selectionParameters);
+				}
+				while(!scenario.positionGroup.includes(playerTable.records[randPlayerRow]['Position']));
+			}
+			else
+			{
+				randPlayerRow = await getRandomPlayerOnTeamWithParameters(teamIndex, scenario.selectionParameters);
+			}
 		}
-		while(!scenario.positionGroup.includes(playerTable.records[randPlayerRow]['Position']));
+		else
+		{
+			if(scenario.usePositionGroup)
+			{
+				do
+				{
+					randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+				}
+				while(!scenario.positionGroup.includes(playerTable.records[randPlayerRow]['Position']));
+			}
+			else
+			{
+				randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+			}
+		}
 	}
-	else
-	{
-		randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
-	}
+	while(randPlayerRow === -1)
 
 	console.log(`\n${randTeam.teamName} - ${playerTable.records[randPlayerRow]['Position']} ${playerTable.records[randPlayerRow]['FirstName']} ${playerTable.records[randPlayerRow]['LastName']} (${playerTable.records[randPlayerRow]['OverallRating']} OVR)`);
 	console.log(`\n${scenario.title}:`);
@@ -421,16 +488,35 @@ async function handleRatingChangeScenario(scenario)
 
 async function handleSuspensionScenario(scenario)
 {
-	let randTeam = teamsList[getRandomNumber(0, teamsList.length - 1)];
-	let randTeamRow = randTeam.teamRowNum;
-	let teamIndex = teamTable.records[randTeamRow]['TeamIndex'];
+	let randTeam; 
+	let randTeamRow; 
+	let teamIndex;
 
 	let randPlayerRow;
 	do
 	{
-		randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+		randTeam = teamsList[getRandomNumber(0, teamsList.length - 1)];
+		randTeamRow = randTeam.teamRowNum;
+		teamIndex = teamTable.records[randTeamRow]['TeamIndex'];
+
+		if(scenario.hasOwnProperty('hasSelectionParameters') && scenario.hasSelectionParameters)
+		{
+			do
+			{
+				randPlayerRow = await getRandomPlayerOnTeamWithParameters(teamIndex, scenario.selectionParameters);
+			}
+			while(playerTable.records[randPlayerRow]['InjuryStatus'] !== 'Uninjured');
+		}
+		else
+		{
+			do
+			{
+				randPlayerRow = await getRandomPlayerOnTeam(teamIndex);
+			}
+			while(playerTable.records[randPlayerRow]['InjuryStatus'] !== 'Uninjured');
+		}
 	}
-	while(playerTable.records[randPlayerRow]['InjuryStatus'] !== 'Uninjured');
+	while(randPlayerRow === -1);
 
 	console.log(`\n${randTeam.teamName} - ${playerTable.records[randPlayerRow]['Position']} ${playerTable.records[randPlayerRow]['FirstName']} ${playerTable.records[randPlayerRow]['LastName']} (${playerTable.records[randPlayerRow]['OverallRating']} OVR)`);
 	console.log(`\n${scenario.title}:`);
@@ -458,6 +544,40 @@ async function getRandomPlayerOnTeam(teamIndex)
 	}
 
 	return playerRows[getRandomNumber(0, playerRows.length - 1)];
+}
+
+async function getRandomPlayerOnTeamWithParameters(teamIndex, selectionParameters)
+{
+	let playerRows = [];
+	for(let i = 0; i < playerTable.header.recordCapacity; i++)
+	{
+		if(playerTable.records[i].isEmpty || playerTable.records[i]['TeamIndex'] !== teamIndex || invalidPlayerStatuses.includes(playerTable.records[i]['ContractStatus']))
+		{
+			continue;
+		}
+
+		let validPlayer = true;
+
+		selectionParameters.forEach(param => {
+			if(playerTable.records[i][param.type] < param.min || playerTable.records[i][param.type] > param.max)
+			{
+				validPlayer = false;
+			}
+		});
+
+		if(validPlayer)
+		{
+			playerRows.push(i);
+		}
+	}
+
+	if(playerRows.length === 0)
+	{
+		return -1;
+	}
+
+	return playerRows[getRandomNumber(0, playerRows.length - 1)];
+
 }
 
 async function createScenario()
@@ -502,6 +622,21 @@ async function createScenario()
 	console.log("\nEnter a description for the scenario:");
 	newScenario.description = prompt();
 
+	newScenario.useRandomThreshold = getYesOrNo("\nDo you want to apply a random threshold to this scenario? (yes/no)");
+
+	if(newScenario.useRandomThreshold)
+	{
+		console.log("\nEnter the random threshold:");
+		newScenario.randomThreshold = parseInt(prompt());
+	}
+
+	newScenario.hasSelectionParameters = getYesOrNo("\nDo you want to apply player selection parameters to this scenario? (yes/no)");
+
+	if(newScenario.hasSelectionParameters)
+	{
+		newScenario.selectionParameters = getSelectionParameters();
+	}
+
 	scenarios.push(newScenario);
 
 	// Save the scenario object to a file named after the title (without spaces or special characters)
@@ -518,6 +653,206 @@ async function createScenario()
 	fs.writeFileSync(`scenarios/${scenarioFileName}.json`, JSON.stringify(newScenario, null, 2));
 
 	console.log("\nScenario created successfully and saved to file.");
+}
+
+function getSelectionParameters(scenario)
+{
+	const parameterOptions = ['Age', 'Overall', 'Injury Rating', 'Awareness Rating', 'Morale'];
+
+	let userChoice;
+
+	let selectionParameters = [];
+
+	do
+	{
+		console.log("\nSelection Parameter Options:");
+		parameterOptions.forEach((param, index) => {
+			console.log(`${index} - ${param}`);
+		});
+
+		console.log("\nEnter the number for the parameter you want to add, or nothing if you are finished: ");
+		userChoice = prompt();
+
+		if(userChoice === '')
+		{
+			break;
+		}
+
+		userChoice = parseInt(userChoice);
+
+		if(userChoice < 0 || userChoice >= parameterOptions.length)
+		{
+			console.log("Invalid choice. Please try again.");
+		}
+
+		const parameterChoice = parameterOptions[userChoice];
+
+		let newParameter = {};
+
+		if(parameterChoice === 'Age')
+		{
+			newParameter.type = 'Age';
+			
+			do
+			{
+				console.log("\nEnter the minimum age: ");
+				newParameter.min = parseInt(prompt());
+				if(newParameter.min < 0)
+				{
+					console.log("Please enter a positive number.");
+				}
+			}
+			while(newParameter.min < 0);
+
+			do
+			{
+				console.log("\nEnter the maximum age: ");
+				newParameter.max = parseInt(prompt());
+				if(newParameter.max < 0)
+				{
+					console.log("Please enter a positive number.");
+				}
+
+				if(newParameter.max < newParameter.min)
+				{
+					console.log("Maximum age must be greater than or equal to minimum age.");
+				}
+			}
+			while(newParameter.max < 0 || newParameter.max < newParameter.min);
+		
+		}
+		else if(parameterChoice === 'Overall')
+		{
+			newParameter.type = 'OverallRating';
+			
+			do
+			{
+				console.log("\nEnter the minimum overall: ");
+				newParameter.min = parseInt(prompt());
+				if(newParameter.min < 0 || newParameter.min > 99)
+				{
+					console.log("Please enter a positive number from 0-99.");
+				}
+			}
+			while(newParameter.min < 0 || newParameter.min > 99);
+
+			do
+			{
+				console.log("\nEnter the maximum overall: ");
+				newParameter.max = parseInt(prompt());
+				if(newParameter.max < 0 || newParameter.max > 99)
+				{
+					console.log("Please enter a positive number from 0-99.");
+				}
+
+				if(newParameter.max < newParameter.min)
+				{
+					console.log("Maximum overall must be greater than or equal to minimum overall.");
+				}
+			}
+			while(newParameter.max < 0 || newParameter.max < newParameter.min || newParameter.max > 99);
+		
+		}
+		else if(parameterChoice === 'Injury Rating')
+		{
+			newParameter.type = 'InjuryRating';
+
+			do
+			{
+				console.log("\nEnter the minimum injury rating: ");
+				newParameter.min = parseInt(prompt());
+				if(newParameter.min < 0 || newParameter.min > 99)
+				{
+					console.log("Please enter a positive number from 0-99.");
+				}
+			}
+			while(newParameter.min < 0 || newParameter.min > 99);
+
+			do
+			{
+				console.log("\nEnter the maximum injury rating: ");
+				newParameter.max = parseInt(prompt());
+				if(newParameter.max < 0 || newParameter.max > 99)
+				{
+					console.log("Please enter a positive number from 0-99.");
+				}
+
+				if(newParameter.max < newParameter.min)
+				{
+					console.log("Maximum injury rating must be greater than or equal to injury rating.");
+				}
+			}
+			while(newParameter.max < 0 || newParameter.max < newParameter.min || newParameter.max > 99);
+		}
+		else if(parameterChoice === 'Awareness Rating')
+		{
+			newParameter.type = 'AwarenessRating';
+
+			do
+			{
+				console.log("\nEnter the minimum awareness rating: ");
+				newParameter.min = parseInt(prompt());
+				if(newParameter.min < 0 || newParameter.min > 99)
+				{
+					console.log("Please enter a positive number from 0-99.");
+				}
+			}
+			while(newParameter.min < 0 || newParameter.min > 99);
+
+			do
+			{
+				console.log("\nEnter the maximum awareness rating: ");
+				newParameter.max = parseInt(prompt());
+				if(newParameter.max < 0 || newParameter.max > 99)
+				{
+					console.log("Please enter a positive number from 0-99.");
+				}
+
+				if(newParameter.max < newParameter.min)
+				{
+					console.log("Maximum awareness rating must be greater than or equal to awareness rating.");
+				}
+			}
+			while(newParameter.max < 0 || newParameter.max < newParameter.min || newParameter.max > 99);
+		}
+		else if(parameterChoice === 'Morale')
+		{
+			newParameter.type = 'ConfidenceRating';
+
+			do
+			{
+				console.log("\nEnter the minimum morale rating: ");
+				newParameter.min = parseInt(prompt());
+				if(newParameter.min < 0 || newParameter.min > 99)
+				{
+					console.log("Please enter a positive number from 0-99.");
+				}
+			}
+			while(newParameter.min < 0 || newParameter.min > 99);
+
+			do
+			{
+				console.log("\nEnter the maximum morale rating: ");
+				newParameter.max = parseInt(prompt());
+				if(newParameter.max < 0 || newParameter.max > 99)
+				{
+					console.log("Please enter a positive number from 0-99.");
+				}
+
+				if(newParameter.max < newParameter.min)
+				{
+					console.log("Maximum morale rating must be greater than or equal to morale rating.");
+				}
+			}
+			while(newParameter.max < 0 || newParameter.max < newParameter.min || newParameter.max > 99);
+		}
+
+		selectionParameters.push(newParameter);
+	}
+	while(true);
+
+	return selectionParameters;
+	
 }
 
 async function createInjuryScenario()
