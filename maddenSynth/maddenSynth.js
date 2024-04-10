@@ -1141,13 +1141,6 @@ if (!validWeekTypes.includes(currentWeekType)) // Check if file is in preseason,
 	process.exit(0);
 }
 
-
-	const seasonGameTable = franchise.getTableByUniqueId(tables.seasonGameTable);
-	await seasonGameTable.readRecords();
-	const numRowsSeasonGame = seasonGameTable.header.recordCapacity; // Number of rows in the SeasonGame table
-	
-	var selectedGame;
-	var allowedGameRows = [];
 	
 	let userOption;
 	while(true)
