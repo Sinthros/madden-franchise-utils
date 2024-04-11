@@ -1,0 +1,45 @@
+// Required modules
+const fs = require('fs');
+const prompt = require('prompt-sync')();
+const Franchise = require('madden-franchise');
+const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const { tables } = require('../lookupFunctions/FranchiseTableId');
+
+// Print tool header message
+console.log("This program will restore all draft picks back to their original team.\n");
+
+// Set up franchise file
+const gameYear = 24;
+const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+
+franchise.on('ready', async function () {
+    const draftPickTable = franchise.getTableByUniqueId(tables.draftPickTable);
+	await draftPickTable.readRecords();
+	
+	// Number of rows in the draft pick table
+    const numRows = draftPickTable.header.recordCapacity; 
+	
+	// Iterate through the draft pick table
+    for (i = 0; i < numRows; i++) 
+	{ 
+        // If it's an empty row, skip it
+		if (draftPickTable.records[i].isEmpty)
+		{
+			continue;
+        }
+		
+		// Get player's assetname value
+        const originalTeamRef = draftPickTable.records[i]['OriginalTeam'];
+		
+		// Assign the updated presentation ID 
+		draftPickTable.records[i]['CurrentTeam'] = originalTeamRef;
+    }
+	
+	// Program complete, so print success message, save the franchise file, and exit
+	console.log("\nDraft picks restored successfully.\n");
+    await FranchiseUtils.saveFranchiseFile(franchise);
+    console.log("\nEnter anything to exit the program.");
+    prompt();
+  
+});
+  
