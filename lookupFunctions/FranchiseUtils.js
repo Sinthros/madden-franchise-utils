@@ -4,8 +4,6 @@ const os = require('os');
 const fs = require('fs');
 const prompt = require('prompt-sync')();
 const zeroRef = '00000000000000000000000000000000';
-const ovrWeights = JSON.parse(fs.readFileSync(path.join(__dirname, 'JsonLookups/ovrweights.json'), 'utf8'));
-const ovrWeightsPosMap = JSON.parse(fs.readFileSync(path.join(__dirname, 'JsonLookups/ovrweightsPosMap.json'), 'utf8'));
 
 function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false, isFtcFile = false) {
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
@@ -141,7 +139,13 @@ function getGameYear(validGameYears) {
 // Afterwards, you can set the overall/archetype like this:
 // playerTable.records[i]['OverallRating;] = newOverall;
 // playerTable.records[i]['PlayerType'] = newArchetype;
+
+// If you use this function, you HAVE to include ovrweights/ovrweightsPosMap in your included files when compiling to an exe
 function calculateBestOverall(player) {
+
+    const ovrWeights = JSON.parse(fs.readFileSync(path.join(__dirname, 'JsonLookups/ovrweights.json'), 'utf8'));
+    const ovrWeightsPosMap = JSON.parse(fs.readFileSync(path.join(__dirname, 'JsonLookups/ovrweightsPosMap.json'), 'utf8'));
+    
     let newOverall = 0;
     let newArchetype = "";
 
