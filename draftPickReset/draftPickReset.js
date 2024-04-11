@@ -14,32 +14,30 @@ const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 franchise.on('ready', async function () {
     const draftPickTable = franchise.getTableByUniqueId(tables.draftPickTable);
-	await draftPickTable.readRecords();
-	
-	// Number of rows in the draft pick table
-    const numRows = draftPickTable.header.recordCapacity; 
-	
-	// Iterate through the draft pick table
-    for (i = 0; i < numRows; i++) 
-	{ 
-        // If it's an empty row, skip it
-		if (draftPickTable.records[i].isEmpty)
-		{
-			continue;
+    await draftPickTable.readRecords();
+
+    // Number of rows in the draft pick table
+    const numRows = draftPickTable.header.recordCapacity;
+
+    // Iterate through the draft pick table
+    for (i = 0; i < numRows; i++) {
+
+        // If not an empty row...
+        if (!draftPickTable.records[i].isEmpty) {
+
+            // Get original team bin
+        	const originalTeamRef = draftPickTable.records[i]['OriginalTeam'];
+
+        	// Replace CurrentTeam with original team bin
+        	draftPickTable.records[i]['CurrentTeam'] = originalTeamRef;
         }
-		
-		// Get player's assetname value
-        const originalTeamRef = draftPickTable.records[i]['OriginalTeam'];
-		
-		// Assign the updated presentation ID 
-		draftPickTable.records[i]['CurrentTeam'] = originalTeamRef;
     }
-	
-	// Program complete, so print success message, save the franchise file, and exit
-	console.log("\nDraft picks restored successfully.\n");
+
+    // Program complete, so print success message, save the franchise file, and exit
+    console.log("\nDraft picks restored successfully.\n");
     await FranchiseUtils.saveFranchiseFile(franchise);
     console.log("\nEnter anything to exit the program.");
     prompt();
-  
 });
+
   
