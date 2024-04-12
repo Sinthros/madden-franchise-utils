@@ -10,7 +10,7 @@ const MIN_EMPTY_PLAYERS = 500;
 
 const gameYear = '24'
 
-console.log("This program will delete the lowest free agent players from your file in order to ensure you have enough empty player table rows.");
+console.log("This program will delete the lowest rated free agent players from your file in order to ensure you have enough empty player table rows.");
 console.log("You only need to use this if you're having an issue importing a custom Draft Class, due to a recent change EA made. Thanks, EA.");
 console.log("If your Franchise File already has enough empty rows, then this program will tell you so and will exit.");
 const autoUnempty = false;
@@ -46,13 +46,33 @@ async function removeFromTable(table, currentBin) {
   }
 }
 
-async function deleteExcessFreeAgents(playerTable, freeAgentsTable, drillCompletedTable, characterVisualsTable, playersToDelete) {
+async function removeFromFATable(table, row) {
+  const recordLength = table.records[0].fieldsArray.filter(field => field.referenceData.tableId != 0).length;
+  const currentPerson = table.records[0].fieldsArray.find(field => field.referenceData.rowNumber == row);
+  const lastPerson = table.records[0].fieldsArray[recordLength - 1];
+
+  if (currentPerson) {
+      if (currentPerson.value == lastPerson.value) {
+          table.records[0][currentPerson.key] = ZERO_REF;
+      } else {
+          table.records[0][currentPerson.key] = table.records[0][lastPerson.key];
+          table.records[0][lastPerson.key] = ZERO_REF;
+      }
+  }
+}
+
+async function deleteExcessFreeAgents(franchise, playersToDelete) {
+
+  const freeAgentsTable = franchise.getTableByUniqueId(tables.freeAgentTable);
+  const drillCompletedTable = franchise.getTableByUniqueId(tables.drillCompletedTable);
+  const characterVisualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable);
+  await FranchiseUtils.readTableRecords([playerTable,freeAgentsTable,drillCompletedTable,characterVisualsTable])
 
   const freeAgentNumMembers = freeAgentsTable.header.numMembers;
   const filteredRecords = playerTable.records.filter(record => !record.isEmpty); //Filter for where the rows aren't empty
   const numFreeAgents = filteredRecords.filter(record => record.ContractStatus === 'FreeAgent') // Filter nonempty players for where they're free agents
   let allFreeAgentsBinary = [];
-  const worstFreeAgentsBinary = [];
+  //const worstFreeAgentsBinary = [];
 
   numFreeAgents.forEach((freeAgentRecord) => {
     const rowIndex = playerTable.records.indexOf(freeAgentRecord);
@@ -61,32 +81,34 @@ async function deleteExcessFreeAgents(playerTable, freeAgentsTable, drillComplet
     
   });
   
-  const worstFreeAgents = numFreeAgents.sort((a, b) => a.OverallRating - b.OverallRating).slice(0, playersToDelete);  // Get the worst free agents up till the amount of extra players
+  const worstFreeAgents = numFreeAgents.sort((a, b) => a.OverallRating - b.OverallRating).slice(0, playersToDelete);  // Get the worst free agents up till the amount of playersToDelete
 
   for (const freeAgentRecord of worstFreeAgents) {
     const rowIndex = playerTable.records.indexOf(freeAgentRecord); 
+  
     const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
-    worstFreeAgentsBinary.push(currentBin);
+    //worstFreeAgentsBinary.push(currentBin);
     playerTable.records[rowIndex]['ContractStatus'] = 'Deleted'; // Mark as deleted and empty the row
+    playerTable.records[rowIndex].CareerStats = ZERO_REF; // If we don't zero these out the game will crash
+    playerTable.records[rowIndex].SeasonStats = ZERO_REF;
+    playerTable.records[rowIndex].GameStats = ZERO_REF;
+    playerTable.records[rowIndex].CharacterVisuals = ZERO_REF;
+    playerTable.records[rowIndex].PLYR_ASSETNAME = ""; // Don't know if this is needed, but doesn't hurt
     playerTable.records[rowIndex].empty();
 
-    const characterVisualsRow = await FranchiseUtils.bin2Dec(playerTable.records[rowIndex].CharacterVisuals.slice(15));
-    const visualsRecord = characterVisualsTable.records[characterVisualsRow];
-    visualsRecord['RawData'] = {};
-    visualsRecord.empty();
-
+    await removeFromFATable(freeAgentsTable,rowIndex)
     await removeFromTable(drillCompletedTable,currentBin);
   }
 
   //Filter for where we aren't including the worstFreeAgentBin
-  allFreeAgentsBinary = allFreeAgentsBinary.filter((bin) => !worstFreeAgentsBinary.includes(bin));
+  //allFreeAgentsBinary = allFreeAgentsBinary.filter((bin) => !worstFreeAgentsBinary.includes(bin));
 
-  while (allFreeAgentsBinary.length < freeAgentNumMembers) { //Fill up the remainder with zeroed out binary
-    allFreeAgentsBinary.push(ZERO_REF)
-  }
+  //while (allFreeAgentsBinary.length < freeAgentNumMembers) { //Fill up the remainder with zeroed out binary
+  //  allFreeAgentsBinary.push(ZERO_REF)
+  //}
 
   //One liner to set the FA table binary = our free agent binary
-  allFreeAgentsBinary.forEach((val, index) => { freeAgentsTable.records[0].fieldsArray[index].value = val; })
+  //allFreeAgentsBinary.forEach((val, index) => { freeAgentsTable.records[0].fieldsArray[index].value = val; })
   //console.log(worstFreeAgents.length)
   
 };
@@ -95,11 +117,7 @@ async function deleteExcessFreeAgents(playerTable, freeAgentsTable, drillComplet
 franchise.on('ready', async function () {
 
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
-  const freeAgentsTable = franchise.getTableByUniqueId(tables.freeAgentTable);
-  const drillCompletedTable = franchise.getTableByUniqueId(tables.drillCompletedTable);
-  const marketedPlayersArrayTable = franchise.getTableByUniqueId(tables.marketedPlayersArrayTableM24);
-  const characterVisualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable);
-  await FranchiseUtils.readTableRecords([playerTable,freeAgentsTable,drillCompletedTable,marketedPlayersArrayTable,characterVisualsTable])
+  await playerTable.readRecords();
 
   const currentEmptyPlayers = playerTable.emptyRecords.size;
   const playersToDelete = MIN_EMPTY_PLAYERS - currentEmptyPlayers;
@@ -112,10 +130,10 @@ franchise.on('ready', async function () {
 
   }
 
-  await deleteExcessFreeAgents(playerTable,freeAgentsTable, drillCompletedTable, characterVisualsTable, playersToDelete);
+  await deleteExcessFreeAgents(franchise, playersToDelete);
 
   // This prints out empty player table references. if you see refs from 6000 (Marketing table) it's fine
-  for (let currentRow = 0; currentRow < playerTable.header.recordCapacity;currentRow++) {
+  /*for (let currentRow = 0; currentRow < playerTable.header.recordCapacity;currentRow++) {
     if (playerTable.records[currentRow].isEmpty)  {
       referencedRow = franchise.getReferencesToRecord(playerTable.header.tableId,currentRow)
   
@@ -123,9 +141,9 @@ franchise.on('ready', async function () {
         console.log(`${table.tableId}: ${table.name}: ${currentRow}`)
       })
     }
-  }
+  }*/
   
-  console.log(`Successfully deleted ${playersToDelete} player rows.`);
+  console.log(`Successfully deleted ${playersToDelete} free agent player rows.`);
   await FranchiseUtils.saveFranchiseFile(franchise);
   console.log("Program completed. Enter anything to exit.")
   prompt();
