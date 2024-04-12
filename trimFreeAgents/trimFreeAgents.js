@@ -46,7 +46,7 @@ async function removeFromTable(table, currentBin) {
   }
 }
 
-async function deleteExcessFreeAgents(playerTable, freeAgentsTable, drillCompletedTable, playersToDelete) {
+async function deleteExcessFreeAgents(playerTable, freeAgentsTable, drillCompletedTable, characterVisualsTable, playersToDelete) {
 
   const freeAgentNumMembers = freeAgentsTable.header.numMembers;
   const filteredRecords = playerTable.records.filter(record => !record.isEmpty); //Filter for where the rows aren't empty
@@ -69,6 +69,11 @@ async function deleteExcessFreeAgents(playerTable, freeAgentsTable, drillComplet
     worstFreeAgentsBinary.push(currentBin);
     playerTable.records[rowIndex]['ContractStatus'] = 'Deleted'; // Mark as deleted and empty the row
     playerTable.records[rowIndex].empty();
+
+    const characterVisualsRow = await FranchiseUtils.bin2Dec(playerTable.records[rowIndex].CharacterVisuals.slice(15));
+    const visualsRecord = characterVisualsTable.records[characterVisualsRow];
+    visualsRecord['RawData'] = {};
+    visualsRecord.empty();
 
     await removeFromTable(drillCompletedTable,currentBin);
   }
@@ -93,10 +98,8 @@ franchise.on('ready', async function () {
   const freeAgentsTable = franchise.getTableByUniqueId(tables.freeAgentTable);
   const drillCompletedTable = franchise.getTableByUniqueId(tables.drillCompletedTable);
   const marketedPlayersArrayTable = franchise.getTableByUniqueId(tables.marketedPlayersArrayTableM24);
-  await playerTable.readRecords();
-  await freeAgentsTable.readRecords();
-  await drillCompletedTable.readRecords();
-  await marketedPlayersArrayTable.readRecords();
+  const characterVisualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable);
+  await FranchiseUtils.readTableRecords([playerTable,freeAgentsTable,drillCompletedTable,marketedPlayersArrayTable,characterVisualsTable])
 
   const currentEmptyPlayers = playerTable.emptyRecords.size;
   const playersToDelete = MIN_EMPTY_PLAYERS - currentEmptyPlayers;
@@ -109,7 +112,7 @@ franchise.on('ready', async function () {
 
   }
 
-  await deleteExcessFreeAgents(playerTable,freeAgentsTable, drillCompletedTable, playersToDelete);
+  await deleteExcessFreeAgents(playerTable,freeAgentsTable, drillCompletedTable, characterVisualsTable, playersToDelete);
 
   // This prints out empty player table references. if you see refs from 6000 (Marketing table) it's fine
   for (let currentRow = 0; currentRow < playerTable.header.recordCapacity;currentRow++) {
