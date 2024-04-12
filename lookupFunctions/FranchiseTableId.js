@@ -117,7 +117,11 @@ const tables = {
     talentSubTreeFtcTable: 3439205175,
     talentNodeFtcTable: 2361769831,
     talentNodeArrayFtcTable: 4261606212,
-    talentFtcTable: 2347346465
+    talentFtcTable: 2347346465,
+
+    //Training tables
+    drillCompletedTable: 1204263071
+    
 
 
 
