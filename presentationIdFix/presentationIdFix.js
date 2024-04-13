@@ -6,12 +6,47 @@ const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 
 // Print tool header message
-console.log("This program will update all presentation IDs based on player asset name to fix commentary lines.")
+console.log("This program will update all presentation IDs based on player asset name to fix commentary lines.\n")
 
 // Set up franchise file
 const validGames = ['22','23','24'];
 const gameYear = FranchiseUtils.getGameYear(validGames);
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+
+function getYesOrNo(message) 
+{
+	while (true) 
+	{
+		console.log(message);
+		const input = prompt().trim().toUpperCase();
+  
+		if (input === 'YES') 
+		{
+			return true;
+		} 
+		else if (input === 'NO') 
+		{
+			return false;
+		} 
+		else 
+		{
+			console.log("Invalid input. Please enter yes or no.");
+		}
+	}
+}
+
+if(gameYear !== '23')
+{
+	console.log("\nWARNING: If you have used the progression tool on this franchise, modifying the presentation ID of players who have a progression path can cause their path to get rerolled.")
+
+	let continueChoice = getYesOrNo("\nDo you still wish to continue? (yes/no)");
+	if (!continueChoice) 
+	{
+		console.log("\nExiting program. Enter anything to exit.");
+		prompt();
+		process.exit(0);
+	}
+}
 
 franchise.on('ready', async function () {
     const playerTable = franchise.getTableByUniqueId(tables.playerTable);
@@ -56,6 +91,8 @@ franchise.on('ready', async function () {
 	// Number of rows in the player table
     const numRows = playerTable.header.recordCapacity; 
 	
+	let modifiedNonRookieCount = 0;
+
 	// Iterate through the player table
     for (i = 0; i < numRows; i++) 
 	{ 
@@ -89,10 +126,20 @@ franchise.on('ready', async function () {
 			newPresentationId = 0;
 		}
 		
+		if(playerTable.records[i]['YearsPro'] > 0 && playerTable.records[i]['PresentationId'] !== newPresentationId)
+		{
+			modifiedNonRookieCount++;
+		}
+
 		// Assign the updated presentation ID 
 		playerTable.records[i]['PresentationId'] = newPresentationId;
     }
 	
+	if(gameYear !== '23' && modifiedNonRookieCount > 0)
+	{
+		console.log(`\n${modifiedNonRookieCount} non-rookie players updated. These players' progression paths will be rerolled next time you run the progression tool.`);
+	}
+
 	// Program complete, so print success message, save the franchise file, and exit
 	console.log("\nPresentation IDs updated successfully.\n");
     await FranchiseUtils.saveFranchiseFile(franchise);
