@@ -174,38 +174,42 @@ async function emptyAcquisitionTables(franchise) {
   await playerAcquisitionEvaluation.readRecords();
   await playerAcquisitionEvaluationArray.readRecords();
 
-  for (let i = 0; i < playerAcquisitionEvaluation.header.recordCapacity;i++) {
+  for (let i = 0; i < playerAcquisitionEvaluation.header.recordCapacity; i++) {
     if (playerAcquisitionEvaluation.records[i].isEmpty) {
-      continue
+      continue;
     }
-    playerAcquisitionEvaluation.records[i]['Player'] = ZERO_REF;
-    playerAcquisitionEvaluation.records[i]['isPlayerSuperstar'] = false;
-    playerAcquisitionEvaluation.records[i]['isPlayerXFactor'] = false;
-    playerAcquisitionEvaluation.records[i]['AddedValue'] = 0;
-    playerAcquisitionEvaluation.records[i]['DevelopmentValue'] = 0;
-    playerAcquisitionEvaluation.records[i]['Value'] = 0;
-    playerAcquisitionEvaluation.records[i]['FreeAgentComparisonValue'] = 0;
-    playerAcquisitionEvaluation.records[i]['ImportanceValue'] = 0;
-    playerAcquisitionEvaluation.records[i]['TeamSchemeOverallValue'] = 0;
-    playerAcquisitionEvaluation.records[i]['TeamTradePhilosophyValue'] = 0;
-    playerAcquisitionEvaluation.records[i]['AcquisitionType'] = "Signed";
-    playerAcquisitionEvaluation.records[i]['Rank'] = 0;
-    playerAcquisitionEvaluation.records[i]['BestSchemeOverallValue'] = 0;
-    playerAcquisitionEvaluation.records[i]['CoachTradeInfluenceValue'] = 0;
-    playerAcquisitionEvaluation.records[i]['ContractValue'] = 0;
-    playerAcquisitionEvaluation.records[i]['IsPlayerHidden'] = false;
-    await playerAcquisitionEvaluation.records[i].empty();
+
+    const record = playerAcquisitionEvaluation.records[i];
+    record['Player'] = ZERO_REF;
+    record['isPlayerSuperstar'] = false;
+    record['isPlayerXFactor'] = false;
+    record['AddedValue'] = 0;
+    record['DevelopmentValue'] = 0;
+    record['Value'] = 0;
+    record['FreeAgentComparisonValue'] = 0;
+    record['ImportanceValue'] = 0;
+    record['TeamSchemeOverallValue'] = 0;
+    record['TeamTradePhilosophyValue'] = 0;
+    record['AcquisitionType'] = 'Signed';
+    record['Rank'] = 0;
+    record['BestSchemeOverallValue'] = 0;
+    record['CoachTradeInfluenceValue'] = 0;
+    record['ContractValue'] = 0;
+    record['IsPlayerHidden'] = false;
+    
+    await record.empty();
   }
 
-  for (let i = 0; i < playerAcquisitionEvaluationArray.header.recordCapacity;i++) {
+  for (let i = 0; i < playerAcquisitionEvaluationArray.header.recordCapacity; i++) {
     if (playerAcquisitionEvaluationArray.records[i].isEmpty) {
-      continue
+      continue;
     }
-    for (j = 0; j < 10;j++) {
-      playerAcquisitionEvaluationArray.records[i][`PlayerAcquisitionEvaluation${j}`] = ZERO_REF;
+
+    const recordArray = playerAcquisitionEvaluationArray.records[i];
+    for (let j = 0; j < 10; j++) {
+      recordArray[`PlayerAcquisitionEvaluation${j}`] = ZERO_REF;
     }
   }
-
 }
 
 
