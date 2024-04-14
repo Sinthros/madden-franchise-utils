@@ -103,7 +103,16 @@ franchise.on('ready', async function () {
         }
 		
 		// Get player's assetname value
-        var playerAssetName = playerTable.records[i]['PLYR_ASSETNAME'];
+        let playerAssetName = playerTable.records[i]['PLYR_ASSETNAME'];
+
+		// Clean up assetname by removing spaces
+		playerAssetName = playerAssetName.trim();
+
+		// Account for selective strandhair by removing "_nostrand" from the assetname if it exists
+		if(playerAssetName.includes('_nostrand'))
+		{
+			playerAssetName = playerAssetName.replace('_nostrand', '');
+		}
 		
 		// If this is a file with custom cyberfaces and this assetname is one that has an override, use the override assetname instead
 		if(customMeshFile && overrideAssetNames.hasOwnProperty(playerAssetName))
@@ -117,8 +126,16 @@ franchise.on('ready', async function () {
 
         if (underscoreIndex !== -1) 
 		{
-			// Extract the numbers after the underscore and convert them to an integer
-			newPresentationId = parseInt(playerAssetName.substring(underscoreIndex + 1), 10);
+			try
+			{
+				// Extract the numbers after the underscore and convert them to an integer
+				newPresentationId = parseInt(playerAssetName.substring(underscoreIndex + 1), 10);
+			}
+			catch(e)
+			{
+				// If unable to parse, set the presentation ID to 0
+				newPresentationId = 0;
+			}
 		} 
 		else 
 		{
