@@ -83,6 +83,13 @@ const tables = {
     careerDefStatsTable: 2237963694,
     careerKickingStatsTable: 2471741740,
     careerDefKPReturnStatsTable: 2070026668,
+    seasonStatsTable: 2358416956,
+    seasonOffKPReturnStatsTable: 4010933771,
+    seasonOffStatsTable: 3519623764,
+    seasonOLineStatsTable: 1611777990,
+    seasonDefStatsTable: 314624969,
+    seasonKickingStatsTable: 2742414559,
+    seasonDefKPReturnStatsTable: 923704924,
     // Team Stats
     teamStatsTable: 1558486428,
     teamGameStatsTable: 1731088851,
