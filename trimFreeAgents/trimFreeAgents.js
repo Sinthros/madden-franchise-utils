@@ -64,8 +64,10 @@ async function removeFromFATable(table, row) {
 async function emptyHistoryTables(franchise) {
   const historyEntryArray = franchise.getTableByUniqueId(1765841029);
   const transactionHistoryArray = franchise.getTableByUniqueId(766279362);
+  const transactionHistoryEntry = franchise.getTableByUniqueId(2590627814)
   await historyEntryArray.readRecords();
   await transactionHistoryArray.readRecords();
+  await transactionHistoryEntry.readRecords();
 
 
   for (let i = 0; i < historyEntryArray.header.recordCapacity;i++) {
@@ -84,6 +86,27 @@ async function emptyHistoryTables(franchise) {
 
         }
       }
+   }
+
+   for (let i = 0; i < transactionHistoryEntry.header.recordCapacity;i++) {
+    if (!transactionHistoryEntry.records[i].isEmpty) {
+      const record = transactionHistoryEntry.records[i];
+      record.OldTeam = ZERO_REF;
+      record.NewTeam = ZERO_REF;
+      record.SeasonYear = 0;
+      record.TransactionId = 0;
+      record.SeasonStage = 'PreSeason';
+      record.ContractStatus = 'Drafted';
+      record.OldContractStatus = 'Drafted';
+      record.SeasonWeek = 0;
+      record.FifthYearOptionCapHit = 0;
+      record.ContractLength = 0;
+      record.ContractTotalSalary = 0;
+      record.CapSavingsThisYear = 0;
+      record.ContractBonus = 0;
+      record.ContractSalary = 0;
+      await record.empty();
+    }
    }
 };
 
@@ -222,7 +245,7 @@ franchise.on('ready', async function () {
   const playersToDelete = MIN_EMPTY_PLAYERS - currentEmptyPlayers;
     // This prints out empty player table references. if you see refs from 6000 (Marketing table) it's fine
   for (let currentRow = 0; currentRow < playerTable.header.recordCapacity;currentRow++) {
-    if (playerTable.records[currentRow].ContractStatus === 'Draft')  {
+    if (playerTable.records[currentRow].isEmpty)  {
       referencedRow = franchise.getReferencesToRecord(playerTable.header.tableId,currentRow)
   
       referencedRow.forEach((table) => {
