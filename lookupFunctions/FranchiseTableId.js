@@ -127,8 +127,10 @@ const tables = {
     talentFtcTable: 2347346465,
 
     //Training tables
-    drillCompletedTable: 1204263071
+    drillCompletedTable: 1204263071,
     
+    //Franchise Debug Table, primarily used for franchise file fingerprinting
+    franchiseDebugModuleTable: 4212179270
 
 
 
