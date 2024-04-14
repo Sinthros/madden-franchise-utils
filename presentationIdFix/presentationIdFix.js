@@ -60,7 +60,7 @@ franchise.on('ready', async function () {
 	if(gameYear === '24')
 	{
 		// Get the fingerprint from the file, if it's in the list, then set the bool to true and read the override file
-		fingerprintTable = franchise.getTableByUniqueId(4212179270);
+		fingerprintTable = franchise.getTableByUniqueId(tables.franchiseDebugModuleTable);
 		await fingerprintTable.readRecords();
 		fingerprint = fingerprintTable.records[0]['SideActivityToForce'];
 		if(customMeshFingerprints.includes(fingerprint))
