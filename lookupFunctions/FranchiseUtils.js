@@ -255,6 +255,122 @@ async function emptyHistoryTables(franchise, tables) {
     }*/
 };
 
+// Empties the Character Visuals table entirely
+// franchise: Your franchise object
+// tables: The tables object from FranchiseTableId
+async function emptyCharacterVisualsTable(franchise, tables) {
+    const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
+    await characterVisuals.readRecords();
+  
+    for (let rows = 0; rows < characterVisuals.header.recordCapacity;rows++) {
+        if (!characterVisuals.records[rows].isEmpty) {
+          characterVisuals.records[rows]['RawData'] = {};
+          await characterVisuals.records[rows].empty();
+        }
+    }
+};
+
+// Regenerates all marketing tables based on top player personalities in the file
+// franchise: Your franchise object
+// tables: The tables object from FranchiseTableId
+async function regenerateMarketingTables(franchise, tables) {
+    const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+    const teamTable = franchise.getTableByUniqueId(tables.teamTable);
+    const marketingTable = franchise.getTableByUniqueId(tables.marketedPlayersArrayTableM24);
+    const topMarketedPlayers = franchise.getTableByUniqueId(tables.topMarketedPlayers);
+    const playerMerchTable = franchise.getTableByUniqueId(tables.playerMerchTable);
+    await FranchiseUtils.readTableRecords([playerTable, teamTable, marketingTable, topMarketedPlayers, playerMerchTable]);
+  
+    for (let i = 0; i < teamTable.header.recordCapacity; i++) {
+      const teamRecord = teamTable.records[i];
+      if (teamRecord.isEmpty) {
+        continue;
+      }
+      let bestPersonalityArray = [];
+  
+      const teamIndex = teamRecord.TeamIndex;
+      const marketedPlayersRow = await FranchiseUtils.bin2Dec(teamRecord.MarketedPlayers.slice(15));
+      const filteredRecords = playerTable.records.filter(record => !record.isEmpty); // Filter for where the rows aren't empty
+      const bestPersonalityPlayers = filteredRecords.filter(record => record.ContractStatus === 'Signed' && record.TeamIndex === teamIndex); // Filter nonempty players for where they're signed
+  
+      // Sort the bestPersonalityPlayers array based on PersonalityRating and then OverallRating
+      const top5Players = bestPersonalityPlayers.sort((a, b) => {
+        // First, compare by PersonalityRating
+        if (a.PersonalityRating !== b.PersonalityRating) {
+          return b.PersonalityRating - a.PersonalityRating; // Sort by PersonalityRating in descending order
+        }
+        // If PersonalityRating is the same, compare by OverallRating
+        return b.OverallRating - a.OverallRating; // Sort by OverallRating in descending order
+      }).slice(0, marketingTable.header.numMembers);
+  
+      for (const record of top5Players) {
+        const rowIndex = playerTable.records.indexOf(record);
+        const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
+        bestPersonalityArray.push(currentBin);
+      }
+  
+      // Set the marketingTable binary = bestPersonalityArray
+      bestPersonalityArray.forEach((val, index) => {
+        marketingTable.records[marketedPlayersRow].fieldsArray[index].value = val;
+      });
+    }
+  
+    let bestPersonalityArray = [];
+    let filteredRecords = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === 'Signed'); // Filter for where the rows aren't empty
+    
+    // Sort the filteredRecords array based on PersonalityRating and then OverallRating
+    const topTen = filteredRecords.sort((a, b) => {
+      // First, compare by PersonalityRating
+      if (a.PersonalityRating !== b.PersonalityRating) {
+        return b.PersonalityRating - a.PersonalityRating; // Sort by PersonalityRating in descending order
+      }
+      // If PersonalityRating is the same, compare by OverallRating
+      return b.OverallRating - a.OverallRating; // Sort by OverallRating in descending order
+    }).slice(0, topMarketedPlayers.header.numMembers);
+    
+    for (const record of topTen) {
+      const rowIndex = playerTable.records.indexOf(record); 
+      const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
+      bestPersonalityArray.push(currentBin);
+    }
+    
+    bestPersonalityArray.forEach((val, index) => { topMarketedPlayers.records[0].fieldsArray[index].value = val; });
+  
+    bestPersonalityArray = [];
+  
+    filteredRecords = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === 'Signed'); // Filter for where the rows aren't empty
+    
+    const topPlayers = filteredRecords.sort((a, b) => {
+      return b.OverallRating - a.OverallRating; // Sort by OverallRating in descending order
+    }).slice(0, playerMerchTable.header.recordCapacity);
+  
+    for (const record of topPlayers) {
+      const rowIndex = playerTable.records.indexOf(record); 
+      const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
+      const jerseyNum = playerTable.records[rowIndex]['JerseyNum'];
+      const teamIndex = playerTable.records[rowIndex]['TeamIndex'];
+      let presentationId = 0;
+  
+      const teamRecord = teamTable.records.find(team => team.TeamIndex === teamIndex);
+  
+      if (teamRecord) {
+        presentationId = teamRecord.PresentationId;
+      }
+  
+      bestPersonalityArray.push({playerValue: currentBin, jerseyNumber: jerseyNum, presentationId: presentationId});
+    }
+  
+    for (let i = 0; i < bestPersonalityArray.length; i++) {
+      const currentPlayer = bestPersonalityArray[i];
+      const merchRecord = playerMerchTable.records[i];
+  
+      merchRecord.Player = currentPlayer.playerValue;
+      merchRecord.MerchandiseType = 'Jersey';
+      merchRecord.JerseyNumber = currentPlayer.jerseyNumber;
+      merchRecord.TeamPresentationId = currentPlayer.presentationId;
+    }
+};
+
 // This function will remove a binary value from an array table
 // It will iterate through each row and look for the binary. If multiple rows/columns
 // contain the target binary, they will all be removed.
@@ -316,5 +432,7 @@ module.exports = {
     calculateBestOverall,
     emptyHistoryTables,
     removeFromTable,
+    emptyCharacterVisualsTable,
+    regenerateMarketingTables,
     zeroRef
   };

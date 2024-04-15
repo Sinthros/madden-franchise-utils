@@ -15,6 +15,7 @@ const tables = {
     draftedPlayersArrayTableM22: 3638782800,
     marketedPlayersArrayTableM24: 434873538,
     marketedPlayersArrayTableM22: 3584052617,
+    topMarketedPlayers: 1505961096,
     rookieStatTrackerTable: 3785623318,
     rookieStatTrackerArray: 540270022,
     //Practice Squad
