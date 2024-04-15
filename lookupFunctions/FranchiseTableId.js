@@ -67,8 +67,6 @@ const tables = {
     leagueHistoryArray: 444189422,
     leagueHistoryAward: 335278464,
     salaryInfoTable: 3759217828,
-    historyEntryArray: 1765841029,
-    transactionHistoryArray: 766279362,
     // Player Stats
     gameStatsTable: 3425479817,
     gameOffKPReturnStatsTable: 3388716768,
@@ -127,8 +125,13 @@ const tables = {
     talentFtcTable: 2347346465,
 
     //Training tables
-    drillCompletedTable: 1204263071
-    
+    drillCompletedTable: 1204263071,
+
+    //History tables
+    historyEntryArray: 1765841029,
+    historyEntry: 3363303785,
+    transactionHistoryArray: 766279362,
+    transactionHistoryEntry: 2590627814
 
 
 

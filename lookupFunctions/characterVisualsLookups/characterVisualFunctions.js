@@ -489,21 +489,21 @@ async function updateAllCharacterVisuals(franchise) {
   
   for (let i = 0; i < coachTable.header.recordCapacity;i++) {
     // If empty OR empty offensive playbook/defensive playbook (not a real coach), don't set visuals
-    if (coachTable.records[i].isEmpty === true || (coachTable.records[i]['OffensivePlaybook'] === ZERO_REF && coachTable.records[i]['DefensivePlaybook'] === ZERO_REF )) {
+    if (coachTable.records[i].isEmpty || (coachTable.records[i]['OffensivePlaybook'] === ZERO_REF && coachTable.records[i]['DefensivePlaybook'] === ZERO_REF )) {
       continue
     }
-
-    await regenerateCoachVisual(franchise,coachTable,mainCharacterVisualsTable,row);
+    
+    await regenerateCoachVisual(franchise,coachTable,mainCharacterVisualsTable,i);
     
   }
 
 
   for (let i = 0; i < playerTable.header.recordCapacity;i++ ) { // Iterate through the player table
-    if (playerTable.records[i].isEmpty === true || playerContractStatusIgnore.includes(playerTable.records[i]['ContractStatus'])) { //If empty or invalid contract status, continue
+    if (playerTable.records[i].isEmpty || playerContractStatusIgnore.includes(playerTable.records[i]['ContractStatus'])) { //If empty or invalid contract status, continue
       continue
     }
 
-    await regeneratePlayerVisual(franchise,playerTable,mainCharacterVisualsTable,row,false);
+    await regeneratePlayerVisual(franchise,playerTable,mainCharacterVisualsTable,i,false);
   }
 }
 
