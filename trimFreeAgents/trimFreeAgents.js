@@ -18,33 +18,6 @@ const autoUnempty = false;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
 
-async function removeFromTable(table, currentBin) {
-  const numMembers = table.header.numMembers;
-  const recordCapacity = table.header.recordCapacity;
-
-  for (let i = 0; i < recordCapacity; i++) {
-    let allBinary = []; // Moved inside the loop to reset for each record
-
-    const currentRecord = table.records[i];
-
-    for (let j = 0; j < numMembers; j++) {
-      allBinary.push(currentRecord[`Player${j}`])
-    }
-
-
-    // Filter out the currentBin from allBinary
-    allBinary = allBinary.filter((bin) => bin !== currentBin);
-
-    while (allBinary.length < numMembers) {
-      allBinary.push(ZERO_REF);
-    }
-
-    // Set the FA table binary = free agent binary
-    allBinary.forEach((val, index) => {
-      table.records[i].fieldsArray[index].value = val;
-    });
-  }
-}
 
 async function removeFromFATable(table, row) {
   const recordLength = table.records[0].fieldsArray.filter(field => field.referenceData.tableId != 0).length;
@@ -60,55 +33,6 @@ async function removeFromFATable(table, row) {
       }
   }
 }
-
-async function emptyHistoryTables(franchise) {
-  const historyEntryArray = franchise.getTableByUniqueId(1765841029);
-  const transactionHistoryArray = franchise.getTableByUniqueId(766279362);
-  const transactionHistoryEntry = franchise.getTableByUniqueId(2590627814)
-  await historyEntryArray.readRecords();
-  await transactionHistoryArray.readRecords();
-  await transactionHistoryEntry.readRecords();
-
-
-  for (let i = 0; i < historyEntryArray.header.recordCapacity;i++) {
-    if (!historyEntryArray.records[i].isEmpty) {
-        for (let j = 0; j < historyEntryArray.header.numMembers;j++) {
-          historyEntryArray.records[i][`HistoryEntry${j}`] = ZERO_REF;
-
-        }
-      }
-   }
-
-   for (let i = 0; i < transactionHistoryArray.header.recordCapacity;i++) {
-    if (!transactionHistoryArray.records[i].isEmpty) {
-        for (let j = 0; j < transactionHistoryArray.header.numMembers;j++) {
-          transactionHistoryArray.records[i][`TransactionHistoryEntry${j}`] = ZERO_REF;
-
-        }
-      }
-   }
-
-   for (let i = 0; i < transactionHistoryEntry.header.recordCapacity;i++) {
-    if (!transactionHistoryEntry.records[i].isEmpty) {
-      const record = transactionHistoryEntry.records[i];
-      record.OldTeam = ZERO_REF;
-      record.NewTeam = ZERO_REF;
-      record.SeasonYear = 0;
-      record.TransactionId = 0;
-      record.SeasonStage = 'PreSeason';
-      record.ContractStatus = 'Drafted';
-      record.OldContractStatus = 'Drafted';
-      record.SeasonWeek = 0;
-      record.FifthYearOptionCapHit = 0;
-      record.ContractLength = 0;
-      record.ContractTotalSalary = 0;
-      record.CapSavingsThisYear = 0;
-      record.ContractBonus = 0;
-      record.ContractSalary = 0;
-      await record.empty();
-    }
-   }
-};
 
 
 async function getCharacterVisualsTable(franchise,currentTable,mainCharacterVisualsTable,row) {
@@ -186,7 +110,7 @@ async function deleteExcessFreeAgents(franchise, playersToDelete) {
     
 
     await removeFromFATable(freeAgentsTable,rowIndex)
-    await removeFromTable(drillCompletedTable,currentBin);
+    await FranchiseUtils.removeFromTable(drillCompletedTable,currentBin);
   }
 };
 
@@ -275,7 +199,7 @@ franchise.on('ready', async function () {
     }
   }*/
   await emptyAcquisitionTables(franchise);
-  await emptyHistoryTables(franchise);
+  await FranchiseUtils.emptyHistoryTables(franchise,tables);
   
   console.log(`Successfully deleted ${playersToDelete} free agent player rows.`);
   await FranchiseUtils.saveFranchiseFile(franchise);

@@ -18,6 +18,7 @@ const commentaryLookup = JSON.parse(fs.readFileSync('lookupFiles/commentary_look
 const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
 const TRANSFER_SCHEDULE_FUNCTIONS = require('../lookupFunctions/transferSchedule');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const { tables } = require('../lookupFunctions/FranchiseTableId');
 
 
 const ZERO_REF = '00000000000000000000000000000000';
@@ -248,11 +249,113 @@ async function emptyCharacterVisualsTable(targetFranchise) {
   await characterVisuals.readRecords();
 
   for (let rows = 0; rows < characterVisuals.header.recordCapacity;rows++) {
-      if (characterVisuals.records[rows].isEmpty) {
+      if (!characterVisuals.records[rows].isEmpty) {
+        characterVisuals.records[rows]['RawData'] = {};
         await characterVisuals.records[rows].empty();
       }
   }
 };
+
+async function regenerateMarketingTables(targetFranchise) {
+  const playerTable = targetFranchise.getTableByUniqueId(tables.playerTable);
+  const teamTable = targetFranchise.getTableByUniqueId(tables.teamTable);
+  const marketingTable = targetFranchise.getTableByUniqueId(tables.marketedPlayersArrayTableM24);
+  const topMarketedPlayers = targetFranchise.getTableByUniqueId(1505961096);
+  const playerMerchTable = targetFranchise.getTableByUniqueId(tables.playerMerchTable);
+  await FranchiseUtils.readTableRecords([playerTable, teamTable, marketingTable, topMarketedPlayers, playerMerchTable]);
+
+  for (let i = 0; i < teamTable.header.recordCapacity; i++) {
+    const teamRecord = teamTable.records[i];
+    if (teamRecord.isEmpty) {
+      continue;
+    }
+    let bestPersonalityArray = [];
+
+    const teamIndex = teamRecord.TeamIndex;
+    const marketedPlayersRow = await FranchiseUtils.bin2Dec(teamRecord.MarketedPlayers.slice(15));
+    const filteredRecords = playerTable.records.filter(record => !record.isEmpty); // Filter for where the rows aren't empty
+    const bestPersonalityPlayers = filteredRecords.filter(record => record.ContractStatus === 'Signed' && record.TeamIndex === teamIndex); // Filter nonempty players for where they're signed
+
+    // Sort the bestPersonalityPlayers array based on PersonalityRating and then OverallRating
+    const top5Players = bestPersonalityPlayers.sort((a, b) => {
+      // First, compare by PersonalityRating
+      if (a.PersonalityRating !== b.PersonalityRating) {
+        return b.PersonalityRating - a.PersonalityRating; // Sort by PersonalityRating in descending order
+      }
+      // If PersonalityRating is the same, compare by OverallRating
+      return b.OverallRating - a.OverallRating; // Sort by OverallRating in descending order
+    }).slice(0, 5);
+
+    for (const record of top5Players) {
+      const rowIndex = playerTable.records.indexOf(record);
+      const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
+      bestPersonalityArray.push(currentBin);
+    }
+
+    // Set the marketingTable binary = bestPersonalityArray
+    bestPersonalityArray.forEach((val, index) => {
+      marketingTable.records[marketedPlayersRow].fieldsArray[index].value = val;
+    });
+  }
+
+  let bestPersonalityArray = [];
+  let filteredRecords = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === 'Signed'); // Filter for where the rows aren't empty
+  
+  // Sort the filteredRecords array based on PersonalityRating and then OverallRating
+  const topTen = filteredRecords.sort((a, b) => {
+    // First, compare by PersonalityRating
+    if (a.PersonalityRating !== b.PersonalityRating) {
+      return b.PersonalityRating - a.PersonalityRating; // Sort by PersonalityRating in descending order
+    }
+    // If PersonalityRating is the same, compare by OverallRating
+    return b.OverallRating - a.OverallRating; // Sort by OverallRating in descending order
+  }).slice(0, topMarketedPlayers.header.recordCapacity);
+  
+  for (const record of topTen) {
+    const rowIndex = playerTable.records.indexOf(record); 
+    const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
+    bestPersonalityArray.push(currentBin);
+  }
+  
+  bestPersonalityArray.forEach((val, index) => { topMarketedPlayers.records[0].fieldsArray[index].value = val; });
+
+  bestPersonalityArray = [];
+
+  filteredRecords = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === 'Signed'); // Filter for where the rows aren't empty
+  
+  const topPlayers = filteredRecords.sort((a, b) => {
+    return b.OverallRating - a.OverallRating; // Sort by OverallRating in descending order
+  }).slice(0, playerMerchTable.header.recordCapacity);
+
+  for (const record of topPlayers) {
+    const rowIndex = playerTable.records.indexOf(record); 
+    const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
+    const jerseyNum = playerTable.records[rowIndex]['JerseyNum'];
+    const teamIndex = playerTable.records[rowIndex]['TeamIndex'];
+    let presentationId = 0;
+
+    const teamRecord = teamTable.records.find(team => team.TeamIndex === teamIndex);
+
+    if (teamRecord) {
+      presentationId = teamRecord.PresentationId;
+    }
+
+    bestPersonalityArray.push({playerValue: currentBin, jerseyNumber: jerseyNum, presentationId: presentationId});
+  }
+
+  for (let i = 0; i < bestPersonalityArray.length; i++) {
+    const currentPlayer = bestPersonalityArray[i];
+    const merchRecord = playerMerchTable.records[i];
+
+    merchRecord.Player = currentPlayer.playerValue;
+    merchRecord.MerchandiseType = 'Jersey';
+    merchRecord.JerseyNumber = currentPlayer.jerseyNumber;
+    merchRecord.TeamPresentationId = currentPlayer.presentationId;
+  }
+}
+
+
+  
 
 async function generatePlayerMotivations(targetFranchise) {
   console.log("Regenerating all Player Motivations...")
@@ -260,7 +363,7 @@ async function generatePlayerMotivations(targetFranchise) {
   await playerTable.readRecords();
 
   for (let i = 0; i < playerTable.header.recordCapacity; i++) {
-    if (playerTable.records[i].isEmpty === false) {
+    if (!playerTable.records[i].isEmpty) {
       const motivationsCopy = [...playerMotivationsM24];
       if (playerTable.records[i]['Position'] === 'QB') {
         // If the position is QB, remove 'TeamHasFranchiseQB' from a copy of the array
@@ -630,8 +733,10 @@ async function fixPlayerTableRow(targetFranchise) {
 async function deleteExcessFreeAgents(targetFranchise) {
   const playerTable = targetFranchise.getTableByUniqueId(1612938518);
   const freeAgentsTable = targetFranchise.getTableByUniqueId(4201237426);
+  const drillCompletedTable = targetFranchise.getTableByUniqueId(tables.drillCompletedTable);
   await playerTable.readRecords();
   await freeAgentsTable.readRecords();
+  await drillCompletedTable.readRecords();
 
 
   const freeAgentNumMembers = freeAgentsTable.header.numMembers;
@@ -642,7 +747,7 @@ async function deleteExcessFreeAgents(targetFranchise) {
   const worstFreeAgentsBinary = [];
 
   const numTotalPlayersDesired = 3500 //Max amount of free agents (this is relevant for a fantasy draft)
-  const totalNumCurrentPlayers = numSignedPlayers.length + numFreeAgents.length //Get the current number of players
+  const totalNumCurrentPlayers = numSignedPlayers.length + numFreeAgents.length; //Get the current number of players
 
   numFreeAgents.forEach((freeAgentRecord) => {
     const rowIndex = playerTable.records.indexOf(freeAgentRecord);
@@ -656,13 +761,20 @@ async function deleteExcessFreeAgents(targetFranchise) {
     const numExtraPlayers = totalNumCurrentPlayers - numTotalPlayersDesired; // Get the excess amount of players 
     const worstFreeAgents = numFreeAgents.sort((a, b) => a.OverallRating - b.OverallRating).slice(0, numExtraPlayers);  // Get the worst free agents up till the amount of extra players
 
-    worstFreeAgents.forEach((freeAgentRecord) => {
+    for (const freeAgentRecord of worstFreeAgents) {
       const rowIndex = playerTable.records.indexOf(freeAgentRecord); 
-      currentBin = getBinaryReferenceData(playerTable.header.tableId,rowIndex);
+      const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
       worstFreeAgentsBinary.push(currentBin);
-      playerTable.records[rowIndex]['ContractStatus'] = 'Deleted' //Mark as deleted and empty the row
-      playerTable.records[rowIndex].empty()
-    });
+      playerTable.records[rowIndex]['ContractStatus'] = 'Deleted'; // Mark as deleted and empty the row
+      playerTable.records[rowIndex].CareerStats = ZERO_REF; // If we don't zero these out the game will crash
+      playerTable.records[rowIndex].SeasonStats = ZERO_REF;
+      playerTable.records[rowIndex].GameStats = ZERO_REF;
+      playerTable.records[rowIndex].CharacterVisuals = ZERO_REF;
+      playerTable.records[rowIndex].College = ZERO_REF;
+      playerTable.records[rowIndex].PLYR_ASSETNAME = ""; // Don't know if this is needed, but doesn't hurt
+      playerTable.records[rowIndex].empty();
+      await FranchiseUtils.removeFromTable(drillCompletedTable, currentBin);
+    }
 
     //Filter for where we aren't including the worstFreeAgentBin
     allFreeAgentsBinary = allFreeAgentsBinary.filter((bin) => !worstFreeAgentsBinary.includes(bin));
@@ -1294,14 +1406,14 @@ async function getPlayerTables() {
   const careerDefensiveStats = targetFranchise.getTableByUniqueId(2237963694);
   const careerKickingStats = targetFranchise.getTableByUniqueId(2471741740);
   const playerMerchTable = targetFranchise.getTableByUniqueId(2046620302);
-  const topMarketedPlayers = targetFranchise.getTableByUniqueId(1505961096);
+  //const topMarketedPlayers = targetFranchise.getTableByUniqueId(1505961096);
   const activeAbilityArray = targetFranchise.getTableByUniqueId(3545956611);
-  const draftedPlayers = targetFranchise.getTableByUniqueId(DRAFTED_PLAYERS_ARRAY_M24);
-  const marketedPlayers = targetFranchise.getTableByUniqueId(MARKETED_PLAYERS_ARRAY_M24);
+  //const draftedPlayers = targetFranchise.getTableByUniqueId(DRAFTED_PLAYERS_ARRAY_M24);
+  //const marketedPlayers = targetFranchise.getTableByUniqueId(MARKETED_PLAYERS_ARRAY_M24);
 
   const tableArray = [mainActiveSignature,secondaryActiveSignature,signatureArray,player,freeagents,playerArray,playerPracticeSquads,
     depthChart,teamRoadMap,playerResignNegotiation,careerDefensiveKPReturnStats,careerOffensiveKPReturnStats,careerOLineStats,careerOffensiveStats,careerDefensiveStats,
-    careerKickingStats,playerMerchTable,topMarketedPlayers,activeAbilityArray,marketedPlayers,draftedPlayers]
+    careerKickingStats,playerMerchTable,activeAbilityArray]
 
   return tableArray;
 
@@ -1431,14 +1543,14 @@ async function emptyRookieStatTracker(targetFranchise) {
   let rookieStatTrackerNumRows = rookieStatTracker.header.recordCapacity;
 
   for (let i = 0; i < rookieStatTrackerNumRows; i++) {
-    if (rookieStatTracker.records[i].isEmpty === false) {
-      rookieStatTracker.records[i]['DownsPlayed'] = 0
-      await rookieStatTracker.records[i].empty()
+    if (!rookieStatTracker.records[i].isEmpty) {
+      rookieStatTracker.records[i]['DownsPlayed'] = 0;
+      await rookieStatTracker.records[i].empty();
     }
   }
 
-  for (let rookieArrayRow = 0; rookieArrayRow < rookieStatTrackerArray.header.numMembers;rookieArrayRow++) {
-    rookieStatTrackerArray.records[0][`RookieStatTracker${rookieArrayRow}`] = ZERO_REF
+  for (let i = 0; i < rookieStatTrackerArray.header.numMembers; i++) {
+    rookieStatTrackerArray.records[0][`RookieStatTracker${i}`] = ZERO_REF;
   }
 };
 
@@ -1453,14 +1565,14 @@ async function emptyMediaGoals(targetFranchise) {
   const activeMediaGoalArrayNumRows = characterActiveMediaGoalArray.header.recordCapacity;
   
   for (let i = 0; i < activeMediaGoalNumRows; i++) {
-    if (characterActiveMediaGoal.records[i].isEmpty === false) {
+    if (!characterActiveMediaGoal.records[i].isEmpty) {
       characterActiveMediaGoal.records[i]['ActiveMediaGoals'] = ZERO_REF;
-      await characterActiveMediaGoal.records[i].empty()
+      await characterActiveMediaGoal.records[i].empty();
     }
   }
 
   for (let i = 0; i < activeMediaGoalArrayNumRows;i++) {
-    if (characterActiveMediaGoalArray.records[i].isEmpty === false) {
+    if (!characterActiveMediaGoalArray.records[i].isEmpty) {
       for (let mediaArrayRow = 0; mediaArrayRow < characterActiveMediaGoalArray.header.numMembers;mediaArrayRow++) {
         characterActiveMediaGoalArray.records[0][`CharacterActiveMediaGoal${mediaArrayRow}`] = ZERO_REF;
       }
@@ -1755,31 +1867,6 @@ async function emptyStoryTable(targetFranchise) {
         }
       }
    }
-}
-async function emptyHistoryTables(targetFranchise) {
-  const historyEntryArray = targetFranchise.getTableByUniqueId(1765841029);
-  const transactionHistoryArray = targetFranchise.getTableByUniqueId(766279362);
-  await historyEntryArray.readRecords();
-  await transactionHistoryArray.readRecords();
-
-
-  for (let i = 0; i < historyEntryArray.header.recordCapacity;i++) {
-    if (historyEntryArray.records[i].isEmpty === false) {
-        for (let j = 0; j < historyEntryArray.header.numMembers;j++) {
-          historyEntryArray.records[i][`HistoryEntry${j}`] = ZERO_REF;
-
-        }
-      }
-   }
-
-   for (let i = 0; i < transactionHistoryArray.header.recordCapacity;i++) {
-    if (transactionHistoryArray.records[i].isEmpty === false) {
-        for (let j = 0; j < transactionHistoryArray.header.numMembers;j++) {
-          transactionHistoryArray.records[i][`TransactionHistoryEntry${j}`] = ZERO_REF;
-
-        }
-      }
-   }
 };
 
 async function fixAllPlayerTables(sourceFranchise,allPlayerTables) {
@@ -1905,14 +1992,11 @@ sourceFranchise.on('ready', async function () {
 
     const allPlayerTables = sourceFranchise.getAllTablesByName('Player');
 
-
     if (allPlayerTables.length > 1) {
       console.log("******************************************************************************************")
       console.log("Warning: Source file has more than one Player table, but this should still transfer over properly.");
       console.log("******************************************************************************************")
       await fixAllPlayerTables(sourceFranchise,allPlayerTables);
-      await sourceFranchise.save();
-      process.exit(0)
     }
 
     const sourceGameYear = sourceFranchise.schema.meta.gameYear // Get the game year of the source file
@@ -1959,7 +2043,6 @@ sourceFranchise.on('ready', async function () {
     });
 
     const is22To24 = sourceGameYear === 22 && targetGameYear === 24;
-
 
     const coachTables = await getCoachTables(mergedTableMappings,is22To24);
     const playerTables = await getPlayerTables();
@@ -2010,8 +2093,8 @@ sourceFranchise.on('ready', async function () {
         await adjustCoachTalents(targetFranchise); // Function to empty coach talents and reassign them
 
       }
-      await emptyHistoryTables(targetFranchise); // Function to empty history tables (Avoid crashing)
       await deleteExcessFreeAgents(targetFranchise); // Only keep the top 3500 players
+      await FranchiseUtils.emptyHistoryTables(targetFranchise, tables); // Function to empty history tables (Avoid crashing)
       await emptyAcquisitionTables(targetFranchise);
 
       if (is22To24) {
@@ -2058,9 +2141,8 @@ sourceFranchise.on('ready', async function () {
       await adjustPlayerIds(targetFranchise, 'LastName', 'PLYR_COMMENT', commentaryLookup);
       await fixPlayerTableRow(targetFranchise);
       await emptyStoryTable(targetFranchise);
+      await regenerateMarketingTables(targetFranchise);
 
-
-  
       if (targetGameYear >= 24) {
         await emptyCharacterVisualsTable(targetFranchise); // Empty all character visuals and then update them for everyone
         await characterVisualFunctions.updateAllCharacterVisuals(targetFranchise);

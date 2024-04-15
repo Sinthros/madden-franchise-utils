@@ -186,9 +186,113 @@ function calculateBestOverall(player) {
     // Return the highest overall/archetype
     return { newOverall, newArchetype };
 };
+
+async function emptyHistoryTables(franchise, tables) {
+    const historyEntryArray = franchise.getTableByUniqueId(tables.historyEntryArray);
+    const historyEntry = franchise.getTableByUniqueId(tables.historyEntry);
+    const transactionHistoryArray = franchise.getTableByUniqueId(tables.transactionHistoryArray);
+    const transactionHistoryEntry = franchise.getTableByUniqueId(tables.transactionHistoryEntry);
+    await readTableRecords([historyEntryArray,historyEntry,transactionHistoryArray,transactionHistoryEntry]);
+  
+    for (let i = 0; i < historyEntryArray.header.recordCapacity;i++) {
+        if (!historyEntryArray.records[i].isEmpty) {
+            for (let j = 0; j < historyEntryArray.header.numMembers;j++) {
+            historyEntryArray.records[i][`HistoryEntry${j}`] = zeroRef;
+
+            }
+        }
+     }
+  
+    for (let i = 0; i < transactionHistoryArray.header.recordCapacity;i++) {
+        if (!transactionHistoryArray.records[i].isEmpty) {
+            for (let j = 0; j < transactionHistoryArray.header.numMembers;j++) {
+            transactionHistoryArray.records[i][`TransactionHistoryEntry${j}`] = zeroRef;
+
+            }
+        }
+     }
+  
+    for (let i = 0; i < transactionHistoryEntry.header.recordCapacity;i++) {
+        if (!transactionHistoryEntry.records[i].isEmpty) {
+        const record = transactionHistoryEntry.records[i];
+        record.OldTeam = zeroRef;
+        record.NewTeam = zeroRef;
+        record.SeasonYear = 0;
+        record.TransactionId = 0;
+        record.SeasonStage = 'PreSeason';
+        record.ContractStatus = 'Drafted';
+        record.OldContractStatus = 'Drafted';
+        record.SeasonWeek = 0;
+        record.FifthYearOptionCapHit = 0;
+        record.ContractLength = 0;
+        record.ContractTotalSalary = 0;
+        record.CapSavingsThisYear = 0;
+        record.ContractBonus = 0;
+        record.ContractSalary = 0;
+        await record.empty();
+        }
+     }
+    // I wouldn't recommend using this part - It shouldn't be necessary and has over 65k rows
+    /*for (let i = 0; i < historyEntry.header.recordCapacity;i++) {
+        if (!historyEntry.records[i].isEmpty) {
+            const record = historyEntry.records[i];
+            record.Person = zeroRef;
+            record.IsSchemeFit = false;
+            record.CurrentStage = 'NFLSeason';
+            record.LegacyValue = 0;
+            record.ExperienceValue = 0;
+            record.CurrentYear = 0;
+            record.BaseExperience = 0;
+            record.BonusExperience = 0;
+            record.DynamicDevValue = 0;
+            record.ProgressionValue = 0;
+            record.MiscValue = 0;
+            record.ConfidenceValue = 0;
+            record.CurrentWeek = 0;
+            record.DynamicDevValue = 0;
+            await record.empty();
+        }
+    }*/
+};
+
+// This function will remove a binary value from an array table
+// It will iterate through each row and look for the binary. If multiple rows/columns
+// contain the target binary, they will all be removed.
+// table: The table passed through to remove the binary from
+// binaryToRemove: The binary we're removing from the table
+async function removeFromTable(table, binaryToRemove) {
+    const numMembers = table.header.numMembers;
+    const recordCapacity = table.header.recordCapacity;
+  
+    for (let i = 0; i < recordCapacity; i++) { // Iterate through the table
+      let allBinary = []; // This will become all of our binary for the row EXCEPT the binaryToRemove
+  
+      const currentRecord = table.records[i];
+      if (currentRecord.isEmpty) {
+        continue; // This almost never gets triggered for array tables
+      }
+      
+      currentRecord.fieldsArray.forEach(field => {
+        allBinary.push(field.value)
+      })
+  
+      // Filter out the binaryToRemove from allBinary
+      allBinary = allBinary.filter((bin) => bin !== binaryToRemove);
+  
+      while (allBinary.length < numMembers) {
+        allBinary.push(zeroRef);
+      }
+  
+      // Set the new binary for the row
+      allBinary.forEach((val, index) => {
+        table.records[i].fieldsArray[index].value = val;
+      });
+    }
+  }
+
 async function bin2Dec(binary) {
     return parseInt(binary, 2);
-  };
+};
 
 function dec2bin(dec) {
     return (dec >>> 0).toString(2);
@@ -210,5 +314,7 @@ module.exports = {
     hasNumber,
     readTableRecords,
     calculateBestOverall,
+    emptyHistoryTables,
+    removeFromTable,
     zeroRef
   };
