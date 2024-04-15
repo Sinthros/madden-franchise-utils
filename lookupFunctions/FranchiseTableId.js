@@ -127,6 +127,9 @@ const tables = {
 
     //Training tables
     drillCompletedTable: 1204263071,
+    
+    //Franchise Debug Table, primarily used for franchise file fingerprinting
+    franchiseDebugModuleTable: 4212179270
 
     //History tables
     historyEntryArray: 1765841029,
