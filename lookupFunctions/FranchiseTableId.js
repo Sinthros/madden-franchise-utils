@@ -11,9 +11,10 @@ const tables = {
     depthChartPlayerTable: 2940627083,
     playerMerchTable: 2046620302,
     activeAbilityArrayTable: 3545956611,
-    draftedPlayersArrayTableM24: 4073486347,
+    activeAbilityArrayTableM22: 3512815678,
+    draftedPlayersArrayTable: 4073486347,
     draftedPlayersArrayTableM22: 3638782800,
-    marketedPlayersArrayTableM24: 434873538,
+    marketedPlayersArrayTable: 434873538,
     marketedPlayersArrayTableM22: 3584052617,
     topMarketedPlayers: 1505961096,
     rookieStatTrackerTable: 3785623318,
@@ -41,9 +42,11 @@ const tables = {
     scoutsTable: 4003749334,
     teamScoutTable: 3639433383,
     teamRoadmapTable: 3807550398,
+    ownerTable: 2357578975,
     // Coach tables
     coachTalentEffects: 2084066789,
     coachTable: 1860529246,
+    freeAgentCoachTable: 2191908271,
     activeTalentTree: 1386036480,
     talentNodeStatus: 4148550679,
     talentNodeStatusArray: 232168893,
@@ -129,13 +132,27 @@ const tables = {
     drillCompletedTable: 1204263071,
     
     //Franchise Debug Table, primarily used for franchise file fingerprinting
-    franchiseDebugModuleTable: 4212179270
+    franchiseDebugModuleTable: 4212179270,
 
     //History tables
     historyEntryArray: 1765841029,
     historyEntry: 3363303785,
     transactionHistoryArray: 766279362,
-    transactionHistoryEntry: 2590627814
+    transactionHistoryEntry: 2590627814, 
+
+    //Trade tables
+    tradeNegotiationArrayTable: 2760331084,
+    tradeNegotiationTable: 1352033064,
+    teamTradePackageArrayTable: 2688963323,
+    tradeRequestArrayTable: 1322332973,
+    pendingTeamArrayTable: 2550787910,
+    teamTradePackageTable: 1415020191,
+
+    //Acquisition tables
+    playerAcquisitionEvaluationTable: 2531183555,
+    playerAcquisitionEvaluationArrayTable: 498911520
+
+
 
 
 

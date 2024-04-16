@@ -1,4 +1,5 @@
 const Franchise = require('madden-franchise');
+const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
@@ -276,10 +277,10 @@ async function emptyCharacterVisualsTable(franchise, tables) {
 async function regenerateMarketingTables(franchise, tables) {
     const playerTable = franchise.getTableByUniqueId(tables.playerTable);
     const teamTable = franchise.getTableByUniqueId(tables.teamTable);
-    const marketingTable = franchise.getTableByUniqueId(tables.marketedPlayersArrayTableM24);
+    const marketingTable = franchise.getTableByUniqueId(tables.marketedPlayersArrayTable);
     const topMarketedPlayers = franchise.getTableByUniqueId(tables.topMarketedPlayers);
     const playerMerchTable = franchise.getTableByUniqueId(tables.playerMerchTable);
-    await FranchiseUtils.readTableRecords([playerTable, teamTable, marketingTable, topMarketedPlayers, playerMerchTable]);
+    await readTableRecords([playerTable, teamTable, marketingTable, topMarketedPlayers, playerMerchTable]);
   
     for (let i = 0; i < teamTable.header.recordCapacity; i++) {
       const teamRecord = teamTable.records[i];
@@ -289,7 +290,7 @@ async function regenerateMarketingTables(franchise, tables) {
       let bestPersonalityArray = [];
   
       const teamIndex = teamRecord.TeamIndex;
-      const marketedPlayersRow = await FranchiseUtils.bin2Dec(teamRecord.MarketedPlayers.slice(15));
+      const marketedPlayersRow = await bin2Dec(teamRecord.MarketedPlayers.slice(15));
       const filteredRecords = playerTable.records.filter(record => !record.isEmpty); // Filter for where the rows aren't empty
       const bestPersonalityPlayers = filteredRecords.filter(record => record.ContractStatus === 'Signed' && record.TeamIndex === teamIndex); // Filter nonempty players for where they're signed
   
@@ -371,6 +372,103 @@ async function regenerateMarketingTables(franchise, tables) {
     }
 };
 
+// Empties the acquisition array tables
+async function emptyAcquisitionTables(franchise,tables) {
+    const playerAcquisitionEvaluation = franchise.getTableByUniqueId(tables.playerAcquisitionEvaluationTable);
+    const playerAcquisitionEvaluationArray = franchise.getTableByUniqueId(tables.playerAcquisitionEvaluationArrayTable);
+  
+    await playerAcquisitionEvaluation.readRecords();
+    await playerAcquisitionEvaluationArray.readRecords();
+  
+    for (let i = 0; i < playerAcquisitionEvaluation.header.recordCapacity;i++) {
+      if (playerAcquisitionEvaluation.records[i].isEmpty) {
+        continue
+      }
+
+      const record = playerAcquisitionEvaluation.records[i];
+      record['Player'] = zeroRef;
+      record['isPlayerSuperstar'] = false;
+      record['isPlayerXFactor'] = false;
+      record['AddedValue'] = 0;
+      record['DevelopmentValue'] = 0;
+      record['Value'] = 0;
+      record['FreeAgentComparisonValue'] = 0;
+      record['ImportanceValue'] = 0;
+      record['TeamSchemeOverallValue'] = 0;
+      record['TeamTradePhilosophyValue'] = 0;
+      record['AcquisitionType'] = "Signed";
+      record['Rank'] = 0;
+      record['BestSchemeOverallValue'] = 0;
+      record['CoachTradeInfluenceValue'] = 0;
+      record['ContractValue'] = 0;
+      record['IsPlayerHidden'] = false;
+      await record.empty();
+    }
+  
+    for (let i = 0; i < playerAcquisitionEvaluationArray.header.recordCapacity;i++) {
+      if (playerAcquisitionEvaluationArray.records[i].isEmpty) {
+        continue
+      }
+      for (j = 0; j < playerAcquisitionEvaluationArray.header.numMembers;j++) {
+        playerAcquisitionEvaluationArray.records[i][`PlayerAcquisitionEvaluation${j}`] = zeroRef;
+      }
+    }
+  
+}
+  
+// This function empties the resign table/resign array table
+async function emptyResignTable(franchise,tables) {
+    const resignTable = franchise.getTableByUniqueId(tables.reSignTable);
+    const resignArrayTable = franchise.getTableByUniqueId(tables.reSignArrayTable)
+    await resignTable.readRecords();
+    await resignArrayTable.readRecords();
+
+    for (let i = 0; i < resignTable.header.recordCapacity; i++) {
+        //Iterate through resign table and set default values
+
+        const resignRecord = resignTable.records[i];
+        resignRecord["Team"] = zeroRef;
+        resignRecord["Player"] = zeroRef;
+        resignRecord["ActiveRequestID"] = "-2147483648";
+        resignRecord["NegotiationWeek"] = 0;
+        resignRecord["TeamReSignInterest"] = 0;
+        resignRecord["ContractSalary"] = 0;
+        resignRecord["NegotiationCount"] = 0;
+        resignRecord["PlayerReSignInterest"] = 0;
+        resignRecord["ContractBonus"] = 0;
+        resignRecord["PreviousOfferedContractBonus"] = 0;
+        resignRecord["PreviousOfferedContractSalary"] = 0;
+        resignRecord["FairMarketContractBonus"] = 0;
+        resignRecord["FairMarketContractSalary"] = 0;
+        resignRecord["ActualDesiredContractBonus"] = 0;
+        resignRecord["ActualDesiredContractSalary"] = 0;
+        resignRecord["LatestOfferStage"] = "PreSeason";
+        resignRecord["ContractLength"] = 0;
+        resignRecord["FairMarketContractLength"] = 0;
+        resignRecord["PreviousOfferedContractLength"] = 0;
+        resignRecord["PreviousReSignStatus"] = "Invalid";
+        resignRecord["ReSignStatus"] = "NotReady";
+        resignRecord["LatestOfferWeek"] = 0;
+        resignRecord["PlayerPreviousReSignInterest"] = 0;
+        resignRecord["InitialContract"] = false;
+        resignRecord["NegotiationsEnded"] = false;
+        resignRecord["ActualDesiredContractLength"] = 0;
+
+
+        //This results in every row being emptied
+        if (!resignRecord.isEmpty) {
+            await resignRecord.empty();
+        }
+
+    }
+
+    //Iterate through the resign array table and zero everything out
+    for (let i = 0; i < resignArrayTable.header.numMembers; i++) {
+        resignArrayTable.records[0][`PlayerReSignNegotiation${i}`] = zeroRef;
+    }
+  
+};
+
 // This function will remove a binary value from an array table
 // It will iterate through each row and look for the binary. If multiple rows/columns
 // contain the target binary, they will all be removed.
@@ -434,5 +532,7 @@ module.exports = {
     removeFromTable,
     emptyCharacterVisualsTable,
     regenerateMarketingTables,
+    emptyAcquisitionTables,
+    emptyResignTable,
     zeroRef
   };
