@@ -10,7 +10,7 @@ const ratingTypes = (JSON.parse(fs.readFileSync(`lookupFiles/ratingTypes.json`, 
 const positionGroups = (JSON.parse(fs.readFileSync(`lookupFiles/positionGroups.json`, 'utf-8')));
 const allPositions = (JSON.parse(fs.readFileSync(`lookupFiles/allPositions.json`, 'utf-8')));
 
-const versionNum = 'v2 ALPHA 0.6';
+const versionNum = 'v2.0';
 
 console.log(`Welcome to MaddenSynth ${versionNum}! This is a customizable franchise scenario generator for Madden 24.\n`)
 const gameYear = '24';
