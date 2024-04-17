@@ -1163,13 +1163,14 @@ async function getPlayerTables() {
 };
 
 async function getTradeTables() {
-  let tradeNegotiationArray = targetFranchise.getTableByUniqueId(tables.tradeNegotiationArrayTable);
-  let tradeNegotiation = targetFranchise.getTableByUniqueId(tables.tradeNegotiationTable);
-  let teamTradePackageArray = targetFranchise.getTableByUniqueId(tables.teamTradePackageArrayTable);
-  let requestArray = targetFranchise.getTableByUniqueId(tables.tradeRequestArrayTable);
-  let pendingTeamArray = targetFranchise.getTableByUniqueId(tables.pendingTeamArrayTable);
-  let teamTradePackage = targetFranchise.getTableByUniqueId(tables.teamTradePackageTable);
-  let tableArray = [tradeNegotiationArray,tradeNegotiation,teamTradePackageArray,
+  const tradeNegotiationArray = targetFranchise.getTableByUniqueId(tables.tradeNegotiationArrayTable);
+  const tradeNegotiation = targetFranchise.getTableByUniqueId(tables.tradeNegotiationTable);
+  const teamTradePackageArray = targetFranchise.getTableByUniqueId(tables.teamTradePackageArrayTable);
+  const requestArray = targetFranchise.getTableByUniqueId(tables.tradeRequestArrayTable);
+  const pendingTeamArray = targetFranchise.getTableByUniqueId(tables.pendingTeamArrayTable);
+  const teamTradePackage = targetFranchise.getTableByUniqueId(tables.teamTradePackageTable);
+
+  const tableArray = [tradeNegotiationArray,tradeNegotiation,teamTradePackageArray,
     requestArray,pendingTeamArray,teamTradePackage];
 
   await FranchiseUtils.readTableRecords(tableArray); 
@@ -1178,11 +1179,22 @@ async function getTradeTables() {
 }
 
 async function getAwardTables() {
-  let playerAward = targetFranchise.getTableByUniqueId(tables.playerAwardTable);
-  let coachAward = targetFranchise.getTableByUniqueId(tables.coachAwardTable);
-  let awardArray = targetFranchise.getTableByUniqueId(tables.awardArrayTable);
+  const playerAward = targetFranchise.getTableByUniqueId(tables.playerAwardTable);
+  const coachAward = targetFranchise.getTableByUniqueId(tables.coachAwardTable);
+  const awardArray = targetFranchise.getTableByUniqueId(tables.awardArrayTable);
 
-  let tableArray = [playerAward,coachAward,awardArray];
+  const tableArray = [playerAward,coachAward,awardArray];
+
+  await FranchiseUtils.readTableRecords(tableArray);
+
+  return tableArray;
+
+};
+
+async function getDraftPickTables() {
+  const draftPicks = targetFranchise.getTableByUniqueId(tables.draftPickTable);
+
+  const tableArray = [draftPicks];
 
   await FranchiseUtils.readTableRecords(tableArray);
 
@@ -1785,12 +1797,10 @@ sourceFranchise.on('ready', async function () {
     const awardTables = await getAwardTables();
     const optionalTables = await getOptionalTables();
     //const tradeTables = await getTradeTables();
-  
-    const draftPickTable = targetFranchise.getTableByUniqueId(tables.draftPickTable);
-    await draftPickTable.readRecords();
-    const draftPicks = [draftPickTable]
 
-    const allTablesArray = [playerTables,coachTables,awardTables,optionalTables,draftPicks]
+    const draftPickTables = await getDraftPickTables();
+
+    const allTablesArray = [playerTables,coachTables,awardTables,optionalTables,draftPickTables]
     const [ignoreColumns] = await columnOptions()
 
     console.log("Now working on transferring all table data...");
@@ -1800,8 +1810,6 @@ sourceFranchise.on('ready', async function () {
         currentArray = allTablesArray[array] //Get current array
         for (let table = 0;table < currentArray.length;table++) { //Then iterate through the currentArray
           let currentTable = currentArray[table] // Get and read the current table, then call handleTable()
-          console.log(currentTable.header.name)
-          //await currentTable.readRecords();
           await handleTable(sourceFranchise,targetFranchise,currentTable,ignoreColumns,sourceGameYear,targetGameYear,mergedTableMappings,is22To24);
         }
       }
