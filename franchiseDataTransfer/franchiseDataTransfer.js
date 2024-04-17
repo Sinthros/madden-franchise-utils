@@ -855,8 +855,6 @@ async function getCoachTables(mergedTableMappings,is22To24) {
     tableArray.push(activeTalentTree,talentNodeStatus,talentNodeStatusArray,talentSubTreeStatus)
   }
 
-  await FranchiseUtils.readTableRecords(tableArray);
-
   const targetIndices = [ // M22 has 68 team rows, M24 has 37. Here we manually reassign the indexes, where -1 = DON'T KEEP THE ROW
   0, 1, 2, 3, 4, 5, 6, 7, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1156,8 +1154,6 @@ async function getPlayerTables() {
     depthChart,teamRoadMap,playerResignNegotiation,careerDefensiveKPReturnStats,careerOffensiveKPReturnStats,careerOLineStats,careerOffensiveStats,careerDefensiveStats,
     careerKickingStats,playerMerchTable,activeAbilityArray];
 
-  await FranchiseUtils.readTableRecords(tableArray);
-
   return tableArray;
 
 };
@@ -1173,7 +1169,6 @@ async function getTradeTables() {
   const tableArray = [tradeNegotiationArray,tradeNegotiation,teamTradePackageArray,
     requestArray,pendingTeamArray,teamTradePackage];
 
-  await FranchiseUtils.readTableRecords(tableArray); 
   return tableArray;
 
 }
@@ -1185,8 +1180,6 @@ async function getAwardTables() {
 
   const tableArray = [playerAward,coachAward,awardArray];
 
-  await FranchiseUtils.readTableRecords(tableArray);
-
   return tableArray;
 
 };
@@ -1195,8 +1188,6 @@ async function getDraftPickTables() {
   const draftPicks = targetFranchise.getTableByUniqueId(tables.draftPickTable);
 
   const tableArray = [draftPicks];
-
-  await FranchiseUtils.readTableRecords(tableArray);
 
   return tableArray;
 
@@ -1282,8 +1273,6 @@ async function getOptionalTables() {
       }
     }
   }
-
-  await FranchiseUtils.readTableRecords(tableArray);
 
   return tableArray;
 }
@@ -1750,20 +1739,27 @@ sourceFranchise.on('ready', async function () {
     const sourceGameYear = sourceFranchise.schema.meta.gameYear // Get the game year of the source file
     const targetGameYear = targetFranchise.schema.meta.gameYear // Get the game year of the target file
     if (targetGameYear !== 24) {
-      console.log("******************************************************************************************");
-      console.log("ERROR! Target franchise isn't a Madden 24 Franchise File. Exiting program.");
-      console.log("******************************************************************************************");
+      console.log("Target franchise file isn't a Madden 24 Franchise File. Exiting program.");
       prompt();
-      process.exit(0);
+      process.exit(1);
     }
 
     if (sourceGameYear !== 22 && sourceGameYear !== 24) {
-      console.log("******************************************************************************************");
-      console.log("ERROR! Source franchise isn't a Madden 22 or Madden 24 Franchise File. Exiting program.");
-      console.log("******************************************************************************************");
+      console.log("Source franchise file isn't a Madden 22 or Madden 24 Franchise File. Exiting program.");
       prompt();
-      process.exit(0);
+      process.exit(1);
     }
+
+    // We're going to read all tables for our source/target franchise so that we don't have to read them again later
+    const allTables = [];
+    for (const key in tables) {
+      const sourceTable = sourceFranchise.getTableByUniqueId(tables[key]);
+      const targetTable = targetFranchise.getTableByUniqueId(tables[key]);
+      allTables.push(sourceTable,targetTable);
+    }
+
+    // We read records for all tables, and we simply continue if there's an error loading a table
+    await FranchiseUtils.readTableRecords(allTables,true);
 
     // Get the tableMappings for the source and target files - These are used to update bin references!
     const allTableMappingsTarget = targetFranchise.tables.map((table) => 
@@ -1806,22 +1802,27 @@ sourceFranchise.on('ready', async function () {
     console.log("Now working on transferring all table data...");
 
     try {
-      for (let array = 0;array < allTablesArray.length;array++) { //Iterate throuh allTablesArray
-        currentArray = allTablesArray[array] //Get current array
-        for (let table = 0;table < currentArray.length;table++) { //Then iterate through the currentArray
-          let currentTable = currentArray[table] // Get and read the current table, then call handleTable()
-          await handleTable(sourceFranchise,targetFranchise,currentTable,ignoreColumns,sourceGameYear,targetGameYear,mergedTableMappings,is22To24);
+      for (const currentArray of allTablesArray) {
+        for (const currentTable of currentArray) {
+          await handleTable(
+            sourceFranchise,
+            targetFranchise,
+            currentTable,
+            ignoreColumns,
+            sourceGameYear,
+            targetGameYear,
+            mergedTableMappings,
+            is22To24
+          );
         }
       }
-
-    } catch (e) { // Except, print the and exit
+    } catch (error) {
       console.log("******************************************************************************************");
-      console.log(`FATAL ERROR! Please report this message to Sinthros IMMEDIATELY and send your source/target Franchise Files - ${e}`);
+      console.log(`FATAL ERROR! Please report this message to Sinthros IMMEDIATELY and send your source/target Franchise Files - ${error}`);
       console.log("Exiting program.");
       console.log("******************************************************************************************");
       prompt();
       process.exit(0);
-
     }
 
 

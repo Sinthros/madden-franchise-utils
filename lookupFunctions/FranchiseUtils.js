@@ -107,11 +107,32 @@ async function saveFranchiseFile(franchise) {
     }
 };
 
-async function readTableRecords(tablesList) {
+
+/*
+  tablesList: List of tables you want to read. For example, if you have playerTable and coachTable,
+  you'd pass through [playerTable, coachTable].
+
+  continueIfError: Boolean. If true, the program will continue if there's an error reading the records for a table.
+  In most cases, leave this as false; you usually don't want the program to proceed if there's an error loading a table.
+
+  This function was designed for the franchiseDataTransfer class, which loads ALL tables from FranchiseTableId.
+  In this specific scenario, a few tables in that list only exist in M22 or M24. We want to continue over
+  those when they don't load properly since they aren't used in the script by the source/target franchise objects.
+*/
+
+async function readTableRecords(tablesList, continueIfError = false) {
     for (const table of tablesList) {
+      try {
         await table.readRecords();
+      } catch (error) {
+        if (!continueIfError) {
+          throw error;
+        } else { // If continueIfError = true, continue (This is not typically recommended!)
+            continue;
+        }
+      }
     }
-}
+  }
 
 function getGameYear(validGameYears) {
     let gameYear;
