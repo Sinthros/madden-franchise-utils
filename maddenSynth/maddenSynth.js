@@ -10,7 +10,7 @@ const ratingTypes = (JSON.parse(fs.readFileSync(`lookupFiles/ratingTypes.json`, 
 const positionGroups = (JSON.parse(fs.readFileSync(`lookupFiles/positionGroups.json`, 'utf-8')));
 const allPositions = (JSON.parse(fs.readFileSync(`lookupFiles/allPositions.json`, 'utf-8')));
 
-const versionNum = 'v2.0';
+const versionNum = 'v2.1';
 
 console.log(`Welcome to MaddenSynth ${versionNum}! This is a customizable franchise scenario generator for Madden 24.\n`)
 const gameYear = '24';
@@ -707,7 +707,7 @@ async function createScenario()
 
 	if(newScenario.hasSelectionParameters)
 	{
-		newScenario.selectionParameters = getSelectionParameters();
+		newScenario.selectionParameters = await getSelectionParameters();
 	}
 
 	scenarios.push(newScenario);
@@ -728,9 +728,9 @@ async function createScenario()
 	console.log("\nScenario created successfully and saved to file.");
 }
 
-function getSelectionParameters(scenario)
+async function getSelectionParameters(scenario)
 {
-	const parameterOptions = ['Age', 'Overall', 'Injury Rating', 'Awareness Rating', 'Morale'];
+	const parameterOptions = ['Age', 'Overall', 'Injury Rating', 'Awareness Rating', 'Morale', 'Other Rating'];
 
 	let userChoice;
 
@@ -918,6 +918,38 @@ function getSelectionParameters(scenario)
 				}
 			}
 			while(newParameter.max < 0 || newParameter.max < newParameter.min || newParameter.max > 99);
+		}
+		else if(parameterChoice === 'Other Rating')
+		{
+			newParameter.type = ratingTypes[await getRatingSelection()];
+			
+			do
+			{
+				console.log("\nEnter the minimum value for the rating: ");
+				newParameter.min = parseInt(prompt());
+				if(newParameter.min < 0 || newParameter.min > 99)
+				{
+					console.log("Please enter a positive number from 0-99.");
+				}
+			}
+			while(newParameter.min < 0 || newParameter.min > 99);
+
+			do
+			{
+				console.log("\nEnter the maximum value for the rating: ");
+				newParameter.max = parseInt(prompt());
+				if(newParameter.max < 0 || newParameter.max > 99)
+				{
+					console.log("Please enter a positive number from 0-99.");
+				}
+
+				if(newParameter.max < newParameter.min)
+				{
+					console.log("Maximum rating must be greater than or equal to minimum rating.");
+				}
+			}
+			while(newParameter.max < 0 || newParameter.max < newParameter.min || newParameter.max > 99);
+		
 		}
 
 		selectionParameters.push(newParameter);
@@ -1187,7 +1219,7 @@ async function getRatingSelection()
 
 	while(true)
 	{
-		console.log("\nEnter the number for the rating you want to edit: ");
+		console.log("\nEnter the number for the rating you want to use: ");
 		inputNumber = parseInt(prompt());
 		if(inputNumber < 0 || inputNumber >= ratingTypeKeys.length)
 		{
