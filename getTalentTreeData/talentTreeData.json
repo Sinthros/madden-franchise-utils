@@ -11,6 +11,7 @@
         "IconId": 32,
         "Description": "Boost Toughness for the Defensive Line and Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -20,6 +21,7 @@
         "IconId": 80,
         "Description": "Boost Play Recognition for Defensive Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Fortified"
         ],
@@ -33,6 +35,7 @@
         "IconId": 64,
         "Description": "Boost Block Shed for Defensive Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Fortified"
         ],
@@ -46,6 +49,7 @@
         "IconId": 53,
         "Description": "Boost Pursuit for Outside Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Already Known"
         ],
@@ -59,6 +63,7 @@
         "IconId": 74,
         "Description": "Boost Speed for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Unstoppable"
         ],
@@ -72,6 +77,7 @@
         "IconId": 72,
         "Description": "Boost Power Moves for Defensive Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Follow the Line"
         ],
@@ -85,6 +91,7 @@
         "IconId": 101,
         "Description": "Boost Strength for Defensive Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Take Off"
         ],
@@ -98,6 +105,7 @@
         "IconId": 24,
         "Description": "Boost Zone Cover for Left and Right Outside Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Bull Rusher"
         ],
@@ -111,6 +119,7 @@
         "IconId": 25,
         "Description": "Boost Man Cover for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Weightroom Legend"
         ],
@@ -124,6 +133,7 @@
         "IconId": 83,
         "Description": "Boost Tackle for the Defensive Line and Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "See the Zones",
           "Single Focus"
@@ -144,6 +154,7 @@
         "IconId": 32,
         "Description": "Boost Toughness for the Defensive Line and Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -153,6 +164,7 @@
         "IconId": 53,
         "Description": "Boost Pursuit for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Fortified"
         ],
@@ -166,6 +178,7 @@
         "IconId": 43,
         "Description": "Boost Acceleration for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Fortified"
         ],
@@ -179,6 +192,7 @@
         "IconId": 101,
         "Description": "Boost Strength for Defensive Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Follow the Line"
         ],
@@ -192,6 +206,7 @@
         "IconId": 25,
         "Description": "Boost Man Cover for Outside Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Burnout"
         ],
@@ -205,6 +220,7 @@
         "IconId": 74,
         "Description": "Boost Speed for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Weightroom Legend"
         ],
@@ -218,6 +234,7 @@
         "IconId": 24,
         "Description": "Boost Zone Cover for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Single Focus"
         ],
@@ -231,6 +248,7 @@
         "IconId": 64,
         "Description": "Boost Block Shed for Defensive Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Take Off"
         ],
@@ -244,6 +262,7 @@
         "IconId": 72,
         "Description": "Boost Power Moves for Left and Right Outside Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "See the Zones"
         ],
@@ -257,6 +276,7 @@
         "IconId": 35,
         "Description": "Boost Hit Power for the Defensive Line and Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Unstoppable",
           "Bull Rusher"
@@ -277,6 +297,7 @@
         "IconId": 32,
         "Description": "Boost Toughness for the Defensive Line and Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -286,6 +307,7 @@
         "IconId": 35,
         "Description": "Boost Hit Power for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Fortified"
         ],
@@ -299,6 +321,7 @@
         "IconId": 44,
         "Description": "Boost Agility for Left and Right Outside Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Fortified"
         ],
@@ -312,6 +335,7 @@
         "IconId": 101,
         "Description": "Boost Strength for Defensive Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Explosive Impact"
         ],
@@ -325,6 +349,7 @@
         "IconId": 43,
         "Description": "Boost Acceleration for Defensive Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Quick Turns"
         ],
@@ -338,6 +363,7 @@
         "IconId": 40,
         "Description": "Boost Impact Blocking for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Weightroom Legend"
         ],
@@ -351,6 +377,7 @@
         "IconId": 2,
         "Description": "Boost Play Recognition for Left and Right Outside Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Burnout"
         ],
@@ -364,6 +391,7 @@
         "IconId": 72,
         "Description": "Boost Power Moves for Defensive Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Coming Through"
         ],
@@ -377,6 +405,7 @@
         "IconId": 41,
         "Description": "Boost Finesse Moves for Defensive Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Gameplanned"
         ],
@@ -390,6 +419,7 @@
         "IconId": 83,
         "Description": "Boost Tackle for the Defensive Line and Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Bull Rusher",
           "Speed Rusher"
@@ -410,6 +440,7 @@
         "IconId": 19,
         "Description": "Boost Awareness for the Defensive Line and Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -419,6 +450,7 @@
         "IconId": 40,
         "Description": "Boost Impact Blocking for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Well Coached"
         ],
@@ -432,6 +464,7 @@
         "IconId": 2,
         "Description": "Boost Play Recognition for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Well Coached"
         ],
@@ -445,6 +478,7 @@
         "IconId": 101,
         "Description": "Boost Strength for Defensive Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Coming Through"
         ],
@@ -458,6 +492,7 @@
         "IconId": 73,
         "Description": "Boost Speed for Defensive Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Gameplanned"
         ],
@@ -471,6 +506,7 @@
         "IconId": 74,
         "Description": "Boost Speed for Outside Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Weightroom Legend"
         ],
@@ -484,6 +520,7 @@
         "IconId": 25,
         "Description": "Boost Man Cover for Outside Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Red Line"
         ],
@@ -497,6 +534,7 @@
         "IconId": 64,
         "Description": "Boost Block Shed for Defensive Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Take Off"
         ],
@@ -510,6 +548,7 @@
         "IconId": 41,
         "Description": "Boost Finesse Moves for Defensive Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Single Focus"
         ],
@@ -523,6 +562,7 @@
         "IconId": 35,
         "Description": "Boost Hit Power for the Defensive Line and Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Unstoppable",
           "Speed Rusher"
@@ -543,6 +583,7 @@
         "IconId": 75,
         "Description": "Boost Stamina for Linebackers, Safeties and Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -552,6 +593,7 @@
         "IconId": 43,
         "Description": "Boost Acceleration for Outside Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Always Charged"
         ],
@@ -565,6 +607,7 @@
         "IconId": 63,
         "Description": "Boost Speed for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Always Charged"
         ],
@@ -578,6 +621,7 @@
         "IconId": 21,
         "Description": "Boost Strength for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Burnout"
         ],
@@ -591,6 +635,7 @@
         "IconId": 96,
         "Description": "Boost Strength for Safeties and Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Rocket Ahead"
         ],
@@ -604,6 +649,7 @@
         "IconId": 41,
         "Description": "Boost Finesse Moves for Right and Left Outside Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Lift Heavy"
         ],
@@ -617,6 +663,7 @@
         "IconId": 67,
         "Description": "Boost Finesse Moves for Free Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Flex"
         ],
@@ -630,6 +677,7 @@
         "IconId": 72,
         "Description": "Boost Power Moves for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Speed Rusher"
         ],
@@ -643,6 +691,7 @@
         "IconId": 34,
         "Description": "Boost Power Moves for Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Surprise"
         ],
@@ -656,6 +705,7 @@
         "IconId": 17,
         "Description": "Boost Block Shed for Linebackers, Safeties and Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Bull Rusher",
           "Not So Safe"
@@ -676,6 +726,7 @@
         "IconId": 104,
         "Description": "Gain the Ability to Equip X-Factors on the Defensive Lineup",
         "maxUpgrades": 0,
+        "TalentIncrement": 0,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -685,6 +736,7 @@
         "IconId": 48,
         "Description": "Boost Pursuit for Free Safeties and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "X-Factor On"
         ],
@@ -698,6 +750,7 @@
         "IconId": 7,
         "Description": "Boost Press for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "X-Factor On"
         ],
@@ -711,6 +764,7 @@
         "IconId": 45,
         "Description": "Boost Tackle for Free Safeties and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Chase Down"
         ],
@@ -724,6 +778,7 @@
         "IconId": 26,
         "Description": "Boost Jumping for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Locked Down"
         ],
@@ -737,6 +792,7 @@
         "IconId": 55,
         "Description": "Boost Impact Blocking for Free and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Tackling Dummy"
         ],
@@ -750,6 +806,7 @@
         "IconId": 71,
         "Description": "Boost Catching for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Bouncy"
         ],
@@ -763,6 +820,7 @@
         "IconId": 37,
         "Description": "Boost Play Recognition for Cornerbacks, Free Safeties and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Move Aside",
           "Soft Hands"
@@ -775,6 +833,7 @@
         "IconId": 20,
         "Description": "Boost Zone Cover for Cornerbacks, Free Safeties and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Gameplanned"
         ],
@@ -788,6 +847,7 @@
         "IconId": 61,
         "Description": "Boost Man Cover for Cornerbacks, Free Safeties and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Gameplanned"
         ],
@@ -809,6 +869,7 @@
         "IconId": 104,
         "Description": "Gain the Ability to Equip X-Factors on the Defensive Lineup",
         "maxUpgrades": 0,
+        "TalentIncrement": 0,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -818,6 +879,7 @@
         "IconId": 51,
         "Description": "Boost Tackle for Defensive Ends and Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "X-Factor On"
         ],
@@ -831,6 +893,7 @@
         "IconId": 35,
         "Description": "Boost Hit Power for Defensive Ends and Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "X-Factor On"
         ],
@@ -844,6 +907,7 @@
         "IconId": 43,
         "Description": "Boost Acceleration for Defensive Ends and Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Ready for Anything"
         ],
@@ -857,6 +921,7 @@
         "IconId": 64,
         "Description": "Boost Block Shed for Defensive Ends and Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Explosive Impact"
         ],
@@ -870,6 +935,7 @@
         "IconId": 73,
         "Description": "Boost Speed for Defensive Ends and Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Burnout"
         ],
@@ -883,6 +949,7 @@
         "IconId": 101,
         "Description": "Boost Strength for Defensive Ends and Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Unstoppable"
         ],
@@ -896,6 +963,7 @@
         "IconId": 75,
         "Description": "Boost Stamina for Defensive Ends and Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Red Line",
           "Weightroom Legend"
@@ -908,6 +976,7 @@
         "IconId": 41,
         "Description": "Boost Finesse Moves for Defensive Ends and Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Always Charged"
         ],
@@ -921,6 +990,7 @@
         "IconId": 72,
         "Description": "Boost Power Moves for Defensive Ends and Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Always Charged"
         ],
@@ -942,6 +1012,7 @@
         "IconId": 104,
         "Description": "Gain the Ability to Equip X-Factors on the Defensive Lineup",
         "maxUpgrades": 0,
+        "TalentIncrement": 0,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -951,6 +1022,7 @@
         "IconId": 64,
         "Description": "Boost Block Shed for Outside and Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "X-Factor On"
         ],
@@ -964,6 +1036,7 @@
         "IconId": 2,
         "Description": "Boost Play Recognition for Outside and Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "X-Factor On"
         ],
@@ -977,6 +1050,7 @@
         "IconId": 72,
         "Description": "Boost Power Moves for Outside and Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Unstoppable"
         ],
@@ -990,6 +1064,7 @@
         "IconId": 53,
         "Description": "Boost Pursuit for Outside and Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Gameplanned"
         ],
@@ -1003,6 +1078,7 @@
         "IconId": 41,
         "Description": "Boost Finesse Moves for Outside and Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Bull Rusher"
         ],
@@ -1016,6 +1092,7 @@
         "IconId": 24,
         "Description": "Boost Zone Cover for Outside and Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Follow the Line"
         ],
@@ -1029,6 +1106,7 @@
         "IconId": 35,
         "Description": "Boost Hit Power for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Speed Rusher",
           "See the Zones"
@@ -1041,6 +1119,7 @@
         "IconId": 101,
         "Description": "Boost Strength for Outside and Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Explosive Impact"
         ],
@@ -1054,6 +1133,7 @@
         "IconId": 43,
         "Description": "Boost Acceleration for Outside and Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Explosive Impact"
         ],
@@ -1075,6 +1155,7 @@
         "IconId": 16,
         "Description": "Boost Awareness for Safeties and Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -1084,6 +1165,7 @@
         "IconId": 99,
         "Description": "Boost Agility for Free and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Plugged In"
         ],
@@ -1097,6 +1179,7 @@
         "IconId": 22,
         "Description": "Boost Agility for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Plugged In"
         ],
@@ -1110,6 +1193,7 @@
         "IconId": 5,
         "Description": "Boost Play Recognition for Free and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Next Move"
         ],
@@ -1123,6 +1207,7 @@
         "IconId": 37,
         "Description": "Boost Play Recognition for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Quick Cuts"
         ],
@@ -1136,6 +1221,7 @@
         "IconId": 100,
         "Description": "Boost Press for Free and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Seen Fom Afar"
         ],
@@ -1149,6 +1235,7 @@
         "IconId": 7,
         "Description": "Boost Press for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Scripted"
         ],
@@ -1162,6 +1249,7 @@
         "IconId": 87,
         "Description": "Boost Man Cover for Free and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "In a Safe"
         ],
@@ -1175,6 +1263,7 @@
         "IconId": 61,
         "Description": "Boost Man Cover for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Locked Down"
         ],
@@ -1188,6 +1277,7 @@
         "IconId": 71,
         "Description": "Boost Catching for Safeties and Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Ball Hawk",
           "On an Island"
@@ -1208,6 +1298,7 @@
         "IconId": 65,
         "Description": "Boost Injury for Linebackers, Safeties and Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -1217,6 +1308,7 @@
         "IconId": 2,
         "Description": "Boost Play Recognition for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Just a Cramp"
         ],
@@ -1230,6 +1322,7 @@
         "IconId": 64,
         "Description": "Boost Block Shed for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Just a Cramp"
         ],
@@ -1243,6 +1336,7 @@
         "IconId": 25,
         "Description": "Boost Man Cover for Outside Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Gameplanned"
         ],
@@ -1256,6 +1350,7 @@
         "IconId": 101,
         "Description": "Boost Strength for Left and Right Outside Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Unstoppable"
         ],
@@ -1269,6 +1364,7 @@
         "IconId": 17,
         "Description": "Boost Block Shed for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Single Focus"
         ],
@@ -1282,6 +1378,7 @@
         "IconId": 45,
         "Description": "Boost Tackle for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Weightroom Legend"
         ],
@@ -1295,6 +1392,7 @@
         "IconId": 71,
         "Description": "Boost Catching for Free Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Step Aside"
         ],
@@ -1308,6 +1406,7 @@
         "IconId": 55,
         "Description": "Boost Hit Power for Free Safeties and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Tackling Dummy"
         ],
@@ -1321,6 +1420,7 @@
         "IconId": 74,
         "Description": "Boost Speed for Linebackers, Safeties and Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Soft Hands",
           "Stop"
@@ -1341,6 +1441,7 @@
         "IconId": 65,
         "Description": "Boost Injury for Linebackers, Safeties and Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -1350,6 +1451,7 @@
         "IconId": 74,
         "Description": "Boost Speed for Outside Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Just a Cramp"
         ],
@@ -1363,6 +1465,7 @@
         "IconId": 44,
         "Description": "Boost Agility for Left and Right Outside Linebackers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Just a Cramp"
         ],
@@ -1376,6 +1479,7 @@
         "IconId": 32,
         "Description": "Boost Toughness for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Take Off"
         ],
@@ -1389,6 +1493,7 @@
         "IconId": 75,
         "Description": "Boost Stamina for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Quick Turns"
         ],
@@ -1402,6 +1507,7 @@
         "IconId": 17,
         "Description": "Boost Block Shed for Free and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Fortified"
         ],
@@ -1415,6 +1521,7 @@
         "IconId": 96,
         "Description": "Boost Strength for Free and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Always Charged"
         ],
@@ -1428,6 +1535,7 @@
         "IconId": 55,
         "Description": "Boost Hit Power for Free Safeties and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Step Aside"
         ],
@@ -1441,6 +1549,7 @@
         "IconId": 63,
         "Description": "Boost Speed for Free and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Flex"
         ],
@@ -1454,6 +1563,7 @@
         "IconId": 83,
         "Description": "Boost Tackle for the Linebackers, Safeties and Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Stop",
           "Rocket Ahead"
@@ -1474,6 +1584,7 @@
         "IconId": 16,
         "Description": "Boost Awareness for Safeties and Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -1483,6 +1594,7 @@
         "IconId": 73,
         "Description": "Boost Acceleration for Free and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Plugged In"
         ],
@@ -1496,6 +1608,7 @@
         "IconId": 76,
         "Description": "Boost Acceleration for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Plugged In"
         ],
@@ -1509,6 +1622,7 @@
         "IconId": 5,
         "Description": "Boost Play Recognition for Free and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Rocket Ahead"
         ],
@@ -1522,6 +1636,7 @@
         "IconId": 37,
         "Description": "Boost Play Recognition for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Running Hot"
         ],
@@ -1535,6 +1650,7 @@
         "IconId": 74,
         "Description": "Boost Jumping for Free and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Seen Fom Afar"
         ],
@@ -1548,6 +1664,7 @@
         "IconId": 26,
         "Description": "Boost Jumping for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Scripted"
         ],
@@ -1561,6 +1678,7 @@
         "IconId": 20,
         "Description": "Boost Zone Cover for Free and Strong Safeties by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Lift Off"
         ],
@@ -1574,6 +1692,7 @@
         "IconId": 56,
         "Description": "Boost Zone Cover for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Bouncy"
         ],
@@ -1587,6 +1706,7 @@
         "IconId": 71,
         "Description": "Boost Catching for Safeties and Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Hold the Zone",
           "Closed Off"
@@ -1607,6 +1727,7 @@
         "IconId": 85,
         "Description": "Increase XP gains for Cornerbacks in training by <talent_value>%",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -1616,6 +1737,7 @@
         "IconId": 33,
         "Description": "Increase XP gains for Middle Linebackers in training by <talent_value>%",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Lockdown Machine"
         ],
@@ -1629,6 +1751,7 @@
         "IconId": 99,
         "Description": "Increase XP gains for Left and Right Outside Linebackers in training by <talent_value>%",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Man in the Middle"
         ],
@@ -1642,6 +1765,7 @@
         "IconId": 32,
         "Description": "Increase XP gains for Defensive Tackles in training by <talent_value>%",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Lockdown Machine"
         ],
@@ -1655,6 +1779,7 @@
         "IconId": 98,
         "Description": "Increase XP gains for Left and Right Ends in training by <talent_value>%",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Fortify the Line"
         ],
@@ -1668,6 +1793,7 @@
         "IconId": 91,
         "Description": "All players on your team count as Scheme Fits during training",
         "maxUpgrades": 0,
+        "TalentIncrement": 0,
         "Dependencies": [
           "Jack of All Trades",
           "Royal Rush"
@@ -1680,6 +1806,7 @@
         "IconId": 30,
         "Description": "Increase XP gains for Free Safeties in training by <talent_value>%",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "The Final Piece"
         ],
@@ -1691,6 +1818,7 @@
         "IconId": 31,
         "Description": "Increase XP gains for Strong Safeties in training by <talent_value>%",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "The Final Piece"
         ],
@@ -1702,6 +1830,7 @@
         "IconId": 100,
         "Description": "Reveal a Hidden development trait for 1 player once per season",
         "maxUpgrades": 0,
+        "TalentIncrement": 0,
         "Dependencies": [
           "Extended Coverage",
           "Strong Progress"
@@ -1722,6 +1851,7 @@
         "IconId": 79,
         "Description": "Decrease multi-week injury recovery time",
         "maxUpgrades": 0,
+        "TalentIncrement": 0,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -1731,6 +1861,7 @@
         "IconId": 70,
         "Description": "Increase XP gains for Tight Ends in training by <talent_value>%",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Secret Stuff"
         ],
@@ -1744,6 +1875,7 @@
         "IconId": 71,
         "Description": "Increase XP gains for Wide Receivers in training by <talent_value>%",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Two Way TE"
         ],
@@ -1757,6 +1889,7 @@
         "IconId": 51,
         "Description": "Increase XP gains for Left and Right Guards in training by <talent_value>%",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Secret Stuff"
         ],
@@ -1770,6 +1903,7 @@
         "IconId": 52,
         "Description": "Increase XP gains for Left and Right Tackles in training by <talent_value>%",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Road Grader"
         ],
@@ -1783,6 +1917,7 @@
         "IconId": 14,
         "Description": "Increase XP gains for Centers in training by <talent_value>%",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Steady Hands",
           "Pocket Setter"
@@ -1795,6 +1930,7 @@
         "IconId": 13,
         "Description": "Increase XP gains for Quarterbacks in training by <talent_value>%",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Anchor Man"
         ],
@@ -1806,6 +1942,7 @@
         "IconId": 34,
         "Description": "Increase XP gains for Halfbacks and Fullbacks in training by <talent_value>%",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Anchor Man"
         ],
@@ -1817,6 +1954,7 @@
         "IconId": 29,
         "Description": "Slow ratings regression for 1 season for one position",
         "maxUpgrades": 0,
+        "TalentIncrement": 0,
         "Dependencies": [
           "Quarterback Captain",
           "Pound the Rock"
@@ -1837,6 +1975,7 @@
         "IconId": 25,
         "Description": "Player Personnel talents cost <talent_value>% less",
         "maxUpgrades": 2,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -1846,6 +1985,7 @@
         "IconId": 37,
         "Description": "Offensive Coordinator talents cost <talent_value>% less",
         "maxUpgrades": 2,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Eye For Talent"
         ],
@@ -1857,6 +1997,7 @@
         "IconId": 20,
         "Description": "Defensive Coordinator talents cost <talent_value>% less",
         "maxUpgrades": 2,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Eye For Talent"
         ],
@@ -1868,6 +2009,7 @@
         "IconId": 60,
         "Description": "<talent_value>% talent point refund when replacing an offensive coordinator",
         "maxUpgrades": 2,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Hands On Offense"
         ],
@@ -1879,6 +2021,7 @@
         "IconId": 78,
         "Description": "<talent_value>% talent point refund when replacing a defensive coordinator",
         "maxUpgrades": 2,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Hands On Defense"
         ],
@@ -1890,6 +2033,7 @@
         "IconId": 67,
         "Description": "Increase the hiring bonus when signing an offensive coordinator",
         "maxUpgrades": 0,
+        "TalentIncrement": 0,
         "Dependencies": [
           "Not all is lost"
         ],
@@ -1901,6 +2045,7 @@
         "IconId": 66,
         "Description": "Increase the hiring bonus when signing a defensive coordinator",
         "maxUpgrades": 0,
+        "TalentIncrement": 0,
         "Dependencies": [
           "Same Team, Same Scheme"
         ],
@@ -1912,6 +2057,7 @@
         "IconId": 2,
         "Description": "Access an additional focus player through Weekly Strategy",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Welcoming Gift",
           "Moving In"
@@ -1924,6 +2070,7 @@
         "IconId": 58,
         "Description": "Reset 1 talent tree for Offensive Coordinator, Defensive Coordinator or Player Personnel once per season",
         "maxUpgrades": 0,
+        "TalentIncrement": 0,
         "Dependencies": [
           "After School Tutoring"
         ],
@@ -1943,6 +2090,7 @@
         "IconId": 24,
         "Description": "Boost Awareness for the Offensive Line by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -1952,6 +2100,7 @@
         "IconId": 55,
         "Description": "Boost Pass Block Power for Right Guards, Left Guards and Centers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Line Vision"
         ],
@@ -1965,6 +2114,7 @@
         "IconId": 45,
         "Description": "Boost Pass Block Finesse for Right Guards, Left Guards and Centers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Line Vision"
         ],
@@ -1978,6 +2128,7 @@
         "IconId": 56,
         "Description": "Boost Run Block Power for Right and Left Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Crossing Guard"
         ],
@@ -1991,6 +2142,7 @@
         "IconId": 52,
         "Description": "Boost Run Block Finesse for Right and Left Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Scared Stiff"
         ],
@@ -2004,6 +2156,7 @@
         "IconId": 32,
         "Description": "Boost Run Block Power for Right Guards, Left Guards and Centers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Road Closed"
         ],
@@ -2017,6 +2170,7 @@
         "IconId": 9,
         "Description": "Boost Run Block Finesse for Right Guards, Left Guards and Centers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Open Lanes"
         ],
@@ -2030,6 +2184,7 @@
         "IconId": 33,
         "Description": "Boost Pass Block Power for Right and Left Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Fortified Interior"
         ],
@@ -2043,6 +2198,7 @@
         "IconId": 100,
         "Description": "Boost Pass Block Finesse for Right and Left Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Quick Set"
         ],
@@ -2056,6 +2212,7 @@
         "IconId": 96,
         "Description": "Boost Strength for the Offensive Line by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Keep Safe",
           "Safe Protection"
@@ -2076,6 +2233,7 @@
         "IconId": 54,
         "Description": "Boost Pass Block for Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -2085,6 +2243,7 @@
         "IconId": 68,
         "Description": "Boost Awareness for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "On The Line"
         ],
@@ -2098,6 +2257,7 @@
         "IconId": 15,
         "Description": "Boost Awareness for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "On The Line"
         ],
@@ -2111,6 +2271,7 @@
         "IconId": 12,
         "Description": "Boost Deep Accuracy for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Picture Perfect"
         ],
@@ -2124,6 +2285,7 @@
         "IconId": 31,
         "Description": "Boost Deep Route Running for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Plugged In"
         ],
@@ -2137,6 +2299,7 @@
         "IconId": 47,
         "Description": "Boost Throw Under Pressure for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Safe Delivery"
         ],
@@ -2150,6 +2313,7 @@
         "IconId": 26,
         "Description": "Boost Jumping for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Go Long"
         ],
@@ -2163,6 +2327,7 @@
         "IconId": 73,
         "Description": "Boost Throw Power for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Iron Nerves"
         ],
@@ -2176,6 +2341,7 @@
         "IconId": 88,
         "Description": "Boost Spectacular Catch for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Hops"
         ],
@@ -2189,6 +2355,7 @@
         "IconId": 11,
         "Description": "Boost Catching for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "High Powered",
           "One Handed"
@@ -2209,6 +2376,7 @@
         "IconId": 53,
         "Description": "Boost Short Route Running for Halfbacks and Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -2218,6 +2386,7 @@
         "IconId": 97,
         "Description": "Boost Juke Move for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Drawn Up"
         ],
@@ -2231,6 +2400,7 @@
         "IconId": 23,
         "Description": "Boost Juke Move for Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Drawn Up"
         ],
@@ -2244,6 +2414,7 @@
         "IconId": 40,
         "Description": "Boost Change of Direction for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Key Cutback"
         ],
@@ -2257,6 +2428,7 @@
         "IconId": 66,
         "Description": "Boost Change of Direction for Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Cut it Out"
         ],
@@ -2270,6 +2442,7 @@
         "IconId": 43,
         "Description": "Boost Spin Move for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Moving Backfield"
         ],
@@ -2283,6 +2456,7 @@
         "IconId": 78,
         "Description": "Boost Spin Move for Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "On The Move"
         ],
@@ -2296,6 +2470,7 @@
         "IconId": 28,
         "Description": "Boost Agility for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Spinning Tires"
         ],
@@ -2309,6 +2484,7 @@
         "IconId": 44,
         "Description": "Boost Agility for Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Full Circle"
         ],
@@ -2322,6 +2498,7 @@
         "IconId": 41,
         "Description": "Boost Acceleration for Halfbacks and Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Action!",
           "Tight Cornering"
@@ -2342,6 +2519,7 @@
         "IconId": 75,
         "Description": "Boost Stamina for the Offensive Line by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -2351,6 +2529,7 @@
         "IconId": 82,
         "Description": "Boost Pass Block for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Fully Charged"
         ],
@@ -2364,6 +2543,7 @@
         "IconId": 101,
         "Description": "Boost Run Block Power for Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Fully Charged"
         ],
@@ -2377,6 +2557,7 @@
         "IconId": 53,
         "Description": "Boost Short Route Running for Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Stood Up"
         ],
@@ -2390,6 +2571,7 @@
         "IconId": 63,
         "Description": "Boost Acceleration for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Pound For Pound"
         ],
@@ -2403,6 +2585,7 @@
         "IconId": 48,
         "Description": "Boost Throw On Run for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Planned Path"
         ],
@@ -2416,6 +2599,7 @@
         "IconId": 7,
         "Description": "Boost Carrying for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Fast Launch"
         ],
@@ -2429,6 +2613,7 @@
         "IconId": 46,
         "Description": "Boost Pass Block for the Offensive Line by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "On The Move"
         ],
@@ -2442,6 +2627,7 @@
         "IconId": 45,
         "Description": "Boost Run Block for the Offensive Line by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Ball Secured"
         ],
@@ -2455,6 +2641,7 @@
         "IconId": 68,
         "Description": "Boost Awareness for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Hold the Pocket",
           "Downhill Force"
@@ -2475,6 +2662,7 @@
         "IconId": 101,
         "Description": "Boost Run Block Power for Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -2484,6 +2672,7 @@
         "IconId": 6,
         "Description": "Boost Ball Carrier Vision for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Pound For Pound"
         ],
@@ -2497,6 +2686,7 @@
         "IconId": 75,
         "Description": "Boost Stamina for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Pound For Pound"
         ],
@@ -2510,6 +2700,7 @@
         "IconId": 97,
         "Description": "Boost Juke Move for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Easy Spot"
         ],
@@ -2523,6 +2714,7 @@
         "IconId": 63,
         "Description": "Boost Acceleration for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Always Charged"
         ],
@@ -2536,6 +2728,7 @@
         "IconId": 7,
         "Description": "Boost Carrying for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Key Cutback"
         ],
@@ -2549,6 +2742,7 @@
         "IconId": 40,
         "Description": "Boost Change of Direction for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Fast Launch"
         ],
@@ -2562,6 +2756,7 @@
         "IconId": 43,
         "Description": "Boost Spin Move for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Ball Secured"
         ],
@@ -2575,6 +2770,7 @@
         "IconId": 28,
         "Description": "Boost Agility for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Moving Backfield"
         ],
@@ -2588,6 +2784,7 @@
         "IconId": 76,
         "Description": "Boost Speed for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Spinning Tires",
           "Action!"
@@ -2608,6 +2805,7 @@
         "IconId": 54,
         "Description": "Boost Pass Block for Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -2617,6 +2815,7 @@
         "IconId": 88,
         "Description": "Boost Short Accuracy for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "On The Line"
         ],
@@ -2630,6 +2829,7 @@
         "IconId": 3,
         "Description": "Boost Short Route Running for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "On The Line"
         ],
@@ -2643,6 +2843,7 @@
         "IconId": 21,
         "Description": "Boost Break Sack for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Easy Delivery"
         ],
@@ -2656,6 +2857,7 @@
         "IconId": 48,
         "Description": "Boost Release for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Safety Valve"
         ],
@@ -2669,6 +2871,7 @@
         "IconId": 89,
         "Description": "Boost Medium Accuracy for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Pocket Strength"
         ],
@@ -2682,6 +2885,7 @@
         "IconId": 37,
         "Description": "Boost Medium Route Running for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Ready, Set, Gone"
         ],
@@ -2695,6 +2899,7 @@
         "IconId": 47,
         "Description": "Boost Throw Under Pressure for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "On The Dot"
         ],
@@ -2708,6 +2913,7 @@
         "IconId": 70,
         "Description": "Boost Catch In Traffic for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "On The Out"
         ],
@@ -2721,6 +2927,7 @@
         "IconId": 11,
         "Description": "Boost Catching for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Iron Nerves",
           "In The Web"
@@ -2741,6 +2948,7 @@
         "IconId": 9,
         "Description": "Boost Run Block for Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -2750,6 +2958,7 @@
         "IconId": 81,
         "Description": "Boost Awareness for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "The Outpost"
         ],
@@ -2763,6 +2972,7 @@
         "IconId": 10,
         "Description": "Boost Run Block for Fullbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "The Outpost"
         ],
@@ -2776,6 +2986,7 @@
         "IconId": 42,
         "Description": "Boost Stiff Arm for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Seen It Before"
         ],
@@ -2789,6 +3000,7 @@
         "IconId": 56,
         "Description": "Boost Impact Blocking for Fullbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Reinforcement"
         ],
@@ -2802,6 +3014,7 @@
         "IconId": 100,
         "Description": "Boost Strength for the Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Strong Armed"
         ],
@@ -2815,6 +3028,7 @@
         "IconId": 2,
         "Description": "Boost Lead Blocking for Fullbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Clear The Road"
         ],
@@ -2828,6 +3042,7 @@
         "IconId": 83,
         "Description": "Boost Trucking for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Safe Strong"
         ],
@@ -2841,6 +3056,7 @@
         "IconId": 55,
         "Description": "Boost Trucking for Halfbacks and Fullbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Follow The Plan"
         ],
@@ -2854,6 +3070,7 @@
         "IconId": 64,
         "Description": "Boost Break Tackle for Halfbacks and Fullbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Run Through Contact",
           "Step Aside"
@@ -2874,6 +3091,7 @@
         "IconId": 58,
         "Description": "Boost Stamina for Halfbacks, Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -2883,6 +3101,7 @@
         "IconId": 15,
         "Description": "Boost Awareness for Halfbacks and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Powered On"
         ],
@@ -2896,6 +3115,7 @@
         "IconId": 16,
         "Description": "Boost Awareness for Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Powered On"
         ],
@@ -2909,6 +3129,7 @@
         "IconId": 36,
         "Description": "Boost Short Route Running for Halfbacks and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Plugged In"
         ],
@@ -2922,6 +3143,7 @@
         "IconId": 53,
         "Description": "Boost Short Route Running for Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "All Is Known"
         ],
@@ -2935,6 +3157,7 @@
         "IconId": 35,
         "Description": "Boost Release for Haflbacks and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Game On"
         ],
@@ -2948,6 +3171,7 @@
         "IconId": 44,
         "Description": "Boost Release for Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Planned Path"
         ],
@@ -2961,6 +3185,7 @@
         "IconId": 87,
         "Description": "Boost Catch in Traffic for Halfbacks and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Break The Press"
         ],
@@ -2974,6 +3199,7 @@
         "IconId": 70,
         "Description": "Boost Catch In Traffic for Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Off To The Races"
         ],
@@ -2987,6 +3213,7 @@
         "IconId": 11,
         "Description": "Boost Catching for Halfbacks, Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Magnetic",
           "In The Web"
@@ -3007,6 +3234,7 @@
         "IconId": 104,
         "Description": "Gain the Ability to Equip X-Factors on the Offensive Lineup",
         "maxUpgrades": 0,
+        "TalentIncrement": 0,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -3016,6 +3244,7 @@
         "IconId": 37,
         "Description": "Boost Release for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "X-Factor On"
         ],
@@ -3029,6 +3258,7 @@
         "IconId": 42,
         "Description": "Boost Stiff Arm for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "X-Factor On"
         ],
@@ -3042,6 +3272,7 @@
         "IconId": 25,
         "Description": "Boost Short Route Running for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Get Open"
         ],
@@ -3055,6 +3286,7 @@
         "IconId": 43,
         "Description": "Boost Spin Move for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Strong Armed"
         ],
@@ -3068,6 +3300,7 @@
         "IconId": 94,
         "Description": "Boost Catch in Traffic for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Find Your Spot"
         ],
@@ -3081,6 +3314,7 @@
         "IconId": 97,
         "Description": "Boost Juke Move for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Spinning Tires"
         ],
@@ -3094,6 +3328,7 @@
         "IconId": 7,
         "Description": "Boost Carrying for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Prized Catch",
           "Key Cutback"
@@ -3106,6 +3341,7 @@
         "IconId": 80,
         "Description": "Boost Catching for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Ball Secured"
         ],
@@ -3119,6 +3355,7 @@
         "IconId": 64,
         "Description": "Boost Break Tackle for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Ball Secured"
         ],
@@ -3140,6 +3377,7 @@
         "IconId": 104,
         "Description": "Gain the Ability to Equip X-Factors on the Offensive Lineup",
         "maxUpgrades": 0,
+        "TalentIncrement": 0,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -3149,6 +3387,7 @@
         "IconId": 51,
         "Description": "Boost Pass Block Power for Centers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "X-Factor On"
         ],
@@ -3162,6 +3401,7 @@
         "IconId": 52,
         "Description": "Boost Run Block Finesse for Right and Left Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "X-Factor On"
         ],
@@ -3175,6 +3415,7 @@
         "IconId": 82,
         "Description": "Boost Pass Block Power for Right and Left Guards by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Pass Anchor"
         ],
@@ -3188,6 +3429,7 @@
         "IconId": 27,
         "Description": "Boost Run Block Power for Centers by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Open Lanes"
         ],
@@ -3201,6 +3443,7 @@
         "IconId": 100,
         "Description": "Boost Pass Block Finesse for Right and Left Tackles by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Guarded"
         ],
@@ -3214,6 +3457,7 @@
         "IconId": 90,
         "Description": "Boost Run Block Power for Right and Left Guards by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Home Protector"
         ],
@@ -3227,6 +3471,7 @@
         "IconId": 96,
         "Description": "Boost Strength for the Offensive Line by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Safe Protection",
           "Knock 'Em Down"
@@ -3239,6 +3484,7 @@
         "IconId": 46,
         "Description": "Boost Pass Block for the Offensive Line by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Mauler"
         ],
@@ -3252,6 +3498,7 @@
         "IconId": 45,
         "Description": "Boost Run Block for the Offensive Line by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Mauler"
         ],
@@ -3273,6 +3520,7 @@
         "IconId": 104,
         "Description": "Gain the Ability to Equip X-Factors on the Offensive Lineup",
         "maxUpgrades": 0,
+        "TalentIncrement": 0,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -3282,6 +3530,7 @@
         "IconId": 48,
         "Description": "Boost Throw On Run for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "X-Factor On"
         ],
@@ -3295,6 +3544,7 @@
         "IconId": 88,
         "Description": "Boost Short Accuracy for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "X-Factor On"
         ],
@@ -3308,6 +3558,7 @@
         "IconId": 47,
         "Description": "Boost Throw Under Pressure for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "On The Move"
         ],
@@ -3321,6 +3572,7 @@
         "IconId": 89,
         "Description": "Boost Medium Accuracy for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Easy Delivery"
         ],
@@ -3334,6 +3586,7 @@
         "IconId": 21,
         "Description": "Boost Break Sack for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Iron Nerves"
         ],
@@ -3347,6 +3600,7 @@
         "IconId": 12,
         "Description": "Boost Deep Accuracy for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "On The Dot"
         ],
@@ -3360,6 +3614,7 @@
         "IconId": 20,
         "Description": "Boost Play Action for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Pocket Strength",
           "Safe Delivery"
@@ -3372,6 +3627,7 @@
         "IconId": 4,
         "Description": "Boost Speed for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Trickery"
         ],
@@ -3385,6 +3641,7 @@
         "IconId": 73,
         "Description": "Boost Throw Power for Quarterbacks by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Trickery"
         ],
@@ -3406,6 +3663,7 @@
         "IconId": 104,
         "Description": "Gain the Ability to Equip X-Factors on the Offensive Lineup",
         "maxUpgrades": 0,
+        "TalentIncrement": 0,
         "Dependencies": [],
         "Exclusions": []
       },
@@ -3415,6 +3673,7 @@
         "IconId": 3,
         "Description": "Boost Short Route Running for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "X-Factor On"
         ],
@@ -3428,6 +3687,7 @@
         "IconId": 37,
         "Description": "Boost Medium Route Running for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "X-Factor On"
         ],
@@ -3441,6 +3701,7 @@
         "IconId": 48,
         "Description": "Boost Release for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Safety Valve"
         ],
@@ -3454,6 +3715,7 @@
         "IconId": 31,
         "Description": "Boost Deep Route Running for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "On The Out"
         ],
@@ -3467,6 +3729,7 @@
         "IconId": 70,
         "Description": "Boost Catch In Traffic for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Ready, Set, Gone"
         ],
@@ -3480,6 +3743,7 @@
         "IconId": 88,
         "Description": "Boost Spectacular Catch for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Go Long"
         ],
@@ -3493,6 +3757,7 @@
         "IconId": 11,
         "Description": "Boost Catching for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "In The Web",
           "One Handed"
@@ -3505,6 +3770,7 @@
         "IconId": 41,
         "Description": "Boost Acceleration for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Caught"
         ],
@@ -3518,6 +3784,7 @@
         "IconId": 26,
         "Description": "Boost Jumping for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
+        "TalentIncrement": 1,
         "Dependencies": [
           "Caught"
         ],
@@ -3538,77 +3805,88 @@
         "Behavior": "Upgradable",
         "IconId": 38,
         "Description": "<talent_value>% discount on players under <ovr> OVR on re-sign",
-        "maxUpgrades": 3
+        "maxUpgrades": 3,
+        "TalentIncrement": 1
       },
       {
         "Name": "Center Focus",
         "Behavior": "Upgradable",
         "IconId": 28,
         "Description": "Increase likelihood of Centers signing through Free Agency",
-        "maxUpgrades": 3
+        "maxUpgrades": 3,
+        "TalentIncrement": 1
       },
       {
         "Name": "Corner the Market",
         "Behavior": "Upgradable",
         "IconId": 9,
         "Description": "Increase likelihood of Cornerbacks signing through Free Agency",
-        "maxUpgrades": 3
+        "maxUpgrades": 3,
+        "TalentIncrement": 1
       },
       {
         "Name": "Full Steam Ahead",
         "Behavior": "Upgradable",
         "IconId": 4,
         "Description": "Increase likelihood of Left and Right Ends signing through Free Agency",
-        "maxUpgrades": 3
+        "maxUpgrades": 3,
+        "TalentIncrement": 1
       },
       {
         "Name": "Feels Like Home",
         "Behavior": "Regular",
         "IconId": 27,
         "Description": "Scheme Fits have increased interest in signing through Free Agency",
-        "maxUpgrades": 0
+        "maxUpgrades": 0,
+        "TalentIncrement": 0
       },
       {
         "Name": "Pressure's On",
         "Behavior": "Upgradable",
         "IconId": 3,
         "Description": "Increase likelihood of Defensive Tackles signing through Free Agency",
-        "maxUpgrades": 3
+        "maxUpgrades": 3,
+        "TalentIncrement": 1
       },
       {
         "Name": "Safe Signing",
         "Behavior": "Upgradable",
         "IconId": 1,
         "Description": "Increase likelihood of Free Safeties signing through Free Agency",
-        "maxUpgrades": 3
+        "maxUpgrades": 3,
+        "TalentIncrement": 1
       },
       {
         "Name": "Tunnel Vision",
         "Behavior": "Upgradable",
         "IconId": 6,
         "Description": "Increase likelihood of Halfbacks and Fullbacks signing through Free Agency",
-        "maxUpgrades": 3
+        "maxUpgrades": 3,
+        "TalentIncrement": 1
       },
       {
         "Name": "General Focus",
         "Behavior": "Upgradable",
         "IconId": 49,
         "Description": "Increase likelihood of Middle Linebackers signing through Free Agency",
-        "maxUpgrades": 3
+        "maxUpgrades": 3,
+        "TalentIncrement": 1
       },
       {
         "Name": "Sign Here",
         "Behavior": "Upgradable",
         "IconId": 54,
         "Description": "Increase likelihood of Left and Right Guards signing through Free Agency",
-        "maxUpgrades": 3
+        "maxUpgrades": 3,
+        "TalentIncrement": 1
       },
       {
         "Name": "Unlocker",
         "Behavior": "Selection",
         "IconId": 97,
         "Description": "Unlock 1 player in re-signing who is \"Not Interested\" in negotiating once per season",
-        "maxUpgrades": 0
+        "maxUpgrades": 0,
+        "TalentIncrement": 0
       }
     ]
   },
@@ -3623,63 +3901,72 @@
         "Behavior": "Upgradable",
         "IconId": 38,
         "Description": "<talent_value>% discount on players under <ovr> OVR on re-sign",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "Pressure's On",
         "Behavior": "Upgradable",
         "IconId": 3,
         "Description": "Increase likelihood of Defensive Tackles signing through Free Agency",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "Full Steam Ahead",
         "Behavior": "Upgradable",
         "IconId": 4,
         "Description": "Increase likelihood of Left and Right Ends signing through Free Agency",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "Safe Signing",
         "Behavior": "Upgradable",
         "IconId": 1,
         "Description": "Increase likelihood of Free Safeties signing through Free Agency",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "Strong Pitch",
         "Behavior": "Upgradable",
         "IconId": 0,
         "Description": "Increase likelihood of Strong Safeties signing through Free Agency",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "Corner the Market",
         "Behavior": "Upgradable",
         "IconId": 9,
         "Description": "Increase likelihood of Cornerbacks signing through Free Agency",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "Outside the Box",
         "Behavior": "Upgradable",
         "IconId": 50,
         "Description": "Increase likelihood of Left and Right Outside Linebackers signing through Free Agency",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "General Focus",
         "Behavior": "Upgradable",
         "IconId": 49,
         "Description": "Increase likelihood of Middle Linebackers signing through Free Agency",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "Unlocker",
         "Behavior": "Selection",
         "IconId": 97,
         "Description": "Unlock 1 player in re-signing who is \"Not Interested\" in negotiating once per season",
-        "maxUpgrades": 0
+        "maxUpgrades": 0,
+        "TalentIncrement": 0
       }
     ]
   },
@@ -3694,56 +3981,64 @@
         "Behavior": "Upgradable",
         "IconId": 28,
         "Description": "Increase likelihood of Centers signing through Free Agency",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "Blindside Signing",
         "Behavior": "Upgradable",
         "IconId": 53,
         "Description": "Increase likelihood of Left and Right Tackles signing through Free Agency",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "Sign Here",
         "Behavior": "Upgradable",
         "IconId": 54,
         "Description": "Increase likelihood of Left and Right Guards signing through Free Agency",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "Tunnel Vision",
         "Behavior": "Upgradable",
         "IconId": 6,
         "Description": "Increase likelihood of Halfbacks and Fullbacks signing through Free Agency",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "QB Kingdom",
         "Behavior": "Upgradable",
         "IconId": 68,
         "Description": "Increase likelihood of Quarterbacks signing through Free Agency",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "Catch On",
         "Behavior": "Upgradable",
         "IconId": 95,
         "Description": "Increase likelihood of Wide Receivers signing through Free Agency",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "On the Line",
         "Behavior": "Upgradable",
         "IconId": 94,
         "Description": "Increase likelihood of Tight Ends signing through Free Agency",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "Feels Like Home",
         "Behavior": "Regular",
         "IconId": 27,
         "Description": "Scheme Fits have increased interest in signing through Free Agency",
-        "maxUpgrades": 0
+        "maxUpgrades": 0,
+        "TalentIncrement": 0
       }
     ]
   },
@@ -3758,56 +4053,64 @@
         "Behavior": "Regular",
         "IconId": 57,
         "Description": "<talent_value>% trade discount on players older than <age>",
-        "maxUpgrades": 0
+        "maxUpgrades": 0,
+        "TalentIncrement": 0
       },
       {
         "Name": "Draft Day Everyday",
         "Behavior": "Upgradable",
         "IconId": 18,
         "Description": "<talent_value>% trade discount for CPU draft picks",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "Wheeling and Dealing",
         "Behavior": "Upgradable",
         "IconId": 102,
         "Description": "<talent_value>% trade value increase for user draft picks",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "On Line One",
         "Behavior": "Regular",
         "IconId": 62,
         "Description": "Guaranteed trade package for current user pick during the draft",
-        "maxUpgrades": 0
+        "maxUpgrades": 0,
+        "TalentIncrement": 0
       },
       {
         "Name": "Quite The Sales Pitch",
         "Behavior": "Regular",
         "IconId": 69,
         "Description": "Non-X-Factor user players will be valued 1 dev trait higher than actual in trades",
-        "maxUpgrades": 0
+        "maxUpgrades": 0,
+        "TalentIncrement": 0
       },
       {
         "Name": "Everyone's Got A Price",
         "Behavior": "Upgradable",
         "IconId": 23,
         "Description": "<talent_value>% trade discount for CPU players",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "The Grass Is Greener",
         "Behavior": "Upgradable",
         "IconId": 93,
         "Description": "<talent_value>% trade value increase for user players",
-        "maxUpgrades": 2
+        "maxUpgrades": 2,
+        "TalentIncrement": 1
       },
       {
         "Name": "Smooth Talker",
         "Behavior": "Regular",
         "IconId": 86,
         "Description": "Reduce the cost of trading up during the draft",
-        "maxUpgrades": 0
+        "maxUpgrades": 0,
+        "TalentIncrement": 0
       }
     ]
   }

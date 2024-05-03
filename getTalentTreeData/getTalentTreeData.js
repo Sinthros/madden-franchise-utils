@@ -82,13 +82,15 @@ franchise.on('ready', async function () {
 
         // If a non-upgradable type, set maxUpgrades to 0. Else, if a 2-upgrade Talent Tree, set to 2. Else, set to 3.
         const maxUpgrades = nonUpgradableTalentTypes.includes(talentRecord.Behavior) ? 0 : (twoUpgradeTalentTrees.includes(talentTreeName) && !threeUpgradeTalents.includes(talentRecord.Name)) ? 2 : 3;
+        const talentIncrement = talentRecord.Behavior === 'Upgradable' ? 1 : 0;
 
         talentNodes.push({
           Name: talentRecord.Name,
           Behavior: talentRecord.Behavior,
           IconId: talentRecord.IconId,
           Description: talentRecord.Description,
-          maxUpgrades: maxUpgrades
+          maxUpgrades: maxUpgrades,
+          TalentIncrement: talentIncrement
         });
       }
 
