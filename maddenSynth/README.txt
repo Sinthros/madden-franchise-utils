@@ -16,7 +16,7 @@ Then, once your file is loaded, you will be presented with a series of options:
 - The quit option will ask if you would like to save changes, and then exit MaddenSynth.
 
 ADDING SCENARIOS:
-There are two ways to add scenarios. You can either use the create scenario option in the tool, or you can add a properly formatted JSON file to the scenarios folder. Look at existing files for an example of how this file should be formatted.
+There are two ways to add scenarios. You can either use the create scenario option in the tool, or you can add a properly formatted JSON file to the scenarios folder. Look at existing files for an example of how this file should be formatted. If you download a pack of scenarios shared online, simply dump the JSON files into the scenarios folder.
 
 SCENARIO RANDOM THRESHOLD:
 When creating a scenario, you will be asked if you want to add a random threshold to the scenario. THis allows you to make some scenarios more rare than others. If you choose yes, you will be asked to input a random threshold. How this works is when generating a scenario, if this scenario is chosen, a random number between 1 and 50 will be generated, and for the scenario to get used, it must be greater than or equal to your chosen random threshold value.
