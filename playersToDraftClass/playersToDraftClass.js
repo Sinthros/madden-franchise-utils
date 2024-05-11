@@ -10,7 +10,7 @@ const { getBinaryReferenceData } = require('madden-franchise/services/utilServic
 const fs = require('fs');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
-const genericHeadLookup = JSON.parse(fs.readFileSync('../lookupFunctions/jsonLookups/genericHeadLookup.json', 'utf-8'));
+const genericHeadLookup = JSON.parse(fs.readFileSync('../lookupFunctions/JsonLookups/genericHeadLookup.json', 'utf-8'));
 
 console.log("In this program, you can convert a specific year of players in your Franchise File into Draft Class players.");
 console.log("For this to work, your Franchise File MUST be in the Regular Season/Playoffs. It will not work during the Preseason.");
