@@ -7,7 +7,7 @@ const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const TRANSFER_SCHEDULE_FUNCTIONS = require('../retroSchedules/transferScheduleFromJson');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 
-console.log("This program will allow you to regenerate the schedule in your Madden 24 franchise file to be closer to a real NFL schedule. This tool must be run during the first week of the preseason.\n")
+console.log("This program will allow you to regenerate the schedule in your Madden 24 franchise file to be closer to a real NFL schedule. This tool must be run during the preseason.\n")
 const gameYear = '24';
 
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
@@ -299,6 +299,22 @@ function getYesOrNo(message)
 	}
 }
 
+function runProgram(command)
+{
+	try
+	{
+		execSync(command);
+	}
+	catch (error)
+	{
+		console.log("Execution failed. Please inform WiiMaster immediately. Enter anything to exit.");
+		fs.unlinkSync('HW12-17Game.exe');
+		prompt();
+		process.exit(0);
+	}
+
+}
+
 
 franchise.on('ready', async function () {
     const teamTable = franchise.getTableByUniqueId(tables.teamTable);
@@ -308,9 +324,9 @@ franchise.on('ready', async function () {
 	const currentWeek = parseInt(seasonInfoTable.records[0]['CurrentWeek']);
 	scheduleObject.year = `${parseInt(seasonInfoTable.records[0]['CurrentSeasonYear'])}`;
 	
-	if (!validWeekTypes.includes(currentWeekType) || currentWeek > 0) // Check if file is in first week of preseason, exit if not
+	if (!validWeekTypes.includes(currentWeekType)) // Check if file is in first week of preseason, exit if not
 	{
-		console.log("Selected file is not in a valid week. Only Franchise Files in the first week of the preseason are supported by this tool. Enter anything to exit.")
+		console.log("Selected file is not in a valid week. Only Franchise Files in the preseason are supported by this tool. Enter anything to exit.")
 		prompt();
 		process.exit(0);
 	}
@@ -422,7 +438,7 @@ franchise.on('ready', async function () {
 		{
 			fs.unlinkSync('solution.json');
 			console.log("\nBeginning generation of schedule. Please be patient, as this may take several minutes.");
-			execSync('HW12-17Game.exe > GeneratorLog.txt');
+			runProgram('HW12-17Game.exe > GeneratorLog.txt');
 			if(!fs.existsSync('solution.json'))
 			{
 				console.log("\nSchedule generation failed. Please inform WiiMaster immediately. Enter anything to exit.");
@@ -436,7 +452,7 @@ franchise.on('ready', async function () {
 	{
 		console.log("\nBeginning generation of schedule. Please be patient, as this may take several minutes.");
 
-		execSync('HW12-17Game.exe > GeneratorLog.txt');
+		runProgram('HW12-17Game.exe > GeneratorLog.txt');
 	}
 	
 
