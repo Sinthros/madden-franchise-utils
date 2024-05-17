@@ -6,8 +6,10 @@
   "author": "Sinthros",
   "license": "ISC",
   "dependencies": {
+    "lodash": "^4.17.21",
     "lz4": "^0.6.5",
     "madden-franchise": "^3.3.0",
+    "papaparse": "^5.4.1",
     "prompt-sync": "^4.2.0",
     "xlsx": "^0.18.5"
   }

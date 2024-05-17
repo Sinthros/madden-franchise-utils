@@ -1,0 +1,1 @@
+nexe --build -i regenerateScheduleM24.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "../lookupFunctions/FranchiseUtils.js" -r "../lookupFunctions/FranchiseTableId.js" -r "teamLookup.json" -r "./lookupFiles" -r "./HW12-17Game.exe" -r "../retroSchedules/transferScheduleFromJson.js" -o "regenerateScheduleM24.exe" --verbose
