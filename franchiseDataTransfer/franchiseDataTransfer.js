@@ -7,6 +7,7 @@ const os = require('os');
 const { exportTableData, importTableData } = require('./externalDataService');
 const fs = require('fs');
 const zeroPad = (num, places) => String(num).padStart(places, '0')
+let is22To24;
 
 const teamIdentityLookup = JSON.parse(fs.readFileSync('lookupFiles/team_identity.json', 'utf8'));
 const coachTalentsPositions = JSON.parse(fs.readFileSync('lookupFiles/coach_talents.json', 'utf8'));
@@ -584,13 +585,16 @@ async function deleteExcessFreeAgents(targetFranchise) {
   }
 };
 
-async function getNeededColumns(currentTableName,is22To24) {
+async function getNeededColumns(currentTableName) {
 
   switch (currentTableName) {
     case "Player":
       keepColumns = [];
       deleteColumns = [];
-      zeroColumns = ["SeasonStats","GameStats","CharacterVisuals","SeasonalGoal"];
+      zeroColumns = ["GameStats","CharacterVisuals","SeasonalGoal"];
+      if (is22To24) {
+        zeroColumns.push("SeasonStats");
+      }
       return [keepColumns,deleteColumns,zeroColumns];
     case "Team":
       keepColumns = ["Philosophy","HeadCoach","OffensiveCoordinator","DefensiveCoordinator","Roster","PracticeSquad","DepthChart","ActiveRosterSize","SalCapRosterSize","SalCapNextYearRosterSize","TeamIndex","isRowEmpty","nextRecordToUse"];
@@ -838,7 +842,7 @@ async function handleOriginalCurrentTeamBin(currentTable, rows, currentCol) {
   currentTable.records[rows][currentCol] = finalBinary;
 }
 
-async function getCoachTables(mergedTableMappings,is22To24) {
+async function getCoachTables(mergedTableMappings) {
   
   const coach = targetFranchise.getTableByUniqueId(tables.coachTable);
   const freeAgentCoachTable = targetFranchise.getTableByUniqueId(tables.freeAgentCoachTable);
@@ -920,7 +924,7 @@ async function getCoachTables(mergedTableMappings,is22To24) {
   return tableArray;
 };
 
-async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreColumns,sourceGameYear,targetGameYear,mergedTableMappings,is22To24) { // Main function to handle table
+async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreColumns,sourceGameYear,targetGameYear,mergedTableMappings) { // Main function to handle table
 
   const tableName = currentTable.header.name;
   
@@ -929,7 +933,7 @@ async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreCo
   
   const uniqueId = currentTable.header.tablePad1; // Get table unique ID
   var sourceUniqueId = uniqueId; //Sometimes the unique IDs don't match up - Cause fuck me, I guess!
-  const [keepColumns,deleteColumns,zeroColumns] = await getNeededColumns(currentTableName,is22To24) // Get the columns we need for the current table
+  const [keepColumns,deleteColumns,zeroColumns] = await getNeededColumns(currentTableName) // Get the columns we need for the current table
 
   const options = {outputFilePath: `${dir}\\${currentTableName}.xlsx`} //Define our output path for the temp Excel file
   const filePath = `${dir}\\${currentTableName}.xlsx` //Define the filepath
@@ -1050,22 +1054,27 @@ async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreCo
             await  handleOriginalCurrentTeamBin(currentTable, rows, currentCol);
           }
 
-          currentBinVal = currentTable.records[rows][currentCol] // Get currentBinVal
-          let outputBin = zeroPad(FranchiseUtils.dec2bin(currentTable.records[rows].fields[currentCol]["referenceData"]["tableId"]), 15); //Get our outputBin and zero-pad it to 15 characters
+          // Get currentBinVal from the current table
+          let currentBinVal = currentTable.records[rows][currentCol];
 
+          // Convert the tableId to binary, zero-pad it to 15 characters
+          let outputBin = zeroPad(FranchiseUtils.dec2bin(currentTable.records[rows].fields[currentCol].referenceData.tableId),15);
+
+          // Find the corresponding dictionary entry in mergedTableMappings
           const currentTableDict = mergedTableMappings.find(table => table.sourceIdBinary === outputBin);
-          try {
-            replaceBin = currentTableDict.targetIdBinary
 
+          let replaceBin;
+          try {
+            // Attempt to get the targetIdBinary from the found dictionary entry
+            replaceBin = currentTableDict.targetIdBinary;
+          } catch (e) {
+            // If an error occurs (e.g., currentTableDict is undefined), continue to the next iteration
+            console.warn(`Could not find targetIdBinary for column: ${columnHeaders[i]}`);
+            continue;
           }
-          catch (e) {
-            //console.log(columnHeaders[i])
-            continue
-            
-          }
-          
-            // Else, replace the outputBin with the currentDictValue
-            currentTable.records[rows][currentCol] = currentBinVal.replace(outputBin,replaceBin)
+
+          // Replace the outputBin with the replaceBin in currentBinVal
+          currentTable.records[rows][currentCol] = currentBinVal.replace(outputBin, replaceBin);
           }
 
         
@@ -1150,9 +1159,23 @@ async function getPlayerTables() {
   const playerMerchTable = targetFranchise.getTableByUniqueId(tables.playerMerchTable);
   const activeAbilityArray = targetFranchise.getTableByUniqueId(tables.activeAbilityArrayTable);
 
+  const seasonStats = targetFranchise.getTableByUniqueId(tables.seasonStatsTable);
+  const seasonDefensiveKPReturnStats = targetFranchise.getTableByUniqueId(tables.seasonDefKPReturnStatsTable);
+  const seasonOffensiveKPReturnStats = targetFranchise.getTableByUniqueId(tables.seasonOffKPReturnStatsTable);
+  const seasonOLineStats = targetFranchise.getTableByUniqueId(tables.seasonOLineStatsTable);
+  const seasonOffensiveStats = targetFranchise.getTableByUniqueId(tables.seasonOffStatsTable);
+  const seasonDefensiveStats = targetFranchise.getTableByUniqueId(tables.seasonDefStatsTable);
+  const seasonKickingStats = targetFranchise.getTableByUniqueId(tables.seasonKickingStatsTable);
+
   const tableArray = [mainActiveSignature,secondaryActiveSignature,signatureArray,player,freeagents,playerArray,playerPracticeSquads,
     depthChart,teamRoadMap,playerResignNegotiation,careerDefensiveKPReturnStats,careerOffensiveKPReturnStats,careerOLineStats,careerOffensiveStats,careerDefensiveStats,
     careerKickingStats,playerMerchTable,activeAbilityArray];
+
+  if (!is22To24) {
+    tableArray.push(seasonStats,seasonDefensiveKPReturnStats,seasonOffensiveKPReturnStats,seasonOLineStats
+      ,seasonOffensiveStats,seasonDefensiveStats,seasonKickingStats
+    )
+  }
 
   return tableArray;
 
@@ -1786,9 +1809,9 @@ sourceFranchise.on('ready', async function () {
       }
     });
 
-    const is22To24 = sourceGameYear === 22 && targetGameYear === 24;
+    is22To24 = sourceGameYear === 22 && targetGameYear === 24;
 
-    const coachTables = await getCoachTables(mergedTableMappings,is22To24);
+    const coachTables = await getCoachTables(mergedTableMappings);
     const playerTables = await getPlayerTables();
     const awardTables = await getAwardTables();
     const optionalTables = await getOptionalTables();
@@ -1811,8 +1834,7 @@ sourceFranchise.on('ready', async function () {
             ignoreColumns,
             sourceGameYear,
             targetGameYear,
-            mergedTableMappings,
-            is22To24
+            mergedTableMappings
           );
         }
       }
