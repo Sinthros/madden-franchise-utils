@@ -178,9 +178,20 @@ franchise.on('ready', async function () {
 				return day1Index - day2Index;
 			}
 
-			// If days are the same, compare times
-			const [hour1, minute1] = game1.time.split(":").map(Number);
-			const [hour2, minute2] = game2.time.split(":").map(Number);
+			// If days are the same, compare times, ensuring AM games come before PM games
+			const time1 = game1.time.split(':');
+			const time2 = game2.time.split(':');
+			const hour1 = parseInt(time1[0]);
+			const hour2 = parseInt(time2[0]);
+			const minute1 = parseInt(time1[1].substr(0, 2));
+			const minute2 = parseInt(time2[1].substr(0, 2));
+
+			const period1 = time1[1].substr(2);
+			const period2 = time2[1].substr(2);
+
+			if (period1 !== period2) {
+				return period1 === 'AM' ? -1 : 1;
+			}
 
 			if (hour1 !== hour2) {
 				return hour1 - hour2;

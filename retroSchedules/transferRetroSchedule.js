@@ -20,12 +20,29 @@ console.log("This only works with Madden 24 Franchise Files, and if your Franchi
 
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
+let minYear = 1970;
+let maxYear = 2023;
+// Dynamically determine min and max year from folder
+const files = fs.readdirSync(directoryPath);
+const years = files.map(file => {
+  try
+  {
+    return parseInt(file.split('.')[0]);
+  }
+  catch (error)
+  {
+    return 0;
+  }
+});
+minYear = Math.min(...years);
+maxYear = Math.max(...years);
+
 async function promptUser() {
   let selectedYear;
 
   while (true) {
     // Ask the user for input
-    const inputYear = prompt('Enter the year of the schedule you would like to use (between 1970 and 2023): ');
+    const inputYear = prompt(`Enter the year of the schedule you would like to use (between ${minYear} and ${maxYear}): `);
 
     // Parse the input as an integer
     selectedYear = parseInt(inputYear, 10);
@@ -35,31 +52,35 @@ async function promptUser() {
         break;
     }
     // Check if the input is a valid year
-    if (!Number.isNaN(selectedYear) && selectedYear >= 1970 && selectedYear <= 2023) {
-      break; // Exit the loop if the input is valid
+    if (!Number.isNaN(selectedYear) && selectedYear >= minYear && selectedYear <= maxYear) 
+    {
+        break; // Exit the loop if the input is valid
     }
 
-    console.log('Invalid input. Please enter a year between 1970 and 2023.');
+    console.log(`Invalid input. Please enter a year between ${minYear} and ${maxYear}.`);
   }
 
   if (selectedYear === 0)
   {
-      // Custom JSON file case
-      const customJsonPath = prompt('Enter the full path of the custom JSON file: ');
-      try
-      {
-         const customJson = JSON.parse(fs.readFileSync(customJsonPath, 'utf8'));
-         return customJson;
-      }
-      catch (error)
-      {
-         console.error(`Error reading or parsing custom JSON file: `, error);
-      }
+    // Custom JSON file case
+    const customJsonPath = prompt('Enter the full path of the custom JSON file: ');
+    try
+    {
+      const customJson = JSON.parse(fs.readFileSync(customJsonPath, 'utf8'));
+      return customJson;
+    }
+    catch (error)
+    {
+      console.log(`Error reading or parsing custom JSON file: ${error}`);
+      console.log("Enter anything to exit.");
+      prompt();
+      process.exit(0);
+    }
   }
   else
   {
-     const sourceScheduleJson = await processSelectedYear(selectedYear);
-     return sourceScheduleJson;
+    const sourceScheduleJson = await processSelectedYear(selectedYear);
+    return sourceScheduleJson;
   }
   // Valid input, process the selected year
 }
