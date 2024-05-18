@@ -1,0 +1,78 @@
+{
+    "SUNE_CBS": {
+        "Day": "Sun",
+        "Time": "1:00PM"
+    },
+    "SUNE_FOX": {
+        "Day": "Sun",
+        "Time": "1:00PM"
+    },
+    "SUNL_CBS": {
+        "Day": "Sun",
+        "Time": "4:05PM"
+    },
+    "SUNL_FOX": {
+        "Day": "Sun",
+        "Time": "4:05PM"
+    },
+    "SUNB_NFL": {
+        "Day": "Sun",
+        "Time": "4:05PM"
+    },
+    "SUNDH_CBS": {
+        "Day": "Sun",
+        "Time": "4:25PM"
+    },
+    "SUNDH_FOX": {
+        "Day": "Sun",
+        "Time": "4:25PM"
+    },
+    "SUNN_NBC": {
+        "Day": "Sun",
+        "Time": "8:20PM"
+    },
+    "SUNI_NFL": {
+        "Day": "Sun",
+        "Time": "9:30AM"
+    },
+    "MON0_ESPN": {
+        "Day": "Mon",
+        "Time": "7:10PM"
+    },
+    "MON1_ESPN": {
+        "Day": "Mon",
+        "Time": "8:15PM"
+    },
+    "MON2_ESPN": {
+        "Day": "Mon",
+        "Time": "10:20PM"
+    },
+    "THUE_FOX": {
+        "Day": "Thu",
+        "Time": "12:30PM"
+    },
+    "THUL_CBS": {
+        "Day": "Thu",
+        "Time": "4:30PM"
+    },
+    "THUN_NBC": {
+        "Day": "Thu",
+        "Time": "8:20PM"
+    },
+    "THUN_CBS": {
+        "Day": "Thu",
+        "Time": "8:25PM"
+    },
+    "THUN_NFL": {
+        "Day": "Thu",
+        "Time": "8:25PM"
+    },
+    "SATE_NFL": {
+        "Day": "Sat",
+        "Time": "4:30PM"
+    },
+    "SATL_NFL": {
+        "Day": "Sat",
+        "Time": "8:30PM"
+    }
+}
