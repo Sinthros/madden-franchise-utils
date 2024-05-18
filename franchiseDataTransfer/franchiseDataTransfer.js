@@ -1069,7 +1069,7 @@ async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreCo
             replaceBin = currentTableDict.targetIdBinary;
           } catch (e) {
             // If an error occurs (e.g., currentTableDict is undefined), continue to the next iteration
-            console.warn(`Could not find targetIdBinary for column: ${columnHeaders[i]}`);
+            //console.warn(`Could not find targetIdBinary for column: ${columnHeaders[i]}`);
             continue;
           }
 

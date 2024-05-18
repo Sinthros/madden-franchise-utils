@@ -150,7 +150,12 @@ const tables = {
 
     //Acquisition tables
     playerAcquisitionEvaluationTable: 2531183555,
-    playerAcquisitionEvaluationArrayTable: 498911520
+    playerAcquisitionEvaluationArrayTable: 498911520,
+
+    // Stadium
+    stadiumPartInfoTable: 3336445590,
+    stadiumTable: 2377187865
+
 
 
 
