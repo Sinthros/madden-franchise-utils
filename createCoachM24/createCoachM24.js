@@ -9,28 +9,32 @@ const fs = require('fs');
 const CHARACTER_VISUALS_FUNCTIONS = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
 const COACH_BASE_JSON = CHARACTER_VISUALS_FUNCTIONS.baseCoachVisualJson;
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const { tables } = require('../lookupFunctions/FranchiseTableId');
 const ZERO_REF = '00000000000000000000000000000000';
 
-  // Load all needed JSON files (Really need to handle this better)
-  const offPlaybookLookup = JSON.parse(fs.readFileSync('lookupFiles/off_playbook_lookup.json', 'utf8'));
-  const defPlaybookLookup = JSON.parse(fs.readFileSync('lookupFiles/def_playbook_lookup.json', 'utf8'));
-  const philosophyLookup = JSON.parse(fs.readFileSync('lookupFiles/philosophy_lookup.json', 'utf8'));
-  const offSchemeLookup = JSON.parse(fs.readFileSync('lookupFiles/off_scheme_lookup.json', 'utf8'));
-  const defSchemeLookup = JSON.parse(fs.readFileSync('lookupFiles/def_scheme_lookup.json', 'utf8'));
-  const coachTalentsPositions = JSON.parse(fs.readFileSync('lookupFiles/coach_talents.json', 'utf8'));
-  const coachTalentsLookup = JSON.parse(fs.readFileSync('lookupFiles/coach_talents_lookup.json', 'utf8'));
-  const allCoachHeads = JSON.parse(fs.readFileSync('lookupFiles/coach_heads_lookup.json', 'utf8'));
+const offPlaybookLookup = JSON.parse(fs.readFileSync('lookupFiles/off_playbook_lookup.json', 'utf8'));
+const defPlaybookLookup = JSON.parse(fs.readFileSync('lookupFiles/def_playbook_lookup.json', 'utf8'));
+const philosophyLookup = JSON.parse(fs.readFileSync('lookupFiles/philosophy_lookup.json', 'utf8'));
+const offSchemeLookup = JSON.parse(fs.readFileSync('lookupFiles/off_scheme_lookup.json', 'utf8'));
+const defSchemeLookup = JSON.parse(fs.readFileSync('lookupFiles/def_scheme_lookup.json', 'utf8'));
+const coachTalentsPositions = JSON.parse(fs.readFileSync('lookupFiles/coach_talents.json', 'utf8'));
+const coachTalentsLookup = JSON.parse(fs.readFileSync('lookupFiles/coach_talents_lookup.json', 'utf8'));
+const allCoachHeads = JSON.parse(fs.readFileSync('lookupFiles/coach_heads_lookup.json', 'utf8'));
 
-  // Visual morph keys for players and coaches
-  const visualMorphKeys = [
-    "ArmSize",
-    "CalfBlend",
-    "Chest",
-    "Feet",
-    "Glute",
-    "Gut",
-    "Thighs"
-  ];
+// Don't believe these are needed anymore
+const allSkinTones = ['SkinTone1','SkinTone2','SkinTone3','SkinTone4','SkinTone5','SkinTone6','SkinTone7'];
+const allApparel = ['Facility1','Facility2','Practice1','Practice2','Practice3','Staff1','Staff2','Staff3','Staff4'];
+
+// Visual morph keys for players and coaches
+const visualMorphKeys = [
+  "ArmSize",
+  "CalfBlend",
+  "Chest",
+  "Feet",
+  "Glute",
+  "Gut",
+  "Thighs"
+];
 
 
 const gameYear = '24';
@@ -49,18 +53,18 @@ if (!fs.existsSync(dir)){
 
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
-async function adjustPresentationId (getPresentationId) {
+async function adjustPresentationId(presentationTable) {
   try {
-    var presentationId = getPresentationId.records[0].PresentationId
-    getPresentationId.records[0].PresentationId++;
-    getPresentationId.records[0].IdsRemaining--;
+    const record = presentationTable.records[0];
+    const presentationId = record.PresentationId;
+    record.PresentationId++;
+    record.IdsRemaining--;
     return presentationId;
 
-  } catch (e) {
-    console.warn('ERROR! Exiting program due to; ', e);
-    process.exit(0);
+  } catch (error) {
+    console.error('ERROR! Exiting program due to: ', error);
+    process.exit(1);
   }
-
 }
 
 async function readTables (allTables) {
@@ -192,7 +196,7 @@ async function setCoachPosition(coachTable, nextCoachRecord) {
   }
 }
 
-async function setSchemes(coachTable, nextCoachRecord, offSchemeLookup, defSchemeLookup) {
+async function setSchemes(coachTable, nextCoachRecord) {
   try {
     const offSchemeKeys = Object.keys(offSchemeLookup);
     const defSchemeKeys = Object.keys(defSchemeLookup);
@@ -220,7 +224,7 @@ async function setSchemes(coachTable, nextCoachRecord, offSchemeLookup, defSchem
   }
 }
 
-async function setPlaybooks(coachTable, nextCoachRecord, offPlaybookLookup, defPlaybookLookup, philosophyLookup) {
+async function setPlaybooks(coachTable, nextCoachRecord) {
   try {
     const playbookKeys = Object.keys(offPlaybookLookup);
 
@@ -250,7 +254,7 @@ async function setPlaybooks(coachTable, nextCoachRecord, offPlaybookLookup, defP
   }
 }
 
-async function setCoachAppearance(coachTable,nextCoachRecord,allCoachHeads,allSkinTones,allCoachFaces) {
+async function setCoachAppearance(coachTable,nextCoachRecord) {
   try {
 
     const allCoachFaces = Object.keys(allCoachHeads); //Get all face values from dictionary
@@ -352,7 +356,7 @@ async function setCoachApparel(coachTable,nextCoachRecord) {
 
 }
 
-async function automaticallyFillTalents(activeTalentTree, activeTalentTreeNextRecord, coachPosition, coachTalentsPositions, coachTalentsLookup) {
+async function automaticallyFillTalents(activeTalentTree, activeTalentTreeNextRecord, coachPosition) {
   const pickedTalents = [];
 
   for (let i = 0; i < 3; i++) {
@@ -397,7 +401,7 @@ async function automaticallyFillTalents(activeTalentTree, activeTalentTreeNextRe
   return pickedTalents;
 }
 
-async function manuallySelectTalents(activeTalentTree, activeTalentTreeNextRecord, coachPosition, coachTalentsPositions, coachTalentsLookup) {
+async function manuallySelectTalents(activeTalentTree, activeTalentTreeNextRecord, coachPosition) {
   const pickedTalents = [];
 
   for (let i = 0; i < 3; i++) {
@@ -455,7 +459,7 @@ async function manuallySelectTalents(activeTalentTree, activeTalentTreeNextRecor
 }
 
 
-async function handleTalentTree(coachTable,nextCoachRecord,talentNodeStatus,talentNodeStatusArray,activeTalentTree,activeTalentTreeNextRecord,activeTalentTreeCurrentBinary,talentSubTreeStatus,coachTalentsPositions,coachTalentsLookup) {
+async function handleTalentTree(coachTable,nextCoachRecord,talentNodeStatus,talentNodeStatusArray,activeTalentTree,activeTalentTreeNextRecord,activeTalentTreeCurrentBinary,talentSubTreeStatus) {
 
 
     try {
@@ -493,17 +497,13 @@ async function handleTalentTree(coachTable,nextCoachRecord,talentNodeStatus,tale
           pickedTalents = await automaticallyFillTalents(
               activeTalentTree,
               activeTalentTreeNextRecord,
-              coachPosition,
-              coachTalentsPositions,
-              coachTalentsLookup
+              coachPosition
           );
       } else if (userChoice === 'm') {
           pickedTalents = await manuallySelectTalents(
               activeTalentTree,
               activeTalentTreeNextRecord,
-              coachPosition,
-              coachTalentsPositions,
-              coachTalentsLookup
+              coachPosition
           );
       }
 
@@ -593,32 +593,27 @@ async function handleTalentTree(coachTable,nextCoachRecord,talentNodeStatus,tale
   
 }
 
-async function getAllArrays(franchise) {
-  const coachTable = franchise.getTableByUniqueId(1860529246); // Get all the tables we'll need
-  const coachArrayTable = franchise.getTableByUniqueId(2191908271);
-  const activeTalentTree = franchise.getTableByUniqueId(1386036480);
-  const talentNodeStatus = franchise.getTableByUniqueId(4148550679);
-  const talentNodeStatusArray = franchise.getTableByUniqueId(232168893);
-  const talentSubTreeStatus = franchise.getTableByUniqueId(1725084110);
-  const getPresentationId = franchise.getTableByUniqueId(3947910319);
-  const characterVisuals = franchise.getTableByUniqueId(1429178382); //Grab the tables we need and read them
+async function getAllTables(franchise) {
+  const coachTable = franchise.getTableByUniqueId(tables.coachTable); // Get all the tables we'll need
+  const freeAgentCoachTable = franchise.getTableByUniqueId(tables.freeAgentCoachTable);
+  const activeTalentTree = franchise.getTableByUniqueId(tables.activeTalentTree);
+  const talentNodeStatus = franchise.getTableByUniqueId(tables.talentNodeStatus);
+  const talentNodeStatusArray = franchise.getTableByUniqueId(tables.talentNodeStatusArray);
+  const talentSubTreeStatus = franchise.getTableByUniqueId(tables.talentSubTreeStatus);
+  const presentationTable = franchise.getTableByUniqueId(tables.presentationTable);
+  const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
 
   //Put all of our tables into an array
-  const allTables = [coachTable,coachArrayTable,activeTalentTree,talentNodeStatus,talentNodeStatusArray,talentSubTreeStatus,getPresentationId,characterVisuals]
+  const allTables = [coachTable,freeAgentCoachTable,activeTalentTree,talentNodeStatus,talentNodeStatusArray,talentSubTreeStatus,presentationTable,characterVisuals];
 
+  // Read all of our tables
+  await FranchiseUtils.readTableRecords(allTables)
 
-  // Put all of our json files into an array
-  const allJsonFiles = [offPlaybookLookup,defPlaybookLookup,offSchemeLookup,defSchemeLookup,philosophyLookup,coachTalentsPositions,coachTalentsLookup,allCoachHeads]
-
-  const allSkinTones = ['SkinTone1','SkinTone2','SkinTone3','SkinTone4','SkinTone5','SkinTone6','SkinTone7']
-  const allApparel = ['Facility1','Facility2','Practice1','Practice2','Practice3','Staff1','Staff2','Staff3','Staff4']
-  const allCoachOptions = [allCoachHeads,allSkinTones,allApparel]
-
-  return [allTables,allJsonFiles,allCoachOptions]
+  return allTables;
 
 }
 
-async function addCoachToFATable(coachArrayTable,currentCoachBinary) {
+async function addCoachToFATable(freeAgentCoachTable,currentCoachBinary) {
   try {
     var i = 0;
     coachArrayNotFull = true
@@ -627,11 +622,11 @@ async function addCoachToFATable(coachArrayTable,currentCoachBinary) {
         coachArrayNotFull = false
         break
       }
-      if (coachArrayTable.records[0][`Coach${i}`] == '00000000000000000000000000000000') {
+      if (freeAgentCoachTable.records[0][`Coach${i}`] == ZERO_REF) {
         if (i > 58) {
           console.log(`Warning: There are 64 total slots for free agent coaches and you've now taken up ${i + 1} slots out of 64. It's not advisable to completely fill up the Coach FA pool.`)
         }
-        coachArrayTable.records[0][`Coach${i}`] = currentCoachBinary
+        freeAgentCoachTable.records[0][`Coach${i}`] = currentCoachBinary
         break
 
       }
@@ -683,39 +678,36 @@ async function updateCoachVisual(coachTable,characterVisuals,nextCoachRecord, co
   characterVisuals.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
 }
 
-async function createNewCoach(allTables,allJsonFiles,allCoachOptions,franchise) {
+async function createNewCoach(franchise) {
+
+  const allTables = await getAllTables(franchise);
 
   // Get all of our tables
-  const [coachTable,coachArrayTable,activeTalentTree,talentNodeStatus,talentNodeStatusArray,talentSubTreeStatus,getPresentationId,characterVisuals] = allTables;
-  const [offPlaybookLookup,defPlaybookLookup,offSchemeLookup,defSchemeLookup,philosophyLookup,coachTalentsPositions,coachTalentsLookup] = allJsonFiles
-  const [allCoachHeads,allSkinTones,allApparel] = allCoachOptions 
+  const [coachTable,freeAgentCoachTable,activeTalentTree,talentNodeStatus,talentNodeStatusArray,talentSubTreeStatus,presentationTable,characterVisuals] = allTables;
   
-  // Read all of our tables
-  await readTables(allTables)
-
-  var nextCoachRecord = coachTable.header.nextRecordToUse; // Get next record to use for the coach table and activeTalentTree table
-  var activeTalentTreeNextRecord = activeTalentTree.header.nextRecordToUse;
-  var currentCoachBinary = getBinaryReferenceData(coachTable.header.tableId,nextCoachRecord); // Then, we need the current row binary for both tables
+  const nextCoachRecord = coachTable.header.nextRecordToUse; // Get next record to use for the coach table and activeTalentTree table
+  const activeTalentTreeNextRecord = activeTalentTree.header.nextRecordToUse;
+  const currentCoachBinary = getBinaryReferenceData(coachTable.header.tableId,nextCoachRecord); // Then, we need the current row binary for both tables
   var activeTalentTreeCurrentBinary = getBinaryReferenceData(activeTalentTree.header.tableId,activeTalentTreeNextRecord);
 
-  var presentationId = await adjustPresentationId(getPresentationId); // Get presentation id
+  const presentationId = await adjustPresentationId(presentationTable); // Get presentation id
   await setDefaultCoachValues(coachTable,nextCoachRecord,presentationId); //Set all default coach values
   
-  var [coachFirstName,coachLastName] = await setCoachName(coachTable,nextCoachRecord); //Get coach name from user
+  const [coachFirstName,coachLastName] = await setCoachName(coachTable,nextCoachRecord); //Get coach name from user
 
   const coachPosition = await setCoachPosition(coachTable,nextCoachRecord); //Get coach position
 
-  await setSchemes(coachTable,nextCoachRecord,offSchemeLookup,defSchemeLookup); //Get coach schemes
+  await setSchemes(coachTable,nextCoachRecord); //Get coach schemes
 
-  await setPlaybooks(coachTable,nextCoachRecord,offPlaybookLookup,defPlaybookLookup,philosophyLookup); //Get playbooks
+  await setPlaybooks(coachTable,nextCoachRecord); //Get playbooks
 
-  const coachSize =  await setCoachAppearance(coachTable,nextCoachRecord,allCoachHeads,allSkinTones);
+  const coachSize = await setCoachAppearance(coachTable,nextCoachRecord);
 
   await setCoachApparel(coachTable,nextCoachRecord);
   
-  await handleTalentTree(coachTable,nextCoachRecord,talentNodeStatus,talentNodeStatusArray,activeTalentTree,activeTalentTreeNextRecord,activeTalentTreeCurrentBinary,talentSubTreeStatus,coachTalentsPositions,coachTalentsLookup) //allCoachTalents
+  await handleTalentTree(coachTable,nextCoachRecord,talentNodeStatus,talentNodeStatusArray,activeTalentTree,activeTalentTreeNextRecord,activeTalentTreeCurrentBinary,talentSubTreeStatus);
 
-  await addCoachToFATable(coachArrayTable,currentCoachBinary);
+  await addCoachToFATable(freeAgentCoachTable,currentCoachBinary);
 
   await updateCoachVisual(coachTable,characterVisuals,nextCoachRecord, coachSize);
 
@@ -736,10 +728,8 @@ franchise.on('ready', async function () {
     process.exit(0);
   }
 
-  const [allTables,allJsonFiles,allCoachOptions] = await getAllArrays(franchise) // First, get everything we'll need
-  
   // Always run our main function at least once
-  await createNewCoach(allTables,allJsonFiles,allCoachOptions,franchise)
+  await createNewCoach(franchise);
 
   let continuePrompt;
   const validOptions = ['YES','NO','FORCEQUIT']
@@ -760,7 +750,7 @@ franchise.on('ready', async function () {
       await franchise.save();
 
       console.log("Franchise file successfully saved.")
-      await createNewCoach(allTables,allJsonFiles,allCoachOptions);
+      await createNewCoach(franchise);
     }
     else if (continuePrompt.toUpperCase() == 'FORCEQUIT') {
       fs.rmSync(dir, { recursive: true, force: true }); //Remove the coach previews folder
