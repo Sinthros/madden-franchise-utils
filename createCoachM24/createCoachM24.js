@@ -11,6 +11,7 @@ const COACH_BASE_JSON = CHARACTER_VISUALS_FUNCTIONS.baseCoachVisualJson;
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 const ZERO_REF = '00000000000000000000000000000000';
+const FORCE_QUIT_REF = "FORCEQUIT";
 
 const offPlaybookLookup = JSON.parse(fs.readFileSync('lookupFiles/off_playbook_lookup.json', 'utf8'));
 const defPlaybookLookup = JSON.parse(fs.readFileSync('lookupFiles/def_playbook_lookup.json', 'utf8'));
@@ -80,60 +81,60 @@ async function readTables (allTables) {
   }
 }
 
-async function setDefaultCoachValues(coachTable,nextCoachRecord,presentationId) {
+async function setDefaultCoachValues(coachRecord,presentationId) {
   try {
     // Self explanatory - These are the default values for the coach table
-    coachTable.records[nextCoachRecord].SeasonsWithTeam = '0';
-    coachTable.records[nextCoachRecord].IsCreated = 'False';
-    coachTable.records[nextCoachRecord].CoachBackstory = 'TeamBuilder';
-    coachTable.records[nextCoachRecord].ContractStatus = 'FreeAgent';
-    coachTable.records[nextCoachRecord].ContractLength = '0';
-    coachTable.records[nextCoachRecord].ContractYearsRemaining = '0';
-    coachTable.records[nextCoachRecord].TeamIndex = '32';
-    coachTable.records[nextCoachRecord].PrevTeamIndex = '0';
-    coachTable.records[nextCoachRecord].Age = '35';
-    coachTable.records[nextCoachRecord].COACH_DEFTENDENCYRUNPASS = '50';
-    coachTable.records[nextCoachRecord].COACH_DEFTENDENCYAGGRESSCONSERV = '50';
-    coachTable.records[nextCoachRecord].COACH_DEFTENDENCYRUNPASS = '50';
-    coachTable.records[nextCoachRecord].COACH_OFFTENDENCYAGGRESSCONSERV = '50';
-    coachTable.records[nextCoachRecord].COACH_RESIGNREPORTED = 'true';
-    coachTable.records[nextCoachRecord].COACH_FIREREPORTED = 'true';
-    coachTable.records[nextCoachRecord].COACH_LASTTEAMFIRED = '0';
-    coachTable.records[nextCoachRecord].COACH_LASTTEAMRESIGNED = '0';
-    coachTable.records[nextCoachRecord].COACH_WASPLAYER = 'false';
-    coachTable.records[nextCoachRecord].CareerPlayoffsMade = '0';
-    coachTable.records[nextCoachRecord].CareerPlayoffWins = '0';
-    coachTable.records[nextCoachRecord].CareerPlayoffLosses = '0';
-    coachTable.records[nextCoachRecord].CareerSuperbowlWins = '0';
-    coachTable.records[nextCoachRecord].CareerSuperbowlLosses = '0';
-    coachTable.records[nextCoachRecord].CareerWins = '0';
-    coachTable.records[nextCoachRecord].CareerLosses = '0';
-    coachTable.records[nextCoachRecord].CareerTies = '0';
-    coachTable.records[nextCoachRecord].CareerProBowlPlayers = '0';
-    coachTable.records[nextCoachRecord].WCPlayoffWinStreak = '0';
-    coachTable.records[nextCoachRecord].ConfPlayoffWinStreak = '0';
-    coachTable.records[nextCoachRecord].WinSeasStreak = '0';
-    coachTable.records[nextCoachRecord].DivPlayoffWinStreak = '0';
-    coachTable.records[nextCoachRecord].SeasWinStreak = '0';
-    coachTable.records[nextCoachRecord].SuperbowlWinStreak = '0';
-    coachTable.records[nextCoachRecord].SeasLosses = '0';
-    coachTable.records[nextCoachRecord].SeasTies = '0';
-    coachTable.records[nextCoachRecord].SeasWins = '0';
-    coachTable.records[nextCoachRecord].RegularWinStreak = '0';
-    coachTable.records[nextCoachRecord].YearsCoaching = '0';
-    coachTable.records[nextCoachRecord].Level = '1';
-    coachTable.records[nextCoachRecord].PresentationId = presentationId;
-    coachTable.records[nextCoachRecord].TeamBuilding = 'ThroughFreeAgency';
-    coachTable.records[nextCoachRecord].LegacyScore = '0';
-    coachTable.records[nextCoachRecord].Face = '0';
-    coachTable.records[nextCoachRecord].HairResid = '0';
-    coachTable.records[nextCoachRecord].Geometry = '0';
-    coachTable.records[nextCoachRecord].Personality = 'Unpredictable';
-    coachTable.records[nextCoachRecord].MultipartBody = 'false';
-    coachTable.records[nextCoachRecord].HasCustomBody = 'false';
-    coachTable.records[nextCoachRecord].YearlyAwardCount = '0';
-    coachTable.records[nextCoachRecord].SpeechId = '31';
-    coachTable.records[nextCoachRecord].AssetName = ''
+    coachRecord.SeasonsWithTeam = '0';
+    coachRecord.IsCreated = 'False';
+    coachRecord.CoachBackstory = 'TeamBuilder';
+    coachRecord.ContractStatus = 'FreeAgent';
+    coachRecord.ContractLength = '0';
+    coachRecord.ContractYearsRemaining = '0';
+    coachRecord.TeamIndex = '32';
+    coachRecord.PrevTeamIndex = '0';
+    coachRecord.Age = '35';
+    coachRecord.COACH_DEFTENDENCYRUNPASS = '50';
+    coachRecord.COACH_DEFTENDENCYAGGRESSCONSERV = '50';
+    coachRecord.COACH_DEFTENDENCYRUNPASS = '50';
+    coachRecord.COACH_OFFTENDENCYAGGRESSCONSERV = '50';
+    coachRecord.COACH_RESIGNREPORTED = 'true';
+    coachRecord.COACH_FIREREPORTED = 'true';
+    coachRecord.COACH_LASTTEAMFIRED = '0';
+    coachRecord.COACH_LASTTEAMRESIGNED = '0';
+    coachRecord.COACH_WASPLAYER = 'false';
+    coachRecord.CareerPlayoffsMade = '0';
+    coachRecord.CareerPlayoffWins = '0';
+    coachRecord.CareerPlayoffLosses = '0';
+    coachRecord.CareerSuperbowlWins = '0';
+    coachRecord.CareerSuperbowlLosses = '0';
+    coachRecord.CareerWins = '0';
+    coachRecord.CareerLosses = '0';
+    coachRecord.CareerTies = '0';
+    coachRecord.CareerProBowlPlayers = '0';
+    coachRecord.WCPlayoffWinStreak = 0;
+    coachRecord.ConfPlayoffWinStreak = 0;
+    coachRecord.WinSeasStreak = 0;
+    coachRecord.DivPlayoffWinStreak = 0;
+    coachRecord.SeasWinStreak = 0;
+    coachRecord.SuperbowlWinStreak = 0;
+    coachRecord.SeasLosses = 0;
+    coachRecord.SeasTies = 0;
+    coachRecord.SeasWins = 0;
+    coachRecord.RegularWinStreak = 0;
+    coachRecord.YearsCoaching = 0;
+    coachRecord.Level = 1;
+    coachRecord.PresentationId = presentationId;
+    coachRecord.TeamBuilding = 'ThroughFreeAgency';
+    coachRecord.LegacyScore = 0;
+    coachRecord.Face = 0;
+    coachRecord.HairResid = 0;
+    coachRecord.Geometry = 0;
+    coachRecord.Personality = 'Unpredictable';
+    coachRecord.MultipartBody = false;
+    coachRecord.HasCustomBody = false;
+    coachRecord.YearlyAwardCount = 0;
+    coachRecord.SpeechId = 31;
+    coachRecord.AssetName = '';
   } catch (e) {
     console.warn('ERROR! Exiting program due to; ', e);
     process.exit(0);
@@ -141,7 +142,7 @@ async function setDefaultCoachValues(coachTable,nextCoachRecord,presentationId) 
 
 }
 
-async function setCoachName(coachTable, nextCoachRecord) {
+async function setCoachName(coachRecord) {
   try {
     let coachFirstName, coachLastName;
 
@@ -155,12 +156,11 @@ async function setCoachName(coachTable, nextCoachRecord) {
       coachLastName = prompt().trim(); // Remove leading/trailing whitespace
     }
 
-    coachTable.records[nextCoachRecord].FirstName = coachFirstName;
-    coachTable.records[nextCoachRecord].LastName = coachLastName;
+    coachRecord.FirstName = coachFirstName;
+    coachRecord.LastName = coachLastName;
 
-    const firstCharOfFirstName = Array.from(coachFirstName)[0];
-    const coachName = firstCharOfFirstName.concat(". ", coachLastName);
-    coachTable.records[nextCoachRecord].Name = coachName;
+    const coachName = `${coachFirstName[0]}. ${coachLastName}`;
+    coachRecord.Name = coachName;
 
     return [coachFirstName, coachLastName];
   } catch (e) {
@@ -169,7 +169,7 @@ async function setCoachName(coachTable, nextCoachRecord) {
   }
 }
 
-async function setCoachPosition(coachTable, nextCoachRecord) {
+async function setCoachPosition(coachRecord) {
   try {
     const validCoachPositions = ['HeadCoach', 'OffensiveCoordinator', 'DefensiveCoordinator'];
     let coachPosition;
@@ -184,8 +184,9 @@ async function setCoachPosition(coachTable, nextCoachRecord) {
 
       if (matchingPosition) {
         // If valid, set the position in its original case
-        coachTable.records[nextCoachRecord].Position = matchingPosition;
-        return coachTable.records[nextCoachRecord].Position;
+        coachRecord.Position = matchingPosition;
+        coachRecord.OriginalPosition = matchingPosition;
+        return coachRecord.Position;
       } else {
         console.log("Invalid value. Please enter one of the valid options.");
       }
@@ -196,7 +197,7 @@ async function setCoachPosition(coachTable, nextCoachRecord) {
   }
 }
 
-async function setSchemes(coachTable, nextCoachRecord) {
+async function setSchemes(coachRecord) {
   try {
     const offSchemeKeys = Object.keys(offSchemeLookup);
     const defSchemeKeys = Object.keys(defSchemeLookup);
@@ -208,7 +209,7 @@ async function setSchemes(coachTable, nextCoachRecord) {
 
         if (validKeys.some((key) => key.toLowerCase() === userScheme)) {
           const selectedScheme = validKeys.find((key) => key.toLowerCase() === userScheme);
-          coachTable.records[nextCoachRecord][coachField] = schemeLookup[selectedScheme];
+          coachRecord[coachField] = schemeLookup[selectedScheme];
           break;
         } else {
           console.log("Invalid value. Please enter a valid listed value.");
@@ -224,7 +225,7 @@ async function setSchemes(coachTable, nextCoachRecord) {
   }
 }
 
-async function setPlaybooks(coachTable, nextCoachRecord) {
+async function setPlaybooks(coachRecord) {
   try {
     const playbookKeys = Object.keys(offPlaybookLookup);
 
@@ -238,10 +239,10 @@ async function setPlaybooks(coachTable, nextCoachRecord) {
         const playbook = offPlaybookLookup[selectedTeam];
         const philosophy = philosophyLookup[selectedTeam];
 
-        coachTable.records[nextCoachRecord].DefensivePlaybook = defPlaybookLookup[selectedTeam];
-        coachTable.records[nextCoachRecord].TeamPhilosophy = philosophy;
-        coachTable.records[nextCoachRecord].DefaultTeamPhilosophy = philosophy;
-        coachTable.records[nextCoachRecord].OffensivePlaybook = playbook;
+        coachRecord.DefensivePlaybook = defPlaybookLookup[selectedTeam];
+        coachRecord.TeamPhilosophy = philosophy;
+        coachRecord.DefaultTeamPhilosophy = philosophy;
+        coachRecord.OffensivePlaybook = playbook;
 
         break;
       } else {
@@ -254,19 +255,19 @@ async function setPlaybooks(coachTable, nextCoachRecord) {
   }
 }
 
-async function setCoachAppearance(coachTable,nextCoachRecord) {
+async function setCoachAppearance(coachRecord) {
   try {
 
     const allCoachFaces = Object.keys(allCoachHeads); //Get all face values from dictionary
     const coachHeadArrayLength = allCoachFaces.length; // Get length of coach faces
-    var filteredCoachHeads = [] //Array of coach heads based on skin tone shade
+    let filteredCoachHeads = [] //Array of coach heads based on skin tone shade
 
 
-    for (var n = 0; n < coachHeadArrayLength; n++) { //Logic to get coach heads for current skin tone
-        filteredCoachHeads.push(allCoachFaces[n])
+    for (let i = 0; i < coachHeadArrayLength; i++) { //Logic to get coach heads for current skin tone
+        filteredCoachHeads.push(allCoachFaces[i])
     }
-    for (var n = 0; n < filteredCoachHeads.length;n++) {
-      currentHead = filteredCoachHeads[n]
+    for (let i = 0; i < filteredCoachHeads.length;i++) {
+      currentHead = filteredCoachHeads[i]
       try { // Get all available coach head pngs - If we can't find one, don't crash the program
         fs.copyFileSync(`${headsDirName}/${currentHead}.png`,`coachPreviews/${currentHead}.png`);
 
@@ -285,15 +286,15 @@ async function setCoachAppearance(coachTable,nextCoachRecord) {
     
       if (filteredCoachHeads.some((head) => head.toLowerCase() === coachHead)) {
         const selectedHead = filteredCoachHeads.find((head) => head.toLowerCase() === coachHead);
-        coachTable.records[nextCoachRecord].FaceShape = selectedHead;
-        coachTable.records[nextCoachRecord].Portrait = allCoachHeads[selectedHead]; // Set portrait based on coach head
+        coachRecord.FaceShape = selectedHead;
+        coachRecord.Portrait = allCoachHeads[selectedHead]; // Set portrait based on coach head
     
         try {
           const skinToneNum = selectedHead.charAt(10);
           const skinTone = "SkinTone".concat(skinToneNum);
-          coachTable.records[nextCoachRecord].SkinTone = skinTone;
+          coachRecord.SkinTone = skinTone;
         } catch (e) {
-          coachTable.records[nextCoachRecord].SkinTone = "SkinTone1";
+          coachRecord.SkinTone = "SkinTone1";
         }
     
         break;
@@ -317,7 +318,7 @@ async function setCoachAppearance(coachTable,nextCoachRecord) {
   
         if (matchingPosition) {
           // If valid, set the position in its original case
-          coachTable.records[nextCoachRecord].BodySize = matchingPosition;
+          coachRecord.BodySize = matchingPosition;
           break
         } else {
           console.log("Invalid value. Please enter one of the valid options.");
@@ -330,11 +331,11 @@ async function setCoachAppearance(coachTable,nextCoachRecord) {
     }
 
 
-    if (coachTable.records[nextCoachRecord].FaceShape.includes("coachhead")) {
-      coachTable.records[nextCoachRecord].Type = 'Generic';
+    if (coachRecord.FaceShape.includes("coachhead")) {
+      coachRecord.Type = 'Generic';
     }
     else {
-      coachTable.records[nextCoachRecord].Type = 'Existing';
+      coachRecord.Type = 'Existing';
     }
 
     return matchingPosition;
@@ -344,10 +345,10 @@ async function setCoachAppearance(coachTable,nextCoachRecord) {
 }
 }
 
-async function setCoachApparel(coachTable,nextCoachRecord) {
+async function setCoachApparel(coachRecord) {
 
   try {
-    coachTable.records[nextCoachRecord].Apparel = "Staff1";
+    coachRecord.Apparel = "Staff1";
   } catch (e) {
     console.warn('ERROR! Exiting program due to; ', e);
     process.exit(0);
@@ -459,13 +460,13 @@ async function manuallySelectTalents(activeTalentTree, activeTalentTreeNextRecor
 }
 
 
-async function handleTalentTree(coachTable,nextCoachRecord,talentNodeStatus,talentNodeStatusArray,activeTalentTree,activeTalentTreeNextRecord,activeTalentTreeCurrentBinary,talentSubTreeStatus) {
+async function handleTalentTree(coachRecord,talentNodeStatus,talentNodeStatusArray,activeTalentTree,activeTalentTreeNextRecord,activeTalentTreeCurrentBinary,talentSubTreeStatus) {
 
+    const coachPosition = coachRecord.Position // Get coach position
 
     try {
       console.log("Next, we're going to set the TALENT TREES for your coach.")
       
-      let coachPosition = coachTable.records[nextCoachRecord].Position // Get coach position
       var pickedTalents = [];
 
       if (coachPosition === 'HeadCoach') {
@@ -484,7 +485,7 @@ async function handleTalentTree(coachTable,nextCoachRecord,talentNodeStatus,tale
       while (userChoice !== 'a' && userChoice !== 'm') {
           if (coachPosition === 'HeadCoach') {
             userChoice = 'a';
-            console.log("Since this is a Head Coach, you won't have to do anything.")
+            console.log("Since this is a Head Coach, this is automatic.")
           }
           else {
             console.log("Would you like to AUTOMATICALLY fill in talents or MANUALLY select them? Valid choices are A or M.");
@@ -528,7 +529,7 @@ async function handleTalentTree(coachTable,nextCoachRecord,talentNodeStatus,tale
         while (i <= currentNodeArrayCount) {
             if (i == 0) {
               var currentBinary = getBinaryReferenceData(talentNodeStatus.header.tableId,talentNodeStatusNextRecord);
-              if (currentTalentNodeCount === 2 && coachTable.records[nextCoachRecord].Position !== 'HeadCoach') {
+              if (currentTalentNodeCount === 2 && coachPosition !== 'HeadCoach') {
                 talentNodeStatus.records[talentNodeStatusNextRecord].TalentStatus = 'Owned';
                 talentNodeStatus.records[talentNodeStatusNextRecord].UpgradeCount = '1';
   
@@ -589,7 +590,7 @@ async function handleTalentTree(coachTable,nextCoachRecord,talentNodeStatus,tale
       }
 
     }
-    coachTable.records[nextCoachRecord].ActiveTalentTree = activeTalentTreeCurrentBinary
+    coachRecord.ActiveTalentTree = activeTalentTreeCurrentBinary;
   
 }
 
@@ -615,11 +616,11 @@ async function getAllTables(franchise) {
 
 async function addCoachToFATable(freeAgentCoachTable,currentCoachBinary) {
   try {
-    var i = 0;
-    coachArrayNotFull = true
+    let i = 0;
+    coachArrayNotFull = true;
     while (coachArrayNotFull) { // Find first zeroed out coach value in array table and insert our new coach there
       if (i > 63) { /// This means the coach array table is full; We can't add a new coach!
-        coachArrayNotFull = false
+        coachArrayNotFull = false;
         break
       }
       if (freeAgentCoachTable.records[0][`Coach${i}`] == ZERO_REF) {
@@ -690,20 +691,22 @@ async function createNewCoach(franchise) {
   const currentCoachBinary = getBinaryReferenceData(coachTable.header.tableId,nextCoachRecord); // Then, we need the current row binary for both tables
   var activeTalentTreeCurrentBinary = getBinaryReferenceData(activeTalentTree.header.tableId,activeTalentTreeNextRecord);
 
+  const coachRecord = coachTable.records[nextCoachRecord];
+
   const presentationId = await adjustPresentationId(presentationTable); // Get presentation id
-  await setDefaultCoachValues(coachTable,nextCoachRecord,presentationId); //Set all default coach values
+  await setDefaultCoachValues(coachRecord,presentationId); // Set all default coach values
   
-  const [coachFirstName,coachLastName] = await setCoachName(coachTable,nextCoachRecord); //Get coach name from user
+  const [coachFirstName,coachLastName] = await setCoachName(coachRecord); // Get coach name from user
 
-  const coachPosition = await setCoachPosition(coachTable,nextCoachRecord); //Get coach position
+  const coachPosition = await setCoachPosition(coachRecord); // Get coach position
 
-  await setSchemes(coachTable,nextCoachRecord); //Get coach schemes
+  await setSchemes(coachRecord); // Get coach schemes
 
-  await setPlaybooks(coachTable,nextCoachRecord); //Get playbooks
+  await setPlaybooks(coachRecord); // Get playbooks
 
-  const coachSize = await setCoachAppearance(coachTable,nextCoachRecord);
+  const coachSize = await setCoachAppearance(coachRecord);
 
-  await setCoachApparel(coachTable,nextCoachRecord);
+  await setCoachApparel(coachRecord);
   
   await handleTalentTree(coachTable,nextCoachRecord,talentNodeStatus,talentNodeStatusArray,activeTalentTree,activeTalentTreeNextRecord,activeTalentTreeCurrentBinary,talentSubTreeStatus);
 
@@ -752,7 +755,7 @@ franchise.on('ready', async function () {
       console.log("Franchise file successfully saved.")
       await createNewCoach(franchise);
     }
-    else if (continuePrompt.toUpperCase() == 'FORCEQUIT') {
+    else if (continuePrompt.toUpperCase() === FORCE_QUIT_REF) {
       fs.rmSync(dir, { recursive: true, force: true }); //Remove the coach previews folder
       console.log("Exiting WITHOUT saving your last added coach. Enter anything to exit.");
       prompt();
