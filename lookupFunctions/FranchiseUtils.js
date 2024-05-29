@@ -407,22 +407,22 @@ async function emptyAcquisitionTables(franchise,tables) {
       }
 
       const record = playerAcquisitionEvaluation.records[i];
-      record['Player'] = ZERO_REF;
-      record['IsPlayerSuperstar'] = false;
-      record['IsPlayerXFactor'] = false;
-      record['AddedValue'] = 0;
-      record['DevelopmentValue'] = 0;
-      record['Value'] = 0;
-      record['FreeAgentComparisonValue'] = 0;
-      record['ImportanceValue'] = 0;
-      record['TeamSchemeOverallValue'] = 0;
-      record['TeamTradePhilosophyValue'] = 0;
-      record['AcquisitionType'] = "Signed";
-      record['Rank'] = 0;
-      record['BestSchemeOverallValue'] = 0;
-      record['CoachTradeInfluenceValue'] = 0;
-      record['ContractValue'] = 0;
-      record['IsPlayerHidden'] = false;
+      record.Player = ZERO_REF;
+      record.IsPlayerSuperstar = false;
+      record.IsPlayerXFactor = false;
+      record.AddedValue = 0;
+      record.DevelopmentValue = 0;
+      record.Value = 0;
+      record.FreeAgentComparisonValue = 0;
+      record.ImportanceValue = 0;
+      record.TeamSchemeOverallValue = 0;
+      record.TeamTradePhilosophyValue = 0;
+      record.AcquisitionType = "Signed";
+      record.Rank = 0;
+      record.BestSchemeOverallValue = 0;
+      record.CoachTradeInfluenceValue = 0;
+      record.ContractValue = 0;
+      record.IsPlayerHidden = false;
       await record.empty();
     }
   
