@@ -4,7 +4,7 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const prompt = require('prompt-sync')();
-const zeroRef = '00000000000000000000000000000000';
+const ZERO_REF = '00000000000000000000000000000000';
 
 function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false, isFtcFile = false) {
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
@@ -219,7 +219,7 @@ async function emptyHistoryTables(franchise, tables) {
     for (let i = 0; i < historyEntryArray.header.recordCapacity;i++) {
         if (!historyEntryArray.records[i].isEmpty) {
             for (let j = 0; j < historyEntryArray.header.numMembers;j++) {
-            historyEntryArray.records[i][`HistoryEntry${j}`] = zeroRef;
+            historyEntryArray.records[i][`HistoryEntry${j}`] = ZERO_REF;
 
             }
         }
@@ -228,7 +228,7 @@ async function emptyHistoryTables(franchise, tables) {
     for (let i = 0; i < transactionHistoryArray.header.recordCapacity;i++) {
         if (!transactionHistoryArray.records[i].isEmpty) {
             for (let j = 0; j < transactionHistoryArray.header.numMembers;j++) {
-            transactionHistoryArray.records[i][`TransactionHistoryEntry${j}`] = zeroRef;
+            transactionHistoryArray.records[i][`TransactionHistoryEntry${j}`] = ZERO_REF;
 
             }
         }
@@ -237,8 +237,8 @@ async function emptyHistoryTables(franchise, tables) {
     for (let i = 0; i < transactionHistoryEntry.header.recordCapacity;i++) {
         if (!transactionHistoryEntry.records[i].isEmpty) {
         const record = transactionHistoryEntry.records[i];
-        record.OldTeam = zeroRef;
-        record.NewTeam = zeroRef;
+        record.OldTeam = ZERO_REF;
+        record.NewTeam = ZERO_REF;
         record.SeasonYear = 0;
         record.TransactionId = 0;
         record.SeasonStage = 'PreSeason';
@@ -258,7 +258,7 @@ async function emptyHistoryTables(franchise, tables) {
     /*for (let i = 0; i < historyEntry.header.recordCapacity;i++) {
         if (!historyEntry.records[i].isEmpty) {
             const record = historyEntry.records[i];
-            record.Person = zeroRef;
+            record.Person = ZERO_REF;
             record.IsSchemeFit = false;
             record.CurrentStage = 'NFLSeason';
             record.LegacyValue = 0;
@@ -407,7 +407,7 @@ async function emptyAcquisitionTables(franchise,tables) {
       }
 
       const record = playerAcquisitionEvaluation.records[i];
-      record['Player'] = zeroRef;
+      record['Player'] = ZERO_REF;
       record['isPlayerSuperstar'] = false;
       record['isPlayerXFactor'] = false;
       record['AddedValue'] = 0;
@@ -431,7 +431,7 @@ async function emptyAcquisitionTables(franchise,tables) {
         continue
       }
       for (j = 0; j < playerAcquisitionEvaluationArray.header.numMembers;j++) {
-        playerAcquisitionEvaluationArray.records[i][`PlayerAcquisitionEvaluation${j}`] = zeroRef;
+        playerAcquisitionEvaluationArray.records[i][`PlayerAcquisitionEvaluation${j}`] = ZERO_REF;
       }
     }
   
@@ -448,8 +448,8 @@ async function emptyResignTable(franchise,tables) {
         //Iterate through resign table and set default values
 
         const resignRecord = resignTable.records[i];
-        resignRecord["Team"] = zeroRef;
-        resignRecord["Player"] = zeroRef;
+        resignRecord["Team"] = ZERO_REF;
+        resignRecord["Player"] = ZERO_REF;
         resignRecord["ActiveRequestID"] = "-2147483648";
         resignRecord["NegotiationWeek"] = 0;
         resignRecord["TeamReSignInterest"] = 0;
@@ -485,7 +485,7 @@ async function emptyResignTable(franchise,tables) {
 
     //Iterate through the resign array table and zero everything out
     for (let i = 0; i < resignArrayTable.header.numMembers; i++) {
-        resignArrayTable.records[0][`PlayerReSignNegotiation${i}`] = zeroRef;
+        resignArrayTable.records[0][`PlayerReSignNegotiation${i}`] = ZERO_REF;
     }
   
 };
@@ -515,7 +515,7 @@ async function removeFromTable(table, binaryToRemove) {
       allBinary = allBinary.filter((bin) => bin !== binaryToRemove);
   
       while (allBinary.length < numMembers) {
-        allBinary.push(zeroRef);
+        allBinary.push(ZERO_REF);
       }
   
       // Set the new binary for the row
@@ -555,5 +555,5 @@ module.exports = {
     regenerateMarketingTables,
     emptyAcquisitionTables,
     emptyResignTable,
-    zeroRef
+    ZERO_REF
   };

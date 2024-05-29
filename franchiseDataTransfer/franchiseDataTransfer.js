@@ -23,7 +23,7 @@ const { tables } = require('../lookupFunctions/FranchiseTableId');
 const DEFAULT_PLAYER_ROW = 755;
 
 
-const ZERO_REF = FranchiseUtils.zeroRef;
+const ZERO_REF = FranchiseUtils.ZERO_REF;
 const PLAYER_TABLE = 1612938518;
 const OFFENSIVE_SKILL_POSITIONS = ['QB','HB','FB','WR','TE'];
 const validGames = ['22','24'];

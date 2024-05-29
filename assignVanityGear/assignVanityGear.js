@@ -17,7 +17,7 @@ const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 async function getRowFromRef(ref)
 {
 	// If the ref is all zeroes, we can save time and just return 0
-	if(ref === FranchiseUtils.zeroRef)
+	if(ref === FranchiseUtils.ZERO_REF)
 	{
 		return 0;
 	}

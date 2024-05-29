@@ -10,7 +10,6 @@ const gameYear = '24';
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 const validWeekTypes = ['RegularSeason','WildcardPlayoff','DivisionalPlayoff','ConferencePlayoff','SuperBowl'];
-const zeroRef = '00000000000000000000000000000000';
 
 const windOptions = ['Calm', 'LightBreeze', 'Moderate', 'VeryWindy'];
 const snowRand = getRandomNumber(2,3);
@@ -98,7 +97,7 @@ async function handleRoof(state, game, homeTeam)
 		return;
 	}
 
-	seasonGameTable.records[game]['Stadium'] = zeroRef;
+	seasonGameTable.records[game]['Stadium'] = FranchiseUtils.ZERO_REF;
 };
 
 
@@ -141,7 +140,7 @@ franchise.on('ready', async function () {
 			if((seasonGameTable.records[j]['SeasonWeekType'] === 'RegularSeason') && (parseInt(seasonGameTable.records[j]['SeasonWeek']) === currentWeek))
 			{
 				let homeTeamBinVal = seasonGameTable.records[j]['HomeTeam'];
-				if(homeTeamBinVal === zeroRef)
+				if(homeTeamBinVal === FranchiseUtils.ZERO_REF)
 				{
 					continue;
 				}
@@ -163,7 +162,7 @@ franchise.on('ready', async function () {
 			if(seasonGameTable.records[j]['SeasonWeekType'] === 'WildcardPlayoff')
 			{
 				let homeTeamBinVal = seasonGameTable.records[j]['HomeTeam'];
-				if(homeTeamBinVal === zeroRef)
+				if(homeTeamBinVal === FranchiseUtils.ZERO_REF)
 				{
 					continue;
 				}
@@ -185,7 +184,7 @@ franchise.on('ready', async function () {
 			if(seasonGameTable.records[j]['SeasonWeekType'] === 'DivisionalPlayoff')
 			{
 				let homeTeamBinVal = seasonGameTable.records[j]['HomeTeam'];
-				if(homeTeamBinVal === zeroRef)
+				if(homeTeamBinVal === FranchiseUtils.ZERO_REF)
 				{
 					continue;
 				}
@@ -207,7 +206,7 @@ franchise.on('ready', async function () {
 			if(seasonGameTable.records[j]['SeasonWeekType'] === 'ConferencePlayoff')
 			{
 				let homeTeamBinVal = seasonGameTable.records[j]['HomeTeam'];
-				if(homeTeamBinVal === zeroRef)
+				if(homeTeamBinVal === FranchiseUtils.ZERO_REF)
 				{
 					continue;
 				}
@@ -229,7 +228,7 @@ franchise.on('ready', async function () {
 			if(seasonGameTable.records[j]['SeasonWeekType'] === 'SuperBowl')
 			{
 				let homeTeamBinVal = seasonGameTable.records[j]['HomeTeam'];
-				if(homeTeamBinVal === zeroRef)
+				if(homeTeamBinVal === FranchiseUtils.ZERO_REF)
 				{
 					continue;
 				}
@@ -269,12 +268,12 @@ franchise.on('ready', async function () {
 	let homeTeamBinVal = seasonGameTable.records[gameRow]['HomeTeam'];
 	const homeTeamRowBinVal = homeTeamBinVal.slice(15);
 	const homeTeamRowNum = await FranchiseUtils.bin2Dec(homeTeamRowBinVal);
-	const validStadiums = [teamTable.records[homeTeamRowNum]['AltStadium'], zeroRef];
+	const validStadiums = [teamTable.records[homeTeamRowNum]['AltStadium'], FranchiseUtils.ZERO_REF];
 
 	// Make sure the home team has a retractable stadium and that the game is not at a neutral site (ex: international games) or Super Bowl
-	if(teamTable.records[homeTeamRowNum]['AltStadium'] !== zeroRef && validStadiums.includes(seasonGameTable.records[gameRow]['Stadium']) && currentWeekType !== 'SuperBowl')
+	if(teamTable.records[homeTeamRowNum]['AltStadium'] !== FranchiseUtils.ZERO_REF && validStadiums.includes(seasonGameTable.records[gameRow]['Stadium']) && currentWeekType !== 'SuperBowl')
 	{
-		if(seasonGameTable.records[gameRow]['Stadium'] === zeroRef)
+		if(seasonGameTable.records[gameRow]['Stadium'] === FranchiseUtils.ZERO_REF)
 		{
 			console.log("\nThis game is in a stadium with a retractable roof. The roof is currently closed, so you can only choose between closed and open roof.");
 			weatherOptions = [];

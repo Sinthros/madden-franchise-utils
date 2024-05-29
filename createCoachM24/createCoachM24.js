@@ -10,8 +10,11 @@ const CHARACTER_VISUALS_FUNCTIONS = require('../lookupFunctions/characterVisuals
 const COACH_BASE_JSON = CHARACTER_VISUALS_FUNCTIONS.baseCoachVisualJson;
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
-const ZERO_REF = '00000000000000000000000000000000';
-const FORCE_QUIT_REF = "FORCEQUIT";
+const YES_KWD = "YES";
+const NO_KWD = "NO;"
+const FORCE_QUIT_KWD = "FORCEQUIT";
+const AUTOMATIC_KWD = 'a';
+const MANUAL_KWD = 'm';
 
 const offPlaybookLookup = JSON.parse(fs.readFileSync('lookupFiles/off_playbook_lookup.json', 'utf8'));
 const defPlaybookLookup = JSON.parse(fs.readFileSync('lookupFiles/def_playbook_lookup.json', 'utf8'));
@@ -23,11 +26,11 @@ const coachTalentsLookup = JSON.parse(fs.readFileSync('lookupFiles/coach_talents
 const allCoachHeads = JSON.parse(fs.readFileSync('lookupFiles/coach_heads_lookup.json', 'utf8'));
 
 // Don't believe these are needed anymore
-const allSkinTones = ['SkinTone1','SkinTone2','SkinTone3','SkinTone4','SkinTone5','SkinTone6','SkinTone7'];
-const allApparel = ['Facility1','Facility2','Practice1','Practice2','Practice3','Staff1','Staff2','Staff3','Staff4'];
+const SKIN_TONES = ['SkinTone1','SkinTone2','SkinTone3','SkinTone4','SkinTone5','SkinTone6','SkinTone7'];
+const APPAREL = ['Facility1','Facility2','Practice1','Practice2','Practice3','Staff1','Staff2','Staff3','Staff4'];
 
 // Visual morph keys for players and coaches
-const visualMorphKeys = [
+const VISUAL_MORPH_KEYS = [
   "ArmSize",
   "CalfBlend",
   "Chest",
@@ -41,7 +44,7 @@ const visualMorphKeys = [
 const gameYear = '24';
 const autoUnempty = true;
 const dir = './coachPreviews';
-const headsDirName = 'coachHeads'
+const headsDirName = 'coachHeads';
 
 console.log("Welcome to the Coach Creator Program for Madden NFL 24.")
 console.log("In this program, you can create new free agent coaches for your franchise file.")
@@ -68,49 +71,36 @@ async function adjustPresentationId(presentationTable) {
   }
 }
 
-async function readTables (allTables) {
-
-  try {
-    for (tableNum = 0; tableNum < allTables.length; tableNum++) { // Iterate through each table and read them
-      await allTables[tableNum].readRecords();
-
-    }
-  } catch (e) {
-    console.warn('ERROR! Exiting program due to; ', e);
-    process.exit(0);
-  }
-}
-
 async function setDefaultCoachValues(coachRecord,presentationId) {
   try {
     // Self explanatory - These are the default values for the coach table
-    coachRecord.SeasonsWithTeam = '0';
-    coachRecord.IsCreated = 'False';
+    coachRecord.SeasonsWithTeam = 0;
+    coachRecord.IsCreated = false;
     coachRecord.CoachBackstory = 'TeamBuilder';
     coachRecord.ContractStatus = 'FreeAgent';
-    coachRecord.ContractLength = '0';
-    coachRecord.ContractYearsRemaining = '0';
-    coachRecord.TeamIndex = '32';
-    coachRecord.PrevTeamIndex = '0';
-    coachRecord.Age = '35';
-    coachRecord.COACH_DEFTENDENCYRUNPASS = '50';
-    coachRecord.COACH_DEFTENDENCYAGGRESSCONSERV = '50';
-    coachRecord.COACH_DEFTENDENCYRUNPASS = '50';
-    coachRecord.COACH_OFFTENDENCYAGGRESSCONSERV = '50';
-    coachRecord.COACH_RESIGNREPORTED = 'true';
-    coachRecord.COACH_FIREREPORTED = 'true';
-    coachRecord.COACH_LASTTEAMFIRED = '0';
-    coachRecord.COACH_LASTTEAMRESIGNED = '0';
-    coachRecord.COACH_WASPLAYER = 'false';
-    coachRecord.CareerPlayoffsMade = '0';
-    coachRecord.CareerPlayoffWins = '0';
-    coachRecord.CareerPlayoffLosses = '0';
-    coachRecord.CareerSuperbowlWins = '0';
-    coachRecord.CareerSuperbowlLosses = '0';
-    coachRecord.CareerWins = '0';
-    coachRecord.CareerLosses = '0';
-    coachRecord.CareerTies = '0';
-    coachRecord.CareerProBowlPlayers = '0';
+    coachRecord.ContractLength = 0;
+    coachRecord.ContractYearsRemaining = 0;
+    coachRecord.TeamIndex = 32;
+    coachRecord.PrevTeamIndex = 0;
+    coachRecord.Age = 35;
+    coachRecord.COACH_DEFTENDENCYRUNPASS = 50;
+    coachRecord.COACH_DEFTENDENCYAGGRESSCONSERV = 50;
+    coachRecord.COACH_DEFTENDENCYRUNPASS = 50;
+    coachRecord.COACH_OFFTENDENCYAGGRESSCONSERV = 50;
+    coachRecord.COACH_RESIGNREPORTED = true;
+    coachRecord.COACH_FIREREPORTED = true;
+    coachRecord.COACH_LASTTEAMFIRED = 0;
+    coachRecord.COACH_LASTTEAMRESIGNED = 0;
+    coachRecord.COACH_WASPLAYER = false;
+    coachRecord.CareerPlayoffsMade = 0;
+    coachRecord.CareerPlayoffWins = 0;
+    coachRecord.CareerPlayoffLosses = 0;
+    coachRecord.CareerSuperbowlWins = 0;
+    coachRecord.CareerSuperbowlLosses = 0;
+    coachRecord.CareerWins = 0;
+    coachRecord.CareerLosses = 0;
+    coachRecord.CareerTies = 0;
+    coachRecord.CareerProBowlPlayers = 0;
     coachRecord.WCPlayoffWinStreak = 0;
     coachRecord.ConfPlayoffWinStreak = 0;
     coachRecord.WinSeasStreak = 0;
@@ -137,7 +127,7 @@ async function setDefaultCoachValues(coachRecord,presentationId) {
     coachRecord.AssetName = '';
   } catch (e) {
     console.warn('ERROR! Exiting program due to; ', e);
-    process.exit(0);
+    process.exit(1);
   }
 
 }
@@ -463,28 +453,25 @@ async function manuallySelectTalents(activeTalentTree, activeTalentTreeNextRecor
 async function handleTalentTree(coachRecord,talentNodeStatus,talentNodeStatusArray,activeTalentTree,activeTalentTreeNextRecord,activeTalentTreeCurrentBinary,talentSubTreeStatus) {
 
     const coachPosition = coachRecord.Position // Get coach position
+    const coordinatorTalentNodeCount = 9;
+    const headCoachTalentNodeCount = 8;
+    
+    const talentNodeCount = coachPosition === 'HeadCoach' ? headCoachTalentNodeCount : coordinatorTalentNodeCount;
+    
+    const firstTalentNodeCount = talentNodeCount;
+    const secondTalentNodeCount = talentNodeCount;
+    const thirdTalentNodeCount = talentNodeCount;
 
     try {
       console.log("Next, we're going to set the TALENT TREES for your coach.")
       
-      var pickedTalents = [];
+      let pickedTalents = [];
 
-      if (coachPosition === 'HeadCoach') {
-        var firstTalentNodeCount = 8; // Get talent tree length - Should always be 9 in M24 (which means 10 actual talents)
-        var secondTalentNodeCount = 8;
-        var thirdTalentNodeCount = 8;
-
-      }
-      else {
-        var firstTalentNodeCount = 9; // Get talent tree length - Should always be 9 in M24 (which means 10 actual talents)
-        var secondTalentNodeCount = 9;
-        var thirdTalentNodeCount = 9;
-      }
       let userChoice = '';
 
-      while (userChoice !== 'a' && userChoice !== 'm') {
+      while (userChoice !== AUTOMATIC_KWD && userChoice !== MANUAL_KWD) {
           if (coachPosition === 'HeadCoach') {
-            userChoice = 'a';
+            userChoice = AUTOMATIC_KWD;
             console.log("Since this is a Head Coach, this is automatic.")
           }
           else {
@@ -494,13 +481,13 @@ async function handleTalentTree(coachRecord,talentNodeStatus,talentNodeStatusArr
           }
       }
   
-      if (userChoice === 'a') {
+      if (userChoice === AUTOMATIC_KWD) {
           pickedTalents = await automaticallyFillTalents(
               activeTalentTree,
               activeTalentTreeNextRecord,
               coachPosition
           );
-      } else if (userChoice === 'm') {
+      } else if (userChoice === MANUAL_KWD) {
           pickedTalents = await manuallySelectTalents(
               activeTalentTree,
               activeTalentTreeNextRecord,
@@ -536,7 +523,7 @@ async function handleTalentTree(coachRecord,talentNodeStatus,talentNodeStatusArr
               }
               else {
                 talentNodeStatus.records[talentNodeStatusNextRecord].TalentStatus = 'NotOwned';
-                talentNodeStatus.records[talentNodeStatusNextRecord].UpgradeCount = '0';
+                talentNodeStatus.records[talentNodeStatusNextRecord].UpgradeCount = 0;
   
               }
               talentNodeArray.push(currentBinary);
@@ -546,7 +533,7 @@ async function handleTalentTree(coachRecord,talentNodeStatus,talentNodeStatusArr
             else {
               var currentBinary = getBinaryReferenceData(talentNodeStatus.header.tableId,talentNodeStatusNextRecord);
               talentNodeStatus.records[talentNodeStatusNextRecord].TalentStatus = 'NotOwned';
-              talentNodeStatus.records[talentNodeStatusNextRecord].UpgradeCount = '0';
+              talentNodeStatus.records[talentNodeStatusNextRecord].UpgradeCount = 0;
               talentNodeArray.push(currentBinary);
               var talentNodeStatusNextRecord = talentNodeStatus.header.nextRecordToUse;
             }
@@ -561,7 +548,7 @@ async function handleTalentTree(coachRecord,talentNodeStatus,talentNodeStatusArr
               j++;
             }
             else if (currentNodeArrayCount < j) { //Once our array is empty, make sure the rest of the row is zeroed out
-              talentNodeStatusArray.records[talentNodeStatusArrayNextRecord][`TalentNodeStatus${j}`] = '00000000000000000000000000000000';
+              talentNodeStatusArray.records[talentNodeStatusArrayNextRecord][`TalentNodeStatus${j}`] = FranchiseUtils.ZERO_REF;
               j++;
             }
           }
@@ -651,7 +638,7 @@ async function updateCoachVisual(coachTable,characterVisuals,nextCoachRecord, co
 
   const coachValues = await CHARACTER_VISUALS_FUNCTIONS.getCoachValues(coachTable, nextCoachRecord);
 
-  jsonToUpdate = await CHARACTER_VISUALS_FUNCTIONS.updateCoachVisuals(coachValues,jsonToUpdate,visualMorphKeys, coachSize)
+  jsonToUpdate = await CHARACTER_VISUALS_FUNCTIONS.updateCoachVisuals(coachValues,jsonToUpdate,VISUAL_MORPH_KEYS, coachSize)
 
   jsonToUpdate = await CHARACTER_VISUALS_FUNCTIONS.removeEmptyCoachBlends(jsonToUpdate)
 
@@ -725,7 +712,7 @@ franchise.on('ready', async function () {
   //THIS IS HOW WE CAN TELL WHAT GAME WE'RE WORKING WITH
   const gameYear = franchise.schema.meta.gameYear;
 
-  if (gameYear !== 24) {
+  if (gameYear !== gameYear) {
     console.log("FATAL ERROR! Selected franchise file is NOT a Madden 24 Franchise File. Enter anything to exit.");
     prompt();
     process.exit(0);
@@ -735,12 +722,12 @@ franchise.on('ready', async function () {
   await createNewCoach(franchise);
 
   let continuePrompt;
-  const validOptions = ['YES','NO','FORCEQUIT']
+  const validOptions = [YES_KWD,NO_KWD,FORCE_QUIT_KWD]
   while (!validOptions.includes(continuePrompt)) { // While loop to keep creating coaches
     console.log("Would you like to create another coach? Enter Yes to create another coach or No to quit the program. Either option will save your franchise file.");
     console.log("Alternatively, enter ForceQuit to exit the program WITHOUT saving your most recent added coach.")
     continuePrompt = prompt(); // Get user input
-    if (continuePrompt.toUpperCase() == 'NO') { // If no, save and quit
+    if (continuePrompt.toUpperCase() === NO_KWD) { // If no, save and quit
       await franchise.save();
 
       fs.rmSync(dir, { recursive: true, force: true }); //Remove the coach previews folder
@@ -749,13 +736,13 @@ franchise.on('ready', async function () {
       break
     }
 
-    else if (continuePrompt.toUpperCase() == 'YES') { //Save the file and run the program again
+    else if (continuePrompt.toUpperCase() === YES_KWD) { //Save the file and run the program again
       await franchise.save();
 
       console.log("Franchise file successfully saved.")
       await createNewCoach(franchise);
     }
-    else if (continuePrompt.toUpperCase() === FORCE_QUIT_REF) {
+    else if (continuePrompt.toUpperCase() === FORCE_QUIT_KWD) {
       fs.rmSync(dir, { recursive: true, force: true }); //Remove the coach previews folder
       console.log("Exiting WITHOUT saving your last added coach. Enter anything to exit.");
       prompt();

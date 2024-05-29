@@ -17,8 +17,6 @@ const scheduleObject = {
 const teamLookup = JSON.parse(fs.readFileSync('teamLookup.json', 'utf8'));
 
 const validWeekTypes = ['PreSeason'];
-const zeroRef = '00000000000000000000000000000000';
-
 function getRandomNumber(floor, ceiling) 
 {
   // Ensure that the floor and ceiling are integers
@@ -136,7 +134,7 @@ franchise.on('ready', async function () {
 			// If an empty row or irrelevant game, skip this row
 			if ((seasonGameTable.records[j].isEmpty) ||
 				(seasonGameTable.records[j]['IsPractice'] === true) ||
-				(seasonGameTable.records[j]['HomeTeam'] === zeroRef) ||
+				(seasonGameTable.records[j]['HomeTeam'] === FranchiseUtils.ZERO_REF) ||
 				(seasonGameTable.records[j]['SeasonWeekType'] !== 'RegularSeason') ||
 				(seasonGameTable.records[j]['SeasonWeek'] !== i))
 			{
