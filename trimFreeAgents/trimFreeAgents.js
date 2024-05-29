@@ -144,7 +144,7 @@ async function emptyAcquisitionTables(franchise) {
     record['ContractValue'] = 0;
     record['IsPlayerHidden'] = false;
     
-    await record.empty();
+    record.empty();
   }
 
   for (let i = 0; i < playerAcquisitionEvaluationArray.header.recordCapacity; i++) {

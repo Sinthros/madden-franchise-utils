@@ -251,7 +251,7 @@ async function emptyHistoryTables(franchise, tables) {
         record.CapSavingsThisYear = 0;
         record.ContractBonus = 0;
         record.ContractSalary = 0;
-        await record.empty();
+        record.empty();
         }
      }
     // I wouldn't recommend using this part - It shouldn't be necessary and has over 65k rows
@@ -272,7 +272,7 @@ async function emptyHistoryTables(franchise, tables) {
             record.ConfidenceValue = 0;
             record.CurrentWeek = 0;
             record.DynamicDevValue = 0;
-            await record.empty();
+            record.empty();
         }
     }*/
 };
@@ -403,7 +403,7 @@ async function emptyAcquisitionTables(franchise,tables) {
   
     for (let i = 0; i < playerAcquisitionEvaluation.header.recordCapacity;i++) {
       if (playerAcquisitionEvaluation.records[i].isEmpty) {
-        continue
+        continue;
       }
 
       const record = playerAcquisitionEvaluation.records[i];
@@ -423,12 +423,12 @@ async function emptyAcquisitionTables(franchise,tables) {
       record.CoachTradeInfluenceValue = 0;
       record.ContractValue = 0;
       record.IsPlayerHidden = false;
-      await record.empty();
+      record.empty();
     }
   
     for (let i = 0; i < playerAcquisitionEvaluationArray.header.recordCapacity;i++) {
       if (playerAcquisitionEvaluationArray.records[i].isEmpty) {
-        continue
+        continue;
       }
       for (j = 0; j < playerAcquisitionEvaluationArray.header.numMembers;j++) {
         playerAcquisitionEvaluationArray.records[i][`PlayerAcquisitionEvaluation${j}`] = ZERO_REF;
@@ -478,7 +478,7 @@ async function emptyResignTable(franchise,tables) {
 
         //This results in every row being emptied
         if (!resignRecord.isEmpty) {
-            await resignRecord.empty();
+            resignRecord.empty();
         }
 
     }

@@ -95,7 +95,7 @@ async function deleteCurrentDraftClass(franchise) {
     draftPlayerTable.records[rowIndex]['ProDayBenchPress'] = '0';
     draftPlayerTable.records[rowIndex]['ProductionGrade'] = '0';
     draftPlayerTable.records[rowIndex]['CombineBroadJump'] = '0';  
-    draftPlayerTable.records[rowIndex].empty()
+    draftPlayerTable.records[rowIndex].empty();
   }
 
 

@@ -233,7 +233,7 @@ async function importTables(tableToEdit,filePath,keepColumns,deleteColumns,zeroC
    })
    if (table.length < tableToEdit.records.length) {
     for (let i = table.length;i < tableToEdit.records.length;i++) {
-      await tableToEdit.records[i].empty();
+      tableToEdit.records[i].empty();
     }
    }
   return;
@@ -299,7 +299,7 @@ async function emptySignatureTable(currentTable,currentTableNumRows) {
 
     //This results in every row being emptied
     if (currentTable.records[rows].isEmpty === false) {
-      await currentTable.records[rows].empty()
+      currentTable.records[rows].empty()
 
     }
 
@@ -1318,7 +1318,7 @@ async function emptyRookieStatTracker(targetFranchise) {
   for (let i = 0; i < rookieStatTrackerNumRows; i++) {
     if (!rookieStatTracker.records[i].isEmpty) {
       rookieStatTracker.records[i]['DownsPlayed'] = 0;
-      await rookieStatTracker.records[i].empty();
+      rookieStatTracker.records[i].empty();
     }
   }
 
@@ -1340,7 +1340,7 @@ async function emptyMediaGoals(targetFranchise) {
   for (let i = 0; i < activeMediaGoalNumRows; i++) {
     if (!characterActiveMediaGoal.records[i].isEmpty) {
       characterActiveMediaGoal.records[i]['ActiveMediaGoals'] = ZERO_REF;
-      await characterActiveMediaGoal.records[i].empty();
+      characterActiveMediaGoal.records[i].empty();
     }
   }
 
@@ -1350,7 +1350,7 @@ async function emptyMediaGoals(targetFranchise) {
         characterActiveMediaGoalArray.records[0][`CharacterActiveMediaGoal${mediaArrayRow}`] = ZERO_REF;
       }
       if (i !== 0) {
-        characterActiveMediaGoalArray.records[i].empty()
+        characterActiveMediaGoalArray.records[i].empty();
 
       }
       
