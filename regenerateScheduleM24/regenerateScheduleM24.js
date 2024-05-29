@@ -176,20 +176,24 @@ async function getSuperBowlChampion(yearSummaryArray, yearSummary, teamTable)
 		}
 	}
 
-	let winningTeamRow;
-	for(let i = 0; i < teamTable.records.length; i++)
+	let winningTeamRow = -1;
+	let teamRows = Object.keys(teamLookup);
+	for (let i = 0; i < teamRows.length; i++)
 	{
-		if(teamTable.records[i].isEmpty)
+		if (teamLookup[teamRows[i]][0].includes(winningTeamName))
 		{
-			continue;
+			if(teamTable.records[teamRows[i]]['LongName'] === winningCityName)
+			{
+				winningTeamRow = teamRows[i];
+				break;
+			}
 		}
-		
-		// Check if both the city name and team name match
-		if (teamTable.records[i]['LongName'] === winningCityName && teamTable.records[i]['DisplayName'] === winningTeamName)
-		{
-			winningTeamRow = i;
-			break;
-		}
+	}
+
+	if(winningTeamRow === -1)
+	{
+		// If the winning team is not found for some reason, just use the first team row
+		winningTeamRow = 0;
 	}
 
 	let winningTeamAbbrev = rowToAbbrev(winningTeamRow);
