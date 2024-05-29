@@ -408,8 +408,8 @@ async function emptyAcquisitionTables(franchise,tables) {
 
       const record = playerAcquisitionEvaluation.records[i];
       record['Player'] = ZERO_REF;
-      record['isPlayerSuperstar'] = false;
-      record['isPlayerXFactor'] = false;
+      record['IsPlayerSuperstar'] = false;
+      record['IsPlayerXFactor'] = false;
       record['AddedValue'] = 0;
       record['DevelopmentValue'] = 0;
       record['Value'] = 0;
