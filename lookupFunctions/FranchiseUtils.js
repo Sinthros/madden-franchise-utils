@@ -448,32 +448,33 @@ async function emptyResignTable(franchise,tables) {
         //Iterate through resign table and set default values
 
         const resignRecord = resignTable.records[i];
-        resignRecord["Team"] = ZERO_REF;
-        resignRecord["Player"] = ZERO_REF;
-        resignRecord["ActiveRequestID"] = "-2147483648";
-        resignRecord["NegotiationWeek"] = 0;
-        resignRecord["TeamReSignInterest"] = 0;
-        resignRecord["ContractSalary"] = 0;
-        resignRecord["NegotiationCount"] = 0;
-        resignRecord["PlayerReSignInterest"] = 0;
-        resignRecord["ContractBonus"] = 0;
-        resignRecord["PreviousOfferedContractBonus"] = 0;
-        resignRecord["PreviousOfferedContractSalary"] = 0;
-        resignRecord["FairMarketContractBonus"] = 0;
-        resignRecord["FairMarketContractSalary"] = 0;
-        resignRecord["ActualDesiredContractBonus"] = 0;
-        resignRecord["ActualDesiredContractSalary"] = 0;
-        resignRecord["LatestOfferStage"] = "PreSeason";
-        resignRecord["ContractLength"] = 0;
-        resignRecord["FairMarketContractLength"] = 0;
-        resignRecord["PreviousOfferedContractLength"] = 0;
-        resignRecord["PreviousReSignStatus"] = "Invalid";
-        resignRecord["ReSignStatus"] = "NotReady";
-        resignRecord["LatestOfferWeek"] = 0;
-        resignRecord["PlayerPreviousReSignInterest"] = 0;
-        resignRecord["InitialContract"] = false;
-        resignRecord["NegotiationsEnded"] = false;
-        resignRecord["ActualDesiredContractLength"] = 0;
+        resignRecord.Team = ZERO_REF;
+        resignRecord.Player = ZERO_REF;
+        resignRecord.ActiveRequestID = "-2147483648";
+        resignRecord.NegotiationWeek = 0;
+        resignRecord.TeamReSignInterest = 0;
+        resignRecord.ContractSalary = 0;
+        resignRecord.NegotiationCount = 0;
+        resignRecord.PlayerReSignInterest = 0;
+        resignRecord.ContractBonus = 0;
+        resignRecord.PreviousOfferedContractBonus = 0;
+        resignRecord.PreviousOfferedContractSalary = 0;
+        resignRecord.FairMarketContractBonus = 0;
+        resignRecord.FairMarketContractSalary = 0;
+        resignRecord.ActualDesiredContractBonus = 0;
+        resignRecord.ActualDesiredContractSalary = 0;
+        resignRecord.LatestOfferStage = "PreSeason";
+        resignRecord.ContractLength = 0;
+        resignRecord.FairMarketContractLength = 0;
+        resignRecord.PreviousOfferedContractLength = 0;
+        resignRecord.PreviousReSignStatus = "Invalid";
+        resignRecord.ReSignStatus = "NotReady";
+        resignRecord.LatestOfferWeek = 0;
+        resignRecord.PlayerPreviousReSignInterest = 0;
+        resignRecord.InitialContract = false;
+        resignRecord.NegotiationsEnded = false;
+        resignRecord.ActualDesiredContractLength = 0;
+        
 
 
         //This results in every row being emptied
