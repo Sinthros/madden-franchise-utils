@@ -138,10 +138,21 @@ async function getCoachValues(coachTable, i) {
 };
 
 async function updateCoachVisuals(coachValues, jsonToUpdate,visualMorphKeys, size = "N/A") {
-  const [assetName, genericHeadName, firstName, lastName, height, skinTone] = coachValues;
+  let [assetName, genericHeadName, firstName, lastName, height, skinTone] = coachValues;
 
   // Get lookup values if they exist for this coach, OR get the default lookup values
-  const visualsLookup = allCoachVisuals[assetName] || allCoachVisuals["DefaultValue"];
+  let visualsLookup = allCoachVisuals["DefaultValue"];
+
+  if(allCoachVisuals.hasOwnProperty(assetName))
+  {
+    visualsLookup = allCoachVisuals[assetName];
+
+    // If lookup values exist for this coach, the genericHeadName needs to be MustBeUnique for the cyberface to work properly
+    genericHeadName = 'MustBeUnique';
+
+    // If the skintone is defined in the lookup, use it, otherwise keep the original value from the coach table
+    skinTone = visualsLookup['skinTone'] || skinTone;
+  }
 
   if (assetName === "") { // If no asset name, we can delete it from the json
     delete jsonToUpdate.assetName;

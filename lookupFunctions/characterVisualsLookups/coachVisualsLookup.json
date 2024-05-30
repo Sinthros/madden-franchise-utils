@@ -1262,7 +1262,8 @@
     "GutBaseBlend": "1",
     "GutBarycentricBlend": "1",
     "ThighsBaseBlend": "1",
-    "ThighsBarycentricBlend": "1"
+    "ThighsBarycentricBlend": "1",
+    "skinTone": 7
   },
   "CowherBill_C_PRO": {
     "containerId": "374",
