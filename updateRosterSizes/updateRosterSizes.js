@@ -17,8 +17,7 @@ franchise.on('ready', async function () {
 
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
-  await teamTable.readRecords();
-  await playerTable.readRecords();
+  await FranchiseUtils.readTableRecords([playerTable,teamTable]);
 
   await FranchiseUtils.recalculateRosterSizes(playerTable,teamTable);
   
