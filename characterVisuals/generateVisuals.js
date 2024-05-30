@@ -1,6 +1,5 @@
 const Franchise = require('madden-franchise');
 const prompt = require('prompt-sync')();
-const ZERO_REF = '00000000000000000000000000000000';
 
 const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
@@ -72,7 +71,7 @@ franchise.on('ready', async function () {
     if (regenerateCoachVisuals) {
       for (let i = 0; i < coachTable.header.recordCapacity;i++) {
         // If empty OR empty offensive playbook/defensive playbook (not a real coach), don't set visuals
-        if (coachTable.records[i].isEmpty || (coachTable.records[i]['OffensivePlaybook'] === ZERO_REF && coachTable.records[i]['DefensivePlaybook'] === ZERO_REF )) {
+        if (coachTable.records[i].isEmpty || (coachTable.records[i]['OffensivePlaybook'] === FranchiseUtils.ZERO_REF && coachTable.records[i]['DefensivePlaybook'] === FranchiseUtils.ZERO_REF )) {
           continue
         };
         await characterVisualFunctions.regenerateCoachVisual(franchise,coachTable,mainCharacterVisualsTable,i);

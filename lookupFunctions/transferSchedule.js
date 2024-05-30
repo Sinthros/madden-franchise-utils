@@ -11,7 +11,6 @@ const zeroPad = (num, places) => String(num).padStart(places, '0')
 const REGULAR_SEASON_WEEKS = 18;
 const PRESEASON_WEEKS = 4;
 const VALID_WEEK_TYPES = ['RegularSeason','PreSeason','OffSeason'];
-const ZERO_REF = '00000000000000000000000000000000';
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 
@@ -193,15 +192,15 @@ function replaceTeamNames(sourceRecord, mergedTableMappings) {
 };
 
 function resetGameRecordValues(record) {
-  record.GameGoal = ZERO_REF;
-  record.GameSetup = ZERO_REF;
-  record.HomePlayerStatCache = ZERO_REF;
-  record.HomeTeamStatCache = ZERO_REF;
-  record.InjuryCache = ZERO_REF;
-  record.AwayPlayerStatCache = ZERO_REF;
-  record.AwayTeamStatCache = ZERO_REF;
-  record.ScoringSummaries = ZERO_REF;
-  record.Stadium = ZERO_REF;
+  record.GameGoal = FranchiseUtils.ZERO_REF;
+  record.GameSetup = FranchiseUtils.ZERO_REF;
+  record.HomePlayerStatCache = FranchiseUtils.ZERO_REF;
+  record.HomeTeamStatCache = FranchiseUtils.ZERO_REF;
+  record.InjuryCache = FranchiseUtils.ZERO_REF;
+  record.AwayPlayerStatCache = FranchiseUtils.ZERO_REF;
+  record.AwayTeamStatCache = FranchiseUtils.ZERO_REF;
+  record.ScoringSummaries = FranchiseUtils.ZERO_REF;
+  record.Stadium = FranchiseUtils.ZERO_REF;
 };
 
 function resetGameStatusForUnpublishedGame(record) {
@@ -218,13 +217,13 @@ async function processSeasonGameRequests(seasonGameRequest, pendingGames, franch
     }
 
     const currentUser = seasonGameRequest.records[i]['Response'];
-    let assignedSeasonGame = ZERO_REF;
+    let assignedSeasonGame = FranchiseUtils.ZERO_REF;
 
-    if (currentUser !== ZERO_REF) {
+    if (currentUser !== FranchiseUtils.ZERO_REF) {
       const franchiseUserRow = await FranchiseUtils.bin2Dec(currentUser.slice(15));
       const userTeam = franchiseUser.records[franchiseUserRow]['Team'];
 
-      if (userTeam !== ZERO_REF) {
+      if (userTeam !== FranchiseUtils.ZERO_REF) {
         for (let j = 0; j < pendingGames.length; j++) {
           const currentGameRow = pendingGames[j];
           const { HomeTeam, AwayTeam } = seasonGameTable.records[currentGameRow];

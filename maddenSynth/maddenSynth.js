@@ -27,7 +27,6 @@ const playerTable = franchise.getTableByUniqueId(tables.playerTable);
 await playerTable.readRecords();
 
 const validWeekTypes = ['PreSeason','RegularSeason','WildcardPlayoff','DivisionalPlayoff','ConferencePlayoff','SuperBowl'];
-const ZERO_REF = '00000000000000000000000000000000';
 const invalidPlayerStatuses = ['Draft','Retired','Deleted','None','Created','PracticeSquad'];
 
 const teamsList = [];

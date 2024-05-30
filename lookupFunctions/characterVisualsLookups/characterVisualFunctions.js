@@ -7,7 +7,6 @@ const allPlayerVisuals = JSON.parse(fs.readFileSync(path.join(__dirname, 'player
 const basePlayerVisualJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'basePlayerVisualLookup.json'), 'utf8'));
 const allCoachVisuals = JSON.parse(fs.readFileSync(path.join(__dirname, 'coachVisualsLookup.json'), 'utf8'));
 const baseCoachVisualJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'baseCoachVisualLookup.json'), 'utf8'));
-const ZERO_REF = '00000000000000000000000000000000';
 const FranchiseUtils = require('../FranchiseUtils');
 const { tables } = require('../FranchiseTableId');
 
@@ -387,7 +386,7 @@ async function getCharacterVisualsTable(franchise,currentTable,mainCharacterVisu
   const visualsRecordCapcity = mainCharacterVisualsTable.header.recordCapacity;
   let currentCharacterVisualsTable;
   
-  if (characterVisualsRef === ZERO_REF) { // If it's all zeroes, we need to set a new reference
+  if (characterVisualsRef === FranchiseUtils.ZERO_REF) { // If it's all zeroes, we need to set a new reference
     characterVisualsRow = mainCharacterVisualsTable.header.nextRecordToUse; // Get the first empty row
     if (characterVisualsRow >= visualsRecordCapcity) {
       console.log("ERROR - The CharacterVisuals table has run out of space. Your changes have not been saved.");
@@ -500,7 +499,7 @@ async function updateAllCharacterVisuals(franchise) {
   
   for (let i = 0; i < coachTable.header.recordCapacity;i++) {
     // If empty OR empty offensive playbook/defensive playbook (not a real coach), don't set visuals
-    if (coachTable.records[i].isEmpty || (coachTable.records[i]['OffensivePlaybook'] === ZERO_REF && coachTable.records[i]['DefensivePlaybook'] === ZERO_REF )) {
+    if (coachTable.records[i].isEmpty || (coachTable.records[i]['OffensivePlaybook'] === FranchiseUtils.ZERO_REF && coachTable.records[i]['DefensivePlaybook'] === FranchiseUtils.ZERO_REF )) {
       continue
     }
     

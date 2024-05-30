@@ -10,7 +10,6 @@ const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 const coachTalentPositions = JSON.parse(fs.readFileSync(path.join(__dirname, '../lookupFunctions/JsonLookups/coach_talents_positions.json'), 'utf8'));
 const coachTalentDependencies = JSON.parse(fs.readFileSync(path.join(__dirname, 'coach_talents_dependencies.json'), 'utf8'));
-const ZERO_REF = '00000000000000000000000000000000';
 const twoUpgradeTalentTrees = ['Staff Modifications','Trades','Offense Recruitment','Defense Recruitment'];
 const threeUpgradeTalents = ['After School Tutoring']; // We need to specficially define this talent as having 3 upgrades because it's in Staff Modifications, which has all other talents as 2 upgrade talents
 const nonUpgradableTalentTypes = ['Regular','Selection'];
@@ -72,7 +71,7 @@ franchise.on('ready', async function () {
     
       for (let j = 0; j < talentNodeArrayTable.header.numMembers; j++) {
         const talentNodeBinary = talentNodeArrayRecord[`TalentNode${j}`];
-        if (talentNodeBinary === ZERO_REF) {
+        if (talentNodeBinary === FranchiseUtils.ZERO_REF) {
           continue;
         }
         const talentNodeRow = await FranchiseUtils.bin2Dec(talentNodeBinary.slice(15));

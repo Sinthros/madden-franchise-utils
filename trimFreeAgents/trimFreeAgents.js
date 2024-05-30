@@ -3,8 +3,6 @@ const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
-const ZERO_REF = '00000000000000000000000000000000';
-
 
 const MIN_EMPTY_PLAYERS = 550;
 
@@ -26,10 +24,10 @@ async function removeFromFATable(table, row) {
 
   if (currentPerson) {
       if (currentPerson.value == lastPerson.value) {
-          table.records[0][currentPerson.key] = ZERO_REF;
+          table.records[0][currentPerson.key] = FranchiseUtils.ZERO_REF;
       } else {
           table.records[0][currentPerson.key] = table.records[0][lastPerson.key];
-          table.records[0][lastPerson.key] = ZERO_REF;
+          table.records[0][lastPerson.key] = FranchiseUtils.ZERO_REF;
       }
   }
 }
@@ -42,7 +40,7 @@ async function getCharacterVisualsTable(franchise,currentTable,mainCharacterVisu
   const visualsRecordCapcity = mainCharacterVisualsTable.header.recordCapacity;
   let currentCharacterVisualsTable;
   
-  if (characterVisualsRef === ZERO_REF) { // If it's all zeroes, return
+  if (characterVisualsRef === FranchiseUtils.ZERO_REF) { // If it's all zeroes, return
     return {currentCharacterVisualsTable, characterVisualsRow, characterVisualsTableId }
   }
   else { //Else, simply convert the binary ref to the row number value
@@ -99,11 +97,11 @@ async function deleteExcessFreeAgents(franchise, playersToDelete) {
 
     
     playerTable.records[rowIndex]['ContractStatus'] = 'Deleted'; // Mark as deleted and empty the row
-    playerTable.records[rowIndex].CareerStats = ZERO_REF; // If we don't zero these out the game will crash
-    playerTable.records[rowIndex].SeasonStats = ZERO_REF;
-    playerTable.records[rowIndex].GameStats = ZERO_REF;
-    playerTable.records[rowIndex].CharacterVisuals = ZERO_REF;
-    playerTable.records[rowIndex].College = ZERO_REF;
+    playerTable.records[rowIndex].CareerStats = FranchiseUtils.ZERO_REF; // If we don't zero these out the game will crash
+    playerTable.records[rowIndex].SeasonStats = FranchiseUtils.ZERO_REF;
+    playerTable.records[rowIndex].GameStats = FranchiseUtils.ZERO_REF;
+    playerTable.records[rowIndex].CharacterVisuals = FranchiseUtils.ZERO_REF;
+    playerTable.records[rowIndex].College = FranchiseUtils.ZERO_REF;
     playerTable.records[rowIndex].PLYR_ASSETNAME = ""; // Don't know if this is needed, but doesn't hurt
     playerTable.records[rowIndex].empty();
 
@@ -127,7 +125,7 @@ async function emptyAcquisitionTables(franchise) {
     }
 
     const record = playerAcquisitionEvaluation.records[i];
-    record['Player'] = ZERO_REF;
+    record['Player'] = FranchiseUtils.ZERO_REF;
     record['isPlayerSuperstar'] = false;
     record['isPlayerXFactor'] = false;
     record['AddedValue'] = 0;
@@ -154,7 +152,7 @@ async function emptyAcquisitionTables(franchise) {
 
     const recordArray = playerAcquisitionEvaluationArray.records[i];
     for (let j = 0; j < 10; j++) {
-      recordArray[`PlayerAcquisitionEvaluation${j}`] = ZERO_REF;
+      recordArray[`PlayerAcquisitionEvaluation${j}`] = FranchiseUtils.ZERO_REF;
     }
   }
 }

@@ -4,9 +4,14 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const prompt = require('prompt-sync')();
+
 const ZERO_REF = '00000000000000000000000000000000';
 const NFL_CONFERENCES = ['AFC','NFC'];
 const OFFENSIVE_SKILL_POSITIONS = ['QB','HB','FB','WR','TE'];
+
+const BASE_FILE_INIT_KWD = 'CAREER';
+const FTC_FILE_INIT_KWD = 'franchise-'
+
 
 function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false, isFtcFile = false) {
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
@@ -15,10 +20,10 @@ function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false, isFtcFile = 
   let franchise;
   let filePrefix;
   if (isFtcFile) {
-    filePrefix = 'franchise-';
+    filePrefix = FTC_FILE_INIT_KWD;
   }
   else {
-    filePrefix = 'CAREER-'
+    filePrefix = BASE_FILE_INIT_KWD;
   }
   
   if (fs.existsSync(documentsDir)) {
@@ -57,10 +62,10 @@ async function selectFranchiseFileAsync(gameYear,isAutoUnemptyEnabled = false, i
     let filePrefix;
 
     if (isFtcFile) {
-        filePrefix = 'franchise-';
+        filePrefix = FTC_FILE_INIT_KWD;
     }
     else {
-        filePrefix = 'CAREER-'
+        filePrefix = BASE_FILE_INIT_KWD;
     }
     
     if (fs.existsSync(documentsDir)) {
@@ -116,10 +121,10 @@ async function saveFranchiseFile(franchise) {
 
   continueIfError: Boolean. If true, the program will continue if there's an error reading the records for a table.
   In most cases, leave this as false; you usually don't want the program to proceed if there's an error loading a table.
-
-  This function was designed for the franchiseDataTransfer class, which loads ALL tables from FranchiseTableId.
+  This was designed for the franchiseDataTransfer class, which loads ALL tables from FranchiseTableId.
   In this specific scenario, a few tables in that list only exist in M22 or M24. We want to continue over
   those when they don't load properly since they aren't used in the script by the source/target franchise objects.
+
 */
 
 async function readTableRecords(tablesList, continueIfError = false) {
@@ -286,10 +291,11 @@ async function emptyCharacterVisualsTable(franchise, tables) {
     const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
     await characterVisuals.readRecords();
   
-    for (let rows = 0; rows < characterVisuals.header.recordCapacity;rows++) {
-        if (!characterVisuals.records[rows].isEmpty) {
-          characterVisuals.records[rows]['RawData'] = {};
-          await characterVisuals.records[rows].empty();
+    for (let i = 0; rows < characterVisuals.header.recordCapacity;i++) {
+      const record = characterVisuals.records[i];
+        if (!record.isEmpty) {
+          record['RawData'] = {};
+          record.empty();
         }
     }
 };

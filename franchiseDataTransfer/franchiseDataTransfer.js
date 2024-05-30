@@ -22,9 +22,7 @@ const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 const DEFAULT_PLAYER_ROW = 755;
 
-
-const ZERO_REF = FranchiseUtils.ZERO_REF;
-const validGames = ['22','24'];
+const VALID_GAME_YEARS = ['22','24'];
 
 
 const playerMotivationsM24 = [
@@ -55,14 +53,14 @@ console.log("In this program, you can convert your Madden 22 Franchise to Madden
 console.log("Your SOURCE franchise file will have the data you want to transfer. Your TARGET franchise file is the one you'll be transferring the data to.")
 console.log("Please note that your TARGET franchise file MUST be in the PreSeason for this program to work.")
 
-var gamePrompt;
-while (!validGames.includes(gamePrompt)) {
+let gamePrompt;
+while (!VALID_GAME_YEARS.includes(gamePrompt)) {
   console.log("Select the Madden version of your SOURCE Franchise file. Valid inputs are 22 and 24.")
   console.log("Only enter 24 if you're purposely trying to transfer a Madden 24 Franchise file's data into another Madden 24 file.")
   gamePrompt = prompt()
 
-  if (validGames.includes(gamePrompt)) {
-    break
+  if (VALID_GAME_YEARS.includes(gamePrompt)) {
+    break;
   }
   else {
     console.log("Invalid option. Please try again.")
@@ -128,7 +126,7 @@ targetFranchise = selectFranchiseFile(targetFranchise,m24Path,"Target");
 async function importTables(tableToEdit,filePath,keepColumns,deleteColumns,zeroColumns) {
 
   //These are the tables we need to explicitly set the nextRecordToUse for
-  let nextRecordTables = ["CoachAward","CareerOffensiveKPReturnStats","CareerDefensiveKPReturnStats","CareerOffensiveStats","CareerDefensiveStats","CareerKickingStats","CareerOLineStats","LeagueHistoryAward"]
+  const nextRecordTables = ["CoachAward","CareerOffensiveKPReturnStats","CareerDefensiveKPReturnStats","CareerOffensiveStats","CareerDefensiveStats","CareerKickingStats","CareerOLineStats","LeagueHistoryAward"];
 
   let checkEmptyRows = []
   let checkInvalidRows = [] //This is specifically for the TalentNodeStatus table
@@ -137,9 +135,9 @@ async function importTables(tableToEdit,filePath,keepColumns,deleteColumns,zeroC
   const table = await importTableData({ inputFilePath: filePath });
 
   await table.forEach(async function (record,i) { //If the TalentStatus column exists, do this check
-    numCheck = await FranchiseUtils.hasNumber(record.TalentStatus)
-    if (numCheck === true) {
-      record.TalentStatus = 'NotOwned'
+    numCheck = await FranchiseUtils.hasNumber(record.TalentStatus);
+    if (numCheck) {
+      record.TalentStatus = 'NotOwned';
       checkInvalidRows.push(i);
     }
   })
@@ -165,7 +163,7 @@ async function importTables(tableToEdit,filePath,keepColumns,deleteColumns,zeroC
 
   //Zero out each column in the zeroColumns array
   for (let j = 0; j< zeroColumns.length;j++) {
-    trimmedTable.forEach(function(item){ item[zeroColumns[j]] = ZERO_REF });
+    trimmedTable.forEach(function(item){ item[zeroColumns[j]] = FranchiseUtils.ZERO_REF });
   }
 
   //If keepColumns is defined, ONLY keep those columns
@@ -288,7 +286,7 @@ async function shuffleArray(array) {
 async function emptySignatureTable(currentTable,currentTableNumRows) {
   for (let rows = 0;rows<currentTableNumRows;rows++) {
     //Iterate through signature table and set default values
-    currentTable.records[rows]["Player"] = ZERO_REF;
+    currentTable.records[rows]["Player"] = FranchiseUtils.ZERO_REF;
     currentTable.records[rows]["ActivationEnabled"] = false
     currentTable.records[rows]["Active"] = false
     currentTable.records[rows]["DeactivationEnabled"] = false
@@ -296,7 +294,7 @@ async function emptySignatureTable(currentTable,currentTableNumRows) {
     currentTable.records[rows]["SlotIndex"] = 0
 
     //This results in every row being emptied
-    if (currentTable.records[rows].isEmpty === false) {
+    if (!currentTable.records[rows].isEmpty) {
       currentTable.records[rows].empty()
 
     }
@@ -317,7 +315,7 @@ async function getBinaryReferenceM24(currentSignatureValue) {
 
 async function adjustSignatureTableBinary(currentTable,currentTableNumRows) {
   for (let rows = 0; rows<currentTableNumRows;rows++) {
-    if (currentTable.records[rows].isEmpty === false) {
+    if (!currentTable.records[rows].isEmpty) {
       let currentSignatureValue = currentTable.records[rows]['Signature']
       const binaryReferenceM24Value = await getBinaryReferenceM24(currentSignatureValue);
       
@@ -374,7 +372,7 @@ async function fillResignTable(currentTable) {
     var currentResignBinary =  getBinaryReferenceData(currentTable.header.tableId,resignTableNextRecord);
     var n = 0;
     while (true) { // Find first zeroed out value in resign table and insert the binary
-      if (resignArrayTable.records[0][`PlayerReSignNegotiation${n}`] === ZERO_REF) {
+      if (resignArrayTable.records[0][`PlayerReSignNegotiation${n}`] === FranchiseUtils.ZERO_REF) {
         resignArrayTable.records[0][`PlayerReSignNegotiation${n}`] = currentResignBinary
         break
       }
@@ -404,13 +402,13 @@ async function handlePlayerTable(currentTable,currentTableNumRows) {
 async function handleTeamTable(currentTable,currentTableNumRows) {
   let coachTable = targetFranchise.getTableByUniqueId(tables.coachTable);
   await coachTable.readRecords();
-  let defaultOffensiveCoordinator = ZERO_REF;
-  let defaultDefensiveCoordinator = ZERO_REF;
-  let defaultSpecialTeams = ZERO_REF;
+  let defaultOffensiveCoordinator = FranchiseUtils.ZERO_REF;
+  let defaultDefensiveCoordinator = FranchiseUtils.ZERO_REF;
+  let defaultSpecialTeams = FranchiseUtils.ZERO_REF;
 
   for (let j = 0; j < coachTable.header.recordCapacity;j++) { //Find default offensive/defensive coordinator rows
 
-    if (coachTable.records[j]['Name'] === "" && coachTable.records[j]['TeamIndex'] === 0 && coachTable.records[j]['ActiveTalentTree'] === ZERO_REF) {
+    if (coachTable.records[j]['Name'] === "" && coachTable.records[j]['TeamIndex'] === 0 && coachTable.records[j]['ActiveTalentTree'] === FranchiseUtils.ZERO_REF) {
       if (coachTable.records[j]['Position'] === 'OffensiveCoordinator') {
         defaultOffensiveCoordinator = getBinaryReferenceData(coachTable.header.tableId,j)
       }
@@ -432,7 +430,7 @@ async function handleTeamTable(currentTable,currentTableNumRows) {
     }
     // If the current row is a pro bowl team, zero out their HC column and set their OC/DC to the default row values from before
     if (FranchiseUtils.NFL_CONFERENCES.includes(currentTable.records[i]['DisplayName'])) {
-      currentTable.records[i]['HeadCoach'] = ZERO_REF;
+      currentTable.records[i]['HeadCoach'] = FranchiseUtils.ZERO_REF;
       currentTable.records[i]['OffensiveCoordinator'] = defaultOffensiveCoordinator;
       currentTable.records[i]['DefensiveCoordinator'] = defaultDefensiveCoordinator;
     }
@@ -451,7 +449,7 @@ async function handleTeamTable(currentTable,currentTableNumRows) {
     }
 
     for (let k = 0; k < teamTableRows; k++) {
-      //currentTeamTable.records[k]['HeadCoach'] = ZERO_REF;
+      //currentTeamTable.records[k]['HeadCoach'] = FranchiseUtils.ZERO_REF;
       currentTeamTable.records[k]['OffensiveCoordinator'] = defaultOffensiveCoordinator;
       currentTeamTable.records[k]['DefensiveCoordinator'] = defaultDefensiveCoordinator;
       currentTeamTable.records[k]['SpecialTeamsCoach'] = defaultSpecialTeams;
@@ -491,7 +489,7 @@ async function fixPlayerTableRow(targetFranchise) {
         for (let n = 0; n < currentRelatedHeaders.length;n++) {
           for (let row = 0; row < currentRelatedTable.header.recordCapacity; row++) { // Iterate through the table rows
               let currentCol = currentRelatedHeaders[n];
-              if (currentRelatedTable.records[row].fields[currentCol]["isReference"] === true) {
+              if (currentRelatedTable.records[row].fields[currentCol]["isReference"]) {
                 if (currentRelatedTable.records[row][currentCol] === originalPlayerBin) {
                   currentRelatedTable.records[row][currentCol] = newPlayerBin;
                   //console.log(`${currentCol} ${currentRelatedTable.header.name} ${currentTableId} ${row}`)
@@ -509,17 +507,17 @@ async function fixPlayerTableRow(targetFranchise) {
     }
   }
 
-  player.records[DEFAULT_PLAYER_ROW]['MorphHead'] = ZERO_REF;
+  player.records[DEFAULT_PLAYER_ROW]['MorphHead'] = FranchiseUtils.ZERO_REF;
   player.records[DEFAULT_PLAYER_ROW]['FirstName'] = '';
   player.records[DEFAULT_PLAYER_ROW]['LastName'] = '';
   player.records[DEFAULT_PLAYER_ROW]['PLYR_ASSETNAME'] = '_0';
   player.records[DEFAULT_PLAYER_ROW]['ContractStatus'] = 'None';
   player.records[DEFAULT_PLAYER_ROW]['TeamIndex'] = 32;
-  player.records[DEFAULT_PLAYER_ROW]['WeeklyGoals'] = ZERO_REF;
-  player.records[DEFAULT_PLAYER_ROW]['CareerStats'] = ZERO_REF;
-  player.records[DEFAULT_PLAYER_ROW]['SeasonStats'] = ZERO_REF;
-  player.records[DEFAULT_PLAYER_ROW]['CharacterVisuals'] = ZERO_REF;
-  player.records[DEFAULT_PLAYER_ROW]['SeasonalGoal'] = ZERO_REF;
+  player.records[DEFAULT_PLAYER_ROW]['WeeklyGoals'] = FranchiseUtils.ZERO_REF;
+  player.records[DEFAULT_PLAYER_ROW]['CareerStats'] = FranchiseUtils.ZERO_REF;
+  player.records[DEFAULT_PLAYER_ROW]['SeasonStats'] = FranchiseUtils.ZERO_REF;
+  player.records[DEFAULT_PLAYER_ROW]['CharacterVisuals'] = FranchiseUtils.ZERO_REF;
+  player.records[DEFAULT_PLAYER_ROW]['SeasonalGoal'] = FranchiseUtils.ZERO_REF;
 
 };
 
@@ -559,11 +557,11 @@ async function deleteExcessFreeAgents(targetFranchise) {
       const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
       worstFreeAgentsBinary.push(currentBin);
       playerTable.records[rowIndex]['ContractStatus'] = 'Deleted'; // Mark as deleted and empty the row
-      playerTable.records[rowIndex].CareerStats = ZERO_REF; // If we don't zero these out the game will crash
-      playerTable.records[rowIndex].SeasonStats = ZERO_REF;
-      playerTable.records[rowIndex].GameStats = ZERO_REF;
-      playerTable.records[rowIndex].CharacterVisuals = ZERO_REF;
-      playerTable.records[rowIndex].College = ZERO_REF;
+      playerTable.records[rowIndex].CareerStats = FranchiseUtils.ZERO_REF; // If we don't zero these out the game will crash
+      playerTable.records[rowIndex].SeasonStats = FranchiseUtils.ZERO_REF;
+      playerTable.records[rowIndex].GameStats = FranchiseUtils.ZERO_REF;
+      playerTable.records[rowIndex].CharacterVisuals = FranchiseUtils.ZERO_REF;
+      playerTable.records[rowIndex].College = FranchiseUtils.ZERO_REF;
       playerTable.records[rowIndex].PLYR_ASSETNAME = ""; // Don't know if this is needed, but doesn't hurt
       playerTable.records[rowIndex].empty();
       await FranchiseUtils.removeFromTable(drillCompletedTable, currentBin);
@@ -573,7 +571,7 @@ async function deleteExcessFreeAgents(targetFranchise) {
     allFreeAgentsBinary = allFreeAgentsBinary.filter((bin) => !worstFreeAgentsBinary.includes(bin));
   
     while (allFreeAgentsBinary.length < freeAgentNumMembers) { //Fill up the remainder with zeroed out binary
-      allFreeAgentsBinary.push(ZERO_REF)
+      allFreeAgentsBinary.push(FranchiseUtils.ZERO_REF)
     }
 
     //One liner to set the FA table binary = our free agent binary
@@ -682,7 +680,7 @@ async function assignFranchiseUsers(franchise) {
     if (franchiseUserTable.records[i].isEmpty) {
       continue
     }
-    var foundUser = true;
+    let foundUser = true;
     currentBin = getBinaryReferenceData(franchiseUserTable.header.tableId,i)
     for (let row = 0; row < franchiseUserArray.header.numMembers;row++) {
       if (franchiseUserArray.records[0][`User${row}`] === currentBin) {
@@ -691,13 +689,13 @@ async function assignFranchiseUsers(franchise) {
 
       }
     }
-    if (foundUser === true) {
+    if (foundUser) {
       let teamBin = franchiseUserTable.records[i]["Team"]; // Get current team from the FranchiseUser table
       for (let teamRow = 0; teamRow < teamTableNumRows;teamRow++) {
         currentRowBinary = getBinaryReferenceData(teamTable.header.tableId,teamRow);
         if (currentRowBinary === teamBin) {
           headCoach = teamTable.records[teamRow]['HeadCoach'];
-          if (headCoach !== ZERO_REF) {
+          if (headCoach !== FranchiseUtils.ZERO_REF) {
             teamTable.records[teamRow]['UserCharacter'] = headCoach;
             franchiseUserTable.records[i]['UserEntity'] = headCoach;
 
@@ -771,7 +769,7 @@ async function handleLeagueHistoryBin(currentTable,teamIdentityLookup) {
   const binaryReference = foundData.binaryReference;
 
   for (let i = 0;i<currentTable.header.recordCapacity;i++) {
-    if (currentTable.records[i].isEmpty === false) {
+    if (!currentTable.records[i].isEmpty) {
       currentTable.records[i]['teamIdentity'] = binaryReference
 
     }
@@ -908,7 +906,7 @@ async function getCoachTables(mergedTableMappings) {
             var finalBinValue = currentSourceBinVal.replace(outputBin,replaceBin)
           }
           else {
-            var finalBinValue = ZERO_REF;
+            var finalBinValue = FranchiseUtils.ZERO_REF;
           
           }
 
@@ -952,13 +950,13 @@ async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreCo
 
   if (sourceUniqueId === tables.activeAbilityArrayTableM22 && is22To24) { 
     //If it's the activeAbilities table AND we're transferring from 22 to 24...
-    currentTable.records[96]['Player0'] = ZERO_REF; // These two rows aren't empty on 24, but are on 22
-    currentTable.records[97]['Player0'] = ZERO_REF;
+    currentTable.records[96]['Player0'] = FranchiseUtils.ZERO_REF; // These two rows aren't empty on 24, but are on 22
+    currentTable.records[97]['Player0'] = FranchiseUtils.ZERO_REF;
 
     for (let i = 18; i <= 77;i++) {
-      currentTable.records[i]['Player0'] = ZERO_REF
-      currentTable.records[i]['Player1'] = ZERO_REF
-      currentTable.records[i]['Player2'] = ZERO_REF
+      currentTable.records[i]['Player0'] = FranchiseUtils.ZERO_REF
+      currentTable.records[i]['Player1'] = FranchiseUtils.ZERO_REF
+      currentTable.records[i]['Player2'] = FranchiseUtils.ZERO_REF
     }
   }
 
@@ -973,7 +971,7 @@ async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreCo
         let value1 = Buffer.from(currentVal, 'utf-8');
         const hasInvalidValue = await containsNonUTF8(value1);
   
-        if (hasInvalidValue === true) {
+        if (hasInvalidValue) {
           sourceFranchise._settings['autoUnempty'] = false;
           currentTable.records[rows][currentCol] = "";
           sourceFranchise._settings['autoUnempty'] = true;
@@ -982,7 +980,7 @@ async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreCo
 
       if (sourceUniqueId === tables.playerTable && currentCol === 'CareerStats' && currentTable.records[rows].isEmpty) {
         sourceFranchise._settings['autoUnempty'] = false;
-        currentTable.records[rows][currentCol] = ZERO_REF;
+        currentTable.records[rows][currentCol] = FranchiseUtils.ZERO_REF;
         sourceFranchise._settings['autoUnempty'] = true;
 
       }
@@ -993,7 +991,7 @@ async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreCo
         sourceFranchise._settings['autoUnempty'] = false;
         let numberCheck = await FranchiseUtils.hasNumber(currentTable.records[rows][currentCol]);
   
-        if (numberCheck === true) {
+        if (numberCheck) {
           if (currentCol === 'PlayerVisMoveType') {
             currentTable.records[rows][currentCol] = 'Default'
           }
@@ -1014,9 +1012,9 @@ async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreCo
       }
   
       try {
-        if (currentTable.records[rows].fields[currentCol]["isReference"] === true) { // If it's a bin reference column...
+        if (currentTable.records[rows].fields[currentCol]["isReference"]) { // If it's a bin reference column...
           // If it should be ignored, or if it's empty, or all zeroes, continue
-          if (ignoreColumns.includes(currentCol) || currentTable.records[rows].isEmpty || currentTable.records[rows][currentCol] === ZERO_REF ) {
+          if (ignoreColumns.includes(currentCol) || currentTable.records[rows].isEmpty || currentTable.records[rows][currentCol] === FranchiseUtils.ZERO_REF ) {
             continue
           }
          
@@ -1319,7 +1317,7 @@ async function emptyRookieStatTracker(targetFranchise) {
   }
 
   for (let i = 0; i < rookieStatTrackerArray.header.numMembers; i++) {
-    rookieStatTrackerArray.records[0][`RookieStatTracker${i}`] = ZERO_REF;
+    rookieStatTrackerArray.records[0][`RookieStatTracker${i}`] = FranchiseUtils.ZERO_REF;
   }
 };
 
@@ -1335,7 +1333,7 @@ async function emptyMediaGoals(targetFranchise) {
   
   for (let i = 0; i < activeMediaGoalNumRows; i++) {
     if (!characterActiveMediaGoal.records[i].isEmpty) {
-      characterActiveMediaGoal.records[i]['ActiveMediaGoals'] = ZERO_REF;
+      characterActiveMediaGoal.records[i]['ActiveMediaGoals'] = FranchiseUtils.ZERO_REF;
       characterActiveMediaGoal.records[i].empty();
     }
   }
@@ -1343,7 +1341,7 @@ async function emptyMediaGoals(targetFranchise) {
   for (let i = 0; i < activeMediaGoalArrayNumRows;i++) {
     if (!characterActiveMediaGoalArray.records[i].isEmpty) {
       for (let mediaArrayRow = 0; mediaArrayRow < characterActiveMediaGoalArray.header.numMembers;mediaArrayRow++) {
-        characterActiveMediaGoalArray.records[0][`CharacterActiveMediaGoal${mediaArrayRow}`] = ZERO_REF;
+        characterActiveMediaGoalArray.records[0][`CharacterActiveMediaGoal${mediaArrayRow}`] = FranchiseUtils.ZERO_REF;
       }
       if (i !== 0) {
         characterActiveMediaGoalArray.records[i].empty();
@@ -1367,10 +1365,10 @@ async function adjustSeasonGameTable(targetFranchise) {
 
   for (const record of seasonGame.records) {
     if (!record.isEmpty && !record['IsPractice']) {
-      record['HomePlayerStatCache'] = ZERO_REF;
-      record['InjuryCache'] = ZERO_REF;
-      record['AwayPlayerStatCache'] = ZERO_REF;
-      record['ScoringSummaries'] = ZERO_REF;
+      record['HomePlayerStatCache'] = FranchiseUtils.ZERO_REF;
+      record['InjuryCache'] = FranchiseUtils.ZERO_REF;
+      record['AwayPlayerStatCache'] = FranchiseUtils.ZERO_REF;
+      record['ScoringSummaries'] = FranchiseUtils.ZERO_REF;
       record['SeasonYear'] = currentSeasYear;
     }
   }
@@ -1397,11 +1395,11 @@ async function emptyTalentTreeTables(targetFranchise) { // Function to empty all
     if (!activeTalentTree.records[i].isEmpty) {
       referencedRow = targetFranchise.getReferencesToRecord(activeTalentTree.header.tableId,i);
       if (referencedRow.length === 0) {
-        activeTalentTree.records[i]['TalentSubTreeStatusThird'] = ZERO_REF;
-        activeTalentTree.records[i]['TalentSubTreeStatusSecond'] = ZERO_REF;
-        activeTalentTree.records[i]['TalentSubTreeStatusFirst'] = ZERO_REF;
-        activeTalentTree.records[i]['TalentSubTreeSecond'] = ZERO_REF;
-        activeTalentTree.records[i]['TalentSubTreeFirst'] = ZERO_REF;
+        activeTalentTree.records[i]['TalentSubTreeStatusThird'] = FranchiseUtils.ZERO_REF;
+        activeTalentTree.records[i]['TalentSubTreeStatusSecond'] = FranchiseUtils.ZERO_REF;
+        activeTalentTree.records[i]['TalentSubTreeStatusFirst'] = FranchiseUtils.ZERO_REF;
+        activeTalentTree.records[i]['TalentSubTreeSecond'] = FranchiseUtils.ZERO_REF;
+        activeTalentTree.records[i]['TalentSubTreeFirst'] = FranchiseUtils.ZERO_REF;
         activeTalentTree.records[i].empty();
       }
 
@@ -1422,7 +1420,7 @@ async function emptyTalentTreeTables(targetFranchise) { // Function to empty all
       referencedRow = targetFranchise.getReferencesToRecord(talentNodeStatusArray.header.tableId,i);
       if (referencedRow.length === 0) {
         for (let j = 0; j < talentNodeStatusArray.header.numMembers;j++) {
-          talentNodeStatusArray.records[i][`TalentNodeStatus${j}`] = ZERO_REF;
+          talentNodeStatusArray.records[i][`TalentNodeStatus${j}`] = FranchiseUtils.ZERO_REF;
         }
         talentNodeStatusArray.records[i].empty();
       }
@@ -1565,7 +1563,7 @@ async function handleTalentTree(targetFranchise,coachTable,coachTableCurrentReco
             j++;
           }
           else if (currentNodeArrayCount < j) { //Once our array is empty, make sure the rest of the row is zeroed out
-            talentNodeStatusArray.records[talentNodeStatusArrayNextRecord][`TalentNodeStatus${j}`] = ZERO_REF;;
+            talentNodeStatusArray.records[talentNodeStatusArrayNextRecord][`TalentNodeStatus${j}`] = FranchiseUtils.ZERO_REF;;
             j++;
           }
         }
@@ -1624,7 +1622,7 @@ async function emptyStoryTable(targetFranchise) {
   for (let i = 0; i < storyArrayTable.header.recordCapacity;i++) {
     if (!storyArrayTable.records[i].isEmpty) {
         for (let j = 0; j < storyArrayTable.header.numMembers;j++) {
-          storyArrayTable.records[i][`Story${j}`] = ZERO_REF;
+          storyArrayTable.records[i][`Story${j}`] = FranchiseUtils.ZERO_REF;
 
         }
       }
@@ -1683,7 +1681,7 @@ async function fixAllPlayerTables(sourceFranchise,allPlayerTables) {
         for (let n = 0; n < currentRelatedHeaders.length;n++) {
           for (let row = 0; row < currentRelatedTable.header.recordCapacity; row++) { // Iterate through the table rows
               let currentCol = currentRelatedHeaders[n];
-              if (currentRelatedTable.records[row].fields[currentCol]["isReference"] === true) {
+              if (currentRelatedTable.records[row].fields[currentCol]["isReference"]) {
                 if (currentRelatedTable.records[row][currentCol] === originalPlayerBin) {
                   currentRelatedTable.records[row][currentCol] = newPlayerBin;
                   //console.log(`${currentCol} ${currentRelatedTable.header.name} ${currentTableId} ${row}`)
@@ -1703,7 +1701,7 @@ async function removeUnnecessaryAssetNames(targetFranchise) {
   await player.readRecords();
 
   for (let i = 0;i < player.header.recordCapacity;i++) {
-    if (player.records[i].isEmpty === false) {
+    if (!player.records[i].isEmpty) {
       let assetName = player.records[i]['PLYR_ASSETNAME'];
       if (!allAssetNames.includes(assetName)) {
         player.records[i]['PLYR_ASSETNAME'] = "";
