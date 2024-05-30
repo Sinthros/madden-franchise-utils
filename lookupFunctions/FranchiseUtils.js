@@ -501,10 +501,10 @@ async function emptyResignTable(franchise,tables) {
 async function removeFromTable(table, binaryToRemove) {
     const numMembers = table.header.numMembers;
     const recordCapacity = table.header.recordCapacity;
-  
+
     for (let i = 0; i < recordCapacity; i++) { // Iterate through the table
       let allBinary = []; // This will become all of our binary for the row EXCEPT the binaryToRemove
-  
+
       const currentRecord = table.records[i];
       if (currentRecord.isEmpty) {
         continue; // This almost never gets triggered for array tables
@@ -513,20 +513,61 @@ async function removeFromTable(table, binaryToRemove) {
       currentRecord.fieldsArray.forEach(field => {
         allBinary.push(field.value)
       })
-  
+
       // Filter out the binaryToRemove from allBinary
       allBinary = allBinary.filter((bin) => bin !== binaryToRemove);
-  
+
       while (allBinary.length < numMembers) {
         allBinary.push(ZERO_REF);
       }
-  
+
       // Set the new binary for the row
       allBinary.forEach((val, index) => {
         table.records[i].fieldsArray[index].value = val;
       });
     }
+}
+
+async function recalculateRosterSizes(playerTable, teamTable) {
+
+  const invalidStatuses = ['Draft','Retired','Deleted','None','Created','PracticeSquad'];
+
+  for (let i = 0; i < teamTable.header.recordCapacity; i++) {
+    let activeRosterSize = 0; // Current active players
+    let salCapRosterSize = 0; // Total rostered players, including IR (but not PS)
+    let salCapNextYearRosterSize = 0; // Players slated to be rostered next season
+
+    const teamRecord = teamTable.records[i];
+
+    if (teamRecord.isEmpty || NFL_CONFERENCES.includes(teamRecord.DisplayName) || !teamRecord.TEAM_VISIBLE) {
+      continue;
+    }
+
+    const currentTeamIndex = teamRecord.TeamIndex;
+
+    const filteredPlayerRecords = playerTable.records.filter(playerRecord => 
+      !playerRecord.isEmpty &&
+      !invalidStatuses.includes(playerRecord.ContractStatus) &&
+      playerRecord.TeamIndex === currentTeamIndex
+    );
+
+    filteredPlayerRecords.forEach(playerRecord => {
+      salCapRosterSize++;
+
+      if (!playerRecord.IsInjuredReserve) {
+        activeRosterSize++;
+      }
+
+      if (playerRecord.ContractLength > 1) {
+        salCapNextYearRosterSize++;
+      }
+    });
+
+    teamRecord.ActiveRosterSize = activeRosterSize;
+    teamRecord.SalCapRosterSize = salCapRosterSize;
+    teamRecord.SalCapNextYearRosterSize = salCapNextYearRosterSize;
   }
+}
 
 async function bin2Dec(binary) {
     return parseInt(binary, 2);
@@ -558,6 +599,7 @@ module.exports = {
     regenerateMarketingTables,
     emptyAcquisitionTables,
     emptyResignTable,
+    recalculateRosterSizes,
     ZERO_REF,
     NFL_CONFERENCES,
     OFFENSIVE_SKILL_POSITIONS
