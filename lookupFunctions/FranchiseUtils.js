@@ -5,6 +5,8 @@ const os = require('os');
 const fs = require('fs');
 const prompt = require('prompt-sync')();
 const ZERO_REF = '00000000000000000000000000000000';
+const NFL_CONFERENCES = ['AFC','NFC'];
+const OFFENSIVE_SKILL_POSITIONS = ['QB','HB','FB','WR','TE'];
 
 function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false, isFtcFile = false) {
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
@@ -556,5 +558,7 @@ module.exports = {
     regenerateMarketingTables,
     emptyAcquisitionTables,
     emptyResignTable,
-    ZERO_REF
+    ZERO_REF,
+    NFL_CONFERENCES,
+    OFFENSIVE_SKILL_POSITIONS
   };

@@ -24,8 +24,6 @@ const DEFAULT_PLAYER_ROW = 755;
 
 
 const ZERO_REF = FranchiseUtils.ZERO_REF;
-const PLAYER_TABLE = 1612938518;
-const OFFENSIVE_SKILL_POSITIONS = ['QB','HB','FB','WR','TE'];
 const validGames = ['22','24'];
 
 
@@ -428,13 +426,12 @@ async function handleTeamTable(currentTable,currentTableNumRows) {
 
   }
 
-  proBowlTeams = ['AFC','NFC']
   for (let i = 0; i < currentTableNumRows; i++) { //Iterate through team table
     if (currentTable.records[i].isEmpty) { //If empty, continue
       continue
     }
     // If the current row is a pro bowl team, zero out their HC column and set their OC/DC to the default row values from before
-    if (proBowlTeams.includes(currentTable.records[i]['DisplayName'])) {
+    if (FranchiseUtils.NFL_CONFERENCES.includes(currentTable.records[i]['DisplayName'])) {
       currentTable.records[i]['HeadCoach'] = ZERO_REF;
       currentTable.records[i]['OffensiveCoordinator'] = defaultOffensiveCoordinator;
       currentTable.records[i]['DefensiveCoordinator'] = defaultDefensiveCoordinator;
@@ -868,7 +865,6 @@ async function getCoachTables(mergedTableMappings) {
 
   let teamSource = sourceFranchise.getTableByUniqueId(tables.teamTable);
   await teamSource.readRecords();
-  const zeroPad = (num, places) => String(num).padStart(places, '0')
 
   for (let i = 0;i<team.header.recordCapacity;i++) {
     if (!team.records[i].isEmpty) {
@@ -984,7 +980,7 @@ async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreCo
         }
       }
 
-      if (sourceUniqueId === PLAYER_TABLE && currentCol === 'CareerStats' && currentTable.records[rows].isEmpty) {
+      if (sourceUniqueId === tables.playerTable && currentCol === 'CareerStats' && currentTable.records[rows].isEmpty) {
         sourceFranchise._settings['autoUnempty'] = false;
         currentTable.records[rows][currentCol] = ZERO_REF;
         sourceFranchise._settings['autoUnempty'] = true;
@@ -1656,7 +1652,7 @@ async function fixAllPlayerTables(sourceFranchise,allPlayerTables) {
 
     const currentTable = allPlayerTables[tableIndex];
     await currentTable.readRecords();
-    if (currentTable.header.uniqueId === PLAYER_TABLE) {
+    if (currentTable.header.uniqueId === tables.playerTable) {
       continue
     }
     const referencedRow = sourceFranchise.getReferencesToRecord(currentTable.header.tableId,0);
@@ -1737,7 +1733,7 @@ async function regenerateAgilityRatings(targetFranchise) {
   await player.readRecords();
 
   for (let i = 0; i < player.header.recordCapacity; i++) {
-    if (!player.records[i].isEmpty && OFFENSIVE_SKILL_POSITIONS.includes(player.records[i]['Position']) ) {
+    if (!player.records[i].isEmpty && FranchiseUtils.OFFENSIVE_SKILL_POSITIONS.includes(player.records[i]['Position']) ) {
       const speedRating = player.records[i]['SpeedRating'];
       const accelerationRating = player.records[i]['AccelerationRating'];
 
