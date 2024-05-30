@@ -591,10 +591,10 @@ async function getNeededColumns(currentTableName) {
     case "Player":
       keepColumns = [];
       deleteColumns = [];
-      zeroColumns = ["GameStats","CharacterVisuals","SeasonalGoal"];
-      if (is22To24) {
-        zeroColumns.push("SeasonStats");
-      }
+      zeroColumns = ["GameStats","CharacterVisuals","SeasonalGoal","SeasonStats"];
+      //if (is22To24) {
+      //  zeroColumns.push("SeasonStats");
+      //}
       return [keepColumns,deleteColumns,zeroColumns];
     case "Team":
       keepColumns = ["Philosophy","HeadCoach","OffensiveCoordinator","DefensiveCoordinator","Roster","PracticeSquad","DepthChart","ActiveRosterSize","SalCapRosterSize","SalCapNextYearRosterSize","TeamIndex","isRowEmpty","nextRecordToUse"];
@@ -1171,11 +1171,11 @@ async function getPlayerTables() {
     depthChart,teamRoadMap,playerResignNegotiation,careerDefensiveKPReturnStats,careerOffensiveKPReturnStats,careerOLineStats,careerOffensiveStats,careerDefensiveStats,
     careerKickingStats,playerMerchTable,activeAbilityArray];
 
-  if (!is22To24) {
-    tableArray.push(seasonStats,seasonDefensiveKPReturnStats,seasonOffensiveKPReturnStats,seasonOLineStats
-      ,seasonOffensiveStats,seasonDefensiveStats,seasonKickingStats
-    )
-  }
+  //if (!is22To24) {
+  //  tableArray.push(seasonStats,seasonDefensiveKPReturnStats,seasonOffensiveKPReturnStats,seasonOLineStats
+  //    ,seasonOffensiveStats,seasonDefensiveStats,seasonKickingStats
+  //  )
+  //}
 
   return tableArray;
 
