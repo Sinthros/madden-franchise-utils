@@ -17,6 +17,7 @@ const franchise = FranchiseUtils.selectFranchiseFile(gameYear, autoUnempty);
 
 const equipmentCols = ['PLYR_EYEPAINT', 'PlayerVisMoveType', 'PLYR_RIGHTARMSLEEVE', 'PLYR_QBSTYLE', 'PLYR_GRASSLEFTELBOW', 'PLYR_RIGHTTHIGH', 'PLYR_RIGHTSPAT', 'PLYR_RIGHTSHOE', 'PLYR_GRASSLEFTHAND', 'PLYR_GRASSRIGHTHAND', 'PLYR_GRASSRIGHTELBOW', 'PLYR_GRASSLEFTWRIST', 'PLYR_GRASSRIGHTWRIST', 'PLYR_VISOR', 'PLYR_HELMET', 'PLYR_FACEMASK', 'PLYR_JERSEYSLEEVE', 'PLYR_JERSEY_STATE', 'PLYR_LEFTSPAT', 'PLYR_LEFTSHOE', 'PLYR_LEFTARMSLEEVE', 'PLYR_MOUTHPIECE', 'PLYR_TOWEL', 'PLYR_STANCE', 'PLYR_SOCK_HEIGHT', 'RunningStyleRating', 'PLYR_FLAKJACKET', 'PLYR_BACKPLATE'];
 
+// This function copies all data in the equipment columns of the source row in the player table to the target row in the player table
 async function copyEquipment(targetRow, sourceRow)
 {
 	const playerTable = franchise.getTableByUniqueId(tables.playerTable);
@@ -47,6 +48,7 @@ function getRandomNumber(floor, ceiling)
   return result;
 };
 
+// This function, given a list of player rows and a position, returns the number of players in the list that have the given position
 async function countAtPosition(playerList, position)
 {
 	const playerTable = franchise.getTableByUniqueId(tables.playerTable);
@@ -65,6 +67,7 @@ async function countAtPosition(playerList, position)
 	return numAtPosition;
 };
 
+// This function, given a list of player rows and a position, returns a list of player rows that have the given position
 async function filterByPosition(playerList, position)
 {
 	const playerTable = franchise.getTableByUniqueId(tables.playerTable);
@@ -83,17 +86,22 @@ async function filterByPosition(playerList, position)
 	return playersAtPosition;
 };
 
+
 franchise.on('ready', async function () {
-    const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+    // Get required tables
+	const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+	const visualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable);
+
+	// Read required tables
+	await FranchiseUtils.readTableRecords([playerTable, visualsTable]);
     
+	// Arrays to represent the draft class player rows, rows of real NFL players, and rows of other active players
 	let draftRows = [];
 	let nflRows = [];
 	let miscRows = [];
 	
 	// Types of players that are not relevant for our purposes and can be skipped
 	const invalidStatuses = ['Retired','Deleted','None','Created'];
-
-    await playerTable.readRecords();
 	
 	// Number of rows in the player table
     const numRows = playerTable.header.recordCapacity; 
@@ -114,18 +122,21 @@ franchise.on('ready', async function () {
 		}
 		else
 		{	
-			// Check if player is a real NFL player
+			// Check if player is a real NFL player based on assetname lookup
 			if (allAssetNames.includes(playerTable.records[i]['PLYR_ASSETNAME']))
 			{
+				// If they are, add to list of NFL players
 				nflRows.push(i);
 			}
 			else
 			{
+				// Otherwise, add to list of other active players
 				miscRows.push(i);
 			}
 		}
     }
 	
+	// If there are no draft class players, we can't continue, so inform the user and exit
 	if (draftRows.length === 0)
 	{
 		console.log("\nThere are no draft class players in your franchise file. Enter anything to exit.");
@@ -133,48 +144,72 @@ franchise.on('ready', async function () {
 		process.exit(0);
 	}
 	
+	// Check if there are NFL players at all in the franchise file so we can know if we can use NFL players to copy from
 	let nflPlayersOnly = true;
-	
 	if (nflRows.length === 0)
 	{
 		nflPlayersOnly = false;
 	}
 	
+	// If we can use NFL players
 	if (nflPlayersOnly)
 	{
+		// Iterate through the draft class row array
 		for (let i = 0; i < draftRows.length; i++)
 		{
+			// Read the player's position
 			const position = playerTable.records[draftRows[i]]['Position'];
+
+			// Check how many NFL players are at the player's position
 			const numNflAtPosition = await countAtPosition(nflRows, position);
+
+			// If we have less than 5 NFL players at the position, we will use all active players at the position to copy from
 			if(numNflAtPosition < 5)
 			{
+				// Filter the list of active players by position
 				const playersAtPosition = await filterByPosition(miscRows, position);
+
+				// Randomly select a player from the filtered list to copy from
 				const randomAtPosition = playersAtPosition[getRandomNumber(0, playersAtPosition.length - 1)];
+
+				// Copy the equipment from the selected player to the draft class player
 				await copyEquipment(draftRows[i], randomAtPosition);
 			}
-			else
+			else // Otherwise, we can use exclusively NFL players at the position
 			{
+				// Filter the list of NFL players by position
 				const nflPlayersAtPosition = await filterByPosition(nflRows, position);
+
+				// Randomly select an NFL player from the filtered list to copy from
 				const randomNflAtPosition = nflPlayersAtPosition[getRandomNumber(0, nflPlayersAtPosition.length - 1)];
+
+				// Copy the equipment from the selected NFL player to the draft class player
 				await copyEquipment(draftRows[i], randomNflAtPosition);
 			}
 		}
 	}
-	else
+	else // If we can't use NFL players, we will use all active players to copy from
 	{
+		// Iterate through the draft class row array
 		for (let i = 0; i < draftRows.length; i++)
 		{
+			// Read the player's position
+			const position = playerTable.records[draftRows[i]]['Position'];
+
+			// Filter the list of active players by position
 			const playersAtPosition = await filterByPosition(miscRows, position);
+
+			// Randomly select a player from the filtered list to copy from
 			const randomAtPosition = playersAtPosition[getRandomNumber(0, playersAtPosition.length - 1)];
+
+			// Copy the equipment from the selected player to the draft class player
 			await copyEquipment(draftRows[i], randomAtPosition);
 		}
 	}
 	
 	console.log("\nRegenerating Character Visuals for draft class players...");
 
-	const visualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable);
-	visualsTable.readRecords();
-	// Iterate through draft rows array and regenerate visuals for each
+	// Iterate through the draft rows array and regenerate visuals for each player
 	for (let i = 0; i < draftRows.length; i++)
     {
         await characterVisualFunctions.regeneratePlayerVisual(franchise, playerTable, visualsTable, draftRows[i],false);
