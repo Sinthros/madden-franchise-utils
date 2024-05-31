@@ -5,13 +5,28 @@ const os = require('os');
 const fs = require('fs');
 const prompt = require('prompt-sync')();
 
+
+/***************************************************
+ *              GLOBAL CONSTANTS                   *
+ * Any const variable that is not class specific   *
+ * should be placed in this file.                  *
+ ***************************************************/
+
 const ZERO_REF = '00000000000000000000000000000000';
-const NFL_CONFERENCES = ['AFC','NFC'];
-const OFFENSIVE_SKILL_POSITIONS = ['QB','HB','FB','WR','TE'];
-
 const BASE_FILE_INIT_KWD = 'CAREER';
-const FTC_FILE_INIT_KWD = 'franchise-'
+const FTC_FILE_INIT_KWD = 'franchise-';
 
+const NFL_CONFERENCES = ['AFC', 'NFC'];
+
+const OFFENSIVE_SKILL_POSITIONS = ['QB', 'HB', 'FB', 'WR', 'TE'];
+const OLINE_POSITIONS = ['LT','LG','C','RG','RT'];
+const DEFENSIVE_LINE_POSITIONS = ['DT','LE','RE'];
+const LINEBACKER_POSITIONS = ['MLB','LOLB','ROLB'];
+const DEFENSIVE_BACK_POSITIONS = ['CB','FS','SS'];
+const SPECIAL_TEAM_POSITIONS = ['K','P'];
+
+const COACH_SKIN_TONES = ['SkinTone1', 'SkinTone2', 'SkinTone3', 'SkinTone4', 'SkinTone5', 'SkinTone6', 'SkinTone7'];
+const COACH_APPAREL = ['Facility1', 'Facility2', 'Practice1', 'Practice2', 'Practice3', 'Staff1', 'Staff2', 'Staff3', 'Staff4'];
 
 function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false, isFtcFile = false) {
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
@@ -608,5 +623,12 @@ module.exports = {
     recalculateRosterSizes,
     ZERO_REF,
     NFL_CONFERENCES,
-    OFFENSIVE_SKILL_POSITIONS
+    OFFENSIVE_SKILL_POSITIONS,
+    OLINE_POSITIONS,
+    DEFENSIVE_LINE_POSITIONS,
+    LINEBACKER_POSITIONS,
+    DEFENSIVE_BACK_POSITIONS,
+    SPECIAL_TEAM_POSITIONS,
+    COACH_SKIN_TONES,
+    COACH_APPAREL
   };

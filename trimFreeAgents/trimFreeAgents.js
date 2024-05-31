@@ -34,7 +34,7 @@ async function removeFromFATable(table, row) {
 
 
 async function getCharacterVisualsTable(franchise,currentTable,mainCharacterVisualsTable,row) {
-  let characterVisualsRef = currentTable.records[row]['CharacterVisuals'];
+  let characterVisualsRef = currentTable.records[row].CharacterVisuals;
   let characterVisualsRow = -1;
   let characterVisualsTableId;
   const visualsRecordCapcity = mainCharacterVisualsTable.header.recordCapacity;
@@ -91,12 +91,12 @@ async function deleteExcessFreeAgents(franchise, playersToDelete) {
       }
       // Then, get the record for the player and empty it
       const visualsRecord = currentCharacterVisualsTable.records[characterVisualsRow];
-      visualsRecord['RawData'] = {};
+      visualsRecord.RawData = {};
       visualsRecord.empty();
     }
 
     
-    playerTable.records[rowIndex]['ContractStatus'] = 'Deleted'; // Mark as deleted and empty the row
+    playerTable.records[rowIndex].ContractStatus = 'Deleted'; // Mark as deleted and empty the row
     playerTable.records[rowIndex].CareerStats = FranchiseUtils.ZERO_REF; // If we don't zero these out the game will crash
     playerTable.records[rowIndex].SeasonStats = FranchiseUtils.ZERO_REF;
     playerTable.records[rowIndex].GameStats = FranchiseUtils.ZERO_REF;
@@ -125,22 +125,22 @@ async function emptyAcquisitionTables(franchise) {
     }
 
     const record = playerAcquisitionEvaluation.records[i];
-    record['Player'] = FranchiseUtils.ZERO_REF;
-    record['isPlayerSuperstar'] = false;
-    record['isPlayerXFactor'] = false;
-    record['AddedValue'] = 0;
-    record['DevelopmentValue'] = 0;
-    record['Value'] = 0;
-    record['FreeAgentComparisonValue'] = 0;
-    record['ImportanceValue'] = 0;
-    record['TeamSchemeOverallValue'] = 0;
-    record['TeamTradePhilosophyValue'] = 0;
-    record['AcquisitionType'] = 'Signed';
-    record['Rank'] = 0;
-    record['BestSchemeOverallValue'] = 0;
-    record['CoachTradeInfluenceValue'] = 0;
-    record['ContractValue'] = 0;
-    record['IsPlayerHidden'] = false;
+    record.Player = FranchiseUtils.ZERO_REF;
+    record.isPlayerSuperstar = false;
+    record.isPlayerXFactor = false;
+    record.AddedValue = 0;
+    record.DevelopmentValue = 0;
+    record.Value = 0;
+    record.FreeAgentComparisonValue = 0;
+    record.ImportanceValue = 0;
+    record.TeamSchemeOverallValue = 0;
+    record.TeamTradePhilosophyValue = 0;
+    record.AcquisitionType = 'Signed';
+    record.Rank = 0;
+    record.BestSchemeOverallValue = 0;
+    record.CoachTradeInfluenceValue = 0;
+    record.ContractValue = 0;
+    record.IsPlayerHidden = false;
     
     record.empty();
   }

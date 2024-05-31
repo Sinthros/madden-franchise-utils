@@ -25,9 +25,6 @@ const coachTalentsPositions = JSON.parse(fs.readFileSync('lookupFiles/coach_tale
 const coachTalentsLookup = JSON.parse(fs.readFileSync('lookupFiles/coach_talents_lookup.json', 'utf8'));
 const allCoachHeads = JSON.parse(fs.readFileSync('lookupFiles/coach_heads_lookup.json', 'utf8'));
 
-// Don't believe these are needed anymore
-const SKIN_TONES = ['SkinTone1','SkinTone2','SkinTone3','SkinTone4','SkinTone5','SkinTone6','SkinTone7'];
-const APPAREL = ['Facility1','Facility2','Practice1','Practice2','Practice3','Staff1','Staff2','Staff3','Staff4'];
 
 // Visual morph keys for players and coaches
 const VISUAL_MORPH_KEYS = [
