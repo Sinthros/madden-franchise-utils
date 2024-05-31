@@ -65,28 +65,6 @@ function getRandomNumber(floor, ceiling)
   return result;
 }
 
-function getYesOrNo(message) 
-{
-	while (true) 
-	{
-		console.log(message);
-		const input = prompt().trim().toUpperCase();
-  
-		if (input === 'YES') 
-		{
-			return true;
-		} 
-		else if (input === 'NO') 
-		{
-			return false;
-		} 
-		else 
-		{
-			console.log("Invalid input. Please enter yes or no.");
-		}
-	}
-}
-
 async function loadTeams()
 {
 	for(let i = 0; i < teamTable.header.recordCapacity; i++)
@@ -694,7 +672,7 @@ async function createScenario()
 	console.log("\nEnter a description for the scenario:");
 	newScenario.description = prompt();
 
-	newScenario.useRandomThreshold = getYesOrNo("\nDo you want to apply a random threshold to this scenario? (yes/no)");
+	newScenario.useRandomThreshold = FranchiseUtils.getYesOrNo("\nDo you want to apply a random threshold to this scenario? (yes/no)");
 
 	if(newScenario.useRandomThreshold)
 	{
@@ -702,7 +680,7 @@ async function createScenario()
 		newScenario.randomThreshold = parseInt(prompt());
 	}
 
-	newScenario.hasSelectionParameters = getYesOrNo("\nDo you want to apply player selection parameters to this scenario? (yes/no)");
+	newScenario.hasSelectionParameters = FranchiseUtils.getYesOrNo("\nDo you want to apply player selection parameters to this scenario? (yes/no)");
 
 	if(newScenario.hasSelectionParameters)
 	{
@@ -969,7 +947,7 @@ async function createInjuryScenario()
 		positionGroup: []
 	};
 
-	newInjScenario.usePositionGroup = getYesOrNo("\nDo you want to apply this injury to a specific position group? (yes/no)");
+	newInjScenario.usePositionGroup = FranchiseUtils.getYesOrNo("\nDo you want to apply this injury to a specific position group? (yes/no)");
 
 	if(newInjScenario.usePositionGroup)
 	{
@@ -1029,7 +1007,7 @@ async function createRatingChangeScenario()
 		positionGroup: []
 	};
 
-	newRatingScenario.usePositionGroup = getYesOrNo("\nDo you want to apply this rating change to a specific position group? (yes/no)");
+	newRatingScenario.usePositionGroup = FranchiseUtils.getYesOrNo("\nDo you want to apply this rating change to a specific position group? (yes/no)");
 
 	if(newRatingScenario.usePositionGroup)
 	{

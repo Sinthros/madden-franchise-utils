@@ -13,33 +13,11 @@ const validGames = ['22','23','24'];
 const gameYear = FranchiseUtils.getGameYear(validGames);
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
-function getYesOrNo(message) 
-{
-	while (true) 
-	{
-		console.log(message);
-		const input = prompt().trim().toUpperCase();
-  
-		if (input === 'YES') 
-		{
-			return true;
-		} 
-		else if (input === 'NO') 
-		{
-			return false;
-		} 
-		else 
-		{
-			console.log("Invalid input. Please enter yes or no.");
-		}
-	}
-}
-
 if(gameYear !== '23')
 {
 	console.log("\nWARNING: If you have used the progression tool on this franchise, modifying the presentation ID of players who have a progression path can cause their path to get rerolled.")
 
-	let continueChoice = getYesOrNo("\nDo you still wish to continue? (yes/no)");
+	let continueChoice = FranchiseUtils.getYesOrNo("\nDo you still wish to continue? (yes/no)");
 	if (!continueChoice) 
 	{
 		console.log("\nExiting program. Enter anything to exit.");

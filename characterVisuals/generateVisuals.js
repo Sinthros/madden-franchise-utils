@@ -5,21 +5,6 @@ const characterVisualFunctions = require('../lookupFunctions/characterVisualsLoo
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 
-function handleInput(message) {
-  while (true) {
-      console.log(message);
-      const input = prompt().trim().toUpperCase();
-
-      if (input === 'YES') {
-          return true;
-      } else if (input === 'NO') {
-          return false;
-      } else {
-          console.log("Invalid input. Please enter YES or NO.");
-      }
-  }
-}
-
 console.log("This program will regenerate Character Visuals for ALL players and coaches. This is only applicable for Madden 24 Franchise Files.")
 const gameYear = '24';
 const autoUnempty = true;
@@ -49,18 +34,18 @@ franchise.on('ready', async function () {
     let regenerateUpdatedPlayers = false;
     let regenerateDeletedPlayers = false;
 
-    const regeneratePlayerVisuals = handleInput("Would you like to regenerate Player Visuals? Enter YES or NO.");
+    const regeneratePlayerVisuals = FranchiseUtils.getYesOrNo("Would you like to regenerate Player Visuals? Enter YES or NO.");
 
     if (regeneratePlayerVisuals) {
-      regenerateUpdatedPlayers = handleInput("Would you like to regenerate visuals for players who've had in-game edits? Enter YES or NO.");
-      regenerateDeletedPlayers = handleInput("Would you like to regenerate visuals for retired players? This is useful if you plan on ever unretiring them with the MyFranchise Tool. Enter YES or NO.");
+      regenerateUpdatedPlayers = FranchiseUtils.getYesOrNo("Would you like to regenerate visuals for players who've had in-game edits? Enter YES or NO.");
+      regenerateDeletedPlayers = FranchiseUtils.getYesOrNo("Would you like to regenerate visuals for retired players? This is useful if you plan on ever unretiring them with the MyFranchise Tool. Enter YES or NO.");
 
       if (!regenerateDeletedPlayers) {
         playerContractStatusIgnore.push('Deleted');
       }
     }
 
-    const regenerateCoachVisuals = handleInput("Would you like to regenerate Coach Visuals? Enter YES or NO.");
+    const regenerateCoachVisuals = FranchiseUtils.getYesOrNo("Would you like to regenerate Coach Visuals? Enter YES or NO.");
 
     if (!regeneratePlayerVisuals && !regenerateCoachVisuals) {
       console.log("Visuals not generated for players or coaches. Enter anything to exit the program.");

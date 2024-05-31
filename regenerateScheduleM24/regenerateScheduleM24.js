@@ -280,28 +280,6 @@ function convertOptimizedSchedule(scheduleSolutionInfo, newSchedule)
 		return newSchedule;
 }
 
-function getYesOrNo(message) 
-{
-	while (true) 
-	{
-		console.log(message);
-		const input = prompt().trim().toUpperCase();
-  
-		if (input === 'YES') 
-		{
-			return true;
-		} 
-		else if (input === 'NO') 
-		{
-			return false;
-		} 
-		else 
-		{
-			console.log("Invalid input. Please enter yes or no.");
-		}
-	}
-}
-
 function runProgram(command)
 {
 	try
@@ -436,7 +414,7 @@ franchise.on('ready', async function () {
 
 	if(fs.existsSync('solution.json'))
 	{
-		const useOld = getYesOrNo("\nAn existing generated schedule was found from a previous run of this tool. Would you like to use this? Enter yes to use it or no to generate a new one:");
+		const useOld = FranchiseUtils.getYesOrNo("\nAn existing generated schedule was found from a previous run of this tool. Would you like to use this? Enter yes to use it or no to generate a new one:");
 		if(!useOld)
 		{
 			fs.unlinkSync('solution.json');

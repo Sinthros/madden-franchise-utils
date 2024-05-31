@@ -468,7 +468,7 @@ async function emptyAcquisitionTables(franchise,tables) {
       }
     }
   
-}
+};
   
 // This function empties the resign table/resign array table
 async function emptyResignTable(franchise,tables) {
@@ -557,7 +557,7 @@ async function removeFromTable(table, binaryToRemove) {
         table.records[i].fieldsArray[index].value = val;
       });
     }
-}
+};
 
 async function recalculateRosterSizes(playerTable, teamTable) {
 
@@ -598,7 +598,22 @@ async function recalculateRosterSizes(playerTable, teamTable) {
     teamRecord.SalCapRosterSize = salCapRosterSize;
     teamRecord.SalCapNextYearRosterSize = salCapNextYearRosterSize;
   }
-}
+};
+
+function getYesOrNo(message) {
+  while (true) {
+      console.log(message);
+      const input = prompt().trim().toUpperCase();
+
+      if (input === 'YES') {
+          return true;
+      } else if (input === 'NO') {
+          return false;
+      } else {
+          console.log("Invalid input. Please enter YES or NO.");
+      }
+  }
+};
 
 async function bin2Dec(binary) {
     return parseInt(binary, 2);
@@ -631,6 +646,7 @@ module.exports = {
     emptyAcquisitionTables,
     emptyResignTable,
     recalculateRosterSizes,
+    getYesOrNo,
     ZERO_REF,
     NFL_CONFERENCES,
     OFFENSIVE_SKILL_POSITIONS,

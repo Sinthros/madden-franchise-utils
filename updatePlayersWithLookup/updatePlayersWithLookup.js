@@ -60,29 +60,7 @@ if(numSearchColumns > 1)
 let updateVisuals = false;
 if(gameYear === '24')
 {
-	updateVisuals = getYesOrNo("Do you want to update CharacterVisuals for edited players? Choose yes if you will be updating any columns related to player appearance. (yes/no)");
-}
-
-function getYesOrNo(message) 
-{
-	while (true) 
-	{
-		console.log(message);
-		const input = prompt().trim().toUpperCase();
-  
-		if (input === 'YES') 
-		{
-			return true;
-		} 
-		else if (input === 'NO') 
-		{
-			return false;
-		} 
-		else 
-		{
-			console.log("Invalid input. Please enter yes or no.");
-		}
-	}
+	updateVisuals = FranchiseUtils.getYesOrNo("Do you want to update CharacterVisuals for edited players? Choose yes if you will be updating any columns related to player appearance. (yes/no)");
 }
 
 if (lookupData.length === 0)
