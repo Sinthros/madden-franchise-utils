@@ -6,11 +6,13 @@ const fs = require('fs');
 const prompt = require('prompt-sync')();
 
 
-/***************************************************
- *              GLOBAL CONSTANTS                   *
- * Any const variable that is not class specific   *
- * should be placed in this file.                  *
- ***************************************************/
+/*******************************************************
+ *                  GLOBAL CONSTANTS                   *
+ *                                                     *
+ *   Any constant variable that is not class-specific  *
+ *   should be placed in this file.                    *
+ *******************************************************/
+
 
 const ZERO_REF = '00000000000000000000000000000000';
 const BASE_FILE_INIT_KWD = 'CAREER';
@@ -27,6 +29,14 @@ const SPECIAL_TEAM_POSITIONS = ['K','P'];
 
 const COACH_SKIN_TONES = ['SkinTone1', 'SkinTone2', 'SkinTone3', 'SkinTone4', 'SkinTone5', 'SkinTone6', 'SkinTone7'];
 const COACH_APPAREL = ['Facility1', 'Facility2', 'Practice1', 'Practice2', 'Practice3', 'Staff1', 'Staff2', 'Staff3', 'Staff4'];
+
+
+/*******************************************************
+ *                  GLOBAL FUNCTIONS                   *
+ *                                                     *
+ *   Any function that is not class-specific should    *
+ *   be placed in this file.                           *
+ *******************************************************/
 
 function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false, isFtcFile = false) {
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
