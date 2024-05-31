@@ -191,8 +191,8 @@ function getGameYear(validGameYears) {
 // const {newOverall, newArchetype} = FranchiseUtils.calculateBestOverall(player);
 
 // Afterwards, you can set the overall/archetype like this:
-// playerTable.records[i]['OverallRating;] = newOverall;
-// playerTable.records[i]['PlayerType'] = newArchetype;
+// player.OverallRating = newOverall;
+// player.PlayerType = newArchetype;
 
 // If you use this function, you HAVE to include ovrweights/ovrweightsPosMap in your included files when compiling to an exe
 function calculateBestOverall(player) {
@@ -319,7 +319,7 @@ async function emptyCharacterVisualsTable(franchise, tables) {
     for (let i = 0; rows < characterVisuals.header.recordCapacity;i++) {
       const record = characterVisuals.records[i];
         if (!record.isEmpty) {
-          record['RawData'] = {};
+          record.RawData = {};
           record.empty();
         }
     }
@@ -402,8 +402,8 @@ async function regenerateMarketingTables(franchise, tables) {
     for (const record of topPlayers) {
       const rowIndex = playerTable.records.indexOf(record); 
       const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
-      const jerseyNum = playerTable.records[rowIndex]['JerseyNum'];
-      const teamIndex = playerTable.records[rowIndex]['TeamIndex'];
+      const jerseyNum = playerTable.records[rowIndex].JerseyNum;
+      const teamIndex = playerTable.records[rowIndex].TeamIndex;
       let presentationId = 0;
   
       const teamRecord = teamTable.records.find(team => team.TeamIndex === teamIndex);
