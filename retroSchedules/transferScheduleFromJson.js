@@ -4,7 +4,6 @@
 
 
 // Requirements
-const Franchise = require('madden-franchise');
 const prompt = require('prompt-sync')();
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const { tables } = require('../lookupFunctions/FranchiseTableId');

@@ -1,4 +1,3 @@
-const Franchise = require('madden-franchise');
 const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
@@ -6,7 +5,7 @@ const { getBinaryReferenceData } = require('madden-franchise/services/utilServic
 
 const MIN_EMPTY_PLAYERS = 550;
 
-const gameYear = '24'
+const gameYear = 24;
 
 console.log("This program will delete the lowest rated free agent players from your file in order to ensure you have enough empty player table rows.");
 console.log("You only need to use this if you're having an issue importing a custom Draft Class, due to a recent change EA made. Thanks, EA.");

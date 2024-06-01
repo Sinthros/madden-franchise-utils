@@ -2,7 +2,6 @@
 
 
 
-const Franchise = require('madden-franchise');
 const prompt = require('prompt-sync')();
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const fs = require('fs');
@@ -38,7 +37,7 @@ const VISUAL_MORPH_KEYS = [
 ];
 
 
-const gameYear = '24';
+const gameYear = 24;
 const autoUnempty = true;
 const dir = './coachPreviews';
 const headsDirName = 'coachHeads';

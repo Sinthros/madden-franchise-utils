@@ -3,8 +3,6 @@
 
 
 
-// Requirements
-const Franchise = require('madden-franchise');
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const zeroPad = (num, places) => String(num).padStart(places, '0')
 

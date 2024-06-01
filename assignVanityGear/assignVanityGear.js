@@ -1,7 +1,6 @@
 // Required modules
 const fs = require('fs');
 const prompt = require('prompt-sync')();
-const Franchise = require('madden-franchise');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 const vanityGearLookup = JSON.parse(fs.readFileSync('./lookupFiles/vanityGearLookup.json', 'utf8'));
@@ -10,7 +9,7 @@ const vanityGearLookup = JSON.parse(fs.readFileSync('./lookupFiles/vanityGearLoo
 console.log("This program will update all players with your chosen vanity gear item.\n")
 
 // Set up franchise file
-const gameYear = '24';
+const gameYear = 24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 // Convert a row reference to a row number

@@ -1,5 +1,4 @@
 // Requirements
-const Franchise = require('madden-franchise');
 const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const PLAYER_TABLE = 1612938518;

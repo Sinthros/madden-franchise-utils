@@ -165,15 +165,15 @@ async function readTableRecords(tablesList, continueIfError = false) {
       }
     }
   }
-
 function getGameYear(validGameYears) {
     let gameYear;
+    const validGameYearsStr = validGameYears.map(String);
 
     while (true) {
         console.log(`Select the version of Madden your franchise file uses. Valid inputs are ${validGameYears.join(', ')}`);
         gameYear = prompt();
 
-        if (validGameYears.includes(gameYear)) {
+        if (validGameYearsStr.includes(String(gameYear))) {
             break;
         } else {
             console.log("Invalid option. Please try again.");

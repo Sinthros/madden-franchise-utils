@@ -1,7 +1,5 @@
 // Required modules
-const fs = require('fs');
 const prompt = require('prompt-sync')();
-const Franchise = require('madden-franchise');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 
@@ -9,7 +7,7 @@ const { tables } = require('../lookupFunctions/FranchiseTableId');
 console.log("This program will allow you to update the weather for a game in your Madden 24 franchise file. This tool must be run during the regular season or playoffs.\n")
 
 // Set up franchise file
-const gameYear = '24';
+const gameYear = 24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 // List of week types when the tool can be run

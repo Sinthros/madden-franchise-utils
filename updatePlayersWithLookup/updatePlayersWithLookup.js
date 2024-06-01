@@ -1,8 +1,6 @@
 // Required modules
-const fs = require('fs');
 const Xlsx = require('xlsx');
 const prompt = require('prompt-sync')();
-const Franchise = require('madden-franchise');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
@@ -11,7 +9,7 @@ const characterVisualFunctions = require('../lookupFunctions/characterVisualsLoo
 console.log("This program will update values for all players in a Madden 24 franchise file based on a lookup.\n")
 
 // Set up franchise file
-const gameYear = '24';
+const gameYear = 24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 // Set up the excel lookup file

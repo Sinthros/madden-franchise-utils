@@ -1,4 +1,3 @@
-const Franchise = require('madden-franchise');
 const prompt = require('prompt-sync')();
 
 const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
@@ -6,7 +5,7 @@ const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 
 console.log("This program will regenerate Character Visuals for ALL players and coaches. This is only applicable for Madden 24 Franchise Files.")
-const gameYear = '24';
+const gameYear = 24;
 const autoUnempty = true;
 
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);

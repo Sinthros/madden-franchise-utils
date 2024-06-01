@@ -2,9 +2,8 @@
 
 
 
-const Franchise = require('madden-franchise');
-const prompt = require('prompt-sync')();
-const { getBinaryReferenceData,getReferenceData } = require('madden-franchise/services/utilService');
+const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
@@ -39,10 +38,10 @@ async function bin2Dec(binary) {
 
 
 
-const gamePrompt = '24';
+const gameYear = 24;
 
-const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gamePrompt}\\saves\\`); //Two paths - One using default, one with OneDrive
-const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gamePrompt}\\saves\\`)
+const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`); //Two paths - One using default, one with OneDrive
+const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`)
 default_path = documentsDir // Set to default dir first
 
 if (fs.existsSync(documentsDir)) { //First, check if our Madden saves are in the default location
@@ -52,12 +51,11 @@ else if (fs.existsSync(oneDriveDir)) {
   default_path = oneDriveDir
 }
 else {
-  console.log(`IMPORTANT! Couldn't find the path to your Madden ${gamePrompt} save files. When selecting your file, make sure to give the FULL PATH.`)
+  console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. When selecting your file, make sure to give the FULL PATH.`)
 }
 
 
-const fileName = 'C:\\Users\\noahj\\Documents\\Madden NFL 24\\saves\\tuning.FTC';
-const franchise = new Franchise(fileName, {'autoUnempty': false});
+const franchise = FranchiseUtils.selectFranchiseFile(gameYear,false,true);
 
 
 

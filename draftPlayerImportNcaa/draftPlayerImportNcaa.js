@@ -1,7 +1,5 @@
 // Required modules
 const prompt = require('prompt-sync')();
-const fs = require('fs');
-const Franchise = require('madden-franchise');
 const Xlsx = require('xlsx');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
@@ -11,7 +9,7 @@ const { tables } = require('../lookupFunctions/FranchiseTableId');
 console.log("This program will update all draft class players based on the NCAA conversion tool output. Only Madden 24 franchise files are supported.\n");
 
 // Set up franchise file
-const gameYear = '24';
+const gameYear = 24;
 const autoUnempty = true;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear, autoUnempty);
 

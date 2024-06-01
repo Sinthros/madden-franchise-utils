@@ -2,7 +2,6 @@
 
 
 
-const Franchise = require('madden-franchise');
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const fs = require('fs');
 const path = require('path');
@@ -14,7 +13,7 @@ const twoUpgradeTalentTrees = ['Staff Modifications','Trades','Offense Recruitme
 const threeUpgradeTalents = ['After School Tutoring']; // We need to specficially define this talent as having 3 upgrades because it's in Staff Modifications, which has all other talents as 2 upgrade talents
 const nonUpgradableTalentTypes = ['Regular','Selection'];
 
-const gamePrompt = '24';
+const gamePrompt = 24;
 const franchise = FranchiseUtils.selectFranchiseFile(gamePrompt,false,true);
 
 

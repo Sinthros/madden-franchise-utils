@@ -1,7 +1,6 @@
 // Required modules
 const fs = require('fs');
 const prompt = require('prompt-sync')();
-const Franchise = require('madden-franchise');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 
@@ -12,7 +11,7 @@ const teamLookup = JSON.parse(fs.readFileSync('teamLookup.json', 'utf8'));
 console.log("This program will allow you to extract the schedule in your Madden 24 franchise file to JSON. This tool must be run during the first week of preseason.\n")
 
 // Set up franchise file
-const gameYear = '24';
+const gameYear = 24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 // Object to store the schedule data

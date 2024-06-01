@@ -18,7 +18,7 @@ const timeSlotLookup = JSON.parse(fs.readFileSync('lookupFiles/timeSlotLookup.js
 console.log("This program will allow you to regenerate the schedule in your Madden 24 franchise file to be closer to a real NFL schedule. This tool must be run during the preseason.\n")
 
 // Set up franchise file
-const gameYear = '24';
+const gameYear = 24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 // Set up base schedule object

@@ -1,9 +1,7 @@
 (async () => {
 const fs = require('fs');
-const os = require('os');
 const prompt = require('prompt-sync')();
 const path = require('path');
-const Franchise = require('madden-franchise');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 const ratingTypes = (JSON.parse(fs.readFileSync(`lookupFiles/ratingTypes.json`, 'utf-8')));
@@ -13,7 +11,7 @@ const allPositions = (JSON.parse(fs.readFileSync(`lookupFiles/allPositions.json`
 const versionNum = 'v2.1';
 
 console.log(`Welcome to MaddenSynth ${versionNum}! This is a customizable franchise scenario generator for Madden 24.\n`)
-const gameYear = '24';
+const gameYear = 24;
 const franchise = await FranchiseUtils.selectFranchiseFileAsync(gameYear);
 
 
