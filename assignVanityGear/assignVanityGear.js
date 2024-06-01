@@ -42,7 +42,6 @@ function assignGear(visualsData, gearAssetInfo)
 		// Figure out which loadout is the one that contains player gear
 		let loadouts = visualsData['loadouts'];
 		let j;
-
 		for(j = 0; j < loadouts.length; j++)
 		{
 			if(loadouts[j].hasOwnProperty("loadoutType"))
@@ -54,7 +53,6 @@ function assignGear(visualsData, gearAssetInfo)
 		// If the gear loadout was not found for some reason, skip this player entirely
 		if(j === loadouts.length)
 		{
-			//console.log("No loadout type found in visuals data. Skipping.");
 			return visualsData;
 		}
 
@@ -91,14 +89,16 @@ function assignGear(visualsData, gearAssetInfo)
 }
 
 franchise.on('ready', async function () {
+
+	// Get the required tables
     const playerTable = franchise.getTableByUniqueId(tables.playerTable);
 	const characterVisualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable);
+
+	// Read required tables
+	await FranchiseUtils.readTableRecords([playerTable, characterVisualsTable]);
     
 	// Types of players that are not relevant for our purposes and can be skipped
 	const invalidStatuses = ['Draft', 'Retired', 'Deleted', 'None'];
-
-    await playerTable.readRecords();
-	await characterVisualsTable.readRecords();
 
 	// Present the user with a list of gear options pulled from the lookup JSON
 	const vanityGearOptions = Object.keys(vanityGearLookup);
@@ -108,7 +108,7 @@ franchise.on('ready', async function () {
 		console.log(`${i}: ${vanityGearOptions[i]}`);
 	}
 
-	// Get the user's selection and look up the gear asset info
+	// Get the user's selection and look up the corresponding gear asset info
 	console.log("\nPlease enter the number of the gear you want: ");
 	const gearChoice = vanityGearOptions[parseInt(prompt())];
 	const gearAssetInfo = vanityGearLookup[gearChoice];
@@ -117,7 +117,7 @@ franchise.on('ready', async function () {
     const numRows = playerTable.header.recordCapacity; 
 	
 	// Iterate through the player table
-    for (i = 0; i < numRows; i++) 
+    for (let i = 0; i < numRows; i++) 
 	{ 
         // If it's an empty row or invalid player, skip this row
 		if (playerTable.records[i].isEmpty || invalidStatuses.includes(playerTable.records[i]['ContractStatus']))
@@ -135,7 +135,7 @@ franchise.on('ready', async function () {
 		}
 
 
-		// Get the visuals data for this player and attempt to parse it. If it fails, it is likely because this player has been edited in-game, so skip them.
+		// Get the visuals data for this player and attempt to parse it. If it throws an exception, it is likely because this player has been edited in-game, so skip them.
 		const playerVisuals = characterVisualsTable.records[playerVisualsRow];
 		let visualsData;
 		try
@@ -144,7 +144,6 @@ franchise.on('ready', async function () {
 		}
 		catch(e)
 		{
-			//console.log("Error parsing visuals data. Skipping.");
 			continue;
 		}
 

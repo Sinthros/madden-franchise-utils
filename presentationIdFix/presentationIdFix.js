@@ -13,6 +13,7 @@ const validGames = ['22','23','24'];
 const gameYear = FranchiseUtils.getGameYear(validGames);
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
+// If the game has the dynamic progression tool, inform the user and ask if they want to continue
 if(gameYear !== '23')
 {
 	console.log("\nWARNING: If you have used the progression tool on this franchise, modifying the presentation ID of players who have a progression path can cause their path to get rerolled.")
@@ -27,20 +28,30 @@ if(gameYear !== '23')
 }
 
 franchise.on('ready', async function () {
-    const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+    // Get required tables	
+	const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+
+	// Read required tables
+	await playerTable.readRecords();
 
 	// Special logic for files with custom cyberfaces
 	let fingerprintTable;
 	let fingerprint;
 	let customMeshFile = false;
 	let overrideAssetNames;
+
+	// List of fingerprints used by files with custom cyberfaces
 	const customMeshFingerprints = ['WiiMaster2015', 'WiiMaster2017'];
+
+	// This logic is only for Madden 24
 	if(gameYear === '24')
 	{
-		// Get the fingerprint from the file, if it's in the list, then set the bool to true and read the override file
+		// Get the fingerprint from the franchise file if it's in the list, then set the bool to true and read the override file
 		fingerprintTable = franchise.getTableByUniqueId(tables.franchiseDebugModuleTable);
 		await fingerprintTable.readRecords();
 		fingerprint = fingerprintTable.records[0]['SideActivityToForce'];
+
+		// If it's in the fingerprint list, then set the bool to true and read the override file
 		if(customMeshFingerprints.includes(fingerprint))
 		{
 			customMeshFile = true;
@@ -58,21 +69,17 @@ franchise.on('ready', async function () {
 		}
 	}
 
-	
-
-    
 	// Types of players that are not relevant for our purposes and can be skipped
 	const invalidStatuses = ['Draft','Retired','Deleted','None','Created'];
-
-    await playerTable.readRecords();
 	
 	// Number of rows in the player table
     const numRows = playerTable.header.recordCapacity; 
 	
+	// Counter for the number of non-rookies that have been modified
 	let modifiedNonRookieCount = 0;
 
 	// Iterate through the player table
-    for (i = 0; i < numRows; i++) 
+    for (let i = 0; i < numRows; i++) 
 	{ 
         // If it's an empty row or invalid player, skip this row
 		if (playerTable.records[i].isEmpty || invalidStatuses.includes(playerTable.records[i]['ContractStatus']))
@@ -99,9 +106,10 @@ franchise.on('ready', async function () {
 		}
 
 		// Check if the assetname has an underscore
-		var underscoreIndex = playerAssetName.indexOf('_');
-		var newPresentationId;
+		const underscoreIndex = playerAssetName.indexOf('_');
+		let newPresentationId;
 
+		// If the underscore exists
         if (underscoreIndex !== -1) 
 		{
 			try
@@ -121,6 +129,7 @@ franchise.on('ready', async function () {
 			newPresentationId = 0;
 		}
 		
+		// If the player is not a rookie and the presentation ID has been updated, increment the non-rookie counter
 		if(playerTable.records[i]['YearsPro'] > 0 && playerTable.records[i]['PresentationId'] !== newPresentationId)
 		{
 			modifiedNonRookieCount++;
@@ -130,6 +139,7 @@ franchise.on('ready', async function () {
 		playerTable.records[i]['PresentationId'] = newPresentationId;
     }
 	
+	// If this is a game with the dynamic progression tool and we've modified non-rookie players, inform the user how many have been updated
 	if(gameYear !== '23' && modifiedNonRookieCount > 0)
 	{
 		console.log(`\n${modifiedNonRookieCount} non-rookie players updated. These players' progression paths will be rerolled next time you run the progression tool.`);

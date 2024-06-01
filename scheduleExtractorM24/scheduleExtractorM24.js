@@ -1,40 +1,27 @@
+// Required modules
 const fs = require('fs');
 const prompt = require('prompt-sync')();
 const Franchise = require('madden-franchise');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 
-console.log("This program will allow you to extract the schedule in your Madden 24 franchise file to JSON. This tool must be run during the first week of preseason.\n")
-const gameYear = '24';
+// Required lookups
+const teamLookup = JSON.parse(fs.readFileSync('teamLookup.json', 'utf8'));
 
+// Print tool header message
+console.log("This program will allow you to extract the schedule in your Madden 24 franchise file to JSON. This tool must be run during the first week of preseason.\n")
+
+// Set up franchise file
+const gameYear = '24';
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
+// Object to store the schedule data
 const scheduleObject = {
 	year: 0,
 	weeks: []
 };
 
-const teamLookup = JSON.parse(fs.readFileSync('teamLookup.json', 'utf8'));
-
-const validWeekTypes = ['PreSeason'];
-function getRandomNumber(floor, ceiling) 
-{
-  // Ensure that the floor and ceiling are integers
-  floor = Math.floor(floor);
-  ceiling = Math.floor(ceiling);
-
-  // Generate a random number between 0 (inclusive) and 1 (exclusive)
-  const randomFraction = Math.random();
-
-  // Scale the random fraction to fit within the specified range
-  const randomInRange = randomFraction * (ceiling - floor + 1) + floor;
-
-  // Convert the result to an integer
-  const result = Math.floor(randomInRange);
-
-  return result;
-}
-
+// This function converts minutes since midnight to a regular time string
 function convertMinutesToTime(minutes)
 {
 	const hours = Math.floor(minutes / 60);
@@ -44,6 +31,7 @@ function convertMinutesToTime(minutes)
 	return `${hour}:${remainder.toString().padStart(2, '0')}${period}`;
 }
 
+// This function will convert a day of the week to its three letter variant
 function parseDay(day)
 {
 	if (day === 'Sunday') {
@@ -71,6 +59,8 @@ function parseDay(day)
 		return 'Sun';
 	}
 }
+
+// This function will parse the game data from the season game table
 async function parseGameData(seasonGameTable, j, indGameData, teamTable)
 {
 	let rawDay = seasonGameTable.records[j]['DayOfWeek'];
@@ -96,27 +86,35 @@ async function parseGameData(seasonGameTable, j, indGameData, teamTable)
 
 
 franchise.on('ready', async function () {
-    const teamTable = franchise.getTableByUniqueId(tables.teamTable);
+    // Get required tables
+	const teamTable = franchise.getTableByUniqueId(tables.teamTable);
 	const seasonInfoTable = franchise.getTableByUniqueId(tables.seasonInfoTable);
-	await seasonInfoTable.readRecords();
-	const currentWeekType = seasonInfoTable.records[0]['CurrentWeekType'];
-	const currentWeek = parseInt(seasonInfoTable.records[0]['CurrentWeek']);
-	scheduleObject.year = `${parseInt(seasonInfoTable.records[0]['CurrentSeasonYear'])}`;
+	const seasonGameTable = franchise.getTableByUniqueId(tables.seasonGameTable);
 	
-	if (!validWeekTypes.includes(currentWeekType) || currentWeek > 0) // Check if file is in first week of preseason, exit if not
+	// Read required tables
+	await FranchiseUtils.readTableRecords([teamTable, seasonInfoTable, seasonGameTable]);
+	
+	// Verify that the franchise file is in a valid week
+
+	// Get the current week type
+	const currentWeekType = seasonInfoTable.records[0]['CurrentWeekType'];
+
+	// Valid week types to run the tool during
+	const validWeekTypes = ['PreSeason'];
+
+	// If the file is not in the preseason, inform the user and exit
+	if (!validWeekTypes.includes(currentWeekType))
 	{
-		console.log("Selected file is not in a valid week. Only Franchise Files in the first week of the preseason are supported by this tool. Enter anything to exit.")
+		console.log("Selected file is not in a valid week. Only Franchise Files in the preseason are supported by this tool. Enter anything to exit.")
 		prompt();
 		process.exit(0);
 	}
 	
-	await teamTable.readRecords();
+	// We can immediately get the year for the schedule object from SeasonInfo
+	scheduleObject.year = `${parseInt(seasonInfoTable.records[0]['CurrentSeasonYear'])}`;
 	
-	const seasonGameTable = franchise.getTableByUniqueId(tables.seasonGameTable);
-	await seasonGameTable.readRecords();
-	const numRowsSeasonGame = seasonGameTable.header.recordCapacity; // Number of rows in the SeasonGame table
-	
-	var selectedGame;
+	// Number of rows in the SeasonGame table
+	const numRowsSeasonGame = seasonGameTable.header.recordCapacity;
 	
 	// Parse the games one week at a time
 	for (let i = 0; i < 18; i++)
@@ -126,8 +124,10 @@ franchise.on('ready', async function () {
 			number: `${i + 1}`,
 			games: undefined
 		};
+
 		// Array of games for the week
 		let gamesArray = [];
+
 		// Iterate through the schedule table
 		for (let j = 0; j < numRowsSeasonGame; j++)
 		{
@@ -142,7 +142,7 @@ franchise.on('ready', async function () {
 			}
 
 
-			// Parse the game data into the schedule object
+			// New object to store the game data
 			let indGameData = {
 				day: undefined,
 				time: undefined,
@@ -150,32 +150,41 @@ franchise.on('ready', async function () {
 				awayTeam: undefined
 			};
 
+			// Read the game data from the current row into the object
 			await parseGameData(seasonGameTable, j, indGameData, teamTable);
+
+			// Add the game to the array of games for the week
 			gamesArray.push(indGameData);
 
-			// The week is complete, so no need to continue iterating, move on to the next week
+			// If we have 16 games, the week must complete, so no need to continue iterating, move on to the next week
 			if (gamesArray.length === 16)
 			{
 				break;
 			}
 		}
 
+		// Add the array of games to the week object
 		indWeekData.games = gamesArray;
+		
+		// Add the week object to the schedule object
 		scheduleObject.weeks.push(indWeekData);
     }
 
 	// Iterate through each week
 	scheduleObject.weeks.forEach(week => {
-		// Sort games within the week
+		// Sort games in chronological order, assuming Wednesday is the first day of the week
 		week.games.sort((game1, game2) => {
 			// Compare days
 			const dayOrder = ["Wed", "Thu", "Fri", "Sat", "Sun", "Mon", "Tue"];
 			const day1Index = dayOrder.indexOf(game1.day);
 			const day2Index = dayOrder.indexOf(game2.day);
-			if (day1Index !== day2Index) {
+
+			// If the days are different, just sort by day
+			if (day1Index !== day2Index) 
+			{
 				return day1Index - day2Index;
 			}
-
+	
 			// If days are the same, compare times, ensuring AM games come before PM games
 			const time1 = game1.time.split(':');
 			const time2 = game2.time.split(':');
@@ -184,17 +193,23 @@ franchise.on('ready', async function () {
 			const minute1 = parseInt(time1[1].substr(0, 2));
 			const minute2 = parseInt(time2[1].substr(0, 2));
 
+			// Get the two AM/PM values
 			const period1 = time1[1].substr(2);
 			const period2 = time2[1].substr(2);
 
-			if (period1 !== period2) {
+			// If they are not the same period, sort based on the period
+			if (period1 !== period2) 
+			{
 				return period1 === 'AM' ? -1 : 1;
 			}
 
-			if (hour1 !== hour2) {
+			// If the periods are the same, sort by hour
+			if (hour1 !== hour2) 
+			{
 				return hour1 - hour2;
 			}
 
+			// If the hours are the same, sort by minute
 			return minute1 - minute2;
 		});
 	});
@@ -202,11 +217,11 @@ franchise.on('ready', async function () {
 	// Convert object to string
 	const jsonString = JSON.stringify(scheduleObject, null, 2);
 
-	const fileName = `${scheduleObject.year}.json`;
-
 	// Write to file named year.json
+	const fileName = `${scheduleObject.year}.json`;
 	fs.writeFileSync(fileName, jsonString, 'utf-8');
 
+	// Program complete, so print success message and exit
 	console.log(`\nSchedule extracted successfully. JSON saved to ${fileName}. Your franchise file has not been modified.\n`);
 	console.log("Enter anything to exit.");
     prompt();
