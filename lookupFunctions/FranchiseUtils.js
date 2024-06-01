@@ -18,6 +18,17 @@ const ZERO_REF = '00000000000000000000000000000000';
 const BASE_FILE_INIT_KWD = 'CAREER';
 const FTC_FILE_INIT_KWD = 'franchise-';
 
+// GAME YEARS
+const YEARS = {
+  M19: 19,
+  M20: 20,
+  M21: 21,
+  M22: 22,
+  M23: 23,
+  M24: 24,
+  M25: 25
+};
+
 const NFL_CONFERENCES = ['AFC', 'NFC'];
 
 const OFFENSIVE_SKILL_POSITIONS = ['QB', 'HB', 'FB', 'WR', 'TE'];
@@ -656,5 +667,6 @@ module.exports = {
     DEFENSIVE_BACK_POSITIONS,
     SPECIAL_TEAM_POSITIONS,
     COACH_SKIN_TONES,
-    COACH_APPAREL
+    COACH_APPAREL,
+    YEARS
   };

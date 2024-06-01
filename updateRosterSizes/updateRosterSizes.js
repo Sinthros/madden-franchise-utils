@@ -2,7 +2,13 @@ const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 
-const validGameYears = [22,23,24];
+const validGameYears = [
+  FranchiseUtils.YEARS.M20,
+  FranchiseUtils.YEARS.M21,
+  FranchiseUtils.YEARS.M22,
+  FranchiseUtils.YEARS.M23,
+  FranchiseUtils.YEARS.M24
+];
 
 console.log("This program will calculate all roster sizes for all teams.");
 const gameYear = FranchiseUtils.getGameYear(validGameYears);

@@ -20,7 +20,7 @@ const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 const DEFAULT_PLAYER_ROW = 755;
 
-const VALID_GAME_YEARS = ['22','24'];
+const VALID_GAME_YEARS = [FranchiseUtils.YEARS.M22,FranchiseUtils.YEARS.M24];
 
 
 const playerMotivationsM24 = [
@@ -1801,7 +1801,7 @@ sourceFranchise.on('ready', async function () {
       }
     });
 
-    is22To24 = sourceGameYear === 22 && targetGameYear === 24;
+    is22To24 = sourceGameYear === FranchiseUtils.YEARS.M22 && targetGameYear === FranchiseUtils.YEARS.M24;
 
     const coachTables = await getCoachTables(mergedTableMappings);
     const playerTables = await getPlayerTables();
