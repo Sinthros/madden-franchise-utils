@@ -71,6 +71,7 @@ const tables = {
     leagueHistoryArray: 444189422,
     leagueHistoryAward: 335278464,
     salaryInfoTable: 3759217828,
+    salCapIncreaseTable: 734850521,
     // Player Stats
     gameStatsTable: 3425479817,
     gameOffKPReturnStatsTable: 3388716768,
