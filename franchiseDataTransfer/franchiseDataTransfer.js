@@ -382,19 +382,10 @@ async function fillResignTable(currentTable) {
 
 };
 
-async function handlePlayerTable(currentTable,currentTableNumRows) {
-  for (let i = 0; i < currentTableNumRows; i++) { //Iterate through the table
-    if (currentTable.records[i].isEmpty) { //If empty, continue
-      continue
-    }
-
-    //If expiring, make them signed
-    contractStatus = currentTable.records[i]['ContractStatus']
-    if (contractStatus === 'Expiring') {
-      currentTable.records[i]['ContractStatus'] = 'Signed'
-
-    }
-  }
+async function setExpiredToSigned(playerTable) {
+  playerTable.records
+    .filter(record => !record.isEmpty && record.ContractStatus === 'Expiring')
+    .forEach(record => record.ContractStatus = 'Signed');
 };
 
 async function handleTeamTable(currentTable,currentTableNumRows) {
@@ -1089,7 +1080,7 @@ async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreCo
       await FranchiseUtils.emptyResignTable(targetFranchise, tables);
       break;
     case 'Player':
-      await handlePlayerTable(currentTable, currentTableNumRows);
+      await setExpiredToSigned(currentTable);
       break;
     case 'Team':
       await handleTeamTable(currentTable, sourceTableNumRows);
@@ -1627,8 +1618,8 @@ async function emptyStoryTable(targetFranchise) {
    }
 };
 
-async function fixAllPlayerTables(sourceFranchise,allPlayerTables) {
-  const mainPlayerTable = sourceFranchise.getTableByUniqueId(tables.playerTable); //Get our main player table
+async function fixAllPlayerTables(franchise,allPlayerTables) {
+  const mainPlayerTable = franchise.getTableByUniqueId(tables.playerTable); //Get our main player table
   await mainPlayerTable.readRecords();
 
   //Iterate through all the extra player tables
@@ -1637,13 +1628,12 @@ async function fixAllPlayerTables(sourceFranchise,allPlayerTables) {
 
     //If we've run out of rows, we can't transfer the file over
     if (nextPlayerRecord === mainPlayerTable.header.recordCapacity) {
-      console.log("******************************************************************************************")
-      console.log("ERROR! Source file has too many players and CANNOT be transferred to Madden 24.");
-      console.log("For more information on this issue, read the README.txt file.")
-      console.log("******************************************************************************************")
+      console.log("********************************************************************************************")
+      console.log("ERROR! Your file has too many total players and CANNOT be merged into the main player table.");
+      console.log("********************************************************************************************")
       console.log("Exiting program.");
       prompt();
-      process.exit(0);
+      process.exit(1);
     }
 
     const currentTable = allPlayerTables[tableIndex];
@@ -1651,7 +1641,7 @@ async function fixAllPlayerTables(sourceFranchise,allPlayerTables) {
     if (currentTable.header.uniqueId === tables.playerTable) {
       continue
     }
-    const referencedRow = sourceFranchise.getReferencesToRecord(currentTable.header.tableId,0);
+    const referencedRow = franchise.getReferencesToRecord(currentTable.header.tableId,0);
     if (referencedRow.length === 0) {
       continue
     }
@@ -1669,7 +1659,7 @@ async function fixAllPlayerTables(sourceFranchise,allPlayerTables) {
 
     for (const table of referencedRow) {
       const currentTableId = table.tableId;
-      const currentRelatedTable = sourceFranchise.getTableById(currentTableId);
+      const currentRelatedTable = franchise.getTableById(currentTableId);
       await currentRelatedTable.readRecords();
 
       const currentRelatedHeaders = await formatHeaders(currentRelatedTable) //Get the headers from the table
@@ -1688,7 +1678,7 @@ async function fixAllPlayerTables(sourceFranchise,allPlayerTables) {
           }
        }
       } catch (e) {
-        continue
+        continue;
       }
     }
   }
@@ -1742,7 +1732,11 @@ async function regenerateAgilityRatings(targetFranchise) {
 sourceFranchise.on('ready', async function () {
   targetFranchise.on('ready', async function () {
 
-    const allPlayerTables = sourceFranchise.getAllTablesByName('Player');
+    if (FranchiseUtils.hasMultiplePlayerTables(sourceFranchise)) {
+      await FranchiseUtils.fixPlayerTables(sourceFranchise);
+    }
+
+  /*const allPlayerTables = sourceFranchise.getAllTablesByName('Player');
 
     if (allPlayerTables.length > 1) {
       console.log("******************************************************************************************")
@@ -1750,7 +1744,7 @@ sourceFranchise.on('ready', async function () {
       console.log("******************************************************************************************")
       await fixAllPlayerTables(sourceFranchise,allPlayerTables);
     }
-
+ */
     const sourceGameYear = sourceFranchise.schema.meta.gameYear // Get the game year of the source file
     const targetGameYear = targetFranchise.schema.meta.gameYear // Get the game year of the target file
     if (targetGameYear !== 24) {

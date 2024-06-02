@@ -1,5 +1,6 @@
 const Franchise = require('madden-franchise');
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
+const { tables } = require('./FranchiseTableId');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
@@ -161,21 +162,31 @@ async function saveFranchiseFile(franchise) {
   In this specific scenario, a few tables in that list only exist in M22 or M24. We want to continue over
   those when they don't load properly since they aren't used in the script by the source/target franchise objects.
 
+  franchise: Franchise Object. If you pass this through and one of the tables being read is the main player table,
+  the program will check if the franchise file has multiple player tables, and will attempt to merge them if there are multiple.
+  The user will have the option to decline merging the tables.
+
 */
 
-async function readTableRecords(tablesList, continueIfError = false) {
-    for (const table of tablesList) {
-      try {
-        await table.readRecords();
-      } catch (error) {
-        if (!continueIfError) {
-          throw error;
-        } else { // If continueIfError = true, continue (This is not typically recommended!)
-            continue;
+async function readTableRecords(tablesList, continueIfError = false, franchise = null) {
+  for (const table of tablesList) {
+    try {
+      await table.readRecords();
+      
+      if (table.header.uniqueId === tables.playerTable && franchise) {
+        if (await hasMultiplePlayerTables(franchise)) {
+          await fixPlayerTables(franchise);
         }
       }
+    } catch (error) {
+      if (!continueIfError) {
+        throw error;
+      }
+      //console.error(`Error reading records for table ${table.header.uniqueId}: ${error.message}`);
     }
   }
+};
+
 function getGameYear(validGameYears) {
     let gameYear;
     const validGameYearsStr = validGameYears.map(String);
@@ -611,6 +622,112 @@ async function recalculateRosterSizes(playerTable, teamTable) {
   }
 };
 
+// Returns true if there any extra player tables exist with non emptied data
+// Returns false otherwise
+async function hasMultiplePlayerTables(franchise) {
+  const allPlayerTables = franchise.getAllTablesByName('Player');
+
+  for (const playerTable of allPlayerTables) {
+    await playerTable.readRecords();
+
+    // Skip the main player table
+    if (playerTable.header.uniqueId === tables.playerTable) {
+      continue;
+    }
+
+    // Check if the current player table's record is empty or not
+    // To clarify, these extra tables only ever have 1 row
+    if (!playerTable.records[0].isEmpty) {
+      return true;
+    }
+  }
+
+  // Otherwise, return false
+  return false;
+};
+
+
+// This function iterates through each extra player table and adds the player to the main player table if not empty
+// If we reach the limit of the main player table, the program will exit.
+// I will likely come back and clean this function up eventually but it should work fine for now
+async function fixPlayerTables(franchise) {
+
+  console.log("IMPORTANT: We've detected that this file has multiple player tables, which should not happen.");
+  const message = "Would you like to attempt to merge the extra player tables into the main table? This is HEAVILY recommended. Enter yes or no.";
+  const mergeTables = getYesOrNo(message);
+
+  if (!mergeTables) {
+    console.log("Continuing program without merging player tables.");
+    return;
+  }
+  
+  
+  const allPlayerTables = franchise.getAllTablesByName('Player'); // All player tables
+  const mainPlayerTable = franchise.getTableByUniqueId(tables.playerTable); //Get our main player table
+  await mainPlayerTable.readRecords();
+
+  //Iterate through all the extra player tables
+  for (let tableIndex = 0; tableIndex < allPlayerTables.length;tableIndex++) {
+    const nextPlayerRecord = mainPlayerTable.header.nextRecordToUse;
+
+    //If we've run out of rows, we can't transfer the file over
+    if (nextPlayerRecord === mainPlayerTable.header.recordCapacity) {
+      console.log("********************************************************************************************")
+      console.log("ERROR! Your file has too many total players and CANNOT be merged into the main player table.");
+      console.log("********************************************************************************************")
+      console.log("Exiting program.");
+      prompt();
+      process.exit(1);
+    }
+
+    const currentTable = allPlayerTables[tableIndex];
+    await currentTable.readRecords();
+    if (currentTable.header.uniqueId === tables.playerTable) {
+      continue;
+    }
+    const referencedRow = franchise.getReferencesToRecord(currentTable.header.tableId,0);
+    if (referencedRow.length === 0) {
+      continue;
+    }
+
+    const originalPlayerBin = getBinaryReferenceData(currentTable.header.tableId,0);
+    const newPlayerBin = getBinaryReferenceData(mainPlayerTable.header.tableId,nextPlayerRecord);
+    
+    const columnHeaders = await formatHeaders(currentTable) //Get the headers from the table
+    for (let j = 0;j < columnHeaders.length;j++) {
+      let currentCol = columnHeaders[j];
+      mainPlayerTable.records[nextPlayerRecord][currentCol] = currentTable.records[0][currentCol];
+    }
+
+    for (const table of referencedRow) {
+      const currentTableId = table.tableId;
+      const currentRelatedTable = franchise.getTableById(currentTableId);
+      await currentRelatedTable.readRecords();
+
+      const currentRelatedHeaders = await formatHeaders(currentRelatedTable) //Get the headers from the table
+
+
+      try {
+        for (let n = 0; n < currentRelatedHeaders.length;n++) {
+          for (let row = 0; row < currentRelatedTable.header.recordCapacity; row++) { // Iterate through the table rows
+              let currentCol = currentRelatedHeaders[n];
+              if (currentRelatedTable.records[row].fields[currentCol]["isReference"]) {
+                if (currentRelatedTable.records[row][currentCol] === originalPlayerBin) {
+                  currentRelatedTable.records[row][currentCol] = newPlayerBin;
+                  //console.log(`${currentCol} ${currentRelatedTable.header.name} ${currentTableId} ${row}`)
+                }
+              }
+          }
+       }
+      } catch (e) {
+        continue;
+      }
+    }
+  }
+
+  console.log("Successfully merged all extra player tables into the main player table.");
+}
+
 function getYesOrNo(message) {
   while (true) {
       console.log(message);
@@ -641,13 +758,10 @@ async function hasNumber(myString) {
 
 
 module.exports = {
-    selectFranchiseFile,
+    selectFranchiseFile, // FUNCTIONS
     selectFranchiseFileAsync,
     saveFranchiseFile,
     getGameYear,
-    bin2Dec,
-    dec2bin,
-    hasNumber,
     readTableRecords,
     calculateBestOverall,
     emptyHistoryTables,
@@ -657,8 +771,15 @@ module.exports = {
     emptyAcquisitionTables,
     emptyResignTable,
     recalculateRosterSizes,
-    getYesOrNo,
-    ZERO_REF,
+    hasMultiplePlayerTables,
+    fixPlayerTables,
+
+    getYesOrNo, // UTILITY FUNCTIONS
+    bin2Dec,
+    dec2bin,
+    hasNumber,
+
+    ZERO_REF, // CONST VARIABLES
     NFL_CONFERENCES,
     OFFENSIVE_SKILL_POSITIONS,
     OLINE_POSITIONS,
