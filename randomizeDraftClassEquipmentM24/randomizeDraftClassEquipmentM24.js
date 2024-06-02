@@ -28,24 +28,6 @@ async function copyEquipment(targetRow, sourceRow)
 	}
 };
 
-function getRandomNumber(floor, ceiling) 
-{
-  // Ensure that the floor and ceiling are integers
-  floor = Math.floor(floor);
-  ceiling = Math.floor(ceiling);
-
-  // Generate a random number between 0 (inclusive) and 1 (exclusive)
-  const randomFraction = Math.random();
-
-  // Scale the random fraction to fit within the specified range
-  const randomInRange = randomFraction * (ceiling - floor + 1) + floor;
-
-  // Convert the result to an integer
-  const result = Math.floor(randomInRange);
-
-  return result;
-};
-
 // This function, given a list of player rows and a position, returns the number of players in the list that have the given position
 async function countAtPosition(playerList, position)
 {
@@ -170,7 +152,7 @@ franchise.on('ready', async function () {
 				const playersAtPosition = await filterByPosition(miscRows, position);
 
 				// Randomly select a player from the filtered list to copy from
-				const randomAtPosition = playersAtPosition[getRandomNumber(0, playersAtPosition.length - 1)];
+				const randomAtPosition = playersAtPosition[FranchiseUtils.getRandomNumber(0, playersAtPosition.length - 1)];
 
 				// Copy the equipment from the selected player to the draft class player
 				await copyEquipment(draftRows[i], randomAtPosition);
@@ -181,7 +163,7 @@ franchise.on('ready', async function () {
 				const nflPlayersAtPosition = await filterByPosition(nflRows, position);
 
 				// Randomly select an NFL player from the filtered list to copy from
-				const randomNflAtPosition = nflPlayersAtPosition[getRandomNumber(0, nflPlayersAtPosition.length - 1)];
+				const randomNflAtPosition = nflPlayersAtPosition[FranchiseUtils.getRandomNumber(0, nflPlayersAtPosition.length - 1)];
 
 				// Copy the equipment from the selected NFL player to the draft class player
 				await copyEquipment(draftRows[i], randomNflAtPosition);
@@ -200,7 +182,7 @@ franchise.on('ready', async function () {
 			const playersAtPosition = await filterByPosition(miscRows, position);
 
 			// Randomly select a player from the filtered list to copy from
-			const randomAtPosition = playersAtPosition[getRandomNumber(0, playersAtPosition.length - 1)];
+			const randomAtPosition = playersAtPosition[FranchiseUtils.getRandomNumber(0, playersAtPosition.length - 1)];
 
 			// Copy the equipment from the selected player to the draft class player
 			await copyEquipment(draftRows[i], randomAtPosition);

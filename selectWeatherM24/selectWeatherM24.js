@@ -17,9 +17,9 @@ const validWeekTypes = ['RegularSeason','WildcardPlayoff','DivisionalPlayoff','C
 const windOptions = ['Calm', 'LightBreeze', 'Moderate', 'VeryWindy'];
 
 // Random selection of wind for each weather type
-const snowRand = getRandomNumber(2,3);
-const rainRand = getRandomNumber(1,3);
-const clearRand = getRandomNumber(0,3);
+const snowRand = FranchiseUtils.getRandomNumber(2,3);
+const rainRand = FranchiseUtils.getRandomNumber(1,3);
+const clearRand = FranchiseUtils.getRandomNumber(0,3);
 
 // List of available weather options
 let weatherOptions = ['Snow', 'Rain (Warm)', 'Rain (Cold)', 'Clear (Warm)', 'Clear (Cold)', 'Overcast (Warm)', 'Overcast (Cold)'];
@@ -32,25 +32,6 @@ let clearWarmValues = [windOptions[clearRand], 'None', 'None', 'Clear', 70];
 let clearColdValues = [windOptions[clearRand], 'None', 'None', 'Clear', 30];
 let overcastWarmValues = [windOptions[clearRand], 'None', 'Overcast', 'Overcast', 70];
 let overcastColdValues = [windOptions[clearRand], 'None', 'Overcast', 'Overcast', 30];
-
-// Function to get a random integer between a floor and ceiling
-function getRandomNumber(floor, ceiling) 
-{
-  // Ensure that the floor and ceiling are integers
-  floor = Math.floor(floor);
-  ceiling = Math.floor(ceiling);
-
-  // Generate a random number between 0 (inclusive) and 1 (exclusive)
-  const randomFraction = Math.random();
-
-  // Scale the random fraction to fit within the specified range
-  const randomInRange = randomFraction * (ceiling - floor + 1) + floor;
-
-  // Convert the result to an integer
-  const result = Math.floor(randomInRange);
-
-  return result;
-}
 
 // Function to prompt the user for a custom temperature and set it if valid
 function temperatureChoice(weatherValues, lowerBound, upperBound)

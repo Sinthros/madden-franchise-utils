@@ -43,34 +43,6 @@ await loadTeams();
 loadScenarios();
 
 
-// Function to shuffle an array (Fisher-Yates algorithm)
-async function shuffleArray(array) 
-{
-	for (let i = array.length - 1; i > 0; i--) 
-	{
-	  const j = Math.floor(Math.random() * (i + 1));
-	  [array[i], array[j]] = [array[j], array[i]];
-	}
-}
-
-// Function to get a random integer between a floor and ceiling value
-function getRandomNumber(floor, ceiling)
-{
-  // Ensure that the floor and ceiling are integers
-  floor = Math.floor(floor);
-  ceiling = Math.floor(ceiling);
-
-  // Generate a random number between 0 (inclusive) and 1 (exclusive)
-  const randomFraction = Math.random();
-
-  // Scale the random fraction to fit within the specified range
-  const randomInRange = randomFraction * (ceiling - floor + 1) + floor;
-
-  // Convert the result to an integer
-  const result = Math.floor(randomInRange);
-
-  return result;
-}
 
 // This function loads all the teams from the team table into the global team list, storing relevant information in an object for each team
 async function loadTeams()
@@ -262,7 +234,7 @@ async function generateScenario()
 	for(let i = 0; i < numScenarios; i++)
 	{
 		// Shuffle the scenarios array for randomness
-		await shuffleArray(scenarios);
+		await FranchiseUtils.shuffleArray(scenarios);
 
 		// Variable to store the selected scenario
 		let selectedScenario;
@@ -271,7 +243,7 @@ async function generateScenario()
 		while(true)
 		{
 			// Randomly choose a scenario from the shuffled list
-			selectedScenario = scenarios[getRandomNumber(0, scenarios.length - 1)];
+			selectedScenario = scenarios[FranchiseUtils.getRandomNumber(0, scenarios.length - 1)];
 
 			// If applicable, check if the scenario should be redrawn based on a random threshold
 			if(selectedScenario.hasOwnProperty('useRandomThreshold') && selectedScenario.useRandomThreshold)
@@ -280,7 +252,7 @@ async function generateScenario()
 				const randomThreshold = selectedScenario.randomThreshold;
 
 				// Get a random number between 1 and 50
-				const randomNum = getRandomNumber(1, 50);
+				const randomNum = FranchiseUtils.getRandomNumber(1, 50);
 
 				// If the threshold is not met, continue to the next iteration of the loop to redraw, otherwise break out of the loop
 				if(randomNum < randomThreshold)
@@ -735,7 +707,7 @@ async function getRandomSignedPlayer()
 	}
 
 	// Randomly select a row number from the list of signed players
-	return playerRows[getRandomNumber(0, playerRows.length - 1)];
+	return playerRows[FranchiseUtils.getRandomNumber(0, playerRows.length - 1)];
 }
 
 // This function randomly selects a player who is signed to a team and meets the specified selection parameters
@@ -779,7 +751,7 @@ async function getRandomSignedPlayerWithParameters(selectionParameters)
 	}
 
 	// Randomly select a row number from the list of signed players that meet the selection parameters
-	return playerRows[getRandomNumber(0, playerRows.length - 1)];
+	return playerRows[FranchiseUtils.getRandomNumber(0, playerRows.length - 1)];
 
 }
 

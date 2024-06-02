@@ -262,7 +262,7 @@ async function generatePlayerMotivations(targetFranchise) {
 
       }
       
-      await shuffleArray(motivationsCopy);
+      await FranchiseUtils.shuffleArray(motivationsCopy);
 
       // Take the first three elements (they will be random and unique)
       const randomMotivations = motivationsCopy.slice(0, 3);
@@ -271,14 +271,6 @@ async function generatePlayerMotivations(targetFranchise) {
       playerTable.records[i]['Motivation2'] = randomMotivations[1];
       playerTable.records[i]['Motivation3'] = randomMotivations[2];
     }
-  }
-}
-
-// Function to shuffle an array (Fisher-Yates algorithm)
-async function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
   }
 }
 

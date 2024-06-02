@@ -208,14 +208,6 @@ function selectThreeValues(x1, locationMotivations) {
   return result;
 }
 
-// Function to shuffle an array (Fisher-Yates algorithm)
-async function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-
 // Based on their position and overall, determine if they should have TopDepthChart be their #1 motivation or not
 async function determineNeedTopDepthChart(player) {
   switch (player.pos) {
