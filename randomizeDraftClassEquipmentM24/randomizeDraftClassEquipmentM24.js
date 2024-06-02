@@ -1,5 +1,4 @@
 // Required modules
-const prompt = require('prompt-sync')();
 const fs = require('fs');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');

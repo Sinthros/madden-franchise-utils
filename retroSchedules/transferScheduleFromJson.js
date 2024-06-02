@@ -4,7 +4,6 @@
 
 
 // Requirements
-const prompt = require('prompt-sync')();
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 const fs = require('fs');

@@ -1,9 +1,7 @@
 // Required modules
 const fs = require('fs');
-const prompt = require('prompt-sync')();
 const papa = require('papaparse');
 const execSync = require('child_process').execSync;
-const Franchise = require('madden-franchise');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const TRANSFER_SCHEDULE_FUNCTIONS = require('../retroSchedules/transferScheduleFromJson');
 const { tables } = require('../lookupFunctions/FranchiseTableId');

@@ -1,6 +1,5 @@
 // Required modules
 const fs = require('fs');
-const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 

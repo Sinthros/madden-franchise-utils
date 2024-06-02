@@ -2,7 +2,7 @@
 const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const PLAYER_TABLE = 1612938518;
-const gamePrompt = '24';
+const gamePrompt = FranchiseUtils.YEARS.M24;
 const autoUnempty = false;
 const franchise = FranchiseUtils.selectFranchiseFile(gamePrompt,autoUnempty);
 

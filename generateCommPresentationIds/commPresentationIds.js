@@ -1,6 +1,4 @@
 // Required modules
-const prompt = require('prompt-sync')();
-const Franchise = require('madden-franchise');
 const fs = require('fs');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
