@@ -177,10 +177,7 @@ franchise.on('ready', async function () {
 
   if (currentEmptyPlayers >= MIN_EMPTY_PLAYERS) {
     console.log(`Your Franchise File already contains enough empty player rows. Your file has ${currentEmptyPlayers} empty rows.`);
-    console.log("Enter anything to exit.");
-    prompt();
-    process.exit(0);
-
+    FranchiseUtils.EXIT_PROGRAM();
   }
 
   await deleteExcessFreeAgents(franchise, playersToDelete);
@@ -200,8 +197,7 @@ franchise.on('ready', async function () {
   
   console.log(`Successfully deleted ${playersToDelete} free agent player rows.`);
   await FranchiseUtils.saveFranchiseFile(franchise);
-  console.log("Program completed. Enter anything to exit.")
-  prompt();
+  FranchiseUtils.EXIT_PROGRAM();
 });
 
 

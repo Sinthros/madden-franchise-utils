@@ -104,9 +104,8 @@ franchise.on('ready', async function () {
 	// If the file is not in the preseason, inform the user and exit
 	if (!validWeekTypes.includes(currentWeekType))
 	{
-		console.log("Selected file is not in a valid week. Only Franchise Files in the preseason are supported by this tool. Enter anything to exit.")
-		prompt();
-		process.exit(0);
+		console.log("Selected file is not in a valid week. Only Franchise Files in the preseason are supported by this tool.")
+		FranchiseUtils.EXIT_PROGRAM();
 	}
 	
 	// We can immediately get the year for the schedule object from SeasonInfo
@@ -222,8 +221,7 @@ franchise.on('ready', async function () {
 
 	// Program complete, so print success message and exit
 	console.log(`\nSchedule extracted successfully. JSON saved to ${fileName}. Your franchise file has not been modified.\n`);
-	console.log("Enter anything to exit.");
-    prompt();
+	FranchiseUtils.EXIT_PROGRAM();
   
 });
   

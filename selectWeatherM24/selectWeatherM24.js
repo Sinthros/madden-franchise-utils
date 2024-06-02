@@ -132,9 +132,8 @@ franchise.on('ready', async function () {
 	// Check if file is in regular season or playoffs, exit if not
 	if (!validWeekTypes.includes(currentWeekType)) 
 	{
-		console.log("Selected file is not in a valid week. Only Franchise Files in the regular season or playoffs are supported by this tool. Enter anything to exit.")
-		prompt();
-		process.exit(0);
+		console.log("Selected file is not in a valid week. Only Franchise Files in the regular season or playoffs are supported by this tool.")
+		FranchiseUtils.EXIT_PROGRAM();
 	}
 	
 	// Number of rows in the SeasonGame table
@@ -321,8 +320,8 @@ franchise.on('ready', async function () {
 		}
 		else // Somehow not a regular season or playoff week despite checks, so inform user and exit
 		{
-			console.log("No games available this week. Enter anything to exit the tool.");
-			prompt();
+			console.log("No games available this week.");
+			FranchiseUtils.EXIT_PROGRAM();
 		}
     }
 	
@@ -450,8 +449,7 @@ franchise.on('ready', async function () {
 	// Program complete, so print success message, save the franchise file, and exit
 	console.log("\nWeather updated successfully.\n");
     await FranchiseUtils.saveFranchiseFile(franchise);
-	console.log("Enter anything to exit.");
-    prompt();
+	FranchiseUtils.EXIT_PROGRAM();
   
 });
   

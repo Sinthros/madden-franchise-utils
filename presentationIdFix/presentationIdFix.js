@@ -20,9 +20,7 @@ if(gameYear !== '23')
 	let continueChoice = FranchiseUtils.getYesOrNo("\nDo you still wish to continue? (yes/no)");
 	if (!continueChoice) 
 	{
-		console.log("\nExiting program. Enter anything to exit.");
-		prompt();
-		process.exit(0);
+		FranchiseUtils.EXIT_PROGRAM();
 	}
 }
 
@@ -61,9 +59,7 @@ franchise.on('ready', async function () {
 			catch(error)
 			{
 				console.error(`Error reading override assetname file: `, error);
-				console.log("Enter anything to exit the program.");
-    			prompt();
-    			process.exit(0);
+				FranchiseUtils.EXIT_PROGRAM();
 			}
 		}
 	}
@@ -147,8 +143,7 @@ franchise.on('ready', async function () {
 	// Program complete, so print success message, save the franchise file, and exit
 	console.log("\nPresentation IDs updated successfully.\n");
     await FranchiseUtils.saveFranchiseFile(franchise);
-    console.log("\nEnter anything to exit the program.");
-    prompt();
+	FranchiseUtils.EXIT_PROGRAM();
   
 });
   

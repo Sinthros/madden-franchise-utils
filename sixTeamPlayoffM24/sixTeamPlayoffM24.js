@@ -27,9 +27,8 @@ franchise.on('ready', async function () {
 	// Check if file is in wildcard round, exit if not
 	if (currentWeek !== 18)
 	{
-		console.log("\nSelected file is not in the Wildcard Round. Only Franchise Files in the Wildcard Round are supported by this tool. Enter anything to exit.")
-		prompt();
-		process.exit(0);
+		console.log("\nSelected file is not in the Wildcard Round. Only Franchise Files in the Wildcard Round are supported by this tool.")
+		FranchiseUtils.EXIT_PROGRAM();
 	}
 
 	// Array to store the rows of the teams that are the 2 seed
@@ -88,8 +87,7 @@ franchise.on('ready', async function () {
 	// Program complete, so print success message, save the franchise file, and exit
 	console.log("\nPlayoff format updated successfully.\n");
     await FranchiseUtils.saveFranchiseFile(franchise);
-	console.log("\nEnter anything to exit.");
-    prompt();
+	FranchiseUtils.EXIT_PROGRAM();
   
 });
   

@@ -5,7 +5,7 @@ const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 
 console.log("This program will regenerate Character Visuals for ALL players and coaches. This is only applicable for Madden 24 Franchise Files.")
-const gameYear = 24;
+const gameYear = FranchiseUtils.YEARS.M24;
 const autoUnempty = true;
 
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
@@ -14,11 +14,10 @@ franchise.on('ready', async function () {
 
     //THIS IS HOW WE CAN TELL WHAT GAME WE'RE WORKING WITH
     const gameYear = franchise.schema.meta.gameYear;
-
-    if (gameYear !== 24) {
-      console.log("FATAL ERROR! Selected franchise file is NOT a Madden 24 Franchise File. Enter anything to exit.");
-      prompt();
-      process.exit(0);
+    
+    if (gameYear !== FranchiseUtils.YEARS.M24) {
+      console.log("FATAL ERROR! Selected franchise file is NOT a Madden 24 Franchise File.");
+      FranchiseUtils.EXIT_PROGRAM();
     }
 
     const mainCharacterVisualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable); //Grab the tables we need and read them
@@ -47,9 +46,8 @@ franchise.on('ready', async function () {
     const regenerateCoachVisuals = FranchiseUtils.getYesOrNo("Would you like to regenerate Coach Visuals? Enter YES or NO.");
 
     if (!regeneratePlayerVisuals && !regenerateCoachVisuals) {
-      console.log("Visuals not generated for players or coaches. Enter anything to exit the program.");
-      prompt();
-      process.exit(0);
+      console.log("Visuals not generated for players or coaches.");
+      FranchiseUtils.EXIT_PROGRAM();
     }
 
     if (regenerateCoachVisuals) {
@@ -77,7 +75,5 @@ franchise.on('ready', async function () {
     }
     
     await FranchiseUtils.saveFranchiseFile(franchise);
-    console.log("Enter anything to exit.");
-    prompt();
-
+    FranchiseUtils.EXIT_PROGRAM();
 });  

@@ -66,16 +66,12 @@ updateDraftClass = FranchiseUtils.getYesOrNo("Do you want to also update draft c
 if (lookupData.length === 0)
 {
 	console.log("No data found in the lookup file.");
-	console.log("Enter anything to exit.");
-	prompt();
-	process.exit();
+	FranchiseUtils.EXIT_PROGRAM();
 }
 else if(Object.keys(lookupData[0]).length < (numSearchColumns + 1))
 {
 	console.log(`Lookup file must have at least ${numSearchColumns + 1} columns.`);
-	console.log("Enter anything to exit.");
-	prompt();
-	process.exit();
+	FranchiseUtils.EXIT_PROGRAM();
 }
 
 franchise.on('ready', async function () {
@@ -233,8 +229,7 @@ franchise.on('ready', async function () {
 	// Program complete, so print success message, save the franchise file, and exit
 	console.log("\nPlayers updated successfully.\n");
     await FranchiseUtils.saveFranchiseFile(franchise);
-    console.log("\nEnter anything to exit the program.");
-    prompt();
+	FranchiseUtils.EXIT_PROGRAM();
   
 });
   

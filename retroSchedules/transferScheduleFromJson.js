@@ -208,9 +208,8 @@ async function processGame(game, seasonGameTable, weekStartOccurrences,numGamesH
 
 
   if (typeof(homeTeam) === 'undefined' || typeof(awayTeam) === 'undefined') {
-    console.log(`ERROR transferring over one of your source games. Please let Sinthros know immediately. Exiting program.`);
-    prompt();
-    process.exit(0);
+    console.log(`ERROR transferring over one of your source games. Please let Sinthros know immediately.`);
+    FranchiseUtils.EXIT_PROGRAM();
   }
 
 

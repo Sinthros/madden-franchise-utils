@@ -86,8 +86,7 @@ franchise.on('ready', async function () {
 
 	console.log("Generated Asset Names/Presentation IDs/Commentary IDs for all Draft Class Players.");
     await FranchiseUtils.saveFranchiseFile(franchise);
-    console.log("Enter anything to exit the program.");
-    prompt();
+    FranchiseUtils.EXIT_PROGRAM();
   
 });
   

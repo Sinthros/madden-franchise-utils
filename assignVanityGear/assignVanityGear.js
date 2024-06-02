@@ -153,8 +153,7 @@ franchise.on('ready', async function () {
 	// Program complete, so print success message, save the franchise file, and exit
 	console.log("\nAll gear updated successfully.\n");
     await FranchiseUtils.saveFranchiseFile(franchise);
-    console.log("\nEnter anything to exit the program.");
-    prompt();
+	FranchiseUtils.EXIT_PROGRAM();
   
 });
   

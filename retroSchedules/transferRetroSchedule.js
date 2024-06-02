@@ -71,9 +71,7 @@ async function promptUser() {
     catch (error)
     {
       console.log(`Error reading or parsing custom JSON file: ${error}`);
-      console.log("Enter anything to exit.");
-      prompt();
-      process.exit(0);
+      FranchiseUtils.EXIT_PROGRAM();
     }
   }
   else
@@ -97,9 +95,7 @@ async function processSelectedYear(year) {
 
   } catch (error) {
     console.error(`Error reading or parsing JSON file ${fileName}:`, error);
-    console.log("Enter anything to exit the program.");
-    prompt();
-    process.exit(0);
+    FranchiseUtils.EXIT_PROGRAM();
   }
 }
 
@@ -114,14 +110,12 @@ franchise.on('ready', async function () {
 
   const gameYear = franchise.schema.meta.gameYear // Get the game year of the source file
   if (gameYear !== 24) {
-    console.log("Selected file is not a Madden 24 Franchise File. Enter anything to exit.")
-    prompt();
-    process.exit(0);
+    console.log("Selected file is not a Madden 24 Franchise File.")
+    FranchiseUtils.EXIT_PROGRAM();
   }
   if (currentStage !== 'PreSeason') {
-    console.log("Selected file is not in the PreSeason. Only Franchise Files in the PreSeason can have schedules inserted. Enter anything to exit.")
-    prompt();
-    process.exit(0);
+    console.log("Selected file is not in the PreSeason. Only Franchise Files in the PreSeason can have schedules inserted.")
+    FranchiseUtils.EXIT_PROGRAM();
 
   }
 
@@ -135,8 +129,7 @@ franchise.on('ready', async function () {
     console.log("Successfully inserted schedule into your franchise file.");
     await FranchiseUtils.saveFranchiseFile(franchise);
   }
-  console.log("Program completed. Enter anything to exit the program.");
-  prompt();
+  FranchiseUtils.EXIT_PROGRAM();
   
 });
 

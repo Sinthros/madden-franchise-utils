@@ -138,9 +138,8 @@ franchise.on('ready', async function () {
 	// If there are no draft class players, we can't continue, so inform the user and exit
 	if (draftRows.length === 0)
 	{
-		console.log("\nThere are no draft class players in your franchise file. Enter anything to exit.");
-		prompt();
-		process.exit(0);
+		console.log("\nThere are no draft class players in your franchise file.");
+		FranchiseUtils.EXIT_PROGRAM();
 	}
 	
 	// Check if there are NFL players at all in the franchise file so we can know if we can use NFL players to copy from
@@ -217,8 +216,7 @@ franchise.on('ready', async function () {
 	// Program complete, so print success message, save the franchise file, and exit
 	console.log("\nRookie equipment updated successfully.\n");
     await FranchiseUtils.saveFranchiseFile(franchise);
-    console.log("\nEnter anything to exit the program.");
-    prompt();
+	FranchiseUtils.EXIT_PROGRAM();
   
 });
   

@@ -63,7 +63,7 @@ async function adjustPresentationId(presentationTable) {
 
   } catch (error) {
     console.error('ERROR! Exiting program due to: ', error);
-    process.exit(1);
+    FranchiseUtils.EXIT_PROGRAM();
   }
 }
 
@@ -123,7 +123,7 @@ async function setDefaultCoachValues(coachRecord,presentationId) {
     coachRecord.AssetName = '';
   } catch (e) {
     console.warn('ERROR! Exiting program due to; ', e);
-    process.exit(1);
+    FranchiseUtils.EXIT_PROGRAM();
   }
 
 }
@@ -151,7 +151,7 @@ async function setCoachName(coachRecord) {
     return [coachFirstName, coachLastName];
   } catch (e) {
     console.warn('ERROR! Exiting program due to:', e);
-    process.exit(0);
+    FranchiseUtils.EXIT_PROGRAM();
   }
 }
 
@@ -179,7 +179,7 @@ async function setCoachPosition(coachRecord) {
     }
   } catch (e) {
     console.warn('ERROR! Exiting program due to:', e);
-    process.exit(0);
+    FranchiseUtils.EXIT_PROGRAM();
   }
 }
 
@@ -207,7 +207,7 @@ async function setSchemes(coachRecord) {
     selectScheme("Which defensive scheme should this coach have?", defSchemeKeys, defSchemeLookup, "DefensiveScheme");
   } catch (e) {
     console.warn('ERROR! Exiting program due to:', e);
-    process.exit(0);
+    FranchiseUtils.EXIT_PROGRAM();
   }
 }
 
@@ -237,7 +237,7 @@ async function setPlaybooks(coachRecord) {
     }
   } catch (e) {
     console.warn('ERROR! Exiting the program due to:', e);
-    process.exit(0);
+    FranchiseUtils.EXIT_PROGRAM();
   }
 }
 
@@ -313,7 +313,7 @@ async function setCoachAppearance(coachRecord) {
     } catch (e) {
       console.warn('ERROR! Exiting program due to:', e);
       prompt();
-      process.exit(0);
+      FranchiseUtils.EXIT_PROGRAM();
     }
 
 
@@ -327,7 +327,7 @@ async function setCoachAppearance(coachRecord) {
     return matchingPosition;
   } catch (e) {
   console.warn('ERROR! Exiting program due to; ', e);
-  process.exit(0);
+  FranchiseUtils.EXIT_PROGRAM();
 }
 }
 
@@ -337,10 +337,8 @@ async function setCoachApparel(coachRecord) {
     coachRecord.Apparel = "Staff1";
   } catch (e) {
     console.warn('ERROR! Exiting program due to; ', e);
-    process.exit(0);
+    FranchiseUtils.EXIT_PROGRAM();
   }
-
-
 }
 
 async function automaticallyFillTalents(activeTalentTree, activeTalentTreeNextRecord, coachPosition) {
@@ -497,7 +495,7 @@ async function handleTalentTree(coachRecord,talentNodeStatus,talentNodeStatusArr
       }
       catch (e) {
         console.warn('ERROR! Exiting program due to; ', e);
-        process.exit(0);
+        FranchiseUtils.EXIT_PROGRAM();
       }
       
     var talentNodeCountArray = [firstTalentNodeCount,secondTalentNodeCount,thirdTalentNodeCount]
@@ -569,7 +567,7 @@ async function handleTalentTree(coachRecord,talentNodeStatus,talentNodeStatusArr
         }
       } catch (e) {
         console.warn("ERROR! Exiting program due to; ", e);
-        process.exit(0);
+        FranchiseUtils.EXIT_PROGRAM();
       }
 
     }
@@ -618,12 +616,11 @@ async function addCoachToFATable(freeAgentCoachTable,currentCoachBinary) {
     }
   } catch (e) {
     console.warn("ERROR! Exiting program due to; ",e)
-    process.exit(0);
+    FranchiseUtils.EXIT_PROGRAM();
   }
   if (coachArrayNotFull == false) {
     console.log("ERROR! Cannot add new coach. You've reached the limit of 64 free agent coaches. Exiting program.");
-    prompt();
-    process.exit(0);
+    FranchiseUtils.EXIT_PROGRAM();
   }
 }
 
@@ -647,9 +644,8 @@ async function updateCoachVisual(coachTable,characterVisuals,nextCoachRecord, co
     characterVisualsRow = characterVisuals.header.nextRecordToUse; // Get the first empty row
     if (characterVisualsRow >= visualsRecordCapacity) {
       console.log("ERROR - The CharacterVisuals table has run out of space. Your changes have not been saved.");
-      console.log(`This means that the amount of players + coaches in your Franchise File exceeds ${visualsRecordCapacity}. Enter anything to exit.`)
-      prompt();
-      process.exit(0);
+      console.log(`This means that the amount of players + coaches in your Franchise File exceeds ${visualsRecordCapacity}.`)
+      FranchiseUtils.EXIT_PROGRAM();
     }
     characterVisualsRef = getBinaryReferenceData(characterVisuals.header.tableId,characterVisualsRow); //Convert to binary
     coachTable.records[nextCoachRecord]['CharacterVisuals'] = characterVisualsRef;
@@ -709,9 +705,8 @@ franchise.on('ready', async function () {
   const gameYear = franchise.schema.meta.gameYear;
 
   if (gameYear !== gameYear) {
-    console.log("FATAL ERROR! Selected franchise file is NOT a Madden 24 Franchise File. Enter anything to exit.");
-    prompt();
-    process.exit(0);
+    console.log("FATAL ERROR! Selected franchise file is NOT a Madden 24 Franchise File.");
+    FranchiseUtils.EXIT_PROGRAM();
   }
 
   // Always run our main function at least once
@@ -727,9 +722,8 @@ franchise.on('ready', async function () {
       await franchise.save();
 
       fs.rmSync(dir, { recursive: true, force: true }); //Remove the coach previews folder
-      console.log("Franchise file successfully saved. Enter anything to exit.");
-      prompt();
-      break
+      console.log("Franchise file successfully saved.");
+      FranchiseUtils.EXIT_PROGRAM();
     }
 
     else if (continuePrompt.toUpperCase() === YES_KWD) { //Save the file and run the program again
@@ -740,9 +734,8 @@ franchise.on('ready', async function () {
     }
     else if (continuePrompt.toUpperCase() === FORCE_QUIT_KWD) {
       fs.rmSync(dir, { recursive: true, force: true }); //Remove the coach previews folder
-      console.log("Exiting WITHOUT saving your last added coach. Enter anything to exit.");
-      prompt();
-      break
+      console.log("Exiting WITHOUT saving your last added coach.");
+      FranchiseUtils.EXIT_PROGRAM();
     }
     else {
       console.log("Invalid option. Please try again.");

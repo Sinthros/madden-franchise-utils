@@ -28,8 +28,7 @@ franchise.on('ready', async function () {
   
   console.log("Roster sizes have been set successfully.");
   await FranchiseUtils.saveFranchiseFile(franchise);
-  console.log("Program completed. Enter anything to exit.");
-  prompt();
+  FranchiseUtils.EXIT_PROGRAM();
 });
 
 

@@ -73,9 +73,13 @@ function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false, isFtcFile = 
 
   while (true) {
       try {
-          console.log("Please enter the name of your franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder.");
+          console.log("Please enter the name of your franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.");
           let fileName = prompt();
           fileName = fileName.trim(); // Remove leading/trailing spaces
+
+          if (fileName === "0") {
+            EXIT_PROGRAM();
+          }
           
           if (fileName.startsWith(filePrefix)) {
               franchise = new Franchise(path.join(default_path, fileName), {'autoUnempty': isAutoUnemptyEnabled});
@@ -115,9 +119,13 @@ async function selectFranchiseFileAsync(gameYear,isAutoUnemptyEnabled = false, i
   
     while (true) {
         try {
-            console.log("Please enter the name of your franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder.");
+            console.log("Please enter the name of your franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.");
             let fileName = prompt();
             fileName = fileName.trim(); // Remove leading/trailing spaces
+
+            if (fileName === "0") {
+              EXIT_PROGRAM();
+            }
             
             if (fileName.startsWith(filePrefix)) {
                 franchise = await Franchise.create(path.join(default_path, fileName), {'autoUnempty': isAutoUnemptyEnabled});
@@ -674,10 +682,8 @@ async function fixPlayerTables(franchise) {
     if (nextPlayerRecord === mainPlayerTable.header.recordCapacity) {
       console.log("********************************************************************************************")
       console.log("ERROR! Your file has too many total players and CANNOT be merged into the main player table.");
-      console.log("********************************************************************************************")
-      console.log("Exiting program.");
-      prompt();
-      process.exit(1);
+      console.log("********************************************************************************************");
+      EXIT_PROGRAM();
     }
 
     const currentTable = allPlayerTables[tableIndex];
@@ -727,6 +733,12 @@ async function fixPlayerTables(franchise) {
 
   console.log("Successfully merged all extra player tables into the main player table.");
 }
+
+function EXIT_PROGRAM() {
+  console.log("Enter anything to exit.");
+  prompt();
+  process.exit(0);
+};
 
 function getYesOrNo(message) {
   while (true) {
@@ -778,6 +790,7 @@ module.exports = {
     bin2Dec,
     dec2bin,
     hasNumber,
+    EXIT_PROGRAM,
 
     ZERO_REF, // CONST VARIABLES
     NFL_CONFERENCES,

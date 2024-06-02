@@ -389,9 +389,8 @@ async function getCharacterVisualsTable(franchise,currentTable,mainCharacterVisu
     characterVisualsRow = mainCharacterVisualsTable.header.nextRecordToUse; // Get the first empty row
     if (characterVisualsRow >= visualsRecordCapcity) {
       console.log("ERROR - The CharacterVisuals table has run out of space. Your changes have not been saved.");
-      console.log(`This means that the amount of players + coaches in your Franchise File exceeds ${visualsRecordCapcity}. Enter anything to exit.`)
-      prompt();
-      process.exit(0);
+      console.log(`This means that the amount of players + coaches in your Franchise File exceeds ${visualsRecordCapcity}.`);
+      FranchiseUtils.EXIT_PROGRAM();
     }
     characterVisualsRef = getBinaryReferenceData(mainCharacterVisualsTable.header.tableId,characterVisualsRow); //Convert to binary
     currentTable.records[row]['CharacterVisuals'] = characterVisualsRef;

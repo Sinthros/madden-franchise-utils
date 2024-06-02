@@ -364,10 +364,9 @@ function runProgram(command)
 	}
 	catch (error)
 	{
-		console.log("Execution failed. Please inform WiiMaster immediately. Enter anything to exit.");
+		console.log("Execution failed. Please inform WiiMaster immediately.");
 		fs.unlinkSync('HW12-17Game.exe');
-		prompt();
-		process.exit(0);
+		FranchiseUtils.EXIT_PROGRAM();
 	}
 
 }
@@ -395,9 +394,8 @@ franchise.on('ready', async function () {
 	// If the file is not in the preseason, inform the user and exit
 	if (!validWeekTypes.includes(currentWeekType))
 	{
-		console.log("Selected file is not in a valid week. Only Franchise Files in the preseason are supported by this tool. Enter anything to exit.")
-		prompt();
-		process.exit(0);
+		console.log("Selected file is not in a valid week. Only Franchise Files in the preseason are supported by this tool.")
+		FranchiseUtils.EXIT_PROGRAM();
 	}
 	
 	// We can immediately get the year for the schedule object from SeasonInfo
@@ -541,10 +539,9 @@ franchise.on('ready', async function () {
 			// Check if the solution was generated successfully, if not, inform the user, clean up, and exit
 			if(!fs.existsSync('solution.json'))
 			{
-				console.log("\nSchedule generation failed. Please inform WiiMaster immediately. Enter anything to exit.");
+				console.log("\nSchedule generation failed. Please inform WiiMaster immediately.");
 				fs.unlinkSync('HW12-17Game.exe');
-				prompt();
-				process.exit(0);
+				FranchiseUtils.EXIT_PROGRAM();
 			}
 		}
 	}
@@ -559,10 +556,9 @@ franchise.on('ready', async function () {
 	// Check if the solution was generated successfully, if not, inform the user, clean up, and exit
 	if(!fs.existsSync('solution.json'))
 	{
-		console.log("\nSchedule generation failed. Please inform WiiMaster immediately.\n\nEnter anything to exit.");
+		console.log("\nSchedule generation failed. Please inform WiiMaster immediately.");
 		fs.unlinkSync('HW12-17Game.exe');
-		prompt();
-		process.exit(0);
+		FranchiseUtils.EXIT_PROGRAM();
 	}
 
 	// Delete the generator executable
@@ -587,16 +583,14 @@ franchise.on('ready', async function () {
 	// If the transfer failed, inform the user and exit
 	if(!transferStatus)
 	{
-		console.log("\nUnable to transfer new schedule. Please inform WiiMaster immediately.\n\nEnter anything to exit.");
-		prompt();
-		process.exit(0);
+		console.log("\nUnable to transfer new schedule. Please inform WiiMaster immediately.");
+		FranchiseUtils.EXIT_PROGRAM();
 	}
 
 	// Program complete, so print success message, save the franchise file, and exit
 	console.log(`\nSchedule generated and transferred successfully.`);
 	await FranchiseUtils.saveFranchiseFile(franchise);
-	console.log("\nEnter anything to exit.");
-    prompt();
+	FranchiseUtils.EXIT_PROGRAM();
   
 });
   

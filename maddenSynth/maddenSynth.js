@@ -1216,9 +1216,8 @@ const currentWeek = parseInt(seasonInfoTable.records[0]['CurrentWeek']);
 	
 if (!validWeekTypes.includes(currentWeekType)) // Check if file is in preseason, regular season, or playoffs, exit if not
 {
-	console.log("Selected file is not in a valid week. Only Franchise Files from the preseason to the playoffs are supported by this tool. Enter anything to exit.")
-	prompt();
-	process.exit(0);
+	console.log("Selected file is not in a valid week. Only Franchise Files from the preseason to the playoffs are supported by this tool.");
+	FranchiseUtils.EXIT_PROGRAM();
 }
 
 	
@@ -1236,9 +1235,7 @@ if (!validWeekTypes.includes(currentWeekType)) // Check if file is in preseason,
 		if(userOption === 'q')
 		{
 			await FranchiseUtils.saveFranchiseFile(franchise);
-			console.log("Enter anything to exit.");
-			prompt();
-			process.exit(0);
+			FranchiseUtils.EXIT_PROGRAM();
 		}
 		else if(userOption === 'g')
 		{

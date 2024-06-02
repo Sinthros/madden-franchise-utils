@@ -268,10 +268,9 @@ franchise.on('ready', async function () {
     const gameYear = franchise.schema.meta.gameYear // Get the game year of the source file
     if (gameYear !== 24) {
       console.log("******************************************************************************************")
-      console.log("ERROR! Target franchise isn't a Madden 24 Franchise File. Exiting program.");
+      console.log("ERROR! Target franchise isn't a Madden 24 Franchise File.");
       console.log("******************************************************************************************")
-      prompt()
-      process.exit(0);
+      FranchiseUtils.EXIT_PROGRAM();
     }
     
     try {
@@ -312,14 +311,11 @@ franchise.on('ready', async function () {
     } catch (e) {
       console.log("******************************************************************************************")
       console.log(`FATAL ERROR!! Please report this message to Sinthros IMMEDIATELY - ${e}`)
-      console.log("Exiting program.")
       console.log("******************************************************************************************")
-      prompt();
-      process.exit(0);
+      FranchiseUtils.EXIT_PROGRAM();
     }
     
   console.log("Successfully regenerated all player motivations based on previous responses.");
   await FranchiseUtils.saveFranchiseFile(franchise);
-  console.log("Program completed. Enter anything to exit the program.");
-  prompt();
+  FranchiseUtils.EXIT_PROGRAM();
 });

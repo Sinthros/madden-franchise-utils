@@ -211,9 +211,8 @@ async function createNewDraftClass(franchise,draftTableArrayId) {
   if (currentStage !== 'NFLSeason') {
     const currentWeekType = seasonInfoTable.records[0]['CurrentWeekType'];
     console.log(`ERROR! Your file MUST be in the Regular Season/Playoffs to execute this program. Your file is currently in the ${currentWeekType}.`);
-    console.log("Ensure your file is in the Regular Season/Playoffs before using this program. Enter anything to exit.");
-    prompt();
-    process.exit(0);
+    console.log("Ensure your file is in the Regular Season/Playoffs before using this program.");
+    FranchiseUtils.EXIT_PROGRAM();
   }
 
   await playerTable.readRecords();
@@ -279,9 +278,7 @@ async function createNewDraftClass(franchise,draftTableArrayId) {
 
   if (targetPlayersAmount === 0) {
     console.log(`ERROR! No available players for a YearsPro value of ${yearsProNumber}.`);
-    console.log("Enter anything to exit the program. This will not save your changes.");
-    prompt();
-    process.exit(0)
+    FranchiseUtils.EXIT_PROGRAM();
   }
 
   const allDraftPlayerBinary = [];
@@ -347,9 +344,7 @@ franchise.on('ready', async function () {
 
   console.log(`Successfully deleted current Draft Class players and converted ${targetPlayersAmount} players with YearsPro = ${yearsProNumber} into Draft Class players.`);
   await FranchiseUtils.saveFranchiseFile(franchise);
-  console.log("Program completed. Enter anything to exit the program.");
-
-  prompt();
+  FranchiseUtils.EXIT_PROGRAM();
 });
 
 

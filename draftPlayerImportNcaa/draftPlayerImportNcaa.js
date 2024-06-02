@@ -106,9 +106,8 @@ franchise.on('ready', async function () {
 	// If no draft class players are found, we can't continue, so inform the user and exit
 	if (draftRows.length === 0)
 	{
-		console.log("\nThere are no draft class players in your franchise file, so we can't import a class. Enter anything to exit.");
-		prompt();
-		process.exit(0);
+		console.log("\nThere are no draft class players in your franchise file, so we can't import a class.");
+		FranchiseUtils.EXIT_PROGRAM();
 	}
 	
 	// If the number of draft class players in the franchise is less than the number of players to import, we need to trim the data to match
@@ -126,9 +125,8 @@ franchise.on('ready', async function () {
 		// If the user doesn't want to trim, we can't continue, so exit
 		if(!proceedTrim)
 		{
-			console.log("\nImport cancelled. Enter anything to exit.");
-			prompt();
-			process.exit(0);
+			console.log("\nImport cancelled.");
+			FranchiseUtils.EXIT_PROGRAM();
 		}
 
 		// Because we sorted the draft class data previously, we can easily trim by just chopping off the end of the array
@@ -213,8 +211,7 @@ franchise.on('ready', async function () {
 	// Program complete, so print success message, save the franchise file, and exit
 	console.log("\nDraft class players imported successfully.\n");
     await FranchiseUtils.saveFranchiseFile(franchise);
-    console.log("\nEnter anything to exit the program.");
-    prompt();
+	FranchiseUtils.EXIT_PROGRAM();
   
 });
   

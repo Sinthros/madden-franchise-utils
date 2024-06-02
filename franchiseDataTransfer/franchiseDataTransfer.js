@@ -1217,9 +1217,8 @@ async function getOptionalTables() {
   if (targetCurrentStage !== 'PreSeason') {
     const currentWeekType = seasonInfo.records[0]['CurrentWeekType'];
     console.log(`ERROR! Target file MUST be in the PreSeason to execute this program. Your target file is currently in the ${currentWeekType}.`);
-    console.log("Ensure your target franchise file is in the PreSeason before using this program. Enter anything to exit.");
-    prompt();
-    process.exit(0);
+    console.log("Ensure your target franchise file is in the PreSeason before using this program.");
+    FranchiseUtils.EXIT_PROGRAM();
   }
 
   const sourceSeasonYear = sourceSeasonInfo.records[0]['CurrentSeasonYear'];
@@ -1249,9 +1248,7 @@ async function getOptionalTables() {
 
         break;
       } else if (quitPrompt.toUpperCase() === 'NO') {
-        console.log("Exiting program. Enter anything to quit.");
-        prompt();
-        process.exit(0);
+        FranchiseUtils.EXIT_PROGRAM();
       }
     }
   }
@@ -1503,8 +1500,7 @@ async function handleTalentTree(targetFranchise,coachTable,coachTableCurrentReco
     }
     catch (e) {
       console.warn('ERROR! Exiting program due to; ', e);
-      prompt();
-      process.exit(0);
+      FranchiseUtils.EXIT_PROGRAM();
     }
     
   var talentNodeCountArray = [firstTalentNodeCount,secondTalentNodeCount,thirdTalentNodeCount]
@@ -1577,8 +1573,7 @@ async function handleTalentTree(targetFranchise,coachTable,coachTableCurrentReco
       }
     } catch (e) {
       console.warn("ERROR! Exiting program due to; ", e);
-      prompt();
-      process.exit(0);
+      FranchiseUtils.EXIT_PROGRAM();
       
     }
 
@@ -1631,9 +1626,7 @@ async function fixAllPlayerTables(franchise,allPlayerTables) {
       console.log("********************************************************************************************")
       console.log("ERROR! Your file has too many total players and CANNOT be merged into the main player table.");
       console.log("********************************************************************************************")
-      console.log("Exiting program.");
-      prompt();
-      process.exit(1);
+      FranchiseUtils.EXIT_PROGRAM();
     }
 
     const currentTable = allPlayerTables[tableIndex];
@@ -1748,15 +1741,13 @@ sourceFranchise.on('ready', async function () {
     const sourceGameYear = sourceFranchise.schema.meta.gameYear // Get the game year of the source file
     const targetGameYear = targetFranchise.schema.meta.gameYear // Get the game year of the target file
     if (targetGameYear !== 24) {
-      console.log("Target franchise file isn't a Madden 24 Franchise File. Exiting program.");
-      prompt();
-      process.exit(1);
+      console.log("Target franchise file isn't a Madden 24 Franchise File.");
+      FranchiseUtils.EXIT_PROGRAM();
     }
 
     if (sourceGameYear !== 22 && sourceGameYear !== 24) {
-      console.log("Source franchise file isn't a Madden 22 or Madden 24 Franchise File. Exiting program.");
-      prompt();
-      process.exit(1);
+      console.log("Source franchise file isn't a Madden 22 or Madden 24 Franchise File.");
+      FranchiseUtils.EXIT_PROGRAM();
     }
 
     // We're going to read all tables for our source/target franchise so that we don't have to read them again later
@@ -1829,8 +1820,7 @@ sourceFranchise.on('ready', async function () {
       console.log(`FATAL ERROR! Please report this message to Sinthros IMMEDIATELY and send your source/target Franchise Files - ${error}`);
       console.log("Exiting program.");
       console.log("******************************************************************************************");
-      prompt();
-      process.exit(0);
+      FranchiseUtils.EXIT_PROGRAM();
     }
 
 
@@ -1924,8 +1914,7 @@ sourceFranchise.on('ready', async function () {
       console.log(`FATAL ERROR!! Please report this message to Sinthros IMMEDIATELY and send your source/target Franchise Files - ${e}`)
       console.log("Exiting program.")
       console.log("******************************************************************************************")
-      prompt();
-      process.exit(0);
+      FranchiseUtils.EXIT_PROGRAM();
 
     }
 
@@ -1952,8 +1941,7 @@ sourceFranchise.on('ready', async function () {
       }
     } while (confirming);
     
-    console.log("Program completed. Enter anything to exit the program.");
-    prompt();
+    FranchiseUtils.EXIT_PROGRAM();
     
 })});
 

@@ -39,8 +39,7 @@ franchise.on('ready', async function () {
   
   console.log("Successfully updated coach values.");
   await FranchiseUtils.saveFranchiseFile(franchise);
-  console.log("Program completed. Enter anything to exit.")
-  prompt();
+  FranchiseUtils.EXIT_PROGRAM();
 });
 
 
