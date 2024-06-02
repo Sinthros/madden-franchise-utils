@@ -458,7 +458,7 @@ async function manuallySelectTalents(activeTalentTree, activeTalentTreeNextRecor
 
 async function handleTalentTree(coachRecord,talentNodeStatus,talentNodeStatusArray,activeTalentTree,activeTalentTreeNextRecord,activeTalentTreeCurrentBinary,talentSubTreeStatus) {
 
-    const coachPosition = coachRecord.Position // Get coach position
+    const coachPosition = coachRecord.Position; // Get coach position
     const coordinatorTalentNodeCount = 9;
     const headCoachTalentNodeCount = 8;
     
@@ -616,7 +616,7 @@ async function addCoachToFATable(freeAgentCoachTable,currentCoachBinary) {
         coachArrayNotFull = false;
         break
       }
-      if (freeAgentCoachTable.records[0][`Coach${i}`] == ZERO_REF) {
+      if (freeAgentCoachTable.records[0][`Coach${i}`] == FranchiseUtils.ZERO_REF) {
         if (i > 58) {
           console.log(`Warning: There are 64 total slots for free agent coaches and you've now taken up ${i + 1} slots out of 64. It's not advisable to completely fill up the Coach FA pool.`)
         }
@@ -652,7 +652,7 @@ async function updateCoachVisual(coachTable,characterVisuals,nextCoachRecord, co
   let characterVisualsRow = await FranchiseUtils.bin2Dec(characterVisualsRef.slice(15));
   const visualsRecordCapacity = characterVisuals.header.recordCapacity;
 
-  if (characterVisualsRef === ZERO_REF) { // If it's all zeroes, we need to set a new reference
+  if (characterVisualsRef === FranchiseUtils.ZERO_REF) { // If it's all zeroes, we need to set a new reference
     characterVisualsRow = characterVisuals.header.nextRecordToUse; // Get the first empty row
     if (characterVisualsRow >= visualsRecordCapacity) {
       console.log("ERROR - The CharacterVisuals table has run out of space. Your changes have not been saved.");
@@ -699,7 +699,7 @@ async function createNewCoach(franchise) {
 
   await setCoachApparel(coachRecord);
   
-  await handleTalentTree(coachTable,nextCoachRecord,talentNodeStatus,talentNodeStatusArray,activeTalentTree,activeTalentTreeNextRecord,activeTalentTreeCurrentBinary,talentSubTreeStatus);
+  await handleTalentTree(coachRecord,talentNodeStatus,talentNodeStatusArray,activeTalentTree,activeTalentTreeNextRecord,activeTalentTreeCurrentBinary,talentSubTreeStatus);
 
   await addCoachToFATable(freeAgentCoachTable,currentCoachBinary);
 
