@@ -780,6 +780,35 @@ function getYesOrNo(message) {
   }
 };
 
+// Function to shuffle an array (Fisher-Yates algorithm)
+async function shuffleArray(array) 
+{
+	for (let i = array.length - 1; i > 0; i--) 
+	{
+	  const j = Math.floor(Math.random() * (i + 1));
+	  [array[i], array[j]] = [array[j], array[i]];
+	}
+}
+
+// Function to get a random integer between a floor and ceiling value
+function getRandomNumber(floor, ceiling)
+{
+  // Ensure that the floor and ceiling are integers
+  floor = Math.floor(floor);
+  ceiling = Math.floor(ceiling);
+
+  // Generate a random number between 0 (inclusive) and 1 (exclusive)
+  const randomFraction = Math.random();
+
+  // Scale the random fraction to fit within the specified range
+  const randomInRange = randomFraction * (ceiling - floor + 1) + floor;
+
+  // Convert the result to an integer
+  const result = Math.floor(randomInRange);
+
+  return result;
+}
+
 async function bin2Dec(binary) {
     return parseInt(binary, 2);
 };
@@ -812,6 +841,8 @@ module.exports = {
     fixPlayerTables,
 
     getYesOrNo, // UTILITY FUNCTIONS
+    shuffleArray,
+    getRandomNumber,
     bin2Dec,
     dec2bin,
     hasNumber,
