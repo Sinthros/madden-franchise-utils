@@ -1,15 +1,18 @@
 // Required modules
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
+const gameYear = FranchiseUtils.YEARS.M24;
 
 // Print tool header message
-console.log("This program will restore all draft picks back to their original team. Only Madden 24 franchise files are supported.\n");
+console.log(`This program will restore all draft picks back to their original team. Only Madden ${gameYear} franchise files are supported.\n`);
 
 // Set up franchise file
-const gameYear = 24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 franchise.on('ready', async function () {
+
+    FranchiseUtils.validateGameYears(franchise,gameYear);
+    
     // Get the draft pick table    
     const draftPickTable = franchise.getTableByUniqueId(tables.draftPickTable);
     await draftPickTable.readRecords();

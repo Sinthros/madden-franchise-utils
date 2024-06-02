@@ -9,7 +9,7 @@ const vanityGearLookup = JSON.parse(fs.readFileSync('./lookupFiles/vanityGearLoo
 console.log("This program will update all players with your chosen vanity gear item.\n")
 
 // Set up franchise file
-const gameYear = 24;
+const gameYear = FranchiseUtils.YEARS.M24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 // Convert a row reference to a row number

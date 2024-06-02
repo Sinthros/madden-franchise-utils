@@ -18,6 +18,8 @@ const prompt = require('prompt-sync')();
 const ZERO_REF = '00000000000000000000000000000000';
 const BASE_FILE_INIT_KWD = 'CAREER';
 const FTC_FILE_INIT_KWD = 'franchise-';
+const YES_KWD = "YES";
+const NO_KWD = "NO";
 
 // GAME YEARS
 const YEARS = {
@@ -732,7 +734,30 @@ async function fixPlayerTables(franchise) {
   }
 
   console.log("Successfully merged all extra player tables into the main player table.");
-}
+};
+
+/*
+
+  This function validates the game year of the franchise file against the valid game years for your program.
+
+  franchise: Franchise Object. This is used to get the game year of the selected Franchise File.
+
+  validGameYears: Int/String representing a valid game year, or an array of Ints/Strings representing
+  valid game years.
+
+*/
+function validateGameYears(franchise, validGameYears) {
+  const fileGameYear = String(franchise.schema.meta.gameYear);
+
+  // If not already an array, convert it to one
+  const validGameYearsArray = Array.isArray(validGameYears) ? validGameYears : [validGameYears];
+  const validGameYearsStr = validGameYearsArray.map(String);
+
+  if (!validGameYearsStr.includes(fileGameYear)) {
+    console.log(`Selected franchise file is not a Madden ${validGameYearsStr.join(', ')} Franchise File. You tried to use a Madden ${fileGameYear} Franchise File.`);
+    EXIT_PROGRAM();
+  }
+};
 
 function EXIT_PROGRAM() {
   console.log("Enter anything to exit.");
@@ -745,12 +770,12 @@ function getYesOrNo(message) {
       console.log(message);
       const input = prompt().trim().toUpperCase();
 
-      if (input === 'YES') {
+      if (input === YES_KWD) {
           return true;
-      } else if (input === 'NO') {
+      } else if (input === NO_KWD) {
           return false;
       } else {
-          console.log("Invalid input. Please enter YES or NO.");
+          console.log(`Invalid input. Please enter ${YES_KWD} or ${NO_KWD}.`);
       }
   }
 };
@@ -790,9 +815,14 @@ module.exports = {
     bin2Dec,
     dec2bin,
     hasNumber,
+    validateGameYears,
     EXIT_PROGRAM,
 
     ZERO_REF, // CONST VARIABLES
+    BASE_FILE_INIT_KWD,
+    FTC_FILE_INIT_KWD,
+    YES_KWD,
+    NO_KWD,
     NFL_CONFERENCES,
     OFFENSIVE_SKILL_POSITIONS,
     OLINE_POSITIONS,

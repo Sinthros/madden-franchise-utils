@@ -9,8 +9,6 @@ const CHARACTER_VISUALS_FUNCTIONS = require('../lookupFunctions/characterVisuals
 const COACH_BASE_JSON = CHARACTER_VISUALS_FUNCTIONS.baseCoachVisualJson;
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
-const YES_KWD = "YES";
-const NO_KWD = "NO;"
 const FORCE_QUIT_KWD = "FORCEQUIT";
 const AUTOMATIC_KWD = 'a';
 const MANUAL_KWD = 'm';
@@ -37,12 +35,12 @@ const VISUAL_MORPH_KEYS = [
 ];
 
 
-const gameYear = 24;
+const gameYear = FranchiseUtils.YEARS.M24;
 const autoUnempty = true;
 const dir = './coachPreviews';
 const headsDirName = 'coachHeads';
 
-console.log("Welcome to the Coach Creator Program for Madden NFL 24.")
+console.log(`Welcome to the Coach Creator Program for Madden NFL ${gameYear}.`)
 console.log("In this program, you can create new free agent coaches for your franchise file.")
 
 fs.rmSync(dir, { recursive: true, force: true }); //Remove this folder if it already exists and recreate it
@@ -469,7 +467,7 @@ async function handleTalentTree(coachRecord,talentNodeStatus,talentNodeStatusArr
             console.log("Since this is a Head Coach, this is automatic.")
           }
           else {
-            console.log("Would you like to AUTOMATICALLY fill in talents or MANUALLY select them? Valid choices are A or M.");
+            console.log(`Would you like to AUTOMATICALLY fill in talents or MANUALLY select them? Valid choices are ${AUTOMATIC_KWD} or ${MANUAL_KWD}.`);
             userChoice = prompt().toLowerCase();
 
           }
@@ -701,24 +699,17 @@ async function createNewCoach(franchise) {
 
 franchise.on('ready', async function () {
  
-  //THIS IS HOW WE CAN TELL WHAT GAME WE'RE WORKING WITH
-  const gameYear = franchise.schema.meta.gameYear;
-
-  if (gameYear !== gameYear) {
-    console.log("FATAL ERROR! Selected franchise file is NOT a Madden 24 Franchise File.");
-    FranchiseUtils.EXIT_PROGRAM();
-  }
-
+  FranchiseUtils.validateGameYears(franchise,gameYear);
   // Always run our main function at least once
   await createNewCoach(franchise);
 
   let continuePrompt;
-  const validOptions = [YES_KWD,NO_KWD,FORCE_QUIT_KWD]
+  const validOptions = [FranchiseUtils.YES_KWD,FranchiseUtils.NO_KWD,FORCE_QUIT_KWD]
   while (!validOptions.includes(continuePrompt)) { // While loop to keep creating coaches
-    console.log("Would you like to create another coach? Enter Yes to create another coach or No to quit the program. Either option will save your franchise file.");
-    console.log("Alternatively, enter ForceQuit to exit the program WITHOUT saving your most recent added coach.")
+    console.log(`Would you like to create another coach? Enter ${FranchiseUtils.YES_KWD} to create another coach or ${FranchiseUtils.NO_KWD} to quit the program. Either option will save your franchise file.`);
+    console.log(`Alternatively, enter ${FORCE_QUIT_KWD} to exit the program WITHOUT saving your most recent added coach.`)
     continuePrompt = prompt(); // Get user input
-    if (continuePrompt.toUpperCase() === NO_KWD) { // If no, save and quit
+    if (continuePrompt.toUpperCase() === FranchiseUtils.NO_KWD) { // If no, save and quit
       await franchise.save();
 
       fs.rmSync(dir, { recursive: true, force: true }); //Remove the coach previews folder
@@ -726,7 +717,7 @@ franchise.on('ready', async function () {
       FranchiseUtils.EXIT_PROGRAM();
     }
 
-    else if (continuePrompt.toUpperCase() === YES_KWD) { //Save the file and run the program again
+    else if (continuePrompt.toUpperCase() === FranchiseUtils.YES_KWD) { //Save the file and run the program again
       await franchise.save();
 
       console.log("Franchise file successfully saved.")

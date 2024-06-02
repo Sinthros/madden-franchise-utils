@@ -1,22 +1,16 @@
 const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
-
-console.log("This program will regenerate Character Visuals for ALL players and coaches. This is only applicable for Madden 24 Franchise Files.")
 const gameYear = FranchiseUtils.YEARS.M24;
 const autoUnempty = true;
+
+console.log(`This program will regenerate Character Visuals for ALL players and coaches. This is only applicable for Madden ${gameYear} Franchise Files.`)
 
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
 franchise.on('ready', async function () {
 
-    //THIS IS HOW WE CAN TELL WHAT GAME WE'RE WORKING WITH
-    const gameYear = franchise.schema.meta.gameYear;
-    
-    if (gameYear !== FranchiseUtils.YEARS.M24) {
-      console.log("FATAL ERROR! Selected franchise file is NOT a Madden 24 Franchise File.");
-      FranchiseUtils.EXIT_PROGRAM();
-    }
+    FranchiseUtils.validateGameYears(franchise,gameYear);
 
     const mainCharacterVisualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable); //Grab the tables we need and read them
     const playerTable = franchise.getTableByUniqueId(tables.playerTable);

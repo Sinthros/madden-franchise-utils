@@ -15,10 +15,9 @@ const autoUnempty = false;
 
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
-
-
 franchise.on('ready', async function () {
 
+  FranchiseUtils.validateGameYears(franchise,validGameYears)
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
   await FranchiseUtils.readTableRecords([playerTable,teamTable]);
