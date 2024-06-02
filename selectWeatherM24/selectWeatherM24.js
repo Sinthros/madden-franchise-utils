@@ -7,7 +7,7 @@ const { tables } = require('../lookupFunctions/FranchiseTableId');
 console.log("This program will allow you to update the weather for a game in your Madden 24 franchise file. This tool must be run during the regular season or playoffs.\n")
 
 // Set up franchise file
-const gameYear = 24;
+const gameYear = FranchiseUtils.YEARS.M24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 // List of week types when the tool can be run
@@ -112,6 +112,9 @@ async function handleRoof(state, game, homeTeam, seasonGameTable, teamTable)
 
 
 franchise.on('ready', async function () {
+
+	FranchiseUtils.validateGameYears(franchise,gameYear);
+	
     // Get required tables
 	const teamTable = franchise.getTableByUniqueId(tables.teamTable);
 	const seasonInfoTable = franchise.getTableByUniqueId(tables.seasonInfoTable);

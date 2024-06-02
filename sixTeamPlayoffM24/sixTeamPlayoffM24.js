@@ -6,10 +6,13 @@ const { tables } = require('../lookupFunctions/FranchiseTableId');
 console.log("This program will update your Madden 24 franchise file to use the 6 team playoff format. This tool must be run during wildcard week.\n")
 
 // Set up franchise file
-const gameYear = 24;
+const gameYear = FranchiseUtils.YEARS.M24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 franchise.on('ready', async function () {
+
+	FranchiseUtils.validateGameYears(franchise,gameYear);
+	
     // Get required tables
 	const teamTable = franchise.getTableByUniqueId(tables.teamTable);
 	const seasonInfoTable = franchise.getTableByUniqueId(tables.seasonInfoTable);

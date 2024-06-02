@@ -10,7 +10,7 @@ const teamLookup = JSON.parse(fs.readFileSync('teamLookup.json', 'utf8'));
 console.log("This program will allow you to extract the schedule in your Madden 24 franchise file to JSON. This tool must be run during the first week of preseason.\n")
 
 // Set up franchise file
-const gameYear = 24;
+const gameYear = FranchiseUtils.YEARS.M24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 // Object to store the schedule data
@@ -84,6 +84,9 @@ async function parseGameData(seasonGameTable, j, indGameData, teamTable)
 
 
 franchise.on('ready', async function () {
+
+	FranchiseUtils.validateGameYears(franchise,gameYear);
+	
     // Get required tables
 	const teamTable = franchise.getTableByUniqueId(tables.teamTable);
 	const seasonInfoTable = franchise.getTableByUniqueId(tables.seasonInfoTable);

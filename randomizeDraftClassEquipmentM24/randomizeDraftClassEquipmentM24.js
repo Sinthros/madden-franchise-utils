@@ -9,7 +9,7 @@ const allAssetNames = Object.keys(JSON.parse(fs.readFileSync('lookupFiles/all_as
 console.log("This program will update all draft class player equipment based on existing players. Only Madden 24 franchise files are supported.\n")
 
 // Set up franchise file
-const gameYear = 24;
+const gameYear = FranchiseUtils.YEARS.M24;
 const autoUnempty = true;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear, autoUnempty);
 
@@ -86,6 +86,9 @@ async function filterByPosition(playerList, position)
 
 
 franchise.on('ready', async function () {
+
+	FranchiseUtils.validateGameYears(franchise,gameYear);
+	
     // Get required tables
 	const playerTable = franchise.getTableByUniqueId(tables.playerTable);
 	const visualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable);

@@ -38,7 +38,7 @@ async function bin2Dec(binary) {
 
 
 
-const gameYear = 24;
+const gameYear = FranchiseUtils.YEARS.M24;
 
 const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`); //Two paths - One using default, one with OneDrive
 const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`)

@@ -15,7 +15,7 @@ console.log("In this program, you can convert a specific year of players in your
 console.log("For this to work, your Franchise File MUST be in the Regular Season/Playoffs. It will not work during the Preseason.");
 console.log("This should NOT be used on a file you intend to keep playing on. Make a backup of your file first, because it won't be able to be played after doing this.");
 console.log("This will delete all current Draft Class players and replace them with up to 450 new Draft Class players in your file. Then, you'll go inside the franchise file and export the Draft Class.");
-const gameYear = 24;
+const gameYear = FranchiseUtils.YEARS.M24;
 const autoUnempty = true;
 
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
@@ -199,12 +199,15 @@ async function fillDraftPlayerRow(draftPlayerTable,index,draftPlayerRow,playerPo
 
 }
 async function createNewDraftClass(franchise,draftTableArrayId) {
+
+  FranchiseUtils.validateGameYears(franchise,gameYear);
+  
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   const draftPlayerTable = franchise.getTableByUniqueId(tables.draftClassTable);
   const draftPlayerArray = franchise.getTableById(draftTableArrayId);
   const seasonInfoTable = franchise.getTableByUniqueId(tables.seasonInfoTable);
 
-  await seasonInfoTable.readRecords();
+  await FranchiseUtils.readTableRecords([seasonInfoTable,playerTable,draftPlayerTable,draftPlayerArray]);
 
   const currentStage = seasonInfoTable.records[0]['CurrentStage'];
 
@@ -215,9 +218,6 @@ async function createNewDraftClass(franchise,draftTableArrayId) {
     FranchiseUtils.EXIT_PROGRAM();
   }
 
-  await playerTable.readRecords();
-  await draftPlayerTable.readRecords();
-  await draftPlayerArray.readRecords();
 
   console.log("Enter the YearsPro value of the players you want to convert into Draft Class players.")
   console.log("For example, if you wanted to convert rookies into Draft Class players, you'd enter 0. Or, for second year players, you'd enter 1, etc.")
