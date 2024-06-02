@@ -2,9 +2,9 @@
 const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const PLAYER_TABLE = 1612938518;
-const gamePrompt = FranchiseUtils.YEARS.M24;
+const gameYear = FranchiseUtils.YEARS.M24;
 const autoUnempty = false;
-const franchise = FranchiseUtils.selectFranchiseFile(gamePrompt,autoUnempty);
+const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
 console.log("This program will will regenerate the player motivations to make them more dynamic and more realistic by using a formula that takes into account a variety of factors including overall rating, age and position. If you are using StartToday, it's recommended to run this tool during Staff Week. Otherwise this tool should only be ran during the regular season and only AFTER you've imported/generated your draft class. If you use the Dynamic Progression Tool in MFT, you should run this tool AFTER running progression. Please follow the prompts below and read carefully!\n\n")
 
@@ -265,13 +265,7 @@ function sortDictionaryByValueDescending(inputArray) {
 
 franchise.on('ready', async function () {
 
-    const gameYear = franchise.schema.meta.gameYear // Get the game year of the source file
-    if (gameYear !== 24) {
-      console.log("******************************************************************************************")
-      console.log("ERROR! Target franchise isn't a Madden 24 Franchise File.");
-      console.log("******************************************************************************************")
-      FranchiseUtils.EXIT_PROGRAM();
-    }
+    FranchiseUtils.validateGameYears(franchise,gameYear);
     
     try {
       var excludeSchemeFit = false;

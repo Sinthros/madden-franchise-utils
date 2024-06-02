@@ -9,15 +9,16 @@ const COLUMNS_TO_ITERATE = [
 
 const DEFAULT_VALUE = 50;
 
-
 console.log("This program will set playcalling/aggressiveness columns for coaches to 50 if they're currently set to 0.");
-const gameYear = 24;
+const gameYear = FranchiseUtils.YEARS.M24;
 const autoUnempty = false;
 
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
 
 
 franchise.on('ready', async function () {
+
+  FranchiseUtils.validateGameYears(franchise,gameYear);
 
   const coachTable = franchise.getTableByUniqueId(tables.coachTable);
   await coachTable.readRecords();

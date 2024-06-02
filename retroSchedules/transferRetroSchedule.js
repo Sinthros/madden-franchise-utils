@@ -108,11 +108,8 @@ franchise.on('ready', async function () {
   await seasonInfoTable.readRecords();
   const currentStage = seasonInfoTable.records[0]['CurrentStage'];
 
-  const gameYear = franchise.schema.meta.gameYear // Get the game year of the source file
-  if (gameYear !== 24) {
-    console.log("Selected file is not a Madden 24 Franchise File.")
-    FranchiseUtils.EXIT_PROGRAM();
-  }
+  FranchiseUtils.validateGameYears(franchise,gameYear);
+  
   if (currentStage !== 'PreSeason') {
     console.log("Selected file is not in the PreSeason. Only Franchise Files in the PreSeason can have schedules inserted.")
     FranchiseUtils.EXIT_PROGRAM();

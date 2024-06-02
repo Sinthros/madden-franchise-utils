@@ -478,7 +478,7 @@ async function transferSchedule(sourceFranchise,targetFranchise,mergedTableMappi
 
   const sourceGameYear = sourceFranchise.schema.meta.gameYear // Get the game year of the source file
   const targetGameYear = targetFranchise.schema.meta.gameYear // Get the game year of the target file
-  const is22To24 = sourceGameYear === 22 && targetGameYear === 24;
+  const is22To24 = sourceGameYear === FranchiseUtils.YEARS.M22 && targetGameYear === FranchiseUtils.YEARS.M24;
 
   const TOTAL_GAMES = countTargetRowsWithSeasonWeekType(seasonGameTable);
   const SOURCE_TOTAL_GAMES = countSourceRowsWithSeasonWeekType(sourceSeasonGameTable);
