@@ -8,7 +8,7 @@ const presentationIdLookup = JSON.parse(fs.readFileSync('presentationIdLookup.js
 // Print tool header message
 console.log("This program will generate Presentation IDs/Commentary IDs/Asset Names for Draft Class players. This is only for Madden 24 Franchise Files.")
 
-const gameYear = '24';
+const gameYear = FranchiseUtils.YEARS.M24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 function removeSuffixes(name) {
@@ -16,6 +16,9 @@ function removeSuffixes(name) {
 }
 
 franchise.on('ready', async function () {
+
+    FranchiseUtils.validateGameYears(franchise,gameYear);
+    
     const playerTable = franchise.getTableByUniqueId(tables.playerTable);
     await playerTable.readRecords();
 	
