@@ -17,7 +17,7 @@ const gameYear = FranchiseUtils.getGameYear(validGames);
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
 // If the game has the dynamic progression tool, inform the user and ask if they want to continue
-if(gameYear !== '23')
+if(gameYear !== FranchiseUtils.YEARS.M23)
 {
 	console.log("\nWARNING: If you have used the progression tool on this franchise, modifying the presentation ID of players who have a progression path can cause their path to get rerolled.")
 
