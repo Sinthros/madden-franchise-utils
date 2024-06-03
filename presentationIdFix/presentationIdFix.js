@@ -45,7 +45,7 @@ franchise.on('ready', async function () {
 	const customMeshFingerprints = ['WiiMaster2015', 'WiiMaster2017'];
 
 	// This logic is only for Madden 24
-	if(gameYear === '24')
+	if(gameYear === FranchiseUtils.YEARS.M24)
 	{
 		// Get the fingerprint from the franchise file if it's in the list, then set the bool to true and read the override file
 		fingerprintTable = franchise.getTableByUniqueId(tables.franchiseDebugModuleTable);
@@ -139,7 +139,7 @@ franchise.on('ready', async function () {
     }
 	
 	// If this is a game with the dynamic progression tool and we've modified non-rookie players, inform the user how many have been updated
-	if(gameYear !== '23' && modifiedNonRookieCount > 0)
+	if(gameYear !== FranchiseUtils.YEARS.M23 && modifiedNonRookieCount > 0)
 	{
 		console.log(`\n${modifiedNonRookieCount} non-rookie players updated. These players' progression paths will be rerolled next time you run the progression tool.`);
 	}
