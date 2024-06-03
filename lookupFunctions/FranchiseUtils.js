@@ -212,7 +212,7 @@ function getGameYear(validGameYears) {
         }
     }
 
-    return gameYear;
+    return parseInt(gameYear);
 };
 
 // Function to calculate the Best Overall and Best Archetype for a player
