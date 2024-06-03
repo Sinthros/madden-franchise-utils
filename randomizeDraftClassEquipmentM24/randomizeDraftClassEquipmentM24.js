@@ -3,6 +3,8 @@ const fs = require('fs');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
+
+// Required lookups
 const allAssetNames = Object.keys(JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8')));
 
 // Print tool header message
@@ -13,14 +15,12 @@ const gameYear = FranchiseUtils.YEARS.M24;
 const autoUnempty = true;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear, autoUnempty);
 
+// List of relevant equipment columns in the player table
 const equipmentCols = ['PLYR_EYEPAINT', 'PlayerVisMoveType', 'PLYR_RIGHTARMSLEEVE', 'PLYR_QBSTYLE', 'PLYR_GRASSLEFTELBOW', 'PLYR_RIGHTTHIGH', 'PLYR_RIGHTSPAT', 'PLYR_RIGHTSHOE', 'PLYR_GRASSLEFTHAND', 'PLYR_GRASSRIGHTHAND', 'PLYR_GRASSRIGHTELBOW', 'PLYR_GRASSLEFTWRIST', 'PLYR_GRASSRIGHTWRIST', 'PLYR_VISOR', 'PLYR_HELMET', 'PLYR_FACEMASK', 'PLYR_JERSEYSLEEVE', 'PLYR_JERSEY_STATE', 'PLYR_LEFTSPAT', 'PLYR_LEFTSHOE', 'PLYR_LEFTARMSLEEVE', 'PLYR_MOUTHPIECE', 'PLYR_TOWEL', 'PLYR_STANCE', 'PLYR_SOCK_HEIGHT', 'RunningStyleRating', 'PLYR_FLAKJACKET', 'PLYR_BACKPLATE'];
 
 // This function copies all data in the equipment columns of the source row in the player table to the target row in the player table
-async function copyEquipment(targetRow, sourceRow)
+async function copyEquipment(targetRow, sourceRow, playerTable)
 {
-	const playerTable = franchise.getTableByUniqueId(tables.playerTable);
-	await playerTable.readRecords();
-	
 	for (let i = 0; i < equipmentCols.length; i++)
 	{
 		const sourceValue = playerTable.records[sourceRow][equipmentCols[i]];		
@@ -29,11 +29,8 @@ async function copyEquipment(targetRow, sourceRow)
 };
 
 // This function, given a list of player rows and a position, returns the number of players in the list that have the given position
-async function countAtPosition(playerList, position)
+async function countAtPosition(playerList, position, playerTable)
 {
-	const playerTable = franchise.getTableByUniqueId(tables.playerTable);
-	await playerTable.readRecords();
-	
 	let numAtPosition = 0;
 	
 	for (let i = 0; i < playerList.length; i++)
@@ -48,11 +45,8 @@ async function countAtPosition(playerList, position)
 };
 
 // This function, given a list of player rows and a position, returns a list of player rows that have the given position
-async function filterByPosition(playerList, position)
+async function filterByPosition(playerList, position, playerTable)
 {
-	const playerTable = franchise.getTableByUniqueId(tables.playerTable);
-	await playerTable.readRecords();
-	
 	let playersAtPosition = [];
 	
 	for (let i = 0; i < playerList.length; i++)
@@ -66,23 +60,9 @@ async function filterByPosition(playerList, position)
 	return playersAtPosition;
 };
 
-
-franchise.on('ready', async function () {
-
-	FranchiseUtils.validateGameYears(franchise,gameYear);
-	
-    // Get required tables
-	const playerTable = franchise.getTableByUniqueId(tables.playerTable);
-	const visualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable);
-
-	// Read required tables
-	await FranchiseUtils.readTableRecords([playerTable, visualsTable]);
-    
-	// Arrays to represent the draft class player rows, rows of real NFL players, and rows of other active players
-	let draftRows = [];
-	let nflRows = [];
-	let miscRows = [];
-	
+// This function enumerates all players in the player table and sorts them into draft class players, NFL players, and other active players
+async function enumeratePlayers(playerTable, draftRows, nflRows, miscRows)
+{
 	// Types of players that are not relevant for our purposes and can be skipped
 	const invalidStatuses = ['Retired','Deleted','None','Created'];
 	
@@ -118,6 +98,27 @@ franchise.on('ready', async function () {
 			}
 		}
     }
+}
+
+
+franchise.on('ready', async function () {
+
+	FranchiseUtils.validateGameYears(franchise,gameYear);
+	
+    // Get required tables
+	const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+	const visualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable);
+
+	// Read required tables
+	await FranchiseUtils.readTableRecords([playerTable, visualsTable]);
+    
+	// Arrays to represent the draft class player rows, rows of real NFL players, and rows of other active players
+	let draftRows = [];
+	let nflRows = [];
+	let miscRows = [];
+	
+	// Enumerate all players in the player table and sort them into the appropriate arrays
+	await enumeratePlayers(playerTable, draftRows, nflRows, miscRows);
 	
 	// If there are no draft class players, we can't continue, so inform the user and exit
 	if (draftRows.length === 0)
@@ -127,11 +128,7 @@ franchise.on('ready', async function () {
 	}
 	
 	// Check if there are NFL players at all in the franchise file so we can know if we can use NFL players to copy from
-	let nflPlayersOnly = true;
-	if (nflRows.length === 0)
-	{
-		nflPlayersOnly = false;
-	}
+	let nflPlayersOnly = !(nflRows.length === 0);
 	
 	// If we can use NFL players
 	if (nflPlayersOnly)
@@ -143,30 +140,30 @@ franchise.on('ready', async function () {
 			const position = playerTable.records[draftRows[i]]['Position'];
 
 			// Check how many NFL players are at the player's position
-			const numNflAtPosition = await countAtPosition(nflRows, position);
+			const numNflAtPosition = await countAtPosition(nflRows, position, playerTable);
 
 			// If we have less than 5 NFL players at the position, we will use all active players at the position to copy from
 			if(numNflAtPosition < 5)
 			{
 				// Filter the list of active players by position
-				const playersAtPosition = await filterByPosition(miscRows, position);
+				const playersAtPosition = await filterByPosition(miscRows, position, playerTable);
 
 				// Randomly select a player from the filtered list to copy from
 				const randomAtPosition = playersAtPosition[FranchiseUtils.getRandomNumber(0, playersAtPosition.length - 1)];
 
 				// Copy the equipment from the selected player to the draft class player
-				await copyEquipment(draftRows[i], randomAtPosition);
+				await copyEquipment(draftRows[i], randomAtPosition, playerTable);
 			}
 			else // Otherwise, we can use exclusively NFL players at the position
 			{
 				// Filter the list of NFL players by position
-				const nflPlayersAtPosition = await filterByPosition(nflRows, position);
+				const nflPlayersAtPosition = await filterByPosition(nflRows, position, playerTable);
 
 				// Randomly select an NFL player from the filtered list to copy from
 				const randomNflAtPosition = nflPlayersAtPosition[FranchiseUtils.getRandomNumber(0, nflPlayersAtPosition.length - 1)];
 
 				// Copy the equipment from the selected NFL player to the draft class player
-				await copyEquipment(draftRows[i], randomNflAtPosition);
+				await copyEquipment(draftRows[i], randomNflAtPosition, playerTable);
 			}
 		}
 	}
@@ -179,13 +176,13 @@ franchise.on('ready', async function () {
 			const position = playerTable.records[draftRows[i]]['Position'];
 
 			// Filter the list of active players by position
-			const playersAtPosition = await filterByPosition(miscRows, position);
+			const playersAtPosition = await filterByPosition(miscRows, position, playerTable);
 
 			// Randomly select a player from the filtered list to copy from
 			const randomAtPosition = playersAtPosition[FranchiseUtils.getRandomNumber(0, playersAtPosition.length - 1)];
 
 			// Copy the equipment from the selected player to the draft class player
-			await copyEquipment(draftRows[i], randomAtPosition);
+			await copyEquipment(draftRows[i], randomAtPosition, playerTable);
 		}
 	}
 	
