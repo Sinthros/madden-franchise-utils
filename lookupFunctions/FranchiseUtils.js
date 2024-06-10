@@ -44,6 +44,42 @@ const SPECIAL_TEAM_POSITIONS = ['K','P'];
 const COACH_SKIN_TONES = ['SkinTone1', 'SkinTone2', 'SkinTone3', 'SkinTone4', 'SkinTone5', 'SkinTone6', 'SkinTone7'];
 const COACH_APPAREL = ['Facility1', 'Facility2', 'Practice1', 'Practice2', 'Practice3', 'Staff1', 'Staff2', 'Staff3', 'Staff4'];
 
+// Default FULL_CONTROL settings
+const USER_CONTROL_SETTINGS = [
+  {label: 'Trades and Free Agency', name: 'IsTradeAndFreeAgencyEnabled', value: true},
+  {label: 'Scout College Players', name: 'IsScoutCollegePlayersEnabled', value: true},
+  {label: 'League Advancement', name: 'IsManualAdvancementEnabled', value: true},
+  {label: 'Manage Practice Reps', name: 'IsManagePracticeRepsEnabled', value: true},
+  {label: 'Injury Management', name: 'IsInjuryManagementEnabled', value: true},
+  {label: 'Offseason FA Bidding', name: 'IsCPUSignOffseasonFAEnabled', value: true},
+  {label: 'Contract Negotiations', name: 'IsCPUReSignPlayersEnabled', value: true},
+  {label: 'Preseason Cut Days', name: 'IsCPUCutPlayersEnabled', value: true},
+  {label: 'Tutorial Pop-ups', name: 'IsTutorialPopupEnabled', value: false},
+  {label: 'Auto Progress Talents', name: 'IsCPUProgressTalentsEnabled', value: false},
+  {label: 'Auto Progress Players', name: 'IsCPUProgressPlayersEnabled', value: false},
+  {label: 'Fill Roster', name: 'IsCPUFillRosterEnabled', value: false},
+  {label: 'Manual Depth Chart', name: 'IsManualReorderDepthChartEnabled', value: true},
+  {label: 'Season Experience', name: 'SeasonExperience', value: 'FULL_CONTROL'},
+];
+
+// Default SIMPLE settings
+const CPU_CONTROL_SETTINGS = [
+  {label: 'Trades and Free Agency', name: 'IsTradeAndFreeAgencyEnabled', value: false},
+  {label: 'Scout College Players', name: 'IsScoutCollegePlayersEnabled', value: false},
+  {label: 'League Advancement', name: 'IsManualAdvancementEnabled', value: false},
+  {label: 'Manage Practice Reps', name: 'IsManagePracticeRepsEnabled', value: false},
+  {label: 'Injury Management', name: 'IsInjuryManagementEnabled', value: false},
+  {label: 'Offseason FA Bidding', name: 'IsCPUSignOffseasonFAEnabled', value: false},
+  {label: 'Contract Negotiations', name: 'IsCPUReSignPlayersEnabled', value: false},
+  {label: 'Preseason Cut Days', name: 'IsCPUCutPlayersEnabled', value: false},
+  {label: 'Tutorial Pop-ups', name: 'IsTutorialPopupEnabled', value: false},
+  {label: 'Auto Progress Talents', name: 'IsCPUProgressTalentsEnabled', value: true},
+  {label: 'Auto Progress Players', name: 'IsCPUProgressPlayersEnabled', value: true},
+  {label: 'Fill Roster', name: 'IsCPUFillRosterEnabled', value: true},
+  {label: 'Manual Depth Chart', name: 'IsManualReorderDepthChartEnabled', value: false},
+  {label: 'Season Experience', name: 'SeasonExperience', value: 'SIMPLE'},
+];
+
 
 /*******************************************************
  *                  GLOBAL FUNCTIONS                   *
@@ -736,6 +772,206 @@ async function fixPlayerTables(franchise) {
   console.log("Successfully merged all extra player tables into the main player table.");
 };
 
+async function takeControl(teamRow, franchise, controlLevel, controlSettings, setAsDefault) {
+  const franchiseUserTable = franchise.getTableByUniqueId(tables.franchiseUserTable);
+  const franchiseUsersArray = franchise.getTableByUniqueId(tables.franchiseUsersArray);
+  const teamTable = franchise.getTableByUniqueId(tables.teamTable);
+  const coachTable = franchise.getTableByUniqueId(tables.coachTable);
+  const ownerTable = franchise.getTableByUniqueId(tables.ownerTable);
+  const teamSettingTable = franchise.getTableByUniqueId(tables.teamSettingTable);
+  await readTableRecords([franchiseUserTable,franchiseUsersArray,teamTable,coachTable,ownerTable,teamSettingTable]);
+
+  const teamRecord = teamTable.records[teamRow];
+  const teamBinary = getBinaryReferenceData(teamTable.header.tableId, teamRow);
+
+  let franchiseOwnerBinary;
+  let franchiseBinary;
+
+  // Remove False Records
+  // Basically, remove records where they're unemptied in the franchise user table but not included in the associated array table
+  const currentRecords = franchiseUserTable.records.filter(record => !record.isEmpty);
+  const currentUsers = franchiseUsersArray.records[0].fieldsArray.filter(field => field.value !== ZERO_REF).map(field => field.referenceData.rowNumber);
+  currentRecords.forEach(record => {
+      if (currentUsers.includes(record.index)) return;
+      const fakeTeam = {
+          value: record.Team.value
+      }
+      removeControl(fakeTeam, tables);
+  });
+
+  let currTeamRecord = franchiseUserTable.records.find(record => record.Team == teamBinary);
+  let row = null;
+  
+  if (currTeamRecord == undefined) {
+      row = franchiseUserTable.records.filter(record => record.isEmpty)[0].index;
+      //console.log(row)
+      franchiseUserTable.records[row].TeamSetting = teamRecord.TeamSettingRef;
+      franchiseUserTable.records[row].Team = teamBinary;
+      let userBinary = null;
+
+      // Check if the current team has a Head Coach
+      const coachRecord = coachTable.records.find(record => 
+          record.Position === 'HeadCoach' &&
+          record.ContractStatus === 'Signed' &&
+          !record.isEmpty &&
+          record.TeamIndex === teamRecord.TeamIndex
+      );
+      
+      if (coachRecord) {
+          userBinary = getBinaryReferenceData(coachTable.header.tableId,coachRecord.index);
+          coachRecord.IsUserControlled = true;
+      } else {
+          // Else, get the current teams default Owner
+          const defaultOwnerRow = teamRecord.getFieldByKey('DefaultOwner').referenceData.rowNumber;
+          userBinary = getBinaryReferenceData(ownerTable.header.tableId,defaultOwnerRow);
+          ownerTable.records[defaultOwnerRow].IsUserControlled = true;
+      }
+
+      franchiseUserTable.records[row].UserEntity = userBinary;
+      franchiseUserTable.records[row].AdminLevel = controlLevel == 'None' ? 'None' : 'Commissioner';
+
+      teamRecord.UserCharacter = userBinary;
+
+      const ownerRecord = franchiseUserTable.records.find(record => record.AdminLevel === 'Owner');
+
+      // We'll need this binary when setting up the Request tables
+      franchiseOwnerBinary = getBinaryReferenceData(franchiseUserTable.header.tableId, ownerRecord.index);
+      
+      franchiseUserTable.records[row].UserIdLower = ownerRecord.UserIdLower;
+      franchiseUserTable.records[row].UserIdUpper = ownerRecord.UserIdLower + row;
+      franchiseUserTable.records[row].DefaultRequestActionTimeout = ownerRecord.DefaultRequestActionTimeout;
+      
+      franchiseUserTable.records[row].PersonalityTeamPlayerRating = 50;
+      franchiseUserTable.records[row].PersonalityLeaderRating = 50;
+      franchiseUserTable.records[row].PersonalityIntenseRating = 50;
+      franchiseUserTable.records[row].PersonalityEntertainerRating = 50;
+      franchiseUserTable.records[row].ReadyToAdvance = false;
+      
+      franchiseUserTable.records[row].NonRepeatableArcsTriggeredArray = ZERO_REF;
+      franchiseUserTable.records[row].DifficultyLevelPlayerWeeklyGoalsArray = ZERO_REF;
+      franchiseUserTable.records[row].FirstTimeAchievement = ZERO_REF;
+        
+
+      // Franchise Users Array
+      franchiseBinary = getBinaryReferenceData(franchiseUserTable.header.tableId,row);
+      const currentUsers = franchiseUsersArray.records[0].fieldsArray.filter(field => field.value != ZERO_REF);
+      franchiseUsersArray.records[0].fieldsArray.forEach((field, index) => {
+          if (index < currentUsers.length) {
+              field.value = currentUsers[index].value;
+          } else if (index == currentUsers.length) {
+              field.value = franchiseBinary;
+          } else {
+              field.value = ZERO_REF;
+          }
+      });
+  } else {
+      row = currTeamRecord.index;
+  } 
+  
+  // Set As Default Owner
+  if (setAsDefault) {
+    // Find current owner and set a level down
+    const currentOwner = franchiseUserTable.records.find(record => record.AdminLevel === 'Owner');
+    if (currentOwner) {
+      currentOwner.AdminLevel = 'Commissioner';
+    }
+    // Set new record to be owner of franchise file
+    franchiseUserTable.records[row].AdminLevel = 'Owner';
+  }
+
+  // Team Control Settings
+  const currRecord = teamSettingTable.records[franchiseUserTable.records[row].getFieldByKey('TeamSetting').referenceData.rowNumber];    
+
+  currRecord.IsTutorialPopupEnabled = controlSettings.find(setting => setting.name === 'IsTutorialPopupEnabled').value;
+  currRecord.IsTradeAndFreeAgencyEnabled = controlSettings.find(setting => setting.name === 'IsTradeAndFreeAgencyEnabled').value;
+  currRecord.IsScoutCollegePlayersEnabled = controlSettings.find(setting => setting.name === 'IsScoutCollegePlayersEnabled').value;
+  currRecord.IsManualAdvancementEnabled = controlSettings.find(setting => setting.name === 'IsManualAdvancementEnabled').value;
+  currRecord.IsManagePracticeRepsEnabled = controlSettings.find(setting => setting.name === 'IsManagePracticeRepsEnabled').value;
+  currRecord.IsInjuryManagementEnabled = controlSettings.find(setting => setting.name === 'IsInjuryManagementEnabled').value;
+  currRecord.IsCPUSignOffseasonFAEnabled = controlSettings.find(setting => setting.name === 'IsCPUSignOffseasonFAEnabled').value;
+  currRecord.IsCPUReSignPlayersEnabled = controlSettings.find(setting => setting.name === 'IsCPUReSignPlayersEnabled').value;
+  currRecord.IsCPUProgressTalentsEnabled = controlSettings.find(setting => setting.name === 'IsCPUProgressTalentsEnabled').value;
+  currRecord.IsCPUProgressPlayersEnabled = controlSettings.find(setting => setting.name === 'IsCPUProgressPlayersEnabled').value;
+  currRecord.IsCPUFillRosterEnabled = controlSettings.find(setting => setting.name === 'IsCPUFillRosterEnabled').value;
+  currRecord.IsCPUCutPlayersEnabled = controlSettings.find(setting => setting.name === 'IsCPUCutPlayersEnabled').value;
+  currRecord.IsManualReorderDepthChartEnabled = controlSettings.find(setting => setting.name === 'IsManualReorderDepthChartEnabled').value;
+  currRecord.SeasonExperience = controlSettings.find(setting => setting.name === 'SeasonExperience').value;
+  
+  
+}
+
+async function removeControl(teamRow, franchise) {
+  const franchiseUserTable = franchise.getTableByUniqueId(tables.franchiseUserTable);
+  const franchiseUsersArray = franchise.getTableByUniqueId(tables.franchiseUsersArray);
+  const teamTable = franchise.getTableByUniqueId(tables.teamTable);
+  const teamSettingTable = franchise.getTableByUniqueId(tables.teamSettingTable);
+  await readTableRecords([franchiseUserTable,franchiseUsersArray,teamTable,teamSettingTable]);
+  
+  const teamRecord = teamTable.records[teamRow];
+  const teamBinary = getBinaryReferenceData(teamTable.header.tableId, teamRow);
+
+  const currTeamRecord = franchiseUserTable.records.find(record => record.Team == teamBinary);
+  let row = currTeamRecord.index;
+  const franchiseBinary = getBinaryReferenceData(franchiseUserTable.header.tableId, row);
+
+  // Our row could either be from the Coach table or Owner table. We'll read the table dynamically to be safe
+  const coachOwnerRow = currTeamRecord.getFieldByKey('UserEntity').referenceData.rowNumber;
+  const userBinary = currTeamRecord.UserEntity;
+  const coachOwnerTableId = await bin2Dec(userBinary.slice(0,15));
+
+  // Team Control Settings
+  const currRecord = teamSettingTable.records[currTeamRecord.getFieldByKey('TeamSetting').referenceData.rowNumber];    
+
+  currRecord.IsTutorialPopupEnabled = false;
+  currRecord.IsTradeAndFreeAgencyEnabled = false;
+  currRecord.IsScoutCollegePlayersEnabled = false;
+  currRecord.IsManualAdvancementEnabled = false;
+  currRecord.IsManagePracticeRepsEnabled = false;
+  currRecord.IsInjuryManagementEnabled = false;
+  currRecord.IsCPUSignOffseasonFAEnabled = false;
+  currRecord.IsCPUReSignPlayersEnabled = false;
+  currRecord.IsCPUProgressTalentsEnabled = true;
+  currRecord.IsCPUProgressPlayersEnabled = true;
+  currRecord.IsCPUFillRosterEnabled = true;
+  currRecord.IsCPUCutPlayersEnabled = false;
+  currRecord.IsManualReorderDepthChartEnabled = false;
+  currRecord.SeasonExperience = 'SIMPLE';
+
+  // Remove Control         
+  currTeamRecord.TeamSetting = ZERO_REF;
+  currTeamRecord.Team = ZERO_REF;
+  currTeamRecord.StorySideActivityContext = ZERO_REF;
+  currTeamRecord.RewardEntries = ZERO_REF;
+  currTeamRecord.UserEntity = ZERO_REF;
+  currTeamRecord.BreakingNewsQueue = ZERO_REF;
+  currTeamRecord.CrossArcDataArray = ZERO_REF;
+  currTeamRecord.ObjectiveProgressArray = ZERO_REF;
+  currTeamRecord.CurrentCompletedWeeklyGoalsArray = ZERO_REF;
+  currTeamRecord.LastWeekCompletedWeeklyGoalsArray = ZERO_REF;
+  currTeamRecord.PlayerSpecificDrill = ZERO_REF;
+  currTeamRecord.DrillProgress = ZERO_REF;
+  
+  currTeamRecord.NonRepeatableArcsTriggeredArray = ZERO_REF;
+  currTeamRecord.DifficultyLevelPlayerWeeklyGoalsArray = ZERO_REF;
+  currTeamRecord.FirstTimeAchievement = ZERO_REF;
+  
+  currTeamRecord.PersonalityTeamPlayerRating = 0;
+  currTeamRecord.PersonalityLeaderRating = 0;
+  currTeamRecord.PersonalityIntenseRating = 0;
+  currTeamRecord.PersonalityEntertainerRating = 0;  
+
+  currTeamRecord.empty();
+
+  // Set IsUserControlled = false in the Coach table or Owner table, depending on what the user is
+  const coachOwnerTable = franchise.getTableById(coachOwnerTableId);
+  await coachOwnerTable.readRecords();
+  coachOwnerTable.records[coachOwnerRow].IsUserControlled = false;
+
+  teamRecord.UserCharacter = ZERO_REF;
+  await removeFromTable(franchiseUsersArray, franchiseBinary);
+
+}
+
 /*
 
   This function validates the game year of the franchise file against the valid game years for your program.
@@ -839,6 +1075,8 @@ module.exports = {
     recalculateRosterSizes,
     hasMultiplePlayerTables,
     fixPlayerTables,
+    takeControl,
+    removeControl,
 
     getYesOrNo, // UTILITY FUNCTIONS
     shuffleArray,
@@ -850,6 +1088,7 @@ module.exports = {
     EXIT_PROGRAM,
 
     ZERO_REF, // CONST VARIABLES
+    YEARS,
     BASE_FILE_INIT_KWD,
     FTC_FILE_INIT_KWD,
     YES_KWD,
@@ -863,5 +1102,7 @@ module.exports = {
     SPECIAL_TEAM_POSITIONS,
     COACH_SKIN_TONES,
     COACH_APPAREL,
-    YEARS
+
+    USER_CONTROL_SETTINGS, // VARIABLES FOR USER/CPU CONTROL
+    CPU_CONTROL_SETTINGS,
   };
