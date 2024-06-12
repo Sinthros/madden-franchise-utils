@@ -56,7 +56,7 @@ let gamePrompt;
 while (!VALID_GAME_YEARS.includes(gamePrompt)) {
   console.log("Select the Madden version of your SOURCE Franchise file. Valid inputs are 22 and 24.")
   console.log("Only enter 24 if you're purposely trying to transfer a Madden 24 Franchise file's data into another Madden 24 file.")
-  gamePrompt = prompt()
+  gamePrompt = parseInt(prompt())
 
   if (VALID_GAME_YEARS.includes(gamePrompt)) {
     break;
@@ -1718,7 +1718,7 @@ async function regenerateAgilityRatings(targetFranchise) {
 sourceFranchise.on('ready', async function () {
   targetFranchise.on('ready', async function () {
 
-    if (FranchiseUtils.hasMultiplePlayerTables(sourceFranchise)) {
+    if (await FranchiseUtils.hasMultiplePlayerTables(sourceFranchise)) {
       await FranchiseUtils.fixPlayerTables(sourceFranchise);
     }
 
