@@ -254,7 +254,7 @@ async function processGame(game, seasonGameTable, weekStartOccurrences,numGamesH
 
 async function convertSchedule(sourceScheduleJson, seasonGameTable, TOTAL_GAMES, targetFranchise) {
 
-  console.log("Now working on inserting the schedule from your selected year over to your target Madden 24 Franchise file...");
+  console.log("Now working on inserting this schedule into your target Madden 24 Franchise file...");
 
   // Separate the assignment from the promise
   const [
