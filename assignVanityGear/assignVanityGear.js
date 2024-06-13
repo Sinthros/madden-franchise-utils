@@ -3,6 +3,7 @@ const fs = require('fs');
 const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
+const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
 const vanityGearLookup = JSON.parse(fs.readFileSync('./lookupFiles/vanityGearLookup.json', 'utf8'));
 
 // Print tool header message
@@ -15,10 +16,10 @@ const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 // Convert a row reference to a row number
 async function getRowFromRef(ref)
 {
-	// If the ref is all zeroes, we can save time and just return 0
+	// If the ref is all zeroes, we can save time and just return -1
 	if(ref === FranchiseUtils.ZERO_REF)
 	{
-		return 0;
+		return -1;
 	}
 
 	// Get the last 15 digits of the ref, which is the row number in binary, then convert it to decimal
@@ -125,12 +126,22 @@ franchise.on('ready', async function () {
         }
 		
 		// Figure out which row in the character visuals table corresponds to this player
-		const playerVisualsRow = await getRowFromRef(playerTable.records[i]['CharacterVisuals']);
+		let playerVisualsRow = await getRowFromRef(playerTable.records[i]['CharacterVisuals']);
 
-		// If this player does not have CharacterVisuals assigned for some reason, skip them
-		if(playerVisualsRow === 0)
+		// If this player does not have CharacterVisuals assigned for some reason, try to generate it
+		if(playerVisualsRow === -1)
 		{
-			continue;
+			// Attempt to generate the visuals for this player
+			await characterVisualFunctions.regeneratePlayerVisual(franchise, playerTable, characterVisualsTable, i, true);
+
+			// Try to get their visuals row number again
+			playerVisualsRow = await getRowFromRef(playerTable.records[i]['CharacterVisuals']);
+			
+			// If it's still a zero ref for some reason, we have to skip this player
+			if(playerVisualsRow === -1)
+			{
+				continue;
+			}
 		}
 
 
