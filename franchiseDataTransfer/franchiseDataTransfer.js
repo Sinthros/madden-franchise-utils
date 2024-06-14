@@ -1733,12 +1733,12 @@ sourceFranchise.on('ready', async function () {
  */
     const sourceGameYear = sourceFranchise.schema.meta.gameYear // Get the game year of the source file
     const targetGameYear = targetFranchise.schema.meta.gameYear // Get the game year of the target file
-    if (targetGameYear !== 24) {
+    if (targetGameYear !== FranchiseUtils.YEARS.M24) {
       console.log("Target franchise file isn't a Madden 24 Franchise File.");
       FranchiseUtils.EXIT_PROGRAM();
     }
 
-    if (sourceGameYear !== 22 && sourceGameYear !== 24) {
+    if (sourceGameYear !== FranchiseUtils.YEARS.M22 && sourceGameYear !== FranchiseUtils.YEARS.M24) {
       console.log("Source franchise file isn't a Madden 22 or Madden 24 Franchise File.");
       FranchiseUtils.EXIT_PROGRAM();
     }
