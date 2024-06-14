@@ -179,6 +179,14 @@ async function selectFranchiseFileAsync(gameYear,isAutoUnemptyEnabled = false, i
     }
 };
 
+/*
+
+  franchise: Your Franchise object.
+
+  customMessage: Optional. If provided, this will replace the default message. This is typically not needed.
+
+*/
+
 async function saveFranchiseFile(franchise, customMessage = null) {
     while (true) {
         const message = customMessage || "Would you like to save your changes? Enter yes to save your changes, or no to quit without saving.";
@@ -310,7 +318,7 @@ function calculateBestOverall(player) {
     return { newOverall, newArchetype };
 };
 
-async function emptyHistoryTables(franchise, tables) {
+async function emptyHistoryTables(franchise) {
     const historyEntryArray = franchise.getTableByUniqueId(tables.historyEntryArray);
     const historyEntry = franchise.getTableByUniqueId(tables.historyEntry);
     const transactionHistoryArray = franchise.getTableByUniqueId(tables.transactionHistoryArray);
@@ -378,10 +386,13 @@ async function emptyHistoryTables(franchise, tables) {
     }*/
 };
 
-// Empties the Character Visuals table entirely
-// franchise: Your franchise object
-// tables: The tables object from FranchiseTableId
-async function emptyCharacterVisualsTable(franchise, tables) {
+/*
+  Empties the Character Visuals table entirely
+
+  franchise: Your Franchise object.
+*/
+
+async function emptyCharacterVisualsTable(franchise) {
     const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
     await characterVisuals.readRecords();
   
@@ -397,7 +408,7 @@ async function emptyCharacterVisualsTable(franchise, tables) {
 // Regenerates all marketing tables based on top player personalities in the file
 // franchise: Your franchise object
 // tables: The tables object from FranchiseTableId
-async function regenerateMarketingTables(franchise, tables) {
+async function regenerateMarketingTables(franchise) {
     const playerTable = franchise.getTableByUniqueId(tables.playerTable);
     const teamTable = franchise.getTableByUniqueId(tables.teamTable);
     const marketingTable = franchise.getTableByUniqueId(tables.marketedPlayersArrayTable);
@@ -496,7 +507,7 @@ async function regenerateMarketingTables(franchise, tables) {
 };
 
 // Empties the acquisition array tables
-async function emptyAcquisitionTables(franchise,tables) {
+async function emptyAcquisitionTables(franchise) {
     const playerAcquisitionEvaluation = franchise.getTableByUniqueId(tables.playerAcquisitionEvaluationTable);
     const playerAcquisitionEvaluationArray = franchise.getTableByUniqueId(tables.playerAcquisitionEvaluationArrayTable);
   
@@ -540,7 +551,7 @@ async function emptyAcquisitionTables(franchise,tables) {
 };
   
 // This function empties the resign table/resign array table
-async function emptyResignTable(franchise,tables) {
+async function emptyResignTable(franchise) {
     const resignTable = franchise.getTableByUniqueId(tables.reSignTable);
     const resignArrayTable = franchise.getTableByUniqueId(tables.reSignArrayTable)
     await resignTable.readRecords();
@@ -790,17 +801,17 @@ async function takeControl(teamRow, franchise, controlLevel, controlSettings, se
 
   // Remove False Records
   // Basically, remove records where they're unemptied in the franchise user table but not included in the associated array table
-  const currentRecords = franchiseUserTable.records.filter(record => !record.isEmpty);
-  const currentUsers = franchiseUsersArray.records[0].fieldsArray.filter(field => field.value !== ZERO_REF).map(field => field.referenceData.rowNumber);
-  currentRecords.forEach(record => {
-      if (currentUsers.includes(record.index)) return;
-      const fakeTeam = {
-          value: record.Team.value
-      }
-      removeControl(fakeTeam, tables);
-  });
+  //const currentRecords = franchiseUserTable.records.filter(record => !record.isEmpty);
+  //const currentUsers = franchiseUsersArray.records[0].fieldsArray.filter(field => field.value !== ZERO_REF).map(field => field.referenceData.rowNumber);
+  //currentRecords.forEach(record => {
+  //    if (currentUsers.includes(record.index)) return;
+  //    const fakeTeam = {
+  //       value: record.Team.value
+  //    }
+  //    removeControl(fakeTeam, franchise);
+  //});
 
-  let currTeamRecord = franchiseUserTable.records.find(record => record.Team == teamBinary);
+  let currTeamRecord = franchiseUserTable.records.find(record => record.Team === teamBinary);
   let row = null;
   
   if (currTeamRecord == undefined) {
@@ -823,7 +834,7 @@ async function takeControl(teamRow, franchise, controlLevel, controlSettings, se
           coachRecord.IsUserControlled = true;
       } else {
           // Else, get the current teams default Owner
-          const defaultOwnerRow = teamRecord.getFieldByKey('DefaultOwner').referenceData.rowNumber;
+          const defaultOwnerRow = teamRecord.fields.DefaultOwner.referenceData.rowNumber;
           userBinary = getBinaryReferenceData(ownerTable.header.tableId,defaultOwnerRow);
           ownerTable.records[defaultOwnerRow].IsUserControlled = true;
       }
@@ -881,7 +892,7 @@ async function takeControl(teamRow, franchise, controlLevel, controlSettings, se
   }
 
   // Team Control Settings
-  const currRecord = teamSettingTable.records[franchiseUserTable.records[row].getFieldByKey('TeamSetting').referenceData.rowNumber];    
+  const currRecord = teamSettingTable.records[franchiseUserTable.records[row].fields.TeamSetting.referenceData.rowNumber];    
 
   currRecord.IsTutorialPopupEnabled = controlSettings.find(setting => setting.name === 'IsTutorialPopupEnabled').value;
   currRecord.IsTradeAndFreeAgencyEnabled = controlSettings.find(setting => setting.name === 'IsTradeAndFreeAgencyEnabled').value;
@@ -912,16 +923,21 @@ async function removeControl(teamRow, franchise) {
   const teamBinary = getBinaryReferenceData(teamTable.header.tableId, teamRow);
 
   const currTeamRecord = franchiseUserTable.records.find(record => record.Team == teamBinary);
+
+  if (!currTeamRecord) {
+    return;
+  }
+  
   let row = currTeamRecord.index;
   const franchiseBinary = getBinaryReferenceData(franchiseUserTable.header.tableId, row);
 
   // Our row could either be from the Coach table or Owner table. We'll read the table dynamically to be safe
-  const coachOwnerRow = currTeamRecord.getFieldByKey('UserEntity').referenceData.rowNumber;
+  const coachOwnerRow = currTeamRecord.fields.UserEntity.referenceData.rowNumber;
   const userBinary = currTeamRecord.UserEntity;
   const coachOwnerTableId = await bin2Dec(userBinary.slice(0,15));
 
   // Team Control Settings
-  const currRecord = teamSettingTable.records[currTeamRecord.getFieldByKey('TeamSetting').referenceData.rowNumber];    
+  const currRecord = teamSettingTable.records[currTeamRecord.fields.TeamSetting.referenceData.rowNumber];    
 
   currRecord.IsTutorialPopupEnabled = false;
   currRecord.IsTradeAndFreeAgencyEnabled = false;

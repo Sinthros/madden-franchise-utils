@@ -1069,8 +1069,8 @@ async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreCo
   switch (currentTableName) {
     case 'PlayerReSignNegotiation':
       // We want to empty the resign tables for both franchises, and then we'll regenerate it after
-      await FranchiseUtils.emptyResignTable(sourceFranchise, tables);
-      await FranchiseUtils.emptyResignTable(targetFranchise, tables);
+      await FranchiseUtils.emptyResignTable(sourceFranchise);
+      await FranchiseUtils.emptyResignTable(targetFranchise);
       break;
     case 'Player':
       await setExpiredToSigned(currentTable);
@@ -1827,8 +1827,8 @@ sourceFranchise.on('ready', async function () {
         await adjustCoachTalents(targetFranchise); // Function to empty coach talents and reassign them
       }
       await deleteExcessFreeAgents(targetFranchise); // Only keep the top 3500 players
-      await FranchiseUtils.emptyHistoryTables(targetFranchise, tables); // Function to empty history tables (Avoid crashing)
-      await FranchiseUtils.emptyAcquisitionTables(targetFranchise,tables);
+      await FranchiseUtils.emptyHistoryTables(targetFranchise); // Function to empty history tables (Avoid crashing)
+      await FranchiseUtils.emptyAcquisitionTables(targetFranchise);
 
       if (is22To24) {
         const validOptions = ['YES', 'NO'];
@@ -1874,11 +1874,11 @@ sourceFranchise.on('ready', async function () {
       await adjustPlayerIds(targetFranchise, 'LastName', 'PLYR_COMMENT', commentaryLookup);
       await fixPlayerTableRow(targetFranchise);
       await emptyStoryTable(targetFranchise);
-      await FranchiseUtils.regenerateMarketingTables(targetFranchise,tables);
+      await FranchiseUtils.regenerateMarketingTables(targetFranchise);
 
       if (targetGameYear >= FranchiseUtils.YEARS.M24) { // Character Visuals began being used in Madden 24
         console.log("Regenerating all Character Visuals for players/coaches...");
-        await FranchiseUtils.emptyCharacterVisualsTable(targetFranchise, tables); // Empty all character visuals and then update them for everyone
+        await FranchiseUtils.emptyCharacterVisualsTable(targetFranchise); // Empty all character visuals and then update them for everyone
         await characterVisualFunctions.updateAllCharacterVisuals(targetFranchise);
       }
 
