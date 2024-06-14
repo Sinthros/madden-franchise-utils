@@ -1876,7 +1876,7 @@ sourceFranchise.on('ready', async function () {
       await emptyStoryTable(targetFranchise);
       await FranchiseUtils.regenerateMarketingTables(targetFranchise,tables);
 
-      if (targetGameYear >= 24) {
+      if (targetGameYear >= FranchiseUtils.YEARS.M24) { // Character Visuals began being used in Madden 24
         console.log("Regenerating all Character Visuals for players/coaches...");
         await FranchiseUtils.emptyCharacterVisualsTable(targetFranchise, tables); // Empty all character visuals and then update them for everyone
         await characterVisualFunctions.updateAllCharacterVisuals(targetFranchise);
