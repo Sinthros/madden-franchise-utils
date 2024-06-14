@@ -179,9 +179,10 @@ async function selectFranchiseFileAsync(gameYear,isAutoUnemptyEnabled = false, i
     }
 };
 
-async function saveFranchiseFile(franchise) {
+async function saveFranchiseFile(franchise, customMessage = null) {
     while (true) {
-        console.log("Would you like to save your changes? Enter yes to save your changes, or no to quit without saving.");
+        const message = customMessage || "Would you like to save your changes? Enter yes to save your changes, or no to quit without saving.";
+        console.log(message);
         const finalPrompt = prompt().trim();
     
         if (finalPrompt.toUpperCase() === 'YES') {
