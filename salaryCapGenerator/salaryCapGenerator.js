@@ -43,7 +43,7 @@ franchise.on('ready', async function () {
   }
 
   // Program complete, so print success message, save the franchise file, and exit the program
-  console.log(" The yearly salary cap increases have been updated successfully.");
+  console.log("Successfully generated random salary cap increases.");
   await FranchiseUtils.saveFranchiseFile(franchise);
   FranchiseUtils.EXIT_PROGRAM();
 });
