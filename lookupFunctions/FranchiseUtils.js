@@ -88,69 +88,50 @@ const CPU_CONTROL_SETTINGS = [
  *   be placed in this file.                           *
  *******************************************************/
 
-function selectFranchiseFile(gameYear,isAutoUnemptyEnabled = false, isFtcFile = false) {
+function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile = false) {
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
   const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
-  let default_path = documentsDir; // Set to default dir first
-  let franchise;
-  let filePrefix;
-  if (isFtcFile) {
-    filePrefix = FTC_FILE_INIT_KWD;
-  }
-  else {
-    filePrefix = BASE_FILE_INIT_KWD;
-  }
+  const filePrefix = isFtcFile ? FTC_FILE_INIT_KWD : BASE_FILE_INIT_KWD;
   
+  let defaultPath;
+
   if (fs.existsSync(documentsDir)) {
-      default_path = documentsDir;
+    defaultPath = documentsDir;
   } else if (fs.existsSync(oneDriveDir)) {
-      default_path = oneDriveDir;
+    defaultPath = oneDriveDir;
   } else {
-      console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`);
+    console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`);
   }
 
   while (true) {
-      try {
-          console.log("Please enter the name of your franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.");
-          let fileName = prompt();
-          fileName = fileName.trim(); // Remove leading/trailing spaces
+    try {
+      console.log("Please enter the name of your franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.");
+      let fileName = prompt().trim(); // Remove leading/trailing spaces
 
-          if (fileName === "0") {
-            EXIT_PROGRAM();
-          }
-          
-          if (fileName.startsWith(filePrefix)) {
-              franchise = new Franchise(path.join(default_path, fileName), {'autoUnempty': isAutoUnemptyEnabled});
-          } else {
-              franchise = new Franchise(fileName.replace(new RegExp('/', 'g'), '\\'), {'autoUnempty': isAutoUnemptyEnabled});
-          }
-
-          return franchise;
-      } catch (e) {
-          console.log("Invalid franchise file name/path given. Please provide a valid name or path and try again.");
-          continue;
+      if (fileName === "0") {
+        EXIT_PROGRAM();
       }
+
+      const franchisePath = fileName.startsWith(filePrefix) ? path.join(defaultPath, fileName) : fileName.replace(new RegExp('/', 'g'), '\\');
+      
+      const franchise = new Franchise(franchisePath, {'autoUnempty': isAutoUnemptyEnabled});
+      return franchise;
+    } catch (e) {
+      console.log("Invalid franchise file name/path given. Please provide a valid name or path and try again.");
+    }
   }
 };
 
-async function selectFranchiseFileAsync(gameYear,isAutoUnemptyEnabled = false, isFtcFile = false) {
+async function selectFranchiseFileAsync(gameYear, isAutoUnemptyEnabled = false, isFtcFile = false) {
     const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
     const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
-    let default_path = documentsDir; // Set to default dir first
-    let franchise;
-    let filePrefix;
-
-    if (isFtcFile) {
-        filePrefix = FTC_FILE_INIT_KWD;
-    }
-    else {
-        filePrefix = BASE_FILE_INIT_KWD;
-    }
+    const filePrefix = isFtcFile ? FTC_FILE_INIT_KWD : BASE_FILE_INIT_KWD;
     
+    let defaultPath;
     if (fs.existsSync(documentsDir)) {
-        default_path = documentsDir;
+        defaultPath = documentsDir;
     } else if (fs.existsSync(oneDriveDir)) {
-        default_path = oneDriveDir;
+        defaultPath = oneDriveDir;
     } else {
         console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`);
     }
@@ -158,18 +139,14 @@ async function selectFranchiseFileAsync(gameYear,isAutoUnemptyEnabled = false, i
     while (true) {
         try {
             console.log("Please enter the name of your franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.");
-            let fileName = prompt();
-            fileName = fileName.trim(); // Remove leading/trailing spaces
+            let fileName = prompt().trim(); // Remove leading/trailing spaces
 
             if (fileName === "0") {
               EXIT_PROGRAM();
             }
-            
-            if (fileName.startsWith(filePrefix)) {
-                franchise = await Franchise.create(path.join(default_path, fileName), {'autoUnempty': isAutoUnemptyEnabled});
-            } else {
-                franchise = await Franchise.create(fileName.replace(new RegExp('/', 'g'), '\\'), {'autoUnempty': isAutoUnemptyEnabled});
-            }
+
+            const franchisePath = fileName.startsWith(filePrefix) ? path.join(defaultPath, fileName) : fileName.replace(new RegExp('/', 'g'), '\\');
+            const franchise = await Franchise.create(franchisePath, {'autoUnempty': isAutoUnemptyEnabled});
   
             return franchise;
         } catch (e) {
