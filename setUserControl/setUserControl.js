@@ -25,9 +25,9 @@ franchise.on('ready', async function () {
     }
   
     if (takeControl) {
-      await FranchiseUtils.takeControl(teamRecord.TeamIndex, franchise, 'None', FranchiseUtils.USER_CONTROL_SETTINGS, false);
+      await FranchiseUtils.takeControl(teamRecord.index, franchise, 'None', FranchiseUtils.USER_CONTROL_SETTINGS, false);
     } else {
-      const teamBinary = getBinaryReferenceData(teamTable.header.tableId, teamRecord.TeamIndex);
+      const teamBinary = getBinaryReferenceData(teamTable.header.tableId, teamRecord.index);
       const currTeamRecord = franchiseUserTable.records.find(record => record.Team === teamBinary);
   
       if (currTeamRecord && currTeamRecord.AdminLevel === 'Owner') {
