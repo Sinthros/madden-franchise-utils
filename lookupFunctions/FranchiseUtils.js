@@ -363,6 +363,23 @@ async function emptyHistoryTables(franchise) {
     }*/
 };
 
+
+async function formatHeaders(table) {
+  if (table.offsetTable) {
+      if (this.showHeaderTypes) {
+          return table.offsetTable.map((offset) => {
+              return `${offset.name} <div class="header-type">${offset.type}</div>`;
+          });
+      } else {
+          return table.offsetTable.map((offset) => {
+              return offset.name;
+          });
+      }
+  } else {
+      return [];
+  }
+};
+
 /*
   Empties the Character Visuals table entirely
 
@@ -752,7 +769,7 @@ async function fixPlayerTables(franchise) {
               }
           }
        }
-      } catch (e) {
+      } catch (e) { // If there's an error, it's okay to just continue
         continue;
       }
     }
