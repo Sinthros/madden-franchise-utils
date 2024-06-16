@@ -1,4 +1,3 @@
-// Required modules
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const { tables } = require('../lookupFunctions/FranchiseTableId');
 
@@ -27,6 +26,22 @@ franchise.on('ready', async function () {
   // Ensure the selected file is from a valid game year
   FranchiseUtils.validateGameYears(franchise, validGameYears);
 
+  // Prompt user for the type of salary cap increase
+  const increaseType = await FranchiseUtils.promptUser(
+    "Do you want a traditional or authentic salary cap increase? (Type 'T' for traditional or 'A' for authentic): "
+  );
+
+  // Set the random number range based on user input
+  let minRange, maxRange;
+  if (increaseType.toUpperCase() === 'A') {
+    minRange = 0;
+    maxRange = 30000;
+    console.log("Warning: Authentic salary cap increase option can potentially exceed $30 million per season.");
+  } else {
+    minRange = 0;
+    maxRange = 2500;
+  }
+
   // Get required tables
   const salCapIncreaseTable = franchise.getTableByUniqueId(tables.salCapIncreaseTable);
 
@@ -35,8 +50,8 @@ franchise.on('ready', async function () {
 
   // Iterate through each row of the salary cap increase array table
   for (let i = 0; i < salCapIncreaseTable.header.numMembers; i++) {
-    // Generate a random integer between 0 and 2000
-    const randomInt = FranchiseUtils.getRandomNumber(0, 2000);
+    // Generate a random integer between the specified range
+    const randomInt = FranchiseUtils.getRandomNumber(minRange, maxRange);
 
     // Update the current salary cap increase column (0th row and i-th column) with the random integer
     salCapIncreaseTable.records[0][`int${i}`] = randomInt;
