@@ -2,3 +2,4 @@ node_modules/
 **/*.exe
 .vs/
 **/*.xlsx
+generateSchema/output/**
