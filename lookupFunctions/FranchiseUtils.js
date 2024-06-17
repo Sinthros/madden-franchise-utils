@@ -1027,21 +1027,35 @@ function getYesOrNo(message) {
   }
 };
 
+/**
+ * Prompts the user to choose between two valid values and returns the chosen value.
+ *
+ * @param {string} message - The message to display to the user.
+ * @param {string} firstValue - The first valid value.
+ * @param {string} secondValue - The second valid value.
+ * @returns {string} - The value chosen by the user, either `firstValue` or `secondValue`.
+ */
 function getUserInput(message, firstValue, secondValue) {
-    floor = parseInt(floor);
-  ceiling = parseInt(ceiling);
   while (true) {
-      console.log(message);
-      const input = prompt().trim().toUpperCase();
+    console.log(message);
+    const input = prompt().trim().toUpperCase();
 
-      if (input === firstValue || input === secondValue) {
-        return input;
+    if (input === firstValue || input === secondValue) {
+      return input;
     } else {
-        console.log(`Invalid input. Please enter ${firstValue} or ${secondValue}.`);
+      console.log(`Invalid input. Please enter ${firstValue} or ${secondValue}.`);
     }
   }
 };
 
+/**
+ * Prompts the user to choose a number within a specified range and returns the chosen number.
+ *
+ * @param {string} message - The message to display to the user.
+ * @param {number} floor - The lower bound of the valid range (inclusive).
+ * @param {number} ceiling - The upper bound of the valid range (inclusive).
+ * @returns {number} - The number chosen by the user within the specified range.
+ */
 function getUserInputNumber(message, floor, ceiling) {
   floor = parseInt(floor);
   ceiling = parseInt(ceiling);
