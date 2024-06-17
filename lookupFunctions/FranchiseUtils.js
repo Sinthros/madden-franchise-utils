@@ -1027,6 +1027,37 @@ function getYesOrNo(message) {
   }
 };
 
+function getUserInput(message, firstValue, secondValue) {
+    floor = parseInt(floor);
+  ceiling = parseInt(ceiling);
+  while (true) {
+      console.log(message);
+      const input = prompt().trim().toUpperCase();
+
+      if (input === firstValue || input === secondValue) {
+        return input;
+    } else {
+        console.log(`Invalid input. Please enter ${firstValue} or ${secondValue}.`);
+    }
+  }
+};
+
+function getUserInputNumber(message, floor, ceiling) {
+  floor = parseInt(floor);
+  ceiling = parseInt(ceiling);
+
+  while (true) {
+    console.log(message);
+    const input = parseInt(prompt().trim().toUpperCase());
+
+    if (!isNaN(input) && input >= floor && input <= ceiling) {
+      return input;
+    } else {
+      console.log(`Invalid input. Please enter a number between ${floor} and ${ceiling}.`);
+    }
+  }
+};
+
 // Function to shuffle an array (Fisher-Yates algorithm)
 async function shuffleArray(array) 
 {
@@ -1091,6 +1122,8 @@ module.exports = {
 
     getYesOrNo, // UTILITY FUNCTIONS
     shuffleArray,
+    getUserInput,
+    getUserInputNumber,
     getRandomNumber,
     bin2Dec,
     dec2bin,
