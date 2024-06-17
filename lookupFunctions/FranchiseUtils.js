@@ -88,6 +88,15 @@ const CPU_CONTROL_SETTINGS = [
  *   be placed in this file.                           *
  *******************************************************/
 
+/**
+ * Selects a franchise file based on the provided game year and options.
+ *
+ * @param {number|string} gameYear - The Madden game year of the Franchise File object.
+ * @param {boolean} [isAutoUnemptyEnabled=false] - If true, rows will always be unemptied upon editing.
+ *                                                 If you aren't sure, leave this as false.
+ * @param {boolean} [isFtcFile=false] - Whether the file is an FTC file. You can almost always leave this as false.
+ * @returns {Object} - The selected Franchise object.
+ */
 function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile = false) {
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
   const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
@@ -122,6 +131,15 @@ function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile =
   }
 };
 
+/**
+ * Selects a franchise file based on the provided game year and options.
+ *
+ * @param {number|string} gameYear - The Madden game year of the Franchise File object.
+ * @param {boolean} [isAutoUnemptyEnabled=false] - If true, rows will always be unemptied upon editing.
+ *                                                 If you aren't sure, leave this as false.
+ * @param {boolean} [isFtcFile=false] - Whether the file is an FTC file. You can almost always leave this as false.
+ * @returns {Object} - The selected Franchise object.
+ */
 async function selectFranchiseFileAsync(gameYear, isAutoUnemptyEnabled = false, isFtcFile = false) {
     const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
     const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
@@ -156,25 +174,24 @@ async function selectFranchiseFileAsync(gameYear, isAutoUnemptyEnabled = false, 
     }
 };
 
-/*
-
-  franchise: Your Franchise object.
-
-  customMessage: Optional. If provided, this will replace the default message. This is typically not needed.
-
-*/
-
+/**
+ * Prompts the user to save the franchise file, optionally using a custom message.
+ *
+ * @param {Object} franchise - Your Franchise object.
+ * @param {string} [customMessage=null] - Optional custom message to replace the default save prompt message.
+ * @returns {Promise<void>}
+ */
 async function saveFranchiseFile(franchise, customMessage = null) {
     while (true) {
         const message = customMessage || "Would you like to save your changes? Enter yes to save your changes, or no to quit without saving.";
         console.log(message);
         const finalPrompt = prompt().trim();
     
-        if (finalPrompt.toUpperCase() === 'YES') {
+        if (finalPrompt.toUpperCase() === YES_KWD) {
             await franchise.save();
             console.log("Franchise file successfully saved!");
             break;
-        } else if (finalPrompt.toUpperCase() === 'NO') {
+        } else if (finalPrompt.toUpperCase() === NO_KWD) {
             console.log("Your Franchise File has not been saved.");
             break;
         } else {
@@ -184,21 +201,19 @@ async function saveFranchiseFile(franchise, customMessage = null) {
 };
 
 
-/*
-  tablesList: List of tables you want to read. For example, if you have playerTable and coachTable,
-  you'd pass through [playerTable, coachTable].
-
-  continueIfError: Boolean. If true, the program will continue if there's an error reading the records for a table.
-  In most cases, leave this as false; you usually don't want the program to proceed if there's an error loading a table.
-  This was designed for the franchiseDataTransfer class, which loads ALL tables from FranchiseTableId.
-  In this specific scenario, a few tables in that list only exist in M22 or M24. We want to continue over
-  those when they don't load properly since they aren't used in the script by the source/target franchise objects.
-
-  franchise: Franchise Object. If you pass this through and one of the tables being read is the main player table,
-  the program will check if the franchise file has multiple player tables, and will attempt to merge them if there are multiple.
-  The user will have the option to decline merging the tables.
-
-*/
+/**
+ * Reads records from a list of tables and handles errors based on the continueIfError flag.
+ *
+ * @param {Array<Object>} tablesList - List of tables to read. For example, if you have playerTable and coachTable,
+ *                                     you'd pass through [playerTable, coachTable].
+ * @param {boolean} [continueIfError=false] - If true, the program will continue if there's an error reading the records for a table.
+ *                                            In most cases, leave this as false; you usually don't want the program to proceed
+ *                                            if there's an error loading a table.
+ * @param {Object} [franchise=null] - Optional Franchise Object. If provided and one of the tables being read is the main player table,
+ *                                    the program will check if the franchise file has multiple player tables and attempt to
+ *                                    merge them if there are multiple. The user will have the option to decline merging the tables.
+ * @returns {Promise<void>}
+ */
 
 async function readTableRecords(tablesList, continueIfError = false, franchise = null) {
   for (const table of tablesList) {
