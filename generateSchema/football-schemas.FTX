@@ -1,0 +1,48 @@
+﻿<FranTkData fileName="Football-Schemas" databaseName="Madden25_Gen5_CFM.Football_Dev_ML" dataMajorVersion="11" dataMinorVersion="0" dataRevisionVersion="1" isSchema="True" majorVersionCRC="-1112699860" minorVersionCRC="2043232006">
+	<!--INCLUDES-->
+	<Includes>
+		<IncludeFile fileName="Core-Schemas" />
+	</Includes>
+	<!--SCHEMAS-->
+	<schemas>
+		<enum name="FootballRecordScope" numMembers="6" assetId="8556928" isRecordPersistent="true">
+			<attribute name="First_" idx="0" value="0" />
+			<attribute name="League" idx="1" value="0" />
+			<attribute name="Team" idx="2" value="1" />
+			<attribute name="Conference" idx="3" value="2" />
+			<attribute name="Last_" idx="4" value="2" />
+			<attribute name="Invalid_" idx="5" value="10" />
+		</enum>
+		<enum name="JumbotronAspectRatios" numMembers="13" assetId="8211538" isRecordPersistent="true">
+			<attribute name="First_" idx="0" value="0" />
+			<attribute name="OneToOne" idx="1" value="0" />
+			<attribute name="TwoToOne" idx="2" value="1" />
+			<attribute name="ThreeToOne" idx="3" value="2" />
+			<attribute name="FourToOne" idx="4" value="3" />
+			<attribute name="FiveToOne" idx="5" value="4" />
+			<attribute name="SixToOne" idx="6" value="5" />
+			<attribute name="Placeholder_0" idx="7" value="6" />
+			<attribute name="Placeholder_1" idx="8" value="7" />
+			<attribute name="Placeholder_2" idx="9" value="8" />
+			<attribute name="Placeholder_3" idx="10" value="9" />
+			<attribute name="Max_" idx="11" value="10" />
+			<attribute name="Invalid_" idx="12" value="31" />
+		</enum>
+		<enum name="StadiumGoalPostType" numMembers="4" assetId="9221468" isRecordPersistent="true">
+			<attribute name="First_" idx="0" value="0" />
+			<attribute name="YStyle" idx="1" value="0" />
+			<attribute name="HStyle" idx="2" value="1" />
+			<attribute name="Max_" idx="3" value="2" />
+		</enum>
+		<schema name="GenericHeadPortraitIdMapElement" numMembers="2" assetId="9549449" isRecordPersistent="true">
+			<attribute name="GenericHeadAssetName" idx="0" type="string" maxLen="20" />
+			<attribute name="PortraitId" idx="1" type="int" minValue="0" maxValue="32767" default="0" />
+		</schema>
+		<schema name="PropertySetterBase" numMembers="0" assetId="6702155" isRecordPersistent="true" />
+		<schema name="PropertySetterStruct" numMembers="3" assetId="6686870" isRecordPersistent="true">
+			<attribute name="Name" idx="0" type="string" maxLen="28" />
+			<attribute name="SetOnTarget" idx="1" type="bool" default="False" />
+			<attribute name="Setter" idx="2" type="PropertySetterBase" />
+		</schema>
+	</schemas>
+</FranTkData>

@@ -1,0 +1,425 @@
+﻿<FranTkData fileName="Core-Schemas" databaseName="Madden25_Gen5_CFM.Football_Dev_ML" dataMajorVersion="41" dataMinorVersion="0" dataRevisionVersion="1" isSchema="True" majorVersionCRC="83920880" minorVersionCRC="-1851312597">
+	<!--INCLUDES-->
+	<Includes />
+	<!--SCHEMAS-->
+	<schemas>
+		<enum name="Action" numMembers="3" assetId="6210600" isRecordPersistent="true">
+			<attribute name="Respond" idx="0" value="0" />
+			<attribute name="Delegate" idx="1" value="1" />
+			<attribute name="Ignore" idx="2" value="2" />
+		</enum>
+		<enum name="AdminLevel" numMembers="3" assetId="6210604" isRecordPersistent="true">
+			<attribute name="Owner" idx="0" value="0" />
+			<attribute name="Commissioner" idx="1" value="1" />
+			<attribute name="None" idx="2" value="2" />
+		</enum>
+		<enum name="CommandInput" numMembers="7" assetId="6210687" isRecordPersistent="true">
+			<attribute name="None" idx="0" value="0" />
+			<attribute name="Action1" idx="1" value="1" />
+			<attribute name="Action2" idx="2" value="2" />
+			<attribute name="Action3" idx="3" value="3" />
+			<attribute name="Left" idx="4" value="4" />
+			<attribute name="Right" idx="5" value="5" />
+			<attribute name="Popup" idx="6" value="6" />
+		</enum>
+		<enum name="DayOfWeek" numMembers="8" assetId="6210635" isRecordPersistent="true">
+			<attribute name="Sunday" idx="0" value="0" />
+			<attribute name="Monday" idx="1" value="1" />
+			<attribute name="Tuesday" idx="2" value="2" />
+			<attribute name="Wednesday" idx="3" value="3" />
+			<attribute name="Thursday" idx="4" value="4" />
+			<attribute name="Friday" idx="5" value="5" />
+			<attribute name="Saturday" idx="6" value="6" />
+			<attribute name="Invalid_" idx="7" value="8" />
+		</enum>
+		<enum name="Month" numMembers="14" assetId="6210619" isRecordPersistent="true">
+			<attribute name="January" idx="0" value="0" />
+			<attribute name="February" idx="1" value="1" />
+			<attribute name="March" idx="2" value="2" />
+			<attribute name="April" idx="3" value="3" />
+			<attribute name="May" idx="4" value="4" />
+			<attribute name="June" idx="5" value="5" />
+			<attribute name="July" idx="6" value="6" />
+			<attribute name="August" idx="7" value="7" />
+			<attribute name="September" idx="8" value="8" />
+			<attribute name="October" idx="9" value="9" />
+			<attribute name="November" idx="10" value="10" />
+			<attribute name="December" idx="11" value="11" />
+			<attribute name="Max_" idx="12" value="12" />
+			<attribute name="Invalid_" idx="13" value="13" />
+		</enum>
+		<enum name="NavigationAction" numMembers="3" assetId="6210736" isRecordPersistent="true">
+			<attribute name="None" idx="0" value="0" />
+			<attribute name="Advance" idx="1" value="1" />
+			<attribute name="Custom" idx="2" value="2" />
+		</enum>
+		<enum name="RequestStyle" numMembers="4" assetId="6210747" isRecordPersistent="true">
+			<attribute name="Default" idx="0" value="0" />
+			<attribute name="Primary" idx="1" value="1" />
+			<attribute name="Notification" idx="2" value="2" />
+			<attribute name="Blocker" idx="3" value="3" />
+		</enum>
+		<enum name="SchedulerPattern" numMembers="7" assetId="6210659" isRecordPersistent="true">
+			<attribute name="Periodic" idx="0" value="0" />
+			<attribute name="Weekly" idx="1" value="1" />
+			<attribute name="MonthlyDay" idx="2" value="2" />
+			<attribute name="MonthlyDayOfWeek" idx="3" value="3" />
+			<attribute name="YearlyDay" idx="4" value="4" />
+			<attribute name="YearlyDayOfWeek" idx="5" value="5" />
+			<attribute name="Invalid_" idx="6" value="7" />
+		</enum>
+		<enum name="SchedulerTermination" numMembers="4" assetId="6210667" isRecordPersistent="true">
+			<attribute name="Iterations" idx="0" value="0" />
+			<attribute name="Date" idx="1" value="1" />
+			<attribute name="Scope" idx="2" value="2" />
+			<attribute name="Invalid_" idx="3" value="4" />
+		</enum>
+		<enum name="SchedulerUnitType" numMembers="7" assetId="6210651" isRecordPersistent="true">
+			<attribute name="Seconds" idx="0" value="0" />
+			<attribute name="Minutes" idx="1" value="1" />
+			<attribute name="Hours" idx="2" value="2" />
+			<attribute name="Days" idx="3" value="3" />
+			<attribute name="Months" idx="4" value="4" />
+			<attribute name="Years" idx="5" value="5" />
+			<attribute name="Invalid_" idx="6" value="7" />
+		</enum>
+		<enum name="SerialGroup" numMembers="40" assetId="6210530" isRecordPersistent="true">
+			<attribute name="League" idx="0" value="0" />
+			<attribute name="StaticFirst_" idx="1" value="0" />
+			<attribute name="SeasonStats" idx="2" value="1" />
+			<attribute name="Tuning" idx="3" value="2" />
+			<attribute name="DraftClass1" idx="4" value="3" />
+			<attribute name="DraftClass2" idx="5" value="4" />
+			<attribute name="DraftClass3" idx="6" value="5" />
+			<attribute name="DraftClass4" idx="7" value="6" />
+			<attribute name="DraftClass5" idx="8" value="7" />
+			<attribute name="DraftClass6" idx="9" value="8" />
+			<attribute name="DraftClass7" idx="10" value="9" />
+			<attribute name="DraftClass8" idx="11" value="10" />
+			<attribute name="DraftClass9" idx="12" value="11" />
+			<attribute name="DraftClass10" idx="13" value="12" />
+			<attribute name="DraftClass11" idx="14" value="13" />
+			<attribute name="DraftClass12" idx="15" value="14" />
+			<attribute name="DraftClass13" idx="16" value="15" />
+			<attribute name="DraftClass14" idx="17" value="16" />
+			<attribute name="DraftClass15" idx="18" value="17" />
+			<attribute name="DraftClass16" idx="19" value="18" />
+			<attribute name="DraftClass17" idx="20" value="19" />
+			<attribute name="DraftClass18" idx="21" value="20" />
+			<attribute name="DraftClass19" idx="22" value="21" />
+			<attribute name="DraftClass20" idx="23" value="22" />
+			<attribute name="DraftClass21" idx="24" value="23" />
+			<attribute name="DraftClass22" idx="25" value="24" />
+			<attribute name="DraftClass23" idx="26" value="25" />
+			<attribute name="DraftClass24" idx="27" value="26" />
+			<attribute name="DraftClass25" idx="28" value="27" />
+			<attribute name="DraftClass26" idx="29" value="28" />
+			<attribute name="DraftClass27" idx="30" value="29" />
+			<attribute name="DraftClass28" idx="31" value="30" />
+			<attribute name="DraftClass29" idx="32" value="31" />
+			<attribute name="DraftClass30" idx="33" value="32" />
+			<attribute name="GeneratorData" idx="34" value="33" />
+			<attribute name="StaticLast_" idx="35" value="63" />
+			<attribute name="ActiveFirst_" idx="36" value="64" />
+			<attribute name="Franchise" idx="37" value="64" />
+			<attribute name="ReferencedByStatic" idx="38" value="65" />
+			<attribute name="ActiveLast_" idx="39" value="127" />
+		</enum>
+		<enum name="StoreOptimization" numMembers="3" assetId="6210537" isRecordPersistent="true">
+			<attribute name="Fast" idx="0" value="0" />
+			<attribute name="Default_" idx="1" value="1" />
+			<attribute name="Lite" idx="2" value="1" />
+		</enum>
+		<enum name="UIDataType" numMembers="5" assetId="6210700" isRecordPersistent="true">
+			<attribute name="Boolean" idx="0" value="0" />
+			<attribute name="Integer" idx="1" value="1" />
+			<attribute name="Real" idx="2" value="2" />
+			<attribute name="String" idx="3" value="3" />
+			<attribute name="Key" idx="4" value="4" />
+		</enum>
+		<enum name="WeekNumber" numMembers="6" assetId="6210644" isRecordPersistent="true">
+			<attribute name="First" idx="0" value="0" />
+			<attribute name="Second" idx="1" value="1" />
+			<attribute name="Third" idx="2" value="2" />
+			<attribute name="Fourth" idx="3" value="3" />
+			<attribute name="Last" idx="4" value="4" />
+			<attribute name="Invalid_" idx="5" value="6" />
+		</enum>
+		<schema name="AddAdminUserEvent" numMembers="4" base="Event" assetId="6210614" isRecordPersistent="true">
+			<attribute name="AdminUser" idx="0" type="User" />
+			<attribute name="Enqueue" idx="1" type="none()" guid="6210614-1895458" final="true" />
+			<attribute name="NewAdminUser" idx="2" type="User" />
+			<attribute name="Send" idx="3" type="none()" guid="6210614-1895455" final="true" />
+		</schema>
+		<schema name="Command" numMembers="6" defaultStoreCapacity="94" assetId="6210689" defaultStoreGroupId="0" isRecordPersistent="true" defaultStoreGroupName="League" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Default_" defaultStoreStringCapacity="7027">
+			<attribute name="ConfirmationMessage" idx="0" type="string" maxLen="248" />
+			<attribute name="DisplayHint" idx="1" type="string" maxLen="65" />
+			<attribute name="DisplayName" idx="2" type="string" maxLen="33" />
+			<attribute name="Input" idx="3" type="CommandInput" default="CommandInput:None" />
+			<attribute name="IsConfirmationRequired" idx="4" type="bool" default="False" />
+			<attribute name="Name" idx="5" type="string" maxLen="33" />
+		</schema>
+		<schema name="DataSource" numMembers="4" defaultStoreCapacity="512" assetId="6210743" defaultStoreGroupId="65" isRecordPersistent="true" defaultStoreGroupName="ReferencedByStatic" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Default_">
+			<attribute name="Data" idx="0" type="record" />
+			<attribute name="DataTemplate" idx="1" type="DataTemplate" />
+			<attribute name="FilterKey" idx="2" type="record" />
+			<attribute name="IsFilterRequired" idx="3" type="bool" default="False" />
+		</schema>
+		<schema name="DataTemplate" numMembers="4" defaultStoreCapacity="40" assetId="6210685" defaultStoreGroupId="0" isRecordPersistent="true" defaultStoreGroupName="League" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Default_" defaultStoreStringCapacity="231">
+			<attribute name="ItemSchema" idx="0" type="DataTemplateSchema" />
+			<attribute name="ItemSourceMember" idx="1" type="string" maxLen="33" />
+			<attribute name="ItemSourceSchema" idx="2" type="string" maxLen="65" />
+			<attribute name="Schemas" idx="3" type="DataTemplateSchema[]" />
+		</schema>
+		<schema name="DataTemplateFilterKey" numMembers="2" defaultStoreCapacity="5" assetId="6210682" defaultStoreGroupId="0" isRecordPersistent="true" defaultStoreGroupName="League" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Default_" defaultStoreStringCapacity="64">
+			<attribute name="MemberName" idx="0" type="string" maxLen="33" />
+			<attribute name="Schema" idx="1" type="string" maxLen="65" />
+		</schema>
+		<schema name="DataTemplateProperty" numMembers="2" assetId="6210683" isRecordPersistent="true">
+			<attribute name="Name" idx="0" type="string" maxLen="65" />
+			<attribute name="Path" idx="1" type="string" maxLen="65" />
+		</schema>
+		<schema name="DataTemplateSchema" numMembers="3" defaultStoreCapacity="87" assetId="6210684" defaultStoreGroupId="0" isRecordPersistent="true" defaultStoreGroupName="League" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Default_" defaultStoreStringCapacity="1222">
+			<attribute name="FilterKeys" idx="0" type="DataTemplateFilterKey[]" />
+			<attribute name="Members" idx="1" type="DataTemplateProperty[]" />
+			<attribute name="Schema" idx="2" type="string" maxLen="65" />
+		</schema>
+		<schema name="EnumTable" numMembers="2" defaultStoreCapacity="96" assetId="6210550" defaultStoreGroupId="2" isRecordPersistent="true" defaultStoreGroupName="Tuning" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Default_" defaultStoreStringCapacity="1176">
+			<attribute name="Entries" idx="0" type="EnumTableEntry[]" />
+			<attribute name="Name" idx="1" type="string" maxLen="44" />
+		</schema>
+		<schema name="EnumTableEntry" numMembers="3" assetId="6210549" isRecordPersistent="true">
+			<attribute name="Description" idx="0" type="string" maxLen="193" />
+			<attribute name="LongName" idx="1" type="string" maxLen="33" />
+			<attribute name="ShortName" idx="2" type="string" maxLen="33" />
+		</schema>
+		<schema name="FlowCommand" numMembers="9" base="Command" defaultStoreCapacity="142" assetId="6495409" defaultStoreGroupId="0" isRecordPersistent="true" defaultStoreGroupName="League" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Default_" defaultStoreStringCapacity="11271">
+			<attribute name="ConfirmationMessage" idx="0" type="string" maxLen="248" />
+			<attribute name="DisplayHint" idx="1" type="string" maxLen="65" />
+			<attribute name="DisplayName" idx="2" type="string" maxLen="33" />
+			<attribute name="Flow" idx="3" type="string" maxLen="33" />
+			<attribute name="Input" idx="4" type="CommandInput" default="CommandInput:None" />
+			<attribute name="IsConfirmationRequired" idx="5" type="bool" default="False" />
+			<attribute name="Name" idx="6" type="string" maxLen="33" />
+			<attribute name="NavigationAction" idx="7" type="NavigationAction" default="NavigationAction:None" />
+			<attribute name="NavigationString" idx="8" type="string" maxLen="65" />
+		</schema>
+		<schema name="FranTkServer_Flow" numMembers="3" base="Module" assetId="6210692" isRecordPersistent="true">
+			<attribute name="Form" idx="0" type="UIForm" />
+			<attribute name="FormManager" idx="1" type="FranTkServer_FormManager" />
+			<attribute name="UserRegistry" idx="2" type="UserRegistry" />
+		</schema>
+		<schema name="FranTkServer_FormManager" numMembers="1" base="Module" assetId="6210686" isRecordPersistent="true">
+			<attribute name="RequestDataTemplate" idx="0" type="DataTemplate" />
+		</schema>
+		<schema name="FranTkServer_Server" numMembers="3" base="Module" assetId="6210694" isRecordPersistent="true">
+			<attribute name="FormManager" idx="0" type="FranTkServer_FormManager" />
+			<attribute name="RequestServer" idx="1" type="RequestServer" />
+			<attribute name="UserRegistry" idx="2" type="UserRegistry" />
+		</schema>
+		<schema name="RegisterUserEvent" numMembers="4" base="Event" assetId="6210610" isRecordPersistent="true">
+			<attribute name="Enqueue" idx="0" type="none()" guid="6210610-1895458" final="true" />
+			<attribute name="IsFirstUser" idx="1" type="bool" default="False" />
+			<attribute name="Send" idx="2" type="none()" guid="6210610-1895455" final="true" />
+			<attribute name="User" idx="3" type="User" />
+		</schema>
+		<schema name="RemoveAdminUserEvent" numMembers="4" base="Event" assetId="6210615" isRecordPersistent="true">
+			<attribute name="AdminUser" idx="0" type="User" />
+			<attribute name="Enqueue" idx="1" type="none()" guid="6210615-1895458" final="true" />
+			<attribute name="ExAdminUser" idx="2" type="User" />
+			<attribute name="Send" idx="3" type="none()" guid="6210615-1895455" final="true" />
+		</schema>
+		<schema name="TransferOwnerUserEvent" numMembers="4" base="Event" assetId="6210612" isRecordPersistent="true">
+			<attribute name="Enqueue" idx="0" type="none()" guid="6210612-1895458" final="true" />
+			<attribute name="NewAdminUser" idx="1" type="User" />
+			<attribute name="OldAdminUser" idx="2" type="User" />
+			<attribute name="Send" idx="3" type="none()" guid="6210612-1895455" final="true" />
+		</schema>
+		<schema name="UIControl" numMembers="3" assetId="6210690" isRecordPersistent="true">
+			<attribute name="DisplayName" idx="0" type="string" maxLen="33" />
+			<attribute name="IsEnabled" idx="1" type="bool" default="True" />
+			<attribute name="Name" idx="2" type="string" maxLen="33" />
+		</schema>
+		<schema name="UIButtonControl" numMembers="4" base="UIControl" assetId="6210695" isRecordPersistent="true">
+			<attribute name="DisplayName" idx="0" type="string" maxLen="33" />
+			<attribute name="IsEnabled" idx="1" type="bool" default="True" />
+			<attribute name="IsSet" idx="2" type="bool" default="False" />
+			<attribute name="Name" idx="3" type="string" maxLen="33" />
+		</schema>
+		<schema name="UIControlPanel" numMembers="5" base="UIControl" assetId="29370" isRecordPersistent="true">
+			<attribute name="Controls" idx="0" type="UIControl[]" />
+			<attribute name="Description" idx="1" type="string" maxLen="129" />
+			<attribute name="DisplayName" idx="2" type="string" maxLen="33" />
+			<attribute name="IsEnabled" idx="3" type="bool" default="True" />
+			<attribute name="Name" idx="4" type="string" maxLen="33" />
+		</schema>
+		<schema name="UIDataField" numMembers="3" assetId="6210717" isRecordPersistent="true">
+			<attribute name="ColumnName" idx="0" type="string" maxLen="1" />
+			<attribute name="DefaultValue" idx="1" type="string" maxLen="1" />
+			<attribute name="DisplayName" idx="2" type="string" maxLen="1" />
+		</schema>
+		<schema name="UIForm" numMembers="6" base="ResponseForm" defaultStoreCapacity="3" assetId="6210691" defaultStoreGroupId="0" isRecordPersistent="true" defaultStoreGroupName="League" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Default_" defaultStoreStringCapacity="99">
+			<attribute name="Commands" idx="0" type="Command[]" />
+			<attribute name="Control" idx="1" type="UIControl" />
+			<attribute name="Description" idx="2" type="string" maxLen="65" />
+			<attribute name="IsSubmittable" idx="3" type="bool" default="False" />
+			<attribute name="Name" idx="4" type="string" maxLen="33" />
+			<attribute name="Title" idx="5" type="string" maxLen="33" />
+		</schema>
+		<schema name="UIDataForm" numMembers="11" base="UIForm" assetId="6210741" isRecordPersistent="true">
+			<attribute name="Commands" idx="0" type="Command[]" />
+			<attribute name="Control" idx="1" type="UIControl" />
+			<attribute name="DataSource" idx="2" type="DataSource" />
+			<attribute name="Description" idx="3" type="string" maxLen="65" />
+			<attribute name="FilterCacheSize" idx="4" type="int" minValue="0" maxValue="32" default="0" />
+			<attribute name="IsFilter1OnDemand" idx="5" type="bool" default="False" />
+			<attribute name="IsFilter2OnDemand" idx="6" type="bool" default="False" />
+			<attribute name="IsFilterRequired" idx="7" type="bool" default="False" />
+			<attribute name="IsSubmittable" idx="8" type="bool" default="False" />
+			<attribute name="Name" idx="9" type="string" maxLen="33" />
+			<attribute name="Title" idx="10" type="string" maxLen="33" />
+		</schema>
+		<schema name="UIFlowForm" numMembers="9" base="UIForm" defaultStoreCapacity="99" assetId="6210740" defaultStoreGroupId="0" isRecordPersistent="true" defaultStoreGroupName="League" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Default_" defaultStoreStringCapacity="6400">
+			<attribute name="Commands" idx="0" type="Command[]" />
+			<attribute name="Control" idx="1" type="UIControl" />
+			<attribute name="Description" idx="2" type="string" maxLen="65" />
+			<attribute name="Flow" idx="3" type="string" maxLen="65" />
+			<attribute name="IsSubmittable" idx="4" type="bool" default="False" />
+			<attribute name="Name" idx="5" type="string" maxLen="33" />
+			<attribute name="NavigationAction" idx="6" type="NavigationAction" default="NavigationAction:None" />
+			<attribute name="NavigationString" idx="7" type="string" maxLen="65" />
+			<attribute name="Title" idx="8" type="string" maxLen="33" />
+		</schema>
+		<schema name="UISpreadsheetForm" numMembers="11" base="UIDataForm" assetId="6210745" isRecordPersistent="true">
+			<attribute name="Commands" idx="0" type="Command[]" />
+			<attribute name="Control" idx="1" type="UIControl" />
+			<attribute name="DataSource" idx="2" type="DataSource" />
+			<attribute name="Description" idx="3" type="string" maxLen="65" />
+			<attribute name="FilterCacheSize" idx="4" type="int" minValue="0" maxValue="32" default="0" />
+			<attribute name="IsFilter1OnDemand" idx="5" type="bool" default="False" />
+			<attribute name="IsFilter2OnDemand" idx="6" type="bool" default="False" />
+			<attribute name="IsFilterRequired" idx="7" type="bool" default="False" />
+			<attribute name="IsSubmittable" idx="8" type="bool" default="False" />
+			<attribute name="Name" idx="9" type="string" maxLen="33" />
+			<attribute name="Title" idx="10" type="string" maxLen="33" />
+		</schema>
+		<schema name="UIListSelectForm" numMembers="13" base="UISpreadsheetForm" defaultStoreCapacity="149" assetId="6210746" defaultStoreGroupId="0" isRecordPersistent="true" defaultStoreGroupName="League" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Lite" defaultStoreStringCapacity="7000">
+			<attribute name="Commands" idx="0" type="Command[]" />
+			<attribute name="Control" idx="1" type="UIControl" />
+			<attribute name="DataSource" idx="2" type="DataSource" />
+			<attribute name="Description" idx="3" type="string" maxLen="65" />
+			<attribute name="FilterCacheSize" idx="4" type="int" minValue="0" maxValue="32" default="0" />
+			<attribute name="IsFilter1OnDemand" idx="5" type="bool" default="False" />
+			<attribute name="IsFilter2OnDemand" idx="6" type="bool" default="False" />
+			<attribute name="IsFilterRequired" idx="7" type="bool" default="False" />
+			<attribute name="IsSubmittable" idx="8" type="bool" default="False" />
+			<attribute name="MaxSelectedItems" idx="9" type="int" minValue="1" maxValue="32" default="1" />
+			<attribute name="MinSelectedItems" idx="10" type="int" minValue="0" maxValue="32" default="1" />
+			<attribute name="Name" idx="11" type="string" maxLen="33" />
+			<attribute name="Title" idx="12" type="string" maxLen="33" />
+		</schema>
+		<schema name="UIMenuForm" numMembers="13" base="UIDataForm" defaultStoreCapacity="34" assetId="6210744" defaultStoreGroupId="0" isRecordPersistent="true" defaultStoreGroupName="League" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Default_" defaultStoreStringCapacity="947">
+			<attribute name="Commands" idx="0" type="Command[]" />
+			<attribute name="Control" idx="1" type="UIControl" />
+			<attribute name="DataSource" idx="2" type="DataSource" />
+			<attribute name="Description" idx="3" type="string" maxLen="65" />
+			<attribute name="FilterCacheSize" idx="4" type="int" minValue="0" maxValue="32" default="0" />
+			<attribute name="IsFilter1OnDemand" idx="5" type="bool" default="False" />
+			<attribute name="IsFilter2OnDemand" idx="6" type="bool" default="False" />
+			<attribute name="IsFilterRequired" idx="7" type="bool" default="False" />
+			<attribute name="IsSubmittable" idx="8" type="bool" default="False" />
+			<attribute name="MenuItems" idx="9" type="UIForm[]" />
+			<attribute name="Name" idx="10" type="string" maxLen="33" />
+			<attribute name="SelectedItem" idx="11" type="ResponseForm" />
+			<attribute name="Title" idx="12" type="string" maxLen="33" />
+		</schema>
+		<schema name="UIPropertyInfo" numMembers="5" base="DataTemplateProperty" assetId="6210706" isRecordPersistent="true">
+			<attribute name="DataType" idx="0" type="UIDataType" default="UIDataType:Boolean" />
+			<attribute name="DisplayHint" idx="1" type="string" maxLen="33" />
+			<attribute name="DisplayName" idx="2" type="string" maxLen="33" />
+			<attribute name="Name" idx="3" type="string" maxLen="65" />
+			<attribute name="Path" idx="4" type="string" maxLen="65" />
+		</schema>
+		<schema name="UIRequestForm" numMembers="32" base="Request" assetId="6210752" isRecordPersistent="true">
+			<attribute name="CanSubmitResponse" idx="0" type="bool" default="True" />
+			<attribute name="CanUpdateResponse" idx="1" type="bool" default="False" />
+			<attribute name="ClearResponse" idx="2" type="none()" guid="6210752-1895689" final="true" />
+			<attribute name="Commands" idx="3" type="Command[]" />
+			<attribute name="CpuResponseDuration" idx="4" type="int" minValue="0" maxValue="16777215" default="0" />
+			<attribute name="CpuResponseMaxDuration" idx="5" type="int" minValue="0" maxValue="16777215" default="0" />
+			<attribute name="CpuResponseMinDuration" idx="6" type="int" minValue="0" maxValue="16777215" default="0" />
+			<attribute name="DefaultResponse" idx="7" type="ResponseForm" />
+			<attribute name="Dismiss" idx="8" type="none()" guid="6210752-1895671" />
+			<attribute name="ExpirationDuration" idx="9" type="int" minValue="0" maxValue="16777215" default="0" />
+			<attribute name="HandleResponse" idx="10" type="none()" guid="6210752-1895983" final="true" />
+			<attribute name="HasResolution" idx="11" type="bool()" guid="6210752-1895676" />
+			<attribute name="IsBlocking" idx="12" type="bool" default="False" />
+			<attribute name="IsConnectionRequired" idx="13" type="bool" default="False" />
+			<attribute name="IsPersistent" idx="14" type="bool" default="False" />
+			<attribute name="IsResolutionPending" idx="15" type="bool()" guid="6210752-1895678" />
+			<attribute name="IsResponseRequired" idx="16" type="bool" default="False" />
+			<attribute name="IsSubmittable" idx="17" type="bool" default="True" />
+			<attribute name="Issue" idx="18" type="Request_Issue" guid="6210752-1895668" />
+			<attribute name="IssueTime" idx="19" type="int" minValue="0" maxValue="100" default="0" />
+			<attribute name="Priority" idx="20" type="int" minValue="0" maxValue="255" default="0" />
+			<attribute name="Refresh" idx="21" type="none()" guid="6210752-1895686" final="true" />
+			<attribute name="RequestData" idx="22" type="record" />
+			<attribute name="RequestForm" idx="23" type="ResponseForm" />
+			<attribute name="RequestId" idx="24" type="int" minValue="-100" maxValue="100" default="-1" />
+			<attribute name="RequestStyle" idx="25" type="RequestStyle" default="RequestStyle:Default" />
+			<attribute name="Resolution" idx="26" type="int" minValue="0" maxValue="100" default="0" />
+			<attribute name="ResolveTime" idx="27" type="int" minValue="0" maxValue="100" default="0" />
+			<attribute name="Response" idx="28" type="ResponseForm" />
+			<attribute name="ResponseForms" idx="29" type="ResponseForm[]" />
+			<attribute name="SeenByUser" idx="30" type="bool" default="True" />
+			<attribute name="TargetUser" idx="31" type="User" />
+		</schema>
+		<schema name="UISelectControl" numMembers="5" base="UIControl" defaultStoreCapacity="37" assetId="6210697" defaultStoreGroupId="0" isRecordPersistent="true" defaultStoreGroupName="League" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Default_" defaultStoreStringCapacity="1108">
+			<attribute name="DisplayName" idx="0" type="string" maxLen="33" />
+			<attribute name="IsEnabled" idx="1" type="bool" default="True" />
+			<attribute name="Items" idx="2" type="UISelectItem[]" />
+			<attribute name="Name" idx="3" type="string" maxLen="33" />
+			<attribute name="Selection" idx="4" type="int" minValue="0" maxValue="100" default="0" />
+		</schema>
+		<schema name="UISelectItem" numMembers="1" assetId="6210696" isRecordPersistent="true">
+			<attribute name="Label" idx="0" type="string" maxLen="33" />
+		</schema>
+		<schema name="UISliderControl" numMembers="7" base="UIControl" defaultStoreCapacity="102" assetId="6210698" defaultStoreGroupId="0" isRecordPersistent="true" defaultStoreGroupName="League" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Default_" defaultStoreStringCapacity="2846">
+			<attribute name="DisplayName" idx="0" type="string" maxLen="33" />
+			<attribute name="IsEnabled" idx="1" type="bool" default="True" />
+			<attribute name="MaxValue" idx="2" type="int" minValue="0" maxValue="512" default="0" />
+			<attribute name="MinValue" idx="3" type="int" minValue="0" maxValue="512" default="0" />
+			<attribute name="Name" idx="4" type="string" maxLen="33" />
+			<attribute name="StepSize" idx="5" type="int" minValue="0" maxValue="100" default="1" />
+			<attribute name="Value" idx="6" type="int" minValue="0" maxValue="512" default="0" />
+		</schema>
+		<schema name="UISliderControlLargeValues" numMembers="7" base="UIControl" defaultStoreCapacity="3" assetId="6210716" defaultStoreGroupId="0" isRecordPersistent="true" defaultStoreGroupName="League" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Default_" defaultStoreStringCapacity="92">
+			<attribute name="DisplayName" idx="0" type="string" maxLen="33" />
+			<attribute name="IsEnabled" idx="1" type="bool" default="True" />
+			<attribute name="MaxValue" idx="2" type="int" minValue="0" maxValue="20000" default="0" />
+			<attribute name="MinValue" idx="3" type="int" minValue="0" maxValue="20000" default="0" />
+			<attribute name="Name" idx="4" type="string" maxLen="33" />
+			<attribute name="StepSize" idx="5" type="int" minValue="0" maxValue="20000" default="0" />
+			<attribute name="Value" idx="6" type="int" minValue="0" maxValue="20000" default="0" />
+		</schema>
+		<schema name="UITextControl" numMembers="4" base="UIControl" defaultStoreCapacity="5" assetId="6210719" defaultStoreGroupId="0" isRecordPersistent="true" defaultStoreGroupName="League" defaultStoreOptimizationId="1" defaultStoreOptimizationName="Default_" defaultStoreStringCapacity="141">
+			<attribute name="DisplayName" idx="0" type="string" maxLen="33" />
+			<attribute name="IsEnabled" idx="1" type="bool" default="True" />
+			<attribute name="Name" idx="2" type="string" maxLen="33" />
+			<attribute name="Value" idx="3" type="string" maxLen="7" />
+		</schema>
+		<schema name="UnregisterUserEvent" numMembers="5" base="Event" assetId="6210611" isRecordPersistent="true">
+			<attribute name="Enqueue" idx="0" type="none()" guid="6210611-1895458" final="true" />
+			<attribute name="IsBanned" idx="1" type="bool" default="False" />
+			<attribute name="IsComingBack" idx="2" type="bool" default="False" />
+			<attribute name="Send" idx="3" type="none()" guid="6210611-1895455" final="true" />
+			<attribute name="User" idx="4" type="User" />
+		</schema>
+		<schema name="UpdateUserDefaultRequestActionEvent" numMembers="4" base="Event" assetId="6210613" isRecordPersistent="true">
+			<attribute name="DefaultRequestAction" idx="0" type="Action" default="Action:Respond" />
+			<attribute name="Enqueue" idx="1" type="none()" guid="6210613-1895458" final="true" />
+			<attribute name="Send" idx="2" type="none()" guid="6210613-1895455" final="true" />
+			<attribute name="User" idx="3" type="User" />
+		</schema>
+	</schemas>
+</FranTkData>
