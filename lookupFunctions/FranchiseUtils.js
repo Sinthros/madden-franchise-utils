@@ -778,6 +778,17 @@ async function fixPlayerTables(franchise) {
   console.log("Successfully merged all extra player tables into the main player table.");
 };
 
+/**
+ * Grants user control to the specified team.
+ *
+ * @param {string} teamRow - The row of the team in the Team table.
+ * @param {Object} franchise - Franchise Object.
+ * @param {string} controlLevel - The level of control to grant ('None', 'Commissioner').
+ * @param {Array<Object>} controlSettings - Array of control settings. 
+ *                                          Reference USER_CONTROL_SETTINGS/CPU_CONTROL_SETTINGS in FranchiseUtils for the structure
+ * @param {boolean} setAsDefault - Whether to set this user as the 'Owner' user.
+ * @returns {Promise<void>}
+ */
 async function takeControl(teamRow, franchise, controlLevel, controlSettings, setAsDefault) {
   const franchiseUserTable = franchise.getTableByUniqueId(tables.franchiseUserTable);
   const franchiseUsersArray = franchise.getTableByUniqueId(tables.franchiseUsersArray);
@@ -906,6 +917,14 @@ async function takeControl(teamRow, franchise, controlLevel, controlSettings, se
   
 }
 
+
+/**
+ * Removes user control from the specified team
+ *
+ * @param {string} teamRow - The row of the team in the Team table.
+ * @param {Object} franchise - Franchise Object.
+ * @returns {Promise<void>}
+ */
 async function removeControl(teamRow, franchise) {
   const franchiseUserTable = franchise.getTableByUniqueId(tables.franchiseUserTable);
   const franchiseUsersArray = franchise.getTableByUniqueId(tables.franchiseUsersArray);
@@ -983,16 +1002,12 @@ async function removeControl(teamRow, franchise) {
 
 }
 
-/*
-
-  This function validates the game year of the franchise file against the valid game years for your program.
-
-  franchise: Franchise Object. This is used to get the game year of the selected Franchise File.
-
-  validGameYears: Int/String representing a valid game year, or an array of Ints/Strings representing
-  valid game years.
-
-*/
+/**
+ * Validates the game year of the franchise file against the valid game years for the program.
+ *
+ * @param {Object} franchise - Franchise Object used to get the game year of the selected Franchise File.
+ * @param {number|string|Array<number|string>} validGameYears - A valid game year or an array of valid game years.
+ */
 function validateGameYears(franchise, validGameYears) {
   const fileGameYear = String(franchise.schema.meta.gameYear);
 
