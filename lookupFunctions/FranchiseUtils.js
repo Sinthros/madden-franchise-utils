@@ -310,6 +310,12 @@ function calculateBestOverall(player) {
     return { newOverall, newArchetype };
 };
 
+/**
+ * Empties the history tables entirely.
+
+ * @param {Object} [franchise] - Your Franchise File object.
+ * @returns {Promise<void>}
+ */
 async function emptyHistoryTables(franchise) {
     const historyEntryArray = franchise.getTableByUniqueId(tables.historyEntryArray);
     const historyEntry = franchise.getTableByUniqueId(tables.historyEntry);
@@ -395,12 +401,12 @@ async function formatHeaders(table) {
   }
 };
 
-/*
-  Empties the Character Visuals table entirely
-
-  franchise: Your Franchise object.
-*/
-
+/**
+ * Empties the Character Visuals table entirely.
+ *
+ * @param {Object} franchise - Your Franchise object.
+ * @returns {Promise<void>}
+ */
 async function emptyCharacterVisualsTable(franchise) {
     const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
     await characterVisuals.readRecords();
@@ -1042,6 +1048,12 @@ function EXIT_PROGRAM() {
   process.exit(0);
 };
 
+/**
+ * Prompts the user with a message and returns a boolean based on their response.
+ *
+ * @param {string} message - The message to display to the user.
+ * @returns {boolean} - Returns true if the user responds with YES_KWD, false if the user responds with NO_KWD.
+ */
 function getYesOrNo(message) {
   while (true) {
       console.log(message);
@@ -1102,19 +1114,27 @@ function getUserInputNumber(message, floor, ceiling) {
   }
 };
 
-// Function to shuffle an array (Fisher-Yates algorithm)
-async function shuffleArray(array) 
-{
-	for (let i = array.length - 1; i > 0; i--) 
-	{
-	  const j = Math.floor(Math.random() * (i + 1));
-	  [array[i], array[j]] = [array[j], array[i]];
-	}
+/**
+ * Shuffles an array in place using the Fisher-Yates algorithm.
+ *
+ * @param {Array} array - The array to shuffle.
+ * @returns {Promise<void>}
+ */
+async function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+  }
 }
 
-// Function to get a random integer between a floor and ceiling value
-function getRandomNumber(floor, ceiling)
-{
+/**
+ * Generates a random integer between a specified floor and ceiling value (inclusive).
+ *
+ * @param {number} floor - The minimum value (inclusive) of the random number.
+ * @param {number} ceiling - The maximum value (inclusive) of the random number.
+ * @returns {number} - A random integer within the specified range.
+ */
+function getRandomNumber(floor, ceiling) {
   // Ensure that the floor and ceiling are integers
   floor = Math.floor(floor);
   ceiling = Math.floor(ceiling);
@@ -1131,16 +1151,34 @@ function getRandomNumber(floor, ceiling)
   return result;
 }
 
+/**
+ * Converts a binary string to a decimal number.
+ *
+ * @param {string} binary - The binary string to convert to decimal.
+ * @returns {Promise<number>} - The decimal representation of the binary string.
+ */
 async function bin2Dec(binary) {
-    return parseInt(binary, 2);
+  return parseInt(binary, 2);
 };
 
+/**
+ * Converts a decimal number to a binary string.
+ *
+ * @param {number} dec - The decimal number to convert to binary.
+ * @returns {string} - The binary representation of the decimal number.
+ */
 function dec2bin(dec) {
-    return (dec >>> 0).toString(2);
+  return (dec >>> 0).toString(2);
 };
 
-async function hasNumber(myString) {
-    return /\d/.test(myString);
+/**
+ * Checks if a string contains at least one numeric digit.
+ *
+ * @param {string} input - The string to check for numeric digits.
+ * @returns {Promise<boolean>} - Returns true if the string contains at least one numeric digit, otherwise false.
+ */
+async function hasNumber(input) {
+  return /\d/.test(input);
 };
   
 
