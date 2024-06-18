@@ -3,11 +3,9 @@
 
 
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const { tables } = require('../lookupFunctions/FranchiseTableId');
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
-const path = require('path');
-const os = require('os');
 const fs = require('fs');
-const ZERO_REF = '00000000000000000000000000000000';
 
 const signatureAbilities = {
     WRSignatureAbilities: {},
@@ -39,21 +37,6 @@ async function bin2Dec(binary) {
 
 
 const gameYear = FranchiseUtils.YEARS.M24;
-
-const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`); //Two paths - One using default, one with OneDrive
-const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`)
-default_path = documentsDir // Set to default dir first
-
-if (fs.existsSync(documentsDir)) { //First, check if our Madden saves are in the default location
-  default_path = documentsDir
-}
-else if (fs.existsSync(oneDriveDir)) {
-  default_path = oneDriveDir
-}
-else {
-  console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. When selecting your file, make sure to give the FULL PATH.`)
-}
-
 
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear,false,true);
 
@@ -106,20 +89,27 @@ async function getFtcReferences() {
 franchise.on('ready', async function () {
   //const json = await getFtcReferences();
 
-    const SignatureAbilitesTable = franchise.getTableByUniqueId(4012247826);
-    const SignatureByPosition = franchise.getTableByUniqueId(2601028454);
-    const PositionSignatureAbilityArray = franchise.getTableByUniqueId(3965066908);
-    const PositionSignatureAbility = franchise.getTableByUniqueId(3636158354);
-    const SignatureAbility = franchise.getTableByUniqueId(1291148681);
+    const SignatureAbilitesTable = franchise.getTableByUniqueId(tables.signatureAbilitesFtcTable);
+    const SignatureByPosition = franchise.getTableByUniqueId(tables.signatureByPositionFtcTable);
+
+    const gameYear = franchise.schema.meta.gameYear;
+
+    const positionSigArrayId = gameYear === FranchiseUtils.YEARS.M25 
+    ? tables.positionSignatureAbilityArrayFtcTableM25 : tables.positionSignatureAbilityArrayFtcTableM24;
+
+    const PositionSignatureAbilityArray = franchise.getTableByUniqueId(positionSigArrayId);
+    const PositionSignatureAbility = franchise.getTableByUniqueId(tables.positionSignatureAbilityFtcTable);
+    const SignatureAbility = franchise.getTableByUniqueId(tables.signatureAbilityFtcTable);
 
     const PositionSignatureAbilityTableId = PositionSignatureAbility.header.tableId //Table ID
 
-    await SignatureAbilitesTable.readRecords();
-    await SignatureByPosition.readRecords();
-    await PositionSignatureAbilityArray.readRecords();
-    await PositionSignatureAbility.readRecords();
-    await SignatureAbility.readRecords();
-
+    await FranchiseUtils.readTableRecords([
+      SignatureAbilitesTable,
+      SignatureByPosition,
+      PositionSignatureAbilityArray,
+      PositionSignatureAbility,
+      SignatureAbility
+  ]);
     const allAssets = franchise.assetTable; //Get all available assets and their references
 
     for (const key in signatureAbilities) {
@@ -131,31 +121,27 @@ franchise.on('ready', async function () {
         const activeSignaturesBin = SignatureByPosition.records[rowRef]['ActiveSignatures']
         const passiveSignaturesBin = SignatureByPosition.records[rowRef]['PassiveSignatures']
         
-        if (activeSignaturesBin !== ZERO_REF) {
+        if (activeSignaturesBin !== FranchiseUtils.ZERO_REF) {
             signatureAbilities[key].XFactorAbilities = [];
             const activeSignaturesRowRef = await bin2Dec(activeSignaturesBin.slice(15));
             for (let i = 0;i < PositionSignatureAbilityArray.header.recordCapacity;i++) {
                 const currentPosSigAbility = PositionSignatureAbilityArray.records[activeSignaturesRowRef][`PositionSignatureAbility${i}`];
-                if (currentPosSigAbility !== ZERO_REF) {
+                if (currentPosSigAbility !== FranchiseUtils.ZERO_REF) {
                     const currentPosSigAbilityRow = await bin2Dec(currentPosSigAbility.slice(15));
                     const abilityBin = PositionSignatureAbility.records[currentPosSigAbilityRow]['Ability'];
                     const abilityBinRow = await bin2Dec(abilityBin.slice(15));
                     xFactorAbilityIndices.push(abilityBinRow);
                     allAbilityIndices.push({ [currentPosSigAbilityRow]: abilityBinRow });
-
-
-
                 }
             }
-
         }
 
-        if (passiveSignaturesBin !== ZERO_REF) {
+        if (passiveSignaturesBin !== FranchiseUtils.ZERO_REF) {
             signatureAbilities[key].SuperStarAbilities = [];
             const passiveSignaturesRowRef = await bin2Dec(passiveSignaturesBin.slice(15));
             for (let i = 0;i < PositionSignatureAbilityArray.header.numMembers;i++) {
                 const currentPosSigAbility = PositionSignatureAbilityArray.records[passiveSignaturesRowRef][`PositionSignatureAbility${i}`];
-                if (currentPosSigAbility !== ZERO_REF) {
+                if (currentPosSigAbility !== FranchiseUtils.ZERO_REF) {
                     const currentPosSigAbilityRow = await bin2Dec(currentPosSigAbility.slice(15));
                     const abilityBin = PositionSignatureAbility.records[currentPosSigAbilityRow]['Ability'];
                     const abilityBinRow = await bin2Dec(abilityBin.slice(15));
