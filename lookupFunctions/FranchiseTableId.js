@@ -129,6 +129,14 @@ const tables = {
     talentNodeArrayFtcTable: 4261606212,
     talentFtcTable: 2347346465,
 
+    signatureAbilitesFtcTable: 4012247826,
+    signatureByPositionFtcTable: 2601028454,
+    positionSignatureAbilityArrayFtcTableM24: 3965066908,
+    positionSignatureAbilityArrayFtcTableM25: 3517346360,
+    positionSignatureAbilityFtcTable: 3636158354,
+    signatureAbilityFtcTable: 1291148681,
+
+
     //Training tables
     drillCompletedTable: 1204263071,
     
