@@ -52,6 +52,9 @@ Then run a command similar to the following:
 nexe --build -i testScript.js -t x64-14.15.3 -r "PATH_TO_NODE_MODULES/node_modules/madden-franchise/data/schemas" -r "*.json" -o "test.exe" --verbose
 ```
 
-This example builds an executable (`test.exe`) from `testScript.js`, including schemas from the madden-franchise API and all JSON files in the current directory.
+Please note that nexe requires both Python and NASM to be installed. You can download Python [here](https://www.python.org/downloads/) (version 3.9 is recommended). You can download NASM [here](https://www.nasm.us/).
+
+
+The above example builds an executable (`test.exe`) from `testScript.js`, including schemas from the madden-franchise API and all JSON files in the current directory.
 
 Replace `PATH_TO_NODE_MODULES` with the actual path to your `node_modules` directory.
