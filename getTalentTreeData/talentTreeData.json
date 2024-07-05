@@ -58,10 +58,10 @@
         ]
       },
       {
-        "Name": "Take Off",
+        "Name": "Single Focus",
         "Behavior": "Upgradable",
-        "IconId": 74,
-        "Description": "Boost Speed for Middle Linebackers by <talent_value>",
+        "IconId": 25,
+        "Description": "Boost Man Cover for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
@@ -93,7 +93,7 @@
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
-          "Take Off"
+          "Single Focus"
         ],
         "Exclusions": [
           "Already Known"
@@ -114,10 +114,10 @@
         ]
       },
       {
-        "Name": "Single Focus",
+        "Name": "Take Off",
         "Behavior": "Upgradable",
-        "IconId": 25,
-        "Description": "Boost Man Cover for Middle Linebackers by <talent_value>",
+        "IconId": 74,
+        "Description": "Boost Speed for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
@@ -136,7 +136,7 @@
         "TalentIncrement": 1,
         "Dependencies": [
           "See the Zones",
-          "Single Focus"
+          "Take Off"
         ],
         "Exclusions": []
       }
@@ -215,10 +215,10 @@
         ]
       },
       {
-        "Name": "Take Off",
+        "Name": "Unstoppable",
         "Behavior": "Upgradable",
-        "IconId": 74,
-        "Description": "Boost Speed for Middle Linebackers by <talent_value>",
+        "IconId": 64,
+        "Description": "Boost Block Shed for Defensive Ends by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
@@ -243,14 +243,14 @@
         ]
       },
       {
-        "Name": "Unstoppable",
+        "Name": "Take Off",
         "Behavior": "Upgradable",
-        "IconId": 64,
-        "Description": "Boost Block Shed for Defensive Ends by <talent_value>",
+        "IconId": 74,
+        "Description": "Boost Speed for Middle Linebackers by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
-          "Take Off"
+          "Unstoppable"
         ],
         "Exclusions": [
           "Burnout"
@@ -278,7 +278,7 @@
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
-          "Unstoppable",
+          "Take Off",
           "Bull Rusher"
         ],
         "Exclusions": []
@@ -487,34 +487,6 @@
         ]
       },
       {
-        "Name": "Red Line",
-        "Behavior": "Upgradable",
-        "IconId": 73,
-        "Description": "Boost Speed for Defensive Ends by <talent_value>",
-        "maxUpgrades": 3,
-        "TalentIncrement": 1,
-        "Dependencies": [
-          "Gameplanned"
-        ],
-        "Exclusions": [
-          "Coming Through"
-        ]
-      },
-      {
-        "Name": "Take Off",
-        "Behavior": "Upgradable",
-        "IconId": 74,
-        "Description": "Boost Speed for Outside Linebackers by <talent_value>",
-        "maxUpgrades": 3,
-        "TalentIncrement": 1,
-        "Dependencies": [
-          "Weightroom Legend"
-        ],
-        "Exclusions": [
-          "Gameplanned"
-        ]
-      },
-      {
         "Name": "Single Focus",
         "Behavior": "Upgradable",
         "IconId": 25,
@@ -522,7 +494,7 @@
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
-          "Red Line"
+          "Gameplanned"
         ],
         "Exclusions": [
           "Coming Through"
@@ -536,7 +508,7 @@
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
-          "Take Off"
+          "Weightroom Legend"
         ],
         "Exclusions": [
           "Gameplanned"
@@ -557,6 +529,34 @@
         ]
       },
       {
+        "Name": "Take Off",
+        "Behavior": "Upgradable",
+        "IconId": 74,
+        "Description": "Boost Speed for Outside Linebackers by <talent_value>",
+        "maxUpgrades": 3,
+        "TalentIncrement": 1,
+        "Dependencies": [
+          "Unstoppable"
+        ],
+        "Exclusions": [
+          "Gameplanned"
+        ]
+      },
+      {
+        "Name": "Red Line",
+        "Behavior": "Upgradable",
+        "IconId": 73,
+        "Description": "Boost Speed for Defensive Ends by <talent_value>",
+        "maxUpgrades": 3,
+        "TalentIncrement": 1,
+        "Dependencies": [
+          "Speed Rusher"
+        ],
+        "Exclusions": [
+          "Coming Through"
+        ]
+      },
+      {
         "Name": "Explosive Impact",
         "Behavior": "Upgradable",
         "IconId": 35,
@@ -564,8 +564,8 @@
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
-          "Unstoppable",
-          "Speed Rusher"
+          "Take Off",
+          "Red Line"
         ],
         "Exclusions": []
       }
@@ -598,14 +598,14 @@
           "Always Charged"
         ],
         "Exclusions": [
-          "Rocket Ahead"
+          "Flex"
         ]
       },
       {
-        "Name": "Rocket Ahead",
+        "Name": "Flex",
         "Behavior": "Upgradable",
-        "IconId": 63,
-        "Description": "Boost Speed for Cornerbacks by <talent_value>",
+        "IconId": 96,
+        "Description": "Boost Strength for Safeties and Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
@@ -626,35 +626,7 @@
           "Burnout"
         ],
         "Exclusions": [
-          "Rocket Ahead"
-        ]
-      },
-      {
-        "Name": "Flex",
-        "Behavior": "Upgradable",
-        "IconId": 96,
-        "Description": "Boost Strength for Safeties and Cornerbacks by <talent_value>",
-        "maxUpgrades": 3,
-        "TalentIncrement": 1,
-        "Dependencies": [
-          "Rocket Ahead"
-        ],
-        "Exclusions": [
-          "Burnout"
-        ]
-      },
-      {
-        "Name": "Speed Rusher",
-        "Behavior": "Upgradable",
-        "IconId": 41,
-        "Description": "Boost Finesse Moves for Right and Left Outside Linebackers by <talent_value>",
-        "maxUpgrades": 3,
-        "TalentIncrement": 1,
-        "Dependencies": [
-          "Lift Heavy"
-        ],
-        "Exclusions": [
-          "Rocket Ahead"
+          "Flex"
         ]
       },
       {
@@ -679,10 +651,10 @@
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
-          "Speed Rusher"
+          "Lift Heavy"
         ],
         "Exclusions": [
-          "Rocket Ahead"
+          "Flex"
         ]
       },
       {
@@ -700,6 +672,34 @@
         ]
       },
       {
+        "Name": "Speed Rusher",
+        "Behavior": "Upgradable",
+        "IconId": 41,
+        "Description": "Boost Finesse Moves for Right and Left Outside Linebackers by <talent_value>",
+        "maxUpgrades": 3,
+        "TalentIncrement": 1,
+        "Dependencies": [
+          "Bull Rusher"
+        ],
+        "Exclusions": [
+          "Flex"
+        ]
+      },
+      {
+        "Name": "Rocket Ahead",
+        "Behavior": "Upgradable",
+        "IconId": 63,
+        "Description": "Boost Speed for Cornerbacks by <talent_value>",
+        "maxUpgrades": 3,
+        "TalentIncrement": 1,
+        "Dependencies": [
+          "Not So Safe"
+        ],
+        "Exclusions": [
+          "Burnout"
+        ]
+      },
+      {
         "Name": "Step Aside",
         "Behavior": "Upgradable",
         "IconId": 17,
@@ -707,8 +707,8 @@
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
-          "Bull Rusher",
-          "Not So Safe"
+          "Speed Rusher",
+          "Rocket Ahead"
         ],
         "Exclusions": []
       }
@@ -1446,10 +1446,10 @@
         "Exclusions": []
       },
       {
-        "Name": "Take Off",
+        "Name": "Fortified",
         "Behavior": "Upgradable",
-        "IconId": 74,
-        "Description": "Boost Speed for Outside Linebackers by <talent_value>",
+        "IconId": 32,
+        "Description": "Boost Toughness for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
@@ -1470,35 +1470,7 @@
           "Just a Cramp"
         ],
         "Exclusions": [
-          "Take Off"
-        ]
-      },
-      {
-        "Name": "Fortified",
-        "Behavior": "Upgradable",
-        "IconId": 32,
-        "Description": "Boost Toughness for Cornerbacks by <talent_value>",
-        "maxUpgrades": 3,
-        "TalentIncrement": 1,
-        "Dependencies": [
-          "Take Off"
-        ],
-        "Exclusions": [
-          "Quick Turns"
-        ]
-      },
-      {
-        "Name": "Always Charged",
-        "Behavior": "Upgradable",
-        "IconId": 75,
-        "Description": "Boost Stamina for Cornerbacks by <talent_value>",
-        "maxUpgrades": 3,
-        "TalentIncrement": 1,
-        "Dependencies": [
-          "Quick Turns"
-        ],
-        "Exclusions": [
-          "Take Off"
+          "Fortified"
         ]
       },
       {
@@ -1516,17 +1488,17 @@
         ]
       },
       {
-        "Name": "Flex",
+        "Name": "Always Charged",
         "Behavior": "Upgradable",
-        "IconId": 96,
-        "Description": "Boost Strength for Free and Strong Safeties by <talent_value>",
+        "IconId": 75,
+        "Description": "Boost Stamina for Cornerbacks by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
-          "Always Charged"
+          "Quick Turns"
         ],
         "Exclusions": [
-          "Take Off"
+          "Fortified"
         ]
       },
       {
@@ -1544,6 +1516,34 @@
         ]
       },
       {
+        "Name": "Flex",
+        "Behavior": "Upgradable",
+        "IconId": 96,
+        "Description": "Boost Strength for Free and Strong Safeties by <talent_value>",
+        "maxUpgrades": 3,
+        "TalentIncrement": 1,
+        "Dependencies": [
+          "Always Charged"
+        ],
+        "Exclusions": [
+          "Fortified"
+        ]
+      },
+      {
+        "Name": "Take Off",
+        "Behavior": "Upgradable",
+        "IconId": 74,
+        "Description": "Boost Speed for Outside Linebackers by <talent_value>",
+        "maxUpgrades": 3,
+        "TalentIncrement": 1,
+        "Dependencies": [
+          "Stop"
+        ],
+        "Exclusions": [
+          "Quick Turns"
+        ]
+      },
+      {
         "Name": "Rocket Ahead",
         "Behavior": "Upgradable",
         "IconId": 63,
@@ -1554,7 +1554,7 @@
           "Flex"
         ],
         "Exclusions": [
-          "Take Off"
+          "Fortified"
         ]
       },
       {
@@ -1565,7 +1565,7 @@
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
-          "Stop",
+          "Take Off",
           "Rocket Ahead"
         ],
         "Exclusions": []
@@ -2381,31 +2381,31 @@
         "Exclusions": []
       },
       {
-        "Name": "Key Cutback",
+        "Name": "Action!",
         "Behavior": "Upgradable",
-        "IconId": 97,
-        "Description": "Boost Juke Move for Halfbacks by <talent_value>",
+        "IconId": 28,
+        "Description": "Boost Agility for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
           "Drawn Up"
         ],
         "Exclusions": [
-          "Cut it Out"
+          "Tight Cornering"
         ]
       },
       {
-        "Name": "Cut it Out",
+        "Name": "Tight Cornering",
         "Behavior": "Upgradable",
-        "IconId": 23,
-        "Description": "Boost Juke Move for Wide Receivers by <talent_value>",
+        "IconId": 44,
+        "Description": "Boost Agility for Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
           "Drawn Up"
         ],
         "Exclusions": [
-          "Key Cutback"
+          "Action!"
         ]
       },
       {
@@ -2416,10 +2416,10 @@
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
-          "Key Cutback"
+          "Action!"
         ],
         "Exclusions": [
-          "Cut it Out"
+          "Tight Cornering"
         ]
       },
       {
@@ -2430,10 +2430,10 @@
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
-          "Cut it Out"
+          "Tight Cornering"
         ],
         "Exclusions": [
-          "Key Cutback"
+          "Action!"
         ]
       },
       {
@@ -2447,7 +2447,7 @@
           "Moving Backfield"
         ],
         "Exclusions": [
-          "Cut it Out"
+          "Tight Cornering"
         ]
       },
       {
@@ -2461,35 +2461,35 @@
           "On The Move"
         ],
         "Exclusions": [
-          "Key Cutback"
+          "Action!"
         ]
       },
       {
-        "Name": "Action!",
+        "Name": "Key Cutback",
         "Behavior": "Upgradable",
-        "IconId": 28,
-        "Description": "Boost Agility for Halfbacks by <talent_value>",
+        "IconId": 97,
+        "Description": "Boost Juke Move for Halfbacks by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
           "Spinning Tires"
         ],
         "Exclusions": [
-          "Cut it Out"
+          "Tight Cornering"
         ]
       },
       {
-        "Name": "Tight Cornering",
+        "Name": "Cut it Out",
         "Behavior": "Upgradable",
-        "IconId": 44,
-        "Description": "Boost Agility for Wide Receivers by <talent_value>",
+        "IconId": 23,
+        "Description": "Boost Juke Move for Wide Receivers by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
           "Full Circle"
         ],
         "Exclusions": [
-          "Key Cutback"
+          "Action!"
         ]
       },
       {
@@ -2500,8 +2500,8 @@
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
-          "Action!",
-          "Tight Cornering"
+          "Key Cutback",
+          "Cut it Out"
         ],
         "Exclusions": []
       }
@@ -3155,7 +3155,7 @@
         "Name": "Break The Press",
         "Behavior": "Upgradable",
         "IconId": 35,
-        "Description": "Boost Release for Haflbacks and Tight Ends by <talent_value>",
+        "Description": "Boost Release for Halfbacks and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
@@ -3724,10 +3724,10 @@
         ]
       },
       {
-        "Name": "In The Web",
+        "Name": "Get Going",
         "Behavior": "Upgradable",
-        "IconId": 70,
-        "Description": "Boost Catch In Traffic for Wide Receivers and Tight Ends by <talent_value>",
+        "IconId": 41,
+        "Description": "Boost Acceleration for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
@@ -3738,10 +3738,10 @@
         ]
       },
       {
-        "Name": "One Handed",
+        "Name": "Hops",
         "Behavior": "Upgradable",
-        "IconId": 88,
-        "Description": "Boost Spectacular Catch for Wide Receivers and Tight Ends by <talent_value>",
+        "IconId": 26,
+        "Description": "Boost Jumping for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
@@ -3759,37 +3759,37 @@
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
-          "In The Web",
-          "One Handed"
+          "Get Going",
+          "Hops"
         ],
         "Exclusions": []
       },
       {
-        "Name": "Get Going",
+        "Name": "In The Web",
         "Behavior": "Upgradable",
-        "IconId": 41,
-        "Description": "Boost Acceleration for Wide Receivers and Tight Ends by <talent_value>",
+        "IconId": 70,
+        "Description": "Boost Catch In Traffic for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
           "Caught"
         ],
         "Exclusions": [
-          "Hops"
+          "One Handed"
         ]
       },
       {
-        "Name": "Hops",
+        "Name": "One Handed",
         "Behavior": "Upgradable",
-        "IconId": 26,
-        "Description": "Boost Jumping for Wide Receivers and Tight Ends by <talent_value>",
+        "IconId": 88,
+        "Description": "Boost Spectacular Catch for Wide Receivers and Tight Ends by <talent_value>",
         "maxUpgrades": 3,
         "TalentIncrement": 1,
         "Dependencies": [
           "Caught"
         ],
         "Exclusions": [
-          "Get Going"
+          "In The Web"
         ]
       }
     ]
