@@ -6,18 +6,14 @@ const autoUnempty = true;
 
 console.log(`This program will regenerate Character Visuals for ALL players and coaches. This is only applicable for Madden ${gameYear} Franchise Files.`)
 
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
+const franchise = FranchiseUtils.init(gameYear,autoUnempty);
 
 franchise.on('ready', async function () {
-
-    FranchiseUtils.validateGameYears(franchise,gameYear);
 
     const mainCharacterVisualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable); //Grab the tables we need and read them
     const playerTable = franchise.getTableByUniqueId(tables.playerTable);
     const coachTable = franchise.getTableByUniqueId(tables.coachTable);
-    await mainCharacterVisualsTable.readRecords();
-    await playerTable.readRecords();
-    await coachTable.readRecords();
+    await FranchiseUtils.readTableRecords([mainCharacterVisualsTable,playerTable,coachTable]);
 
     let playerContractStatusIgnore = ['None']; //If the player a status in here, don't regenerate
 
