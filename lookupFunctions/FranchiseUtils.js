@@ -89,6 +89,17 @@ const CPU_CONTROL_SETTINGS = [
  *******************************************************/
 
 
+/**
+ * Init function which handles selecting the franchise file and validating it
+ * 
+ * @param {number|string|Array<number|string>} validGameYears - A valid game year or an array of valid game years.
+ *
+ * @param {boolean} [isAutoUnemptyEnabled=false] - If true, rows will always be unemptied upon editing.
+ *                                                 If you aren't sure, leave this as false.
+ * @param {boolean} [isFtcFile=false] - Whether the file is an FTC file. You can almost always leave this as false.
+ * @returns {Object} - The selected Franchise object.
+ */
+
 function init(validGameYears, isAutoUnemptyEnabled = false, isFtcFile = false) {
   const gameYear = getGameYear(validGameYears);
   const franchise = selectFranchiseFile(gameYear, isAutoUnemptyEnabled, isFtcFile);
@@ -248,6 +259,14 @@ async function readTableRecords(tablesList, continueIfError = false, franchise =
   }
 };
 
+/**
+ * Takes a list of valid game years and has the user select one.
+ * If the user passes through a string/int instead of a list, it's returned immediately.
+ *
+ * @param {number|string|Array<number|string>} validGameYears - A valid game year or an array of valid game years.
+
+ * @returns {number} - Returns the selected gameYear
+ */
 function getGameYear(validGameYears) {
     // If we didn't pass through an array, simply return the value
     if (!Array.isArray(validGameYears)) {
@@ -256,7 +275,7 @@ function getGameYear(validGameYears) {
 
     if (validGameYears.length === 1) {
       return parseInt(validGameYears[0]); // Return the integer value directly
-  }
+    }
 
     let gameYear;
     const validGameYearsStr = validGameYears.map(String);
