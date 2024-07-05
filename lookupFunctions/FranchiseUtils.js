@@ -95,7 +95,8 @@ function init(validGameYears, isAutoUnemptyEnabled = false, isFtcFile = false) {
   validateGameYears(franchise,validGameYears);
 
   return franchise;
-}
+};
+
 /**
  * Selects a franchise file based on the provided game year and options.
  *
@@ -252,6 +253,10 @@ function getGameYear(validGameYears) {
     if (!Array.isArray(validGameYears)) {
         return parseInt(validGameYears);
     }
+
+    if (validGameYears.length === 1) {
+      return parseInt(validGameYears[0]); // Return the integer value directly
+  }
 
     let gameYear;
     const validGameYearsStr = validGameYears.map(String);
