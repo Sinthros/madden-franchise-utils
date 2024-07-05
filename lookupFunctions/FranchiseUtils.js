@@ -1,6 +1,6 @@
 const Franchise = require('madden-franchise');
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
-const { tables } = require('./FranchiseTableId');
+const { tables, tablesM25 } = require('./FranchiseTableId');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
@@ -216,11 +216,16 @@ async function saveFranchiseFile(franchise, customMessage = null) {
  */
 
 async function readTableRecords(tablesList, continueIfError = false, franchise = null) {
+  let tables = null;
+  if (franchise) {
+    tables = getTablesObject(franchise);
+  }
+
   for (const table of tablesList) {
     try {
       await table.readRecords();
       
-      if (table.header.uniqueId === tables.playerTable && franchise) {
+      if (tables && table.header.uniqueId === tables.playerTable) {
         if (await hasMultiplePlayerTables(franchise)) {
           await fixPlayerTables(franchise);
         }
@@ -251,6 +256,28 @@ function getGameYear(validGameYears) {
 
     return parseInt(gameYear);
 };
+
+/**
+ * Returns the correct tables object from FranchiseTableId depending on the GameYear of your franchise file.
+ * If Madden 24 or before, 'tables' will be returned.
+ * If Madden 25, tablesM25 will be returned.
+ *
+ * @param {Object} [franchise] - Franchise Object. We get the gameYear value from this object and 
+ *                               return the proper tables object.
+ * @returns {Object}
+ */
+function getTablesObject(franchise) {
+  const fileGameYear = Number(franchise.schema.meta.gameYear);
+
+  switch (true) {
+    case fileGameYear <= 24:
+      return tables;
+    case fileGameYear === 25:
+      return tablesM25;
+    default:
+      return tables;
+  }
+}
 
 // Function to calculate the Best Overall and Best Archetype for a player
 // This takes in a player record object; For example, if you're iterating through the player table and are working
@@ -317,6 +344,7 @@ function calculateBestOverall(player) {
  * @returns {Promise<void>}
  */
 async function emptyHistoryTables(franchise) {
+    const tables = getTablesObject(franchise);
     const historyEntryArray = franchise.getTableByUniqueId(tables.historyEntryArray);
     const historyEntry = franchise.getTableByUniqueId(tables.historyEntry);
     const transactionHistoryArray = franchise.getTableByUniqueId(tables.transactionHistoryArray);
@@ -408,6 +436,7 @@ async function formatHeaders(table) {
  * @returns {Promise<void>}
  */
 async function emptyCharacterVisualsTable(franchise) {
+    const tables = getTablesObject(franchise);
     const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
     await characterVisuals.readRecords();
   
@@ -424,6 +453,7 @@ async function emptyCharacterVisualsTable(franchise) {
 // franchise: Your franchise object
 // tables: The tables object from FranchiseTableId
 async function regenerateMarketingTables(franchise) {
+    const tables = getTablesObject(franchise);
     const playerTable = franchise.getTableByUniqueId(tables.playerTable);
     const teamTable = franchise.getTableByUniqueId(tables.teamTable);
     const marketingTable = franchise.getTableByUniqueId(tables.marketedPlayersArrayTable);
@@ -523,6 +553,7 @@ async function regenerateMarketingTables(franchise) {
 
 // Empties the acquisition array tables
 async function emptyAcquisitionTables(franchise) {
+    const tables = getTablesObject(franchise);
     const playerAcquisitionEvaluation = franchise.getTableByUniqueId(tables.playerAcquisitionEvaluationTable);
     const playerAcquisitionEvaluationArray = franchise.getTableByUniqueId(tables.playerAcquisitionEvaluationArrayTable);
   
@@ -567,6 +598,7 @@ async function emptyAcquisitionTables(franchise) {
   
 // This function empties the resign table/resign array table
 async function emptyResignTable(franchise) {
+    const tables = getTablesObject(franchise);
     const resignTable = franchise.getTableByUniqueId(tables.reSignTable);
     const resignArrayTable = franchise.getTableByUniqueId(tables.reSignArrayTable)
     await resignTable.readRecords();
@@ -698,6 +730,7 @@ async function recalculateRosterSizes(playerTable, teamTable) {
 // Returns true if there any extra player tables exist with non emptied data
 // Returns false otherwise
 async function hasMultiplePlayerTables(franchise) {
+  const tables = getTablesObject(franchise);
   const allPlayerTables = franchise.getAllTablesByName('Player');
 
   for (const playerTable of allPlayerTables) {
@@ -733,6 +766,8 @@ async function fixPlayerTables(franchise) {
     console.log("Continuing program without merging player tables.");
     return;
   }
+
+  const tables = getTablesObject(franchise);
   
   
   const allPlayerTables = franchise.getAllTablesByName('Player'); // All player tables
@@ -811,6 +846,7 @@ async function fixPlayerTables(franchise) {
  * @returns {Promise<void>}
  */
 async function takeControl(teamRow, franchise, controlLevel, controlSettings, setAsDefault) {
+  const tables = getTablesObject(franchise);
   const franchiseUserTable = franchise.getTableByUniqueId(tables.franchiseUserTable);
   const franchiseUsersArray = franchise.getTableByUniqueId(tables.franchiseUsersArray);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
@@ -947,6 +983,7 @@ async function takeControl(teamRow, franchise, controlLevel, controlSettings, se
  * @returns {Promise<void>}
  */
 async function removeControl(teamRow, franchise) {
+  const tables = getTablesObject(franchise);
   const franchiseUserTable = franchise.getTableByUniqueId(tables.franchiseUserTable);
   const franchiseUsersArray = franchise.getTableByUniqueId(tables.franchiseUsersArray);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
@@ -1189,6 +1226,7 @@ module.exports = {
     saveFranchiseFile,
     getGameYear,
     readTableRecords,
+    getTablesObject,
     calculateBestOverall,
     emptyHistoryTables,
     removeFromTable,
