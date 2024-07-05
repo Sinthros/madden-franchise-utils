@@ -42,9 +42,9 @@ let scenarios = [];
 await loadTeams();
 loadScenarios();
 
-
-
-// This function loads all the teams from the team table into the global team list, storing relevant information in an object for each team
+/**
+ * Loads all teams from the team table into the global team list.
+ */
 async function loadTeams()
 {
 	// Iterate through all rows in the team table
@@ -82,7 +82,9 @@ async function loadTeams()
 	}
 }
 
-// This function loads all existing scenarios from file into the global scenarios list
+/**
+ * Loads all existing scenarios from file into the global scenarios list.
+ */
 function loadScenarios()
 {
 	// Name of the scenarios directory
@@ -159,7 +161,12 @@ function loadScenarios()
 	}
 }
 
-// This function converts rating change scenarios made on legacy versions of the tool to the new format
+/**
+ * Converts a legacy rating change scenario made on old versions of the tool to the new format
+ * 
+ * @param {Object} scenario The rating change scenario object
+ * @returns {Object} The converted scenario object
+ */
 function convertLegacyRatingScenario(scenario)
 {
 	// If the scenario has a single rating and rating change property, convert it to the new object format
@@ -177,7 +184,12 @@ function convertLegacyRatingScenario(scenario)
 	return scenario;
 }
 
-// This function converts injury scenarios made on legacy versions of the tool to the new format
+/**
+ * Converts a legacy injury scenario made on old versions of the tool to the new format
+ * 
+ * @param {Object} scenario The injury scenario object
+ * @returns {Object} The converted scenario object
+ */
 function convertLegacyInjuryScenario(scenario)
 {
 	// If the scenario does not have a position group bool, add it and set it to false
@@ -189,7 +201,9 @@ function convertLegacyInjuryScenario(scenario)
 	return scenario;
 }
 
-// This function selects a new scenario to use from the list of loaded scenarios
+/**
+ * Selects scenario(s) based on the user's input. 
+ */
 async function generateScenario()
 {
 	// If there are no scenarios, we can't proceed, so inform the user and return
@@ -324,7 +338,12 @@ async function generateScenario()
 	}
 }
 
-// This function applies an injury scenario
+/**
+ * Applies an injury scenario to a player
+ * 
+ * @param {Object} scenario The injury scenario object to apply
+ * @returns {boolean} True if the scenario was successfully applied, false if not
+ */
 async function handleInjuryScenario(scenario)
 {
 	// Variable to store the row number of the randomly selected player
@@ -425,7 +444,12 @@ async function handleInjuryScenario(scenario)
 	return true;
 }
 
-// This function applies a rating change scenario
+/**
+ * Applies a rating change scenario to a player
+ * 
+ * @param {Object} scenario The rating change scenario object to apply
+ * @returns {boolean} True if the scenario was successfully applied, false if not
+ */
 async function handleRatingChangeScenario(scenario)
 {
 	// Variable to store the row number of the randomly selected player
@@ -619,7 +643,12 @@ async function handleRatingChangeScenario(scenario)
 	return true;
 }
 
-// This function applies a suspension scenario
+/**
+ * Applies a suspension scenario to a player
+ * 
+ * @param {Object} scenario The suspension scenario object to apply 
+ * @returns {boolean} True if the scenario was successfully applied, false if not
+ */
 async function handleSuspensionScenario(scenario)
 {
 	// Variable to store the row number of the randomly selected player
@@ -687,7 +716,11 @@ async function handleSuspensionScenario(scenario)
 	return true;
 }
 
-// This function randomly selects a player who is signed to a team
+/**
+ * Randomly selects a player who is signed to a team
+ * 
+ * @returns {number} The row number of a randomly selected signed player
+ */
 async function getRandomSignedPlayer()
 {
 	// List of row numbers of signed players
@@ -711,6 +744,12 @@ async function getRandomSignedPlayer()
 }
 
 // This function randomly selects a player who is signed to a team and meets the specified selection parameters
+/**
+ * Randomly selects a player who is signed to a team and meets the specified selection parameters
+ * 
+ * @param {Object} selectionParameters The selection parameters object to verify against
+ * @returns {number} The row number of a randomly selected signed player that meets the selection parameters, or -1 if no valid player is found
+ */
 async function getRandomSignedPlayerWithParameters(selectionParameters)
 {
 	// List of row numbers of signed players that meet the selection parameters
@@ -755,7 +794,9 @@ async function getRandomSignedPlayerWithParameters(selectionParameters)
 
 }
 
-// This function allows the user to create a new scenario and save it to a file
+/**
+ * Prompts the user to create a new scenario and saves it to a file
+ */
 async function createScenario()
 {
 	// List of scenario types
