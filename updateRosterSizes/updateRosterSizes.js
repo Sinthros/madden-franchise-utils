@@ -10,15 +10,12 @@ const validGameYears = [
 ];
 
 console.log("This program will calculate all roster sizes for all teams.");
-const gameYear = FranchiseUtils.getGameYear(validGameYears);
-const autoUnempty = false;
 
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
+const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 franchise.on('ready', async function () {
 
-  FranchiseUtils.validateGameYears(franchise,validGameYears);
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
   await FranchiseUtils.readTableRecords([playerTable,teamTable]);

@@ -88,6 +88,14 @@ const CPU_CONTROL_SETTINGS = [
  *   be placed in this file.                           *
  *******************************************************/
 
+
+function init(validGameYears, isAutoUnemptyEnabled = false, isFtcFile = false) {
+  const gameYear = getGameYear(validGameYears);
+  const franchise = selectFranchiseFile(gameYear, isAutoUnemptyEnabled, isFtcFile);
+  validateGameYears(franchise,validGameYears);
+
+  return franchise;
+}
 /**
  * Selects a franchise file based on the provided game year and options.
  *
@@ -114,7 +122,7 @@ function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile =
 
   while (true) {
     try {
-      console.log("Please enter the name of your franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.");
+      console.log(`Please enter the name of your Madden ${gameYear} franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.`);
       let fileName = prompt().trim(); // Remove leading/trailing spaces
 
       if (fileName === "0") {
@@ -240,6 +248,11 @@ async function readTableRecords(tablesList, continueIfError = false, franchise =
 };
 
 function getGameYear(validGameYears) {
+    // If we didn't pass through an array, simply return the value
+    if (!Array.isArray(validGameYears)) {
+        return parseInt(validGameYears);
+    }
+
     let gameYear;
     const validGameYearsStr = validGameYears.map(String);
 
@@ -1221,6 +1234,7 @@ async function hasNumber(input) {
 
 
 module.exports = {
+    init,
     selectFranchiseFile, // FUNCTIONS
     selectFranchiseFileAsync,
     saveFranchiseFile,
