@@ -13,7 +13,12 @@ console.log("This program will update all players with your chosen vanity gear i
 const gameYear = FranchiseUtils.YEARS.M24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 
-// Convert a row reference to a row number
+/**
+ * Takes a table reference value and converts it to a row number.
+ * 
+ * @param {string} ref The reference value
+ * @returns {number} The row number specified by the reference, or -1 if it's a zero reference
+ */
 async function getRowFromRef(ref)
 {
 	// If the ref is all zeroes, we can save time and just return -1
@@ -30,7 +35,13 @@ async function getRowFromRef(ref)
 	return rowNum;
 }
 
-// Assign a given gear item to a given visuals JSON
+/**
+ * Assigns a gear item to a player's visuals JSON object.
+ * 
+ * @param {Object} visualsData The visuals JSON object for the player
+ * @param {Object} gearAssetInfo The gear asset JSON object for the desired gear item
+ * @returns {Object} The updated visuals JSON object with the new gear item added
+ */
 function assignGear(visualsData, gearAssetInfo)
 {
 	// If the gear info includes multiple gear items, we need to repeat this process for each one

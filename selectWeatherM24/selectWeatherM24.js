@@ -1,7 +1,6 @@
 // Required modules
 const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
 
 // Print tool header message
 console.log("This program will allow you to update the weather for a game in your Madden 24 franchise file. This tool must be run during the regular season or playoffs.\n")
@@ -9,6 +8,7 @@ console.log("This program will allow you to update the weather for a game in you
 // Set up franchise file
 const gameYear = FranchiseUtils.YEARS.M24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const tables = FranchiseUtils.getTablesObject(franchise);
 
 // List of week types when the tool can be run
 const validWeekTypes = ['RegularSeason','WildcardPlayoff','DivisionalPlayoff','ConferencePlayoff','SuperBowl'];
