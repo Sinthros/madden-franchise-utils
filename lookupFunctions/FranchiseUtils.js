@@ -1116,6 +1116,9 @@ function validateGameYears(franchise, validGameYears) {
   }
 };
 
+/**
+ * Exits the program.
+ */
 function EXIT_PROGRAM() {
   console.log("Enter anything to exit.");
   prompt();
