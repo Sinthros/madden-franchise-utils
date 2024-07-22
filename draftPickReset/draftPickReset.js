@@ -1,6 +1,5 @@
 // Required modules
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
 const gameYear = FranchiseUtils.YEARS.M24;
 
 // Print tool header message
@@ -8,6 +7,7 @@ console.log(`This program will restore all draft picks back to their original te
 
 // Set up franchise file
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const tables = FranchiseUtils.getTablesObject(franchise);
 
 franchise.on('ready', async function () {
 

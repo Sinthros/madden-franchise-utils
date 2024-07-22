@@ -33,7 +33,13 @@ let clearColdValues = [windOptions[clearRand], 'None', 'None', 'Clear', 30];
 let overcastWarmValues = [windOptions[clearRand], 'None', 'Overcast', 'Overcast', 70];
 let overcastColdValues = [windOptions[clearRand], 'None', 'Overcast', 'Overcast', 30];
 
-// Function to prompt the user for a custom temperature and set it if valid
+/**
+ * Prompts the user for a custom temperature within inclusive bounds and sets it if valid
+ * 
+ * @param {Array} weatherValues The list of weather values to update 
+ * @param {number} lowerBound The lower bound for the temperature selection 
+ * @param {number} upperBound The upper bound for the temperature selection
+ */
 function temperatureChoice(weatherValues, lowerBound, upperBound)
 {
 	// Loop until a valid temperature is entered
@@ -67,7 +73,13 @@ function temperatureChoice(weatherValues, lowerBound, upperBound)
 	}
 }
 
-// Function to apply a list of weather values to a game
+/**
+ * Applies a list of weather values to a game
+ * 
+ * @param {Array} weatherValues The list of weather values to apply
+ * @param {number} game The row number of the game to update 
+ * @param {Object} seasonGameTable The season game table object 
+ */
 async function adjustWeather(weatherValues, game, seasonGameTable)
 {
 	// Set all needed weather values
@@ -78,7 +90,15 @@ async function adjustWeather(weatherValues, game, seasonGameTable)
 	seasonGameTable.records[game]['Temperature'] = weatherValues[4];
 };
 
-// Function to handle the roof status of a stadium
+/**
+ * Updates the roof status of a stadium
+ * 
+ * @param {string} state The state to set the roof to ('Open' or 'Closed')
+ * @param {number} game The row number of the game to update
+ * @param {number} homeTeam The row number of the home team
+ * @param {Object} seasonGameTable The season game table object
+ * @param {Object} teamTable The team table object
+ */
 async function handleRoof(state, game, homeTeam, seasonGameTable, teamTable)
 {
 	if(state === 'Open')
@@ -94,6 +114,7 @@ async function handleRoof(state, game, homeTeam, seasonGameTable, teamTable)
 
 franchise.on('ready', async function () {
 
+	// Validate that the file is for a valid game year
 	FranchiseUtils.validateGameYears(franchise,gameYear);
 	
     // Get required tables

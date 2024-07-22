@@ -4,7 +4,6 @@ const fs = require('fs');
 const prompt = require('prompt-sync')();
 const path = require('path');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
 
 // Required lookups
 const ratingTypes = (JSON.parse(fs.readFileSync(`lookupFiles/ratingTypes.json`, 'utf-8')));
@@ -20,6 +19,7 @@ console.log(`Welcome to MaddenSynth ${VERSION}! This is a customizable franchise
 // Set up franchise file
 const gameYear = FranchiseUtils.YEARS.M24;
 const franchise = await FranchiseUtils.selectFranchiseFileAsync(gameYear);
+const tables = FranchiseUtils.getTablesObject(franchise);
 
 // Validate file's game year
 FranchiseUtils.validateGameYears(franchise, [gameYear]);

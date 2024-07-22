@@ -3,7 +3,6 @@ const prompt = require('prompt-sync')();
 const Xlsx = require('xlsx');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
 
 // Print tool header message
 console.log("This program will update all draft class players based on the NCAA conversion tool output. Only Madden 24 franchise files are supported.\n");
@@ -12,6 +11,7 @@ console.log("This program will update all draft class players based on the NCAA 
 const gameYear = FranchiseUtils.YEARS.M24;
 const autoUnempty = true;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear, autoUnempty);
+const tables = FranchiseUtils.getTablesObject(franchise);
 
 // Set up Excel file
 console.log("Enter the path to the Excel file from the NCAA converter: ");

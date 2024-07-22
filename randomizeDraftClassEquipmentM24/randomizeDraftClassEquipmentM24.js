@@ -18,7 +18,13 @@ const tables = FranchiseUtils.getTablesObject(franchise);
 // List of relevant equipment columns in the player table
 const equipmentCols = ['PLYR_EYEPAINT', 'PlayerVisMoveType', 'PLYR_RIGHTARMSLEEVE', 'PLYR_QBSTYLE', 'PLYR_GRASSLEFTELBOW', 'PLYR_RIGHTTHIGH', 'PLYR_RIGHTSPAT', 'PLYR_RIGHTSHOE', 'PLYR_GRASSLEFTHAND', 'PLYR_GRASSRIGHTHAND', 'PLYR_GRASSRIGHTELBOW', 'PLYR_GRASSLEFTWRIST', 'PLYR_GRASSRIGHTWRIST', 'PLYR_VISOR', 'PLYR_HELMET', 'PLYR_FACEMASK', 'PLYR_JERSEYSLEEVE', 'PLYR_JERSEY_STATE', 'PLYR_LEFTSPAT', 'PLYR_LEFTSHOE', 'PLYR_LEFTARMSLEEVE', 'PLYR_MOUTHPIECE', 'PLYR_TOWEL', 'PLYR_STANCE', 'PLYR_SOCK_HEIGHT', 'RunningStyleRating', 'PLYR_FLAKJACKET', 'PLYR_BACKPLATE'];
 
-// This function copies all data in the equipment columns of the source row in the player table to the target row in the player table
+/**
+ * Copies all data in the equipment columns of the source row in the player table to the target row in the player table
+ * 
+ * @param {number} targetRow The row number of the target player to update
+ * @param {number} sourceRow The row number of the source player to copy equipment data from
+ * @param {Object} playerTable The player table object
+*/
 async function copyEquipment(targetRow, sourceRow, playerTable)
 {
 	for (let i = 0; i < equipmentCols.length; i++)
@@ -28,7 +34,14 @@ async function copyEquipment(targetRow, sourceRow, playerTable)
 	}
 };
 
-// This function, given a list of player rows and a position, returns the number of players in the list that have the given position
+/**
+ * Given a list of player rows and a position, returns the number of players in the list that have the given position
+ * 
+ * @param {Array<number>} playerList A list of player row numbers
+ * @param {string} position The position to count
+ * @param {Object} playerTable The player table object
+ * @returns 
+ */
 async function countAtPosition(playerList, position, playerTable)
 {
 	let numAtPosition = 0;
@@ -44,7 +57,14 @@ async function countAtPosition(playerList, position, playerTable)
 	return numAtPosition;
 };
 
-// This function, given a list of player rows and a position, returns a list of player rows that have the given position
+/**
+ * Given a list of player rows and a position, returns a list of player rows that have the given position
+ * 
+ * @param {Array<number>} playerList A list of player row numbers
+ * @param {string} position The position to filter by
+ * @param {Object} playerTable The player table object
+ * @returns {Array<number>} A list of player row numbers that are the given position
+ */
 async function filterByPosition(playerList, position, playerTable)
 {
 	let playersAtPosition = [];
@@ -60,7 +80,14 @@ async function filterByPosition(playerList, position, playerTable)
 	return playersAtPosition;
 };
 
-// This function enumerates all players in the player table and sorts them into draft class players, NFL players, and other active players
+/**
+ * Enumerates all players in the player table and sorts them into draft class players, NFL players, and other active players
+ * 
+ * @param {Object} playerTable The player table object
+ * @param {Array<number>} draftRows A list to store row numbers of draft class players
+ * @param {Array<number>} nflRows A list to store row numbers of real NFL players
+ * @param {Array<number>} miscRows A list to store row numbers of all other active players
+ */
 async function enumeratePlayers(playerTable, draftRows, nflRows, miscRows)
 {
 	// Types of players that are not relevant for our purposes and can be skipped
