@@ -4,7 +4,6 @@ const papa = require('papaparse');
 const execSync = require('child_process').execSync;
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
 const TRANSFER_SCHEDULE_FUNCTIONS = require('../retroSchedules/transferScheduleFromJson');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
 
 // Required lookup files
 const teamLookup = JSON.parse(fs.readFileSync('lookupFiles/teamLookup.json', 'utf8'));
@@ -17,8 +16,9 @@ const gameYear = FranchiseUtils.YEARS.M24;
 // Print tool header message
 console.log("This program will allow you to regenerate the schedule in your Madden 24 franchise file to be closer to a real NFL schedule. This tool must be run during the preseason.\n")
 
-// Set up franchise file
+// Set up franchise file and get table object
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const tables = FranchiseUtils.getTablesObject(franchise);
 
 // Set up base schedule object
 const scheduleObject = {
@@ -26,7 +26,12 @@ const scheduleObject = {
 	weeks: []
 };
 
-// This function converts minutes since midnight to a regular time string
+/**
+ * Converts minutes since midnight to a regular time string
+ * 
+ * @param {number} minutes The number of minutes since midnight
+ * @returns {string} The time string in H:MM AM/PM format (ex: 7:30 PM)
+ */
 function convertMinutesToTime(minutes)
 {
 	// Get the hour
@@ -45,7 +50,12 @@ function convertMinutesToTime(minutes)
 	return `${hour}:${remainder.toString().padStart(2, '0')}${period}`;
 }
 
-// This function will convert a day of the week to its three letter variant
+/**
+ * Converts a day of the week to its three letter variant
+ * 
+ * @param {string} day The full day of the week 
+ * @returns {strng} The three letter abbreviation of the day
+ */
 function parseDay(day)
 {
 	if (day === 'Sunday') {
@@ -74,8 +84,14 @@ function parseDay(day)
 	}
 }
 
-// This function will parse the game data from the season game table
-async function parseGameData(seasonGameTable, j, indGameData, teamTable)
+/**
+ * Parses game data from the season game table
+ * 
+ * @param {Object} seasonGameTable The season game table object
+ * @param {number} j The row number to parse 
+ * @param {Object} indGameData The object to store the parsed game data 
+ */
+async function parseGameData(seasonGameTable, j, indGameData)
 {
 	// Get the day and convert it to the three letter variant
 	let rawDay = seasonGameTable.records[j]['DayOfWeek'];
@@ -103,7 +119,11 @@ async function parseGameData(seasonGameTable, j, indGameData, teamTable)
 
 }
 
-// This function will dump the matchups in the current schedule to a CSV file
+/**
+ * Dumps the matchups in a schedule object to a CSV file
+ * 
+ * @param {Object} scheduleObject The schedule object to dump  
+ */
 function dumpMatchups(scheduleObject)
 {
 	// Array to hold each matchup object
@@ -135,7 +155,12 @@ function dumpMatchups(scheduleObject)
 	fs.writeFileSync('_internal/Opponents 17G Season 2016.csv', csv, 'utf-8');
 }
 
-// This function finds the team abbreviation given the team name
+/**
+ * Finds the team abbreviation given the team name
+ * 
+ * @param {string} teamName 
+ * @returns {string} The abbreviation of the team, or "UNK" if not found
+ */
 function findTeamAbbrev(teamName)
 {
 	// Get the possible team table row numbers
@@ -156,7 +181,12 @@ function findTeamAbbrev(teamName)
 	return "UNK";
 }
 
-// This function converts a team table row number to a team abbreviation
+/**
+ * Converts a team table row number to a team abbreviation
+ * 
+ * @param {number} row The row number to convert 
+ * @returns {string} The abbreviation of the team
+ */
 function rowToAbbrev(row)
 {
 	// Get the possible team abbreviations
@@ -174,7 +204,14 @@ function rowToAbbrev(row)
 	}
 }
 
-// This function pulls the most recent Super Bowl champion from the franchise file
+/**
+ * Returns the most recent Super Bowl champion from the franchise file
+ * 
+ * @param {Object} yearSummaryArray The year summary array table object 
+ * @param {Object} yearSummary The year summary table object
+ * @param {Object} teamTable The team table object
+ * @returns {string} The abbreviation of the most recent Super Bowl champion
+ */
 async function getSuperBowlChampion(yearSummaryArray, yearSummary, teamTable)
 {
 	// Determine how many years are complete in this franchise file
@@ -239,7 +276,13 @@ async function getSuperBowlChampion(yearSummaryArray, yearSummary, teamTable)
 	return winningTeamAbbrev;
 }
 
-// This function converts the optimized schedule solution into a JSON format we can transfer to the franchise file
+/**
+ * Converts an optimized schedule solution object into an object format we can transfer to the franchise file
+ * 
+ * @param {Object} scheduleSolutionInfo The schedule solution object 
+ * @param {Object} newSchedule The new schedule object to populate 
+ * @returns {Object} The new schedule object with the converted data
+ */
 function convertOptimizedSchedule(scheduleSolutionInfo, newSchedule)
 {
 	// Parse each game in the schedule solution
@@ -354,7 +397,11 @@ function convertOptimizedSchedule(scheduleSolutionInfo, newSchedule)
 	return newSchedule;
 }
 
-// This function will synchronously run the command passed to it
+/**
+ * Synchronously runs the command passed in or handles the error if it fails
+ * 
+ * @param {string} command The command to run 
+ */
 function runProgram(command)
 {
 	try
@@ -373,6 +420,7 @@ function runProgram(command)
 
 franchise.on('ready', async function () {
 
+	// Make sure this franchise file is for a valid game year
 	FranchiseUtils.validateGameYears(franchise,gameYear);
 	
     // Get required tables
@@ -442,7 +490,7 @@ franchise.on('ready', async function () {
 			};
 
 			// Read the game data from the current row into the object
-			await parseGameData(seasonGameTable, j, indGameData, teamTable);
+			await parseGameData(seasonGameTable, j, indGameData);
 
 			// Add the game to the array of games for the week
 			gamesArray.push(indGameData);

@@ -1,10 +1,9 @@
 // Required modules
 const fs = require('fs');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
 
 // Print tool header message
-console.log("This program will update all presentation IDs based on player asset name to fix commentary lines.\n")
+console.log("This program will update all presentation IDs based on player asset name to fix commentary lines.\n");
 
 // Set up franchise file
 const validGames = [
@@ -15,11 +14,12 @@ const validGames = [
 ];
 const gameYear = FranchiseUtils.getGameYear(validGames);
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const tables = FranchiseUtils.getTablesObject(franchise);
 
 // If the game has the dynamic progression tool, inform the user and ask if they want to continue
 if(gameYear !== FranchiseUtils.YEARS.M23)
 {
-	console.log("\nWARNING: If you have used the progression tool on this franchise, modifying the presentation ID of players who have a progression path can cause their path to get rerolled.")
+	console.log("\nWARNING: If you have used the progression tool on this franchise, modifying the presentation ID of players who have a progression path can cause their path to get rerolled.");
 
 	let continueChoice = FranchiseUtils.getYesOrNo("\nDo you still wish to continue? (yes/no)");
 	if (!continueChoice) 

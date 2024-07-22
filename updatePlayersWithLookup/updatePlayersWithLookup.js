@@ -2,7 +2,6 @@
 const Xlsx = require('xlsx');
 const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
 const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
 
 // Print tool header message
@@ -11,6 +10,7 @@ console.log("This program will update values for all players in a Madden 24 fran
 // Set up franchise file
 const gameYear = FranchiseUtils.YEARS.M24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const tables = FranchiseUtils.getTablesObject(franchise);
 
 // Set up the excel lookup file
 console.log("Enter the path to the lookup Excel file: ");

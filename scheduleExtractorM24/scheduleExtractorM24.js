@@ -1,7 +1,6 @@
 // Required modules
 const fs = require('fs');
 const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
 
 // Required lookups
 const teamLookup = JSON.parse(fs.readFileSync('teamLookup.json', 'utf8'));
@@ -12,6 +11,7 @@ console.log("This program will allow you to extract the schedule in your Madden 
 // Set up franchise file
 const gameYear = FranchiseUtils.YEARS.M24;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const tables = FranchiseUtils.getTablesObject(franchise);
 
 // Object to store the schedule data
 const scheduleObject = {
@@ -19,7 +19,12 @@ const scheduleObject = {
 	weeks: []
 };
 
-// This function converts minutes since midnight to a regular time string
+/**
+ * Converts minutes since midnight to a regular time string
+ * 
+ * @param {number} minutes The number of minutes since midnight
+ * @returns {string} The time string in H:MM AM/PM format (ex: 7:30 PM)
+ */
 function convertMinutesToTime(minutes)
 {
 	const hours = Math.floor(minutes / 60);
@@ -29,7 +34,12 @@ function convertMinutesToTime(minutes)
 	return `${hour}:${remainder.toString().padStart(2, '0')}${period}`;
 }
 
-// This function will convert a day of the week to its three letter variant
+/**
+ * Converts a day of the week to its three letter variant
+ * 
+ * @param {string} day The full day of the week 
+ * @returns {strng} The three letter abbreviation of the day
+ */
 function parseDay(day)
 {
 	if (day === 'Sunday') {
@@ -58,8 +68,14 @@ function parseDay(day)
 	}
 }
 
-// This function will parse the game data from the season game table
-async function parseGameData(seasonGameTable, j, indGameData, teamTable)
+/**
+ * Parses game data from the season game table
+ * 
+ * @param {Object} seasonGameTable The season game table object
+ * @param {number} j The row number to parse 
+ * @param {Object} indGameData The object to store the parsed game data 
+ */
+async function parseGameData(seasonGameTable, j, indGameData)
 {
 	let rawDay = seasonGameTable.records[j]['DayOfWeek'];
 	let convertedDay = parseDay(rawDay);
@@ -84,7 +100,7 @@ async function parseGameData(seasonGameTable, j, indGameData, teamTable)
 
 
 franchise.on('ready', async function () {
-
+	// Make sure this franchise file is for a valid game year
 	FranchiseUtils.validateGameYears(franchise,gameYear);
 	
     // Get required tables
@@ -151,7 +167,7 @@ franchise.on('ready', async function () {
 			};
 
 			// Read the game data from the current row into the object
-			await parseGameData(seasonGameTable, j, indGameData, teamTable);
+			await parseGameData(seasonGameTable, j, indGameData);
 
 			// Add the game to the array of games for the week
 			gamesArray.push(indGameData);
