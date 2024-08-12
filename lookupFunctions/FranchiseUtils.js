@@ -477,7 +477,7 @@ async function emptyCharacterVisualsTable(franchise) {
     const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
     await characterVisuals.readRecords();
   
-    for (let i = 0; rows < characterVisuals.header.recordCapacity;i++) {
+    for (let i = 0; i < characterVisuals.header.recordCapacity;i++) {
       const record = characterVisuals.records[i];
         if (!record.isEmpty) {
           record.RawData = {};
