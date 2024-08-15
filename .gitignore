@@ -3,3 +3,4 @@ node_modules/
 .vs/
 **/*.xlsx
 generateSchema/output/**
+updateAllRosters/
