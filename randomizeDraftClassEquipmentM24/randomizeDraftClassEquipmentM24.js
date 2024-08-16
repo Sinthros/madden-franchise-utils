@@ -6,14 +6,42 @@ const characterVisualFunctions = require('../lookupFunctions/characterVisualsLoo
 // Required lookups
 const allAssetNames = Object.keys(JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8')));
 
+// Valid game years
+const validYears = [
+	FranchiseUtils.YEARS.M24,
+	FranchiseUtils.YEARS.M25
+];
+
 // Print tool header message
-console.log("This program will update all draft class player equipment based on existing players. Only Madden 24 franchise files are supported.\n")
+let validYearsMessage = "";
+for(let i = 0; i < validYears.length; i++)
+{
+	if(validYears.length > 1 && i === validYears.length - 1)
+	{
+		validYearsMessage += `and ${validYears[i]}`;
+	}
+	else if(i === validYears.length - 1)
+	{
+		validYearsMessage = `${validYears[i]}`;
+	}
+	else if(validYears.length === 2 && i === validYears.length - 2)
+	{
+		validYearsMessage += `${validYears[i]} `;
+	}
+	else
+	{
+		validYearsMessage += `${validYears[i]}, `;
+	}
+}
+
+console.log(`This program will update all draft class player equipment based on existing players. Only Madden ${validYearsMessage} franchise files are supported.\n`)
 
 // Set up franchise file
-const gameYear = FranchiseUtils.YEARS.M24;
+const gameYear = FranchiseUtils.getGameYear(validYears);
 const autoUnempty = true;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear, autoUnempty);
 const tables = FranchiseUtils.getTablesObject(franchise);
+const useJsonStrategy = false;
 
 // List of relevant equipment columns in the player table
 const equipmentCols = ['PLYR_EYEPAINT', 'PlayerVisMoveType', 'PLYR_RIGHTARMSLEEVE', 'PLYR_QBSTYLE', 'PLYR_GRASSLEFTELBOW', 'PLYR_RIGHTTHIGH', 'PLYR_RIGHTSPAT', 'PLYR_RIGHTSHOE', 'PLYR_GRASSLEFTHAND', 'PLYR_GRASSRIGHTHAND', 'PLYR_GRASSRIGHTELBOW', 'PLYR_GRASSLEFTWRIST', 'PLYR_GRASSRIGHTWRIST', 'PLYR_VISOR', 'PLYR_HELMET', 'PLYR_FACEMASK', 'PLYR_JERSEYSLEEVE', 'PLYR_JERSEY_STATE', 'PLYR_LEFTSPAT', 'PLYR_LEFTSHOE', 'PLYR_LEFTARMSLEEVE', 'PLYR_MOUTHPIECE', 'PLYR_TOWEL', 'PLYR_STANCE', 'PLYR_SOCK_HEIGHT', 'RunningStyleRating', 'PLYR_FLAKJACKET', 'PLYR_BACKPLATE'];
@@ -27,12 +55,85 @@ const equipmentCols = ['PLYR_EYEPAINT', 'PlayerVisMoveType', 'PLYR_RIGHTARMSLEEV
 */
 async function copyEquipment(targetRow, sourceRow, playerTable)
 {
+	const keys = Object.keys(playerTable.records[sourceRow]);
+	
 	for (let i = 0; i < equipmentCols.length; i++)
-	{
-		const sourceValue = playerTable.records[sourceRow][equipmentCols[i]];		
-		playerTable.records[targetRow][equipmentCols[i]] = sourceValue;
+	{		
+		if(keys.includes(equipmentCols[i]))
+		{
+			const sourceValue = playerTable.records[sourceRow][equipmentCols[i]];
+			playerTable.records[targetRow][equipmentCols[i]] = sourceValue;
+		}
 	}
 };
+
+/**
+ * Copies all data in the character visuals JSON data of the source row in the player table to the character visuals JSON data of the target row in the player table
+ * 
+ * @param {number} targetRow The row number of the target player to update
+ * @param {number} sourceRow The row number of the source player to copy equipment data from
+ * @param {Object} playerTable The player table object
+ * @param {Object} visualsTable The character visuals table object 
+ */
+async function copyEquipmentJson(targetRow, sourceRow, playerTable, visualsTable)
+{
+	const sourceVisualsRow = FranchiseUtils.bin2Dec(playerTable.records[sourceRow]['CharacterVisuals'].slice(15));
+	const targetVisualsRow = FranchiseUtils.bin2Dec(playerTable.records[targetRow]['CharacterVisuals'].slice(15));
+
+	let sourceVisualsData;
+	let targetVisualsData;
+
+	try
+	{
+		sourceVisualsData = JSON.parse(visualsTable.records[sourceVisualsRow]['RawData']);
+		targetVisualsData = JSON.parse(visualsTable.records[targetVisualsRow]['RawData']);
+	}
+	catch (e)
+	{
+		return;
+	}
+
+	const sourceVisualsLoadouts = sourceVisualsData['loadouts'];
+	const targetVisualsLoadouts = targetVisualsData['loadouts'];
+
+	let sourceEquipmentLoadouts;
+
+	for (let i = 0; i < sourceVisualsLoadouts.length; i++)
+	{
+		if(sourceVisualsLoadouts[i]['loadoutType'] === 'PlayerOnField')
+		{
+			sourceEquipmentLoadouts = sourceVisualsLoadouts[i];
+			break;
+		}
+	}
+
+	if(!sourceEquipmentLoadouts)
+	{
+		return;
+	}
+
+	for(let i = 0; i < targetVisualsLoadouts.length; i++)
+	{
+		if(targetVisualsLoadouts[i]['loadoutType'] === 'PlayerOnField')
+		{
+			targetVisualsLoadouts[i] = sourceEquipmentLoadouts;
+			break;
+		}
+	}
+
+	targetVisualsData['loadouts'] = targetVisualsLoadouts;
+
+	try
+	{
+		visualsTable.records[targetVisualsRow]['RawData'] = JSON.stringify(targetVisualsData);
+	}
+	catch (e)
+	{
+		return;
+	}
+
+	return;
+}
 
 /**
  * Given a list of player rows and a position, returns the number of players in the list that have the given position
@@ -131,6 +232,12 @@ async function enumeratePlayers(playerTable, draftRows, nflRows, miscRows)
 franchise.on('ready', async function () {
 
 	FranchiseUtils.validateGameYears(franchise,gameYear);
+
+	// No equipment columns in M25+, so we must use the JSON strategy
+	if (gameYear >= FranchiseUtils.YEARS.M25)
+	{
+		useJsonStrategy = true;
+	}
 	
     // Get required tables
 	const playerTable = franchise.getTableByUniqueId(tables.playerTable);
@@ -179,7 +286,15 @@ franchise.on('ready', async function () {
 				const randomAtPosition = playersAtPosition[FranchiseUtils.getRandomNumber(0, playersAtPosition.length - 1)];
 
 				// Copy the equipment from the selected player to the draft class player
-				await copyEquipment(draftRows[i], randomAtPosition, playerTable);
+				if(useJsonStrategy)
+				{
+					await copyEquipmentJson(draftRows[i], randomAtPosition, playerTable, visualsTable);
+					await copyEquipment(draftRows[i], randomAtPosition, playerTable);
+				}
+				else
+				{
+					await copyEquipment(draftRows[i], randomAtPosition, playerTable);
+				}
 			}
 			else // Otherwise, we can use exclusively NFL players at the position
 			{
@@ -190,7 +305,15 @@ franchise.on('ready', async function () {
 				const randomNflAtPosition = nflPlayersAtPosition[FranchiseUtils.getRandomNumber(0, nflPlayersAtPosition.length - 1)];
 
 				// Copy the equipment from the selected NFL player to the draft class player
-				await copyEquipment(draftRows[i], randomNflAtPosition, playerTable);
+				if(useJsonStrategy)
+				{
+					await copyEquipmentJson(draftRows[i], randomNflAtPosition, playerTable, visualsTable);
+					await copyEquipment(draftRows[i], randomNflAtPosition, playerTable);
+				}
+				else
+				{
+					await copyEquipment(draftRows[i], randomNflAtPosition, playerTable);
+				}
 			}
 		}
 	}
@@ -209,17 +332,29 @@ franchise.on('ready', async function () {
 			const randomAtPosition = playersAtPosition[FranchiseUtils.getRandomNumber(0, playersAtPosition.length - 1)];
 
 			// Copy the equipment from the selected player to the draft class player
-			await copyEquipment(draftRows[i], randomAtPosition, playerTable);
+			if(useJsonStrategy)
+			{
+				await copyEquipmentJson(draftRows[i], randomAtPosition, playerTable, visualsTable);
+				await copyEquipment(draftRows[i], randomAtPosition, playerTable);
+			}
+			else
+			{
+				await copyEquipment(draftRows[i], randomAtPosition, playerTable);
+			}
 		}
 	}
-	
-	console.log("\nRegenerating Character Visuals for draft class players...");
 
-	// Iterate through the draft rows array and regenerate visuals for each player
-	for (let i = 0; i < draftRows.length; i++)
-    {
-        await characterVisualFunctions.regeneratePlayerVisual(franchise, playerTable, visualsTable, draftRows[i],false);
-    }
+	// Regenerate visuals if we are using the player table strategy and not the JSON strategy
+	if(!useJsonStrategy)
+	{
+		console.log("\nRegenerating Character Visuals for draft class players...");
+
+		// Iterate through the draft rows array and regenerate visuals for each player
+		for (let i = 0; i < draftRows.length; i++)
+		{
+			await characterVisualFunctions.regeneratePlayerVisual(franchise, playerTable, visualsTable, draftRows[i],false);
+		}
+	}
 	
 	// Program complete, so print success message, save the franchise file, and exit
 	console.log("\nRookie equipment updated successfully.\n");

@@ -10,7 +10,7 @@ const validGames = [
 	FranchiseUtils.YEARS.M22,
 	FranchiseUtils.YEARS.M23,
 	FranchiseUtils.YEARS.M24,
-
+	FranchiseUtils.YEARS.M25
 ];
 const gameYear = FranchiseUtils.getGameYear(validGames);
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
@@ -44,8 +44,8 @@ franchise.on('ready', async function () {
 	// List of fingerprints used by files with custom cyberfaces
 	const customMeshFingerprints = ['WiiMaster2015', 'WiiMaster2017'];
 
-	// This logic is only for Madden 24
-	if(gameYear === FranchiseUtils.YEARS.M24)
+	// This logic is only for Madden 24 and newer
+	if(gameYear >= FranchiseUtils.YEARS.M24)
 	{
 		// Get the fingerprint from the franchise file if it's in the list, then set the bool to true and read the override file
 		fingerprintTable = franchise.getTableByUniqueId(tables.franchiseDebugModuleTable);
