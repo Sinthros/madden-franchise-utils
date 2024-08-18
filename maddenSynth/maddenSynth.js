@@ -3,7 +3,7 @@
 const fs = require('fs');
 const prompt = require('prompt-sync')();
 const path = require('path');
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 // Required lookups
 const ratingTypes = (JSON.parse(fs.readFileSync(`lookupFiles/ratingTypes.json`, 'utf-8')));

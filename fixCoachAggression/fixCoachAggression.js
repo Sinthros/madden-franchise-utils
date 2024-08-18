@@ -1,5 +1,5 @@
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
+const { tables } = require('../Utils/FranchiseTableId');
 const COLUMNS_TO_ITERATE = [
   'COACH_DL', 'COACH_LB', 'COACH_WR', 'COACH_K', 'COACH_OFFENSE', 'COACH_DEFTENDENCYRUNPASS',
   'COACH_S', 'COACH_DB', 'COACH_DEFTENDENCYAGGRESSCONSERV', 'COACH_QB', 'COACH_RB', 'COACH_RBTENDENCY',

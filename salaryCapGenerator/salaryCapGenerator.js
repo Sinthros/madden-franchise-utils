@@ -1,6 +1,6 @@
 // Required modules
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
+const { tables } = require('../Utils/FranchiseTableId');
 
 // List of allowed game years
 const validGameYears = [

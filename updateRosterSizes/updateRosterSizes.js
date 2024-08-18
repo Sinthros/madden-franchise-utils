@@ -1,4 +1,4 @@
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 const validGameYears = [
   FranchiseUtils.YEARS.M20,

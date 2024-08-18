@@ -1,8 +1,8 @@
 // Required modules
 const prompt = require('prompt-sync')();
 const Xlsx = require('xlsx');
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
+const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
 
 // Print tool header message
 console.log("This program will update all draft class players based on the NCAA conversion tool output. Only Madden 24 franchise files are supported.\n");

@@ -1,1 +1,1 @@
-nexe --build -i generateVisuals.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "*.json" -r "../lookupFunctions/**/characterVisualsLookups/*" -r "../lookupFunctions/FranchiseUtils.js" -r "../lookupFunctions/FranchiseTableId.js" -o "updateCharacterVisuals.exe" --verbose
+nexe --build -i generateVisuals.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "*.json" -r "../Utils/**/characterVisualsLookups/*" -r "../Utils/FranchiseUtils.js" -r "../Utils/FranchiseTableId.js" -o "updateCharacterVisuals.exe" --verbose

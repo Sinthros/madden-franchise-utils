@@ -9,8 +9,8 @@ const zeroPad = (num, places) => String(num).padStart(places, '0')
 const REGULAR_SEASON_WEEKS = 18;
 const PRESEASON_WEEKS = 4;
 const VALID_WEEK_TYPES = ['RegularSeason','PreSeason','OffSeason'];
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
+const FranchiseUtils = require('./FranchiseUtils');
+const { tables } = require('./FranchiseTableId');
 
 
 function findGameEventBinary(seasonRowBinary,gameEventTable) {

@@ -15,10 +15,10 @@ const sigAbilityJson = JSON.parse(fs.readFileSync('lookupFiles/signature_abiliti
 const allAssetNames = Object.keys(JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8')));
 const presentationIdLookup = JSON.parse(fs.readFileSync('lookupFiles/presentation_id_lookup.json', 'utf-8'));
 const commentaryLookup = JSON.parse(fs.readFileSync('lookupFiles/commentary_lookup.json', 'utf-8'));
-const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
-const TRANSFER_SCHEDULE_FUNCTIONS = require('../lookupFunctions/transferSchedule');
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
+const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
+const TRANSFER_SCHEDULE_FUNCTIONS = require('../Utils/transferSchedule');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
+const { tables } = require('../Utils/FranchiseTableId');
 const DEFAULT_PLAYER_ROW = 755;
 
 const VALID_GAME_YEARS = [FranchiseUtils.YEARS.M22,FranchiseUtils.YEARS.M24];

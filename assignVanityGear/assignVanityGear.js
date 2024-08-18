@@ -1,9 +1,9 @@
 // Required modules
 const fs = require('fs');
 const prompt = require('prompt-sync')();
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
-const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
+const { tables } = require('../Utils/FranchiseTableId');
+const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
 const vanityGearLookup = JSON.parse(fs.readFileSync('./lookupFiles/vanityGearLookup.json', 'utf8'));
 
 // Print tool header message

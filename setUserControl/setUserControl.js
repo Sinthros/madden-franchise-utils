@@ -1,5 +1,5 @@
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
+const { tables } = require('../Utils/FranchiseTableId');
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 
 const gameYear = FranchiseUtils.YEARS.M24;

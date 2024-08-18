@@ -1,6 +1,6 @@
 // Required modules
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
+const { tables } = require('../Utils/FranchiseTableId');
 
 // Print tool header message
 console.log("This program will update your Madden 24 franchise file to use the 6 team playoff format. This tool must be run during wildcard week.\n")

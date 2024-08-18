@@ -5,14 +5,14 @@
 
 // Requirements
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
+const { tables } = require('../Utils/FranchiseTableId');
 const fs = require('fs');
 const teamLookup = JSON.parse(fs.readFileSync('teamLookup.json', 'utf8'));
 
 const REGULAR_SEASON_WEEKS = 18;
 const PRESEASON_WEEKS = 4;
 const VALID_WEEK_TYPES = ['RegularSeason','OffSeason'];
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 //9:30 AM, 1:00 PM, 4:05 PM, 4:25 PM, 7:10 PM, 8:15 PM, 8:20 PM, 10:20 PM
 const MADDEN_TIMES = [570,780,965,985,1150,1215,1220,1340];

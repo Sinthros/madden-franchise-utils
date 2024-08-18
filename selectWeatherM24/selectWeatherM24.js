@@ -1,6 +1,6 @@
 // Required modules
 const prompt = require('prompt-sync')();
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 // Print tool header message
 console.log("This program will allow you to update the weather for a game in your Madden 24 franchise file. This tool must be run during the regular season or playoffs.\n")

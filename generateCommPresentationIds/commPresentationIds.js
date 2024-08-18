@@ -1,8 +1,8 @@
 // Required modules
 const fs = require('fs');
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
-const commentaryLookup = JSON.parse(fs.readFileSync('../lookupFunctions/JsonLookups/commentary_lookup.json', 'utf8'));
+const FranchiseUtils = require('../Utils/FranchiseUtils');
+const { tables } = require('../Utils/FranchiseTableId');
+const commentaryLookup = JSON.parse(fs.readFileSync('../Utils/JsonLookups/commentary_lookup.json', 'utf8'));
 const presentationIdLookup = JSON.parse(fs.readFileSync('presentationIdLookup.json', 'utf8'));
 
 // Print tool header message

@@ -1,1 +1,1 @@
-nexe --build -i sixTeamPlayoffM24.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "../lookupFunctions/FranchiseUtils.js" -r "../lookupFunctions/FranchiseTableId.js" -o "sixTeamPlayoffM24.exe" --verbose 
+nexe --build -i sixTeamPlayoffM24.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "../Utils/FranchiseUtils.js" -r "../Utils/FranchiseTableId.js" -o "sixTeamPlayoffM24.exe" --verbose 

@@ -1,7 +1,7 @@
 // Required modules
 const fs = require('fs');
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
+const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
 
 // Required lookups
 const allAssetNames = Object.keys(JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8')));

@@ -1,6 +1,6 @@
 // Required modules
 const fs = require('fs');
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 // Print tool header message
 console.log("This program will update all presentation IDs based on player asset name to fix commentary lines.\n");

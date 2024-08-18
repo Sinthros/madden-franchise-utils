@@ -2,7 +2,7 @@
 const fs = require('fs');
 const papa = require('papaparse');
 const execSync = require('child_process').execSync;
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
 const TRANSFER_SCHEDULE_FUNCTIONS = require('../retroSchedules/transferScheduleFromJson');
 
 // Required lookup files

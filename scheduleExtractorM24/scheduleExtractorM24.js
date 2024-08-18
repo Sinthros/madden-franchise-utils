@@ -1,6 +1,6 @@
 // Required modules
 const fs = require('fs');
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 // Required lookups
 const teamLookup = JSON.parse(fs.readFileSync('teamLookup.json', 'utf8'));

@@ -1,5 +1,5 @@
 // Required modules
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
 const gameYear = FranchiseUtils.YEARS.M24;
 
 // Print tool header message

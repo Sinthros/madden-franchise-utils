@@ -1,6 +1,6 @@
-const characterVisualFunctions = require('../lookupFunctions/characterVisualsLookups/characterVisualFunctions');
-const FranchiseUtils = require('../lookupFunctions/FranchiseUtils');
-const { tables } = require('../lookupFunctions/FranchiseTableId');
+const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
+const FranchiseUtils = require('../Utils/FranchiseUtils');
+const { tables } = require('../Utils/FranchiseTableId');
 const gameYear = FranchiseUtils.YEARS.M24;
 const autoUnempty = true;
 
