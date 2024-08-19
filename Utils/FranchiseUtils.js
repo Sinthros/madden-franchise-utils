@@ -32,6 +32,20 @@ const YEARS = {
   M25: 25
 };
 
+const CONTRACT_STATUSES = {
+  SIGNED: 'Signed',
+  FREE_AGENT: 'FreeAgent',
+  PRACTICE_SQUAD: 'PracticeSquad',
+  DRAFT: 'Draft',
+  DRAFTED: 'Drafted',
+  RETIRED: 'Retired',
+  CREATED: 'Created',
+  EXPIRING: 'Expiring',
+  DELETED: 'Deleted',
+  NONE: 'None'
+
+}
+
 const NFL_CONFERENCES = ['AFC', 'NFC'];
 
 const OFFENSIVE_SKILL_POSITIONS = ['QB', 'HB', 'FB', 'WR', 'TE'];
@@ -1098,6 +1112,45 @@ async function removeControl(teamRow, franchise) {
 }
 
 /**
+ * Determines if a player is valid based on various criteria.
+ *
+ * @param {Object} playerRecord - The record to check. Can be passed through as playerTable.records[rowNum].
+ * @param {Object} [options={}] - Options to include or exclude certain player statuses.
+ * @param {boolean} [options.includeDraftPlayers=true] - Include draft players?
+ * @param {boolean} [options.includeFreeAgents=true] - Include free agent players?
+ * @param {boolean} [options.includePracticeSquad=true] - Include practice squad players?
+ * @param {boolean} [options.includeRetiredPlayers=false] - Include retired players?
+ * @param {boolean} [options.includeDeletedPlayers=false] - Include deleted players?
+ * @param {boolean} [options.includeLegends=false] - Include legends? (We believe this is only used for Superstar mode - Keep as false if not sure)
+ * @returns {boolean} - Returns `true` if the player is valid, `false` otherwise.
+ */
+function isValidPlayer(playerRecord, options = {}) {
+  const {
+    includeDraftPlayers = true,
+    includeFreeAgents = true,
+    includePracticeSquad = true,
+    includeRetiredPlayers = false,
+    includeDeletedPlayers = false,
+    includeLegends = false
+  } = options;
+
+  const invalidStatuses = new Set([
+    CONTRACT_STATUSES.NONE,
+    CONTRACT_STATUSES.CREATED,
+    ...(!includeDraftPlayers ? [CONTRACT_STATUSES.DRAFT] : []),
+    ...(!includeFreeAgents ? [CONTRACT_STATUSES.FREE_AGENT] : []),
+    ...(!includePracticeSquad ? [CONTRACT_STATUSES.PRACTICE_SQUAD] : []),
+    ...(!includeRetiredPlayers ? [CONTRACT_STATUSES.RETIRED] : []),
+    ...(!includeDeletedPlayers ? [CONTRACT_STATUSES.DELETED] : [])
+  ]);
+
+  return !playerRecord.isEmpty && 
+         !invalidStatuses.has(playerRecord.ContractStatus) && 
+         (includeLegends || !playerRecord.IsLegend);
+}
+
+
+/**
  * Validates the game year of the franchise file against the valid game years for the program.
  *
  * @param {Object} franchise - Franchise Object used to get the game year of the selected Franchise File.
@@ -1289,6 +1342,7 @@ module.exports = {
     bin2Dec,
     dec2bin,
     hasNumber,
+    isValidPlayer,
     validateGameYears,
     EXIT_PROGRAM,
 
@@ -1307,6 +1361,7 @@ module.exports = {
     SPECIAL_TEAM_POSITIONS,
     COACH_SKIN_TONES,
     COACH_APPAREL,
+    CONTRACT_STATUSES,
 
     USER_CONTROL_SETTINGS, // VARIABLES FOR USER/CPU CONTROL
     CPU_CONTROL_SETTINGS,
