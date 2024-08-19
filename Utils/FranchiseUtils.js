@@ -1118,27 +1118,35 @@ async function removeControl(teamRow, franchise) {
  * @param {boolean} [options.includePracticeSquad=true] - Include practice squad players?
  * @param {boolean} [options.includeRetiredPlayers=false] - Include retired players?
  * @param {boolean} [options.includeDeletedPlayers=false] - Include deleted players?
+ * @param {boolean} [options.includeCreatedPlayers=false] - Include Created players? (Should likely always leave as false)
+ * @param {boolean} [options.includeNoneTypePlayers=false] - Include None players? (Should likely always leave as false)
  * @param {boolean} [options.includeLegends=false] - Include legends? (We believe this is only used for Superstar mode - Keep as false if not sure)
  * @returns {boolean} - Returns `true` if the player is valid, `false` otherwise.
  */
 function isValidPlayer(playerRecord, options = {}) {
   const {
+    includeSignedPlayers = true,
     includeFreeAgents = true,
     includePracticeSquad = true,
+    includeExpiringPlayers = true,
     includeDraftPlayers = false,
     includeRetiredPlayers = false,
     includeDeletedPlayers = false,
+    includeCreatedPlayers = false,
+    includeNoneTypePlayers = false,
     includeLegends = false
   } = options;
 
   const invalidStatuses = new Set([
-    CONTRACT_STATUSES.NONE,
-    CONTRACT_STATUSES.CREATED,
-    ...(!includeDraftPlayers ? [CONTRACT_STATUSES.DRAFT] : []),
+    ...(!includeSignedPlayers ? [CONTRACT_STATUSES.SIGNED] : []),
     ...(!includeFreeAgents ? [CONTRACT_STATUSES.FREE_AGENT] : []),
     ...(!includePracticeSquad ? [CONTRACT_STATUSES.PRACTICE_SQUAD] : []),
+    ...(!includeExpiringPlayers ? [CONTRACT_STATUSES.EXPIRING] : []),
+    ...(!includeDraftPlayers ? [CONTRACT_STATUSES.DRAFT] : []),
     ...(!includeRetiredPlayers ? [CONTRACT_STATUSES.RETIRED] : []),
-    ...(!includeDeletedPlayers ? [CONTRACT_STATUSES.DELETED] : [])
+    ...(!includeDeletedPlayers ? [CONTRACT_STATUSES.DELETED] : []),
+    ...(!includeCreatedPlayers ? [CONTRACT_STATUSES.CREATED] : []),
+    ...(!includeNoneTypePlayers ? [CONTRACT_STATUSES.NONE] : []),
   ]);
 
   return !playerRecord.isEmpty && 
