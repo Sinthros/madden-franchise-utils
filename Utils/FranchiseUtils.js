@@ -739,8 +739,6 @@ async function removeFromTable(table, binaryToRemove) {
 
 async function recalculateRosterSizes(playerTable, teamTable) {
 
-  const invalidStatuses = ['Draft','Retired','Deleted','None','Created','PracticeSquad'];
-
   for (let i = 0; i < teamTable.header.recordCapacity; i++) {
     let activeRosterSize = 0; // Current active players
     let salCapRosterSize = 0; // Total rostered players, including IR (but not PS)
@@ -754,11 +752,10 @@ async function recalculateRosterSizes(playerTable, teamTable) {
 
     const currentTeamIndex = teamRecord.TeamIndex;
 
-    const filteredPlayerRecords = playerTable.records.filter(playerRecord => 
-      !playerRecord.isEmpty &&
-      !invalidStatuses.includes(playerRecord.ContractStatus) &&
+    const filteredPlayerRecords = playerTable.records.filter(playerRecord =>
+      isValidPlayer(playerRecord, {includePracticeSquad: false, includeFreeAgents: false}) &&
       playerRecord.TeamIndex === currentTeamIndex
-    );
+    )
 
     filteredPlayerRecords.forEach(playerRecord => {
       salCapRosterSize++;
@@ -1126,9 +1123,9 @@ async function removeControl(teamRow, franchise) {
  */
 function isValidPlayer(playerRecord, options = {}) {
   const {
-    includeDraftPlayers = true,
     includeFreeAgents = true,
     includePracticeSquad = true,
+    includeDraftPlayers = false,
     includeRetiredPlayers = false,
     includeDeletedPlayers = false,
     includeLegends = false
