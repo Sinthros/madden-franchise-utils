@@ -216,22 +216,26 @@ async function selectFranchiseFileAsync(gameYear, isAutoUnemptyEnabled = false, 
  * @returns {Promise<void>}
  */
 async function saveFranchiseFile(franchise, customMessage = null) {
-    while (true) {
-        const message = customMessage || "Would you like to save your changes? Enter yes to save your changes, or no to quit without saving.";
-        console.log(message);
-        const finalPrompt = prompt().trim();
-    
-        if (finalPrompt.toUpperCase() === YES_KWD) {
-            await franchise.save();
-            console.log("Franchise file successfully saved!");
-            break;
-        } else if (finalPrompt.toUpperCase() === NO_KWD) {
-            console.log("Your Franchise File has not been saved.");
-            break;
-        } else {
-            console.log("Invalid input. Please enter 'yes' to save or 'no' to not save.");
-        }
-    }
+  const message = customMessage || "Would you like to save your changes? Enter yes to save your changes, or no to quit without saving.";
+  const saveFile = getYesOrNo(message);
+
+  if (!saveFile) {
+      console.log("Your Franchise File has not been saved.");
+      return;
+  }
+
+  const backupMessage = "Would you like to make a backup of your franchise file before saving your changes? Enter yes or no.";
+  const saveBackupFile = getYesOrNo(backupMessage);
+
+  if (saveBackupFile) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-'); // Replace characters that aren't allowed in filenames
+      const backupFilePath = franchise._filePath + `_${timestamp}`;
+      await franchise.save(backupFilePath);
+      console.log(`Successfully saved a backup to ${backupFilePath}.`);
+  }
+
+  await franchise.save();
+  console.log("Franchise file successfully saved!");
 };
 
 
