@@ -11,12 +11,16 @@ const teamAbbrevLookup = JSON.parse(fs.readFileSync('lookupFiles/teamAbbrevLooku
 const teamIdentityLookup = JSON.parse(fs.readFileSync('lookupFiles/teamIdentityLookup.json', 'utf8'));
 const timeSlotLookup = JSON.parse(fs.readFileSync('lookupFiles/timeSlotLookup.json', 'utf8'));
 
-const gameYear = FranchiseUtils.YEARS.M24;
+const validGameYears = [
+	FranchiseUtils.YEARS.M24,
+	FranchiseUtils.YEARS.M25
+];
 
 // Print tool header message
-console.log("This program will allow you to regenerate the schedule in your Madden 24 franchise file to be closer to a real NFL schedule. This tool must be run during the preseason.\n")
+console.log("This program will allow you to regenerate the schedule in your Madden 24 or 25 franchise file to be closer to a real NFL schedule. This tool must be run during the preseason.\n")
 
 // Set up franchise file and get table object
+const gameYear = FranchiseUtils.getGameYear(validGameYears);
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
