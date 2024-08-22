@@ -15,7 +15,7 @@ const validGameYears = [
 
 console.log("This program will allow you to select any table by name or ID, and then will let you select a column to get valid schema values for.");
 
-const franchise = FranchiseUtils.init(validGameYears);
+const franchise = FranchiseUtils.init(validGameYears,false,false,false);
 
 async function getTable(franchise) {
   while (true) {
@@ -90,7 +90,7 @@ function getTableField(table) {
       } else if (isString) {
         console.log(`The field ${actualColumnName} is a string.`);
         console.log(`Max length: ${maxLength}`);
-        
+
       } else {
         console.log(`The field ${actualColumnName} has an unknown type.`);
       }
