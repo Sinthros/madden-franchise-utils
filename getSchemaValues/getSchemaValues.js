@@ -19,7 +19,7 @@ const franchise = FranchiseUtils.init(validGameYears, {promptForBackup: false});
 
 async function getTable(franchise) {
   while (true) {
-    console.log("Please enter a table name or table ID to check (For example, Player or 4220). Names are case sensitive.");
+    console.log("Please enter a table name or table ID to check (For example, Player or 4220).");
     let tableId = prompt().trim();
     let table;
 
@@ -48,7 +48,7 @@ function getTableField(table) {
   const lowerCaseColumnNames = columnNames.map(name => name.toLowerCase());
 
   while (true) {
-    console.log(`Select a column from ${table.header.name} to get data for (case sensitive). If you want to print out the column names, enter 'print'. Enter 'exit' to stop searching for columns in this table.`);
+    console.log(`Select a column from ${table.header.name} to get data for. If you want to print out the column names, enter 'print'. Enter 'exit' to stop searching for columns in this table.`);
     const columnName = prompt().trim();
 
     if (columnName.toUpperCase() === EXIT_KWD) {
