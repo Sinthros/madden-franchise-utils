@@ -2,7 +2,7 @@ const FranchiseUtils = require('../Utils/FranchiseUtils');
 const { tables } = require('../Utils/FranchiseTableId');
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 
-const MIN_EMPTY_PLAYERS = 550;
+const MIN_EMPTY_PLAYERS = 650;
 
 const gameYear = FranchiseUtils.YEARS.M24;
 
