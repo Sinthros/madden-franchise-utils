@@ -73,6 +73,7 @@ function getTableField(table) {
       const isEnum = enumField !== undefined;
       const isInt = type === 'int' || type === 's_int';
       const isString = type === 'string';
+      const isBool = type === 'bool';
 
       if (isEnum) {
         console.log(`The field ${actualColumnName} has an enum of valid values. These values are as follows:`);
@@ -91,6 +92,9 @@ function getTableField(table) {
         console.log(`The field ${actualColumnName} is a string.`);
         console.log(`Max length: ${maxLength}`);
 
+      } else if (isBool) {
+        console.log(`The field ${actualColumnName} is a boolean. Valid values are true or false.`);
+        
       } else {
         console.log(`The field ${actualColumnName} has an unknown type.`);
       }
