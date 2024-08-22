@@ -114,13 +114,30 @@ const CPU_CONTROL_SETTINGS = [
  * @returns {Object} - The selected Franchise object.
  */
 
-function init(validGameYears, isAutoUnemptyEnabled = false, isFtcFile = false) {
+function init(validGameYears, isAutoUnemptyEnabled = false, isFtcFile = false, promptForBackup = true) {
   const gameYear = getGameYear(validGameYears);
   const franchise = selectFranchiseFile(gameYear, isAutoUnemptyEnabled, isFtcFile);
-  validateGameYears(franchise,validGameYears);
+  validateGameYears(franchise, validGameYears);
+
+  if (promptForBackup) {
+    const backupMessage = "Would you like to make a backup of your franchise file before running this program? Enter yes or no.";
+    const saveBackupFile = getYesOrNo(backupMessage);
+  
+    if (saveBackupFile) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-'); // Replace characters that aren't allowed in filenames
+      const backupFilePath = `${franchise._filePath}_${timestamp}`;
+  
+      try {
+        fs.copyFileSync(franchise._filePath, backupFilePath);
+        console.log(`Backup saved to ${backupFilePath}`);
+      } catch (error) {
+        console.error('Error saving backup file:', error);
+      }
+    }
+  }
 
   return franchise;
-};
+}
 
 /**
  * Selects a franchise file based on the provided game year and options.
@@ -213,28 +230,20 @@ async function selectFranchiseFileAsync(gameYear, isAutoUnemptyEnabled = false, 
  *
  * @param {Object} franchise - Your Franchise object.
  * @param {string} [customMessage=null] - Optional custom message to replace the default save prompt message.
+ * @param {string} [filePath=null] - Optional file path to save the franchise file to.
  * @returns {Promise<void>}
  */
-async function saveFranchiseFile(franchise, customMessage = null) {
+async function saveFranchiseFile(franchise, customMessage = null, filePath = null) {
   const message = customMessage || "Would you like to save your changes? Enter yes to save your changes, or no to quit without saving.";
   const saveFile = getYesOrNo(message);
+  const destination = filePath ? filePath : franchise._filePath;
 
   if (!saveFile) {
       console.log("Your Franchise File has not been saved.");
       return;
   }
 
-  const backupMessage = "Would you like to make a backup of your franchise file before saving your changes? Enter yes or no.";
-  const saveBackupFile = getYesOrNo(backupMessage);
-
-  if (saveBackupFile) {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-'); // Replace characters that aren't allowed in filenames
-      const backupFilePath = franchise._filePath + `_${timestamp}`;
-      await franchise.save(backupFilePath);
-      console.log(`Successfully saved a backup to ${backupFilePath}.`);
-  }
-
-  await franchise.save();
+  await franchise.save(destination);
   console.log("Franchise file successfully saved!");
 };
 
