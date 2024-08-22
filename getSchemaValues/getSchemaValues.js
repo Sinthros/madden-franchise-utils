@@ -15,7 +15,7 @@ const validGameYears = [
 
 console.log("This program will allow you to select any table by name or ID, and then will let you select a column to get valid schema values for.");
 
-const franchise = FranchiseUtils.init(validGameYears,false,false,false);
+const franchise = FranchiseUtils.init(validGameYears, {promptForBackup: false});
 
 async function getTable(franchise) {
   while (true) {
@@ -94,7 +94,7 @@ function getTableField(table) {
 
       } else if (isBool) {
         console.log(`The field ${actualColumnName} is a boolean. Valid values are true or false.`);
-        
+
       } else {
         console.log(`The field ${actualColumnName} has an unknown type.`);
       }

@@ -104,17 +104,22 @@ const CPU_CONTROL_SETTINGS = [
 
 
 /**
- * Init function which handles selecting the franchise file and validating it
- * 
- * @param {number|string|Array<number|string>} validGameYears - A valid game year or an array of valid game years.
+ * Initializes the franchise and optionally prompts for a backup.
  *
- * @param {boolean} [isAutoUnemptyEnabled=false] - If true, rows will always be unemptied upon editing.
- *                                                 If you aren't sure, leave this as false.
- * @param {boolean} [isFtcFile=false] - Whether the file is an FTC file. You can almost always leave this as false.
- * @returns {Object} - The selected Franchise object.
+ * @param {number|string|Array<number|string>} validGameYears - A valid game year or an array of valid game years.
+ * @param {Object} [options={}] - Options for initialization.
+ * @param {boolean} [options.isAutoUnemptyEnabled=false] - If true, rows will always be unemptied upon editing. If you aren't sure, leave this as false.
+ * @param {boolean} [options.isFtcFile=false] - Is the franchise file an FTC file?
+ * @param {boolean} [options.promptForBackup=true] - Prompt the user to make a backup of their selected save file?
+ * @returns {Object} - The Franchise object.
  */
+function init(validGameYears, options = {}) {
+  const {
+    isAutoUnemptyEnabled = false,
+    isFtcFile = false,
+    promptForBackup = true
+  } = options;
 
-function init(validGameYears, isAutoUnemptyEnabled = false, isFtcFile = false, promptForBackup = true) {
   const gameYear = getGameYear(validGameYears);
   const franchise = selectFranchiseFile(gameYear, isAutoUnemptyEnabled, isFtcFile);
   validateGameYears(franchise, validGameYears);
@@ -131,7 +136,7 @@ function init(validGameYears, isAutoUnemptyEnabled = false, isFtcFile = false, p
         fs.copyFileSync(franchise._filePath, backupFilePath);
         console.log(`Backup saved to ${backupFilePath}`);
       } catch (error) {
-        console.error('Error saving backup file:', error);
+        console.error('Error saving backup file: ', error);
       }
     }
   }
