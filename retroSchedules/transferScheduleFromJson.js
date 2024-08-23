@@ -18,9 +18,9 @@ const FranchiseUtils = require('../Utils/FranchiseUtils');
 //9:30 AM, 1:00 PM, 4:05 PM, 4:25 PM, 7:10 PM, 8:15 PM, 8:20 PM, 10:20 PM
 const MADDEN_TIMES = [570,780,965,985,1150,1215,1220,1340];
 
-function setFranchise(franchise) {
-  franchise = franchise;
-  tables = FranchiseUtils.getTablesObject(franchise);
+function setFranchise(franchiseObj) {
+  franchise = franchiseObj;
+  tables = FranchiseUtils.getTablesObject(franchiseObj);
 }
 
 function convertTimeToMinutes(timeString) {
