@@ -632,7 +632,8 @@ franchise.on('ready', async function () {
 	newScheduleObject.year = scheduleObject.year;
 
 	// Attempt to transfer the new schedule JSON to the franchise file
-	let transferStatus = await TRANSFER_SCHEDULE_FUNCTIONS.transferSchedule(newScheduleObject, franchise);
+	TRANSFER_SCHEDULE_FUNCTIONS.setFranchise(franchise);
+	let transferStatus = await TRANSFER_SCHEDULE_FUNCTIONS.transferSchedule(newScheduleObject);
 
 	// If the transfer failed, inform the user and exit
 	if(!transferStatus)

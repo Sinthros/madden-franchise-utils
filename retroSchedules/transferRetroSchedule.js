@@ -118,7 +118,8 @@ franchise.on('ready', async function () {
 
   }
 
-  let transferStatus = await TRANSFER_SCHEDULE_FUNCTIONS.transferSchedule(sourceScheduleJson,franchise);
+  TRANSFER_SCHEDULE_FUNCTIONS.setFranchise(franchise);
+  let transferStatus = await TRANSFER_SCHEDULE_FUNCTIONS.transferSchedule(sourceScheduleJson);
   if(!transferStatus)
   {
     console.log("Unable to transfer schedule.");
