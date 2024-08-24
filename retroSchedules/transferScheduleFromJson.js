@@ -5,7 +5,8 @@
 
 // Requirements
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
-const { tables } = require('../Utils/FranchiseTableId');
+let tables = null;
+let franchise = null;
 const fs = require('fs');
 const teamLookup = JSON.parse(fs.readFileSync('teamLookup.json', 'utf8'));
 
@@ -16,6 +17,11 @@ const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 //9:30 AM, 1:00 PM, 4:05 PM, 4:25 PM, 7:10 PM, 8:15 PM, 8:20 PM, 10:20 PM
 const MADDEN_TIMES = [570,780,965,985,1150,1215,1220,1340];
+
+function setFranchise(franchiseObj) {
+  franchise = franchiseObj;
+  tables = FranchiseUtils.getTablesObject(franchiseObj);
+}
 
 function convertTimeToMinutes(timeString) {
   const match = timeString.match(/(\d+:\d+)\s*([APMapm]{2})/);
@@ -102,9 +108,9 @@ function countTargetRowsWithSeasonWeekType(table) {
 };
 
 
-async function getAllStartOccurrences(targetFranchise) {
-  const currentTimeTable = targetFranchise.getTableByUniqueId(tables.schedulerTable);
-  const seasonInfoTable = targetFranchise.getTableByUniqueId(tables.seasonInfoTable);
+async function getAllStartOccurrences() {
+  const currentTimeTable = franchise.getTableByUniqueId(tables.schedulerTable);
+  const seasonInfoTable = franchise.getTableByUniqueId(tables.seasonInfoTable);
 
   await currentTimeTable.readRecords();
   await seasonInfoTable.readRecords();
@@ -252,7 +258,7 @@ async function processGame(game, seasonGameTable, weekStartOccurrences,numGamesH
 };
 
 
-async function convertSchedule(sourceScheduleJson, seasonGameTable, TOTAL_GAMES, targetFranchise) {
+async function convertSchedule(sourceScheduleJson, seasonGameTable, TOTAL_GAMES) {
 
   console.log("Now working on inserting this schedule into your target Madden 24 Franchise file...");
 
@@ -267,17 +273,17 @@ async function convertSchedule(sourceScheduleJson, seasonGameTable, TOTAL_GAMES,
     schedulerTable,
     teamTable
   ] = await Promise.all([
-    targetFranchise.getTableByUniqueId(tables.pendingSeasonGamesTable).readRecords(),
-    targetFranchise.getTableByUniqueId(tables.practiceEvalTable).readRecords(),
-    targetFranchise.getTableByUniqueId(tables.seasonInfoTable).readRecords(),
-    targetFranchise.getTableByUniqueId(tables.seasonGameRequestTable).readRecords(),
-    targetFranchise.getTableByUniqueId(tables.franchiseUserTable).readRecords(),
-    targetFranchise.getTableByUniqueId(tables.gameEventTable).readRecords(),
-    targetFranchise.getTableByUniqueId(tables.schedulerAppointmentTable).readRecords(),
-    targetFranchise.getTableByUniqueId(tables.teamTable).readRecords()
+    franchise.getTableByUniqueId(tables.pendingSeasonGamesTable).readRecords(),
+    franchise.getTableByUniqueId(tables.practiceEvalTable).readRecords(),
+    franchise.getTableByUniqueId(tables.seasonInfoTable).readRecords(),
+    franchise.getTableByUniqueId(tables.seasonGameRequestTable).readRecords(),
+    franchise.getTableByUniqueId(tables.franchiseUserTable).readRecords(),
+    franchise.getTableByUniqueId(tables.gameEventTable).readRecords(),
+    franchise.getTableByUniqueId(tables.schedulerAppointmentTable).readRecords(),
+    franchise.getTableByUniqueId(tables.teamTable).readRecords()
   ]);
 
-  const {weekStartOccurrences,preseasonStartOccurrences} = await getAllStartOccurrences(targetFranchise);
+  const {weekStartOccurrences,preseasonStartOccurrences} = await getAllStartOccurrences();
 
   
   const currentWeek = seasonInfoTable.records[0]['CurrentWeek'];
@@ -350,12 +356,12 @@ async function convertSchedule(sourceScheduleJson, seasonGameTable, TOTAL_GAMES,
   
 };
 
-async function transferSchedule(sourceScheduleJson,targetFranchise) {
+async function transferSchedule(sourceScheduleJson) {
 
   const [
     seasonGameTable,
   ] = await Promise.all([
-    targetFranchise.getTableByUniqueId(tables.seasonGameTable).readRecords()
+    franchise.getTableByUniqueId(tables.seasonGameTable).readRecords()
   ]);
 
   const TOTAL_GAMES = countTargetRowsWithSeasonWeekType(seasonGameTable);
@@ -378,10 +384,11 @@ async function transferSchedule(sourceScheduleJson,targetFranchise) {
     console.log("This will still be able to transfer over to your target franchise file.");
   }  
   
-  await convertSchedule(sourceScheduleJson, seasonGameTable, TOTAL_GAMES, targetFranchise);
+  await convertSchedule(sourceScheduleJson, seasonGameTable, TOTAL_GAMES);
   return true;
 };
 
 module.exports = {
-  transferSchedule
+  transferSchedule,
+  setFranchise
 };

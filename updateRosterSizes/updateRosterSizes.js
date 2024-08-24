@@ -11,7 +11,7 @@ const validGameYears = [
 
 console.log("This program will calculate all roster sizes for all teams.");
 
-const franchise = FranchiseUtils.init(validGameYears);
+const franchise = FranchiseUtils.init(validGameYears, {promptForBackup: false});
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 franchise.on('ready', async function () {

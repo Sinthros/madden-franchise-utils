@@ -1722,15 +1722,6 @@ sourceFranchise.on('ready', async function () {
       await FranchiseUtils.fixPlayerTables(sourceFranchise);
     }
 
-  /*const allPlayerTables = sourceFranchise.getAllTablesByName('Player');
-
-    if (allPlayerTables.length > 1) {
-      console.log("******************************************************************************************")
-      console.log("Warning: Source file has more than one Player table, but this should still transfer over properly.");
-      console.log("******************************************************************************************")
-      await fixAllPlayerTables(sourceFranchise,allPlayerTables);
-    }
- */
     const sourceGameYear = sourceFranchise.schema.meta.gameYear // Get the game year of the source file
     const targetGameYear = targetFranchise.schema.meta.gameYear // Get the game year of the target file
     if (targetGameYear !== FranchiseUtils.YEARS.M24) {

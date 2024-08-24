@@ -6,7 +6,7 @@ const autoUnempty = true;
 
 console.log(`This program will regenerate Character Visuals for ALL players and coaches. This is only applicable for Madden ${gameYear} Franchise Files.`)
 
-const franchise = FranchiseUtils.init(gameYear,autoUnempty);
+const franchise = FranchiseUtils.init(gameYear,{isAutoUnemptyEnabled: autoUnempty});
 
 franchise.on('ready', async function () {
 
