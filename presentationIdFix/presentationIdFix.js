@@ -12,9 +12,9 @@ const validGames = [
 	FranchiseUtils.YEARS.M24,
 	FranchiseUtils.YEARS.M25
 ];
-const gameYear = FranchiseUtils.getGameYear(validGames);
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const franchise = FranchiseUtils.init(validGames);
 const tables = FranchiseUtils.getTablesObject(franchise);
+const gameYear = parseInt(franchise.schema.meta.gameYear);
 
 // If the game has the dynamic progression tool, inform the user and ask if they want to continue
 if(gameYear !== FranchiseUtils.YEARS.M23)

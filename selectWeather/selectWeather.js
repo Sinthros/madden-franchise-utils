@@ -3,15 +3,15 @@ const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 // Print tool header message
-console.log("This program will allow you to update the weather for a game in your Madden 24 franchise file. This tool must be run during the regular season or playoffs.\n")
+console.log("This program will allow you to update the weather for a game in your Madden 24 or 25 franchise file. This tool must be run during the regular season or playoffs.\n")
 
 // Set up franchise file
-const gameYear = FranchiseUtils.YEARS.M24;
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const validGameYears = [
+	FranchiseUtils.YEARS.M24,
+	FranchiseUtils.YEARS.M25
+];
+const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
-
-// List of week types when the tool can be run
-const validWeekTypes = ['RegularSeason','WildcardPlayoff','DivisionalPlayoff','ConferencePlayoff','SuperBowl'];
 
 // List of wind options
 const windOptions = ['Calm', 'LightBreeze', 'Moderate', 'VeryWindy'];
@@ -113,9 +113,6 @@ async function handleRoof(state, game, homeTeam, seasonGameTable, teamTable)
 
 
 franchise.on('ready', async function () {
-
-	// Validate that the file is for a valid game year
-	FranchiseUtils.validateGameYears(franchise,gameYear);
 	
     // Get required tables
 	const teamTable = franchise.getTableByUniqueId(tables.teamTable);
