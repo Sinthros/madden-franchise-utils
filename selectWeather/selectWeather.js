@@ -12,6 +12,7 @@ const validGameYears = [
 ];
 const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
+const gameYear = parseInt(franchise.schema.meta.gameYear);
 
 // List of wind options
 const windOptions = ['Calm', 'LightBreeze', 'Moderate', 'VeryWindy'];
@@ -25,7 +26,7 @@ const clearRand = FranchiseUtils.getRandomNumber(0,3);
 let weatherOptions = ['Snow', 'Rain (Warm)', 'Rain (Cold)', 'Clear (Warm)', 'Clear (Cold)', 'Overcast (Warm)', 'Overcast (Cold)'];
 
 // Weather values for each option in order of Wind, Precipitation, CloudCover, Weather, and Temperature values
-let snowValues = [windOptions[snowRand], 'Heavy', 'Overcast', 'Snow', 0];
+let snowValues = [windOptions[snowRand], gameYear >= FranchiseUtils.YEARS.M25 ? 'Medium' : 'Heavy', 'Overcast', 'Snow', 0]; // Override for M25 precipitation requirement
 let rainWarmValues = [windOptions[rainRand], 'Heavy', 'Overcast', 'Rain', 70];
 let rainColdValues = [windOptions[rainRand], 'Heavy', 'Overcast', 'Rain', 35];
 let clearWarmValues = [windOptions[clearRand], 'None', 'None', 'Clear', 70];
