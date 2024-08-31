@@ -5,11 +5,14 @@ const FranchiseUtils = require('../Utils/FranchiseUtils');
 const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
 
 // Print tool header message
-console.log("This program will update values for all players in a Madden 24 franchise file based on a lookup.\n")
+console.log("This program will update values for all players in a Madden 24/25 franchise file based on a lookup.\n")
 
 // Set up franchise file
-const gameYear = FranchiseUtils.YEARS.M24;
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const validGameYears = [
+	FranchiseUtils.YEARS.M24,
+	FranchiseUtils.YEARS.M25
+];
+const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 // Set up the excel lookup file
@@ -75,8 +78,6 @@ else if(Object.keys(lookupData[0]).length < (numSearchColumns + 1))
 }
 
 franchise.on('ready', async function () {
-
-	FranchiseUtils.validateGameYears(franchise,gameYear);
 
     // Get required tables
 	const playerTable = franchise.getTableByUniqueId(tables.playerTable);

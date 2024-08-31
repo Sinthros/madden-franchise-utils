@@ -1,17 +1,18 @@
 // Required modules
 const FranchiseUtils = require('../Utils/FranchiseUtils');
-const { tables } = require('../Utils/FranchiseTableId');
 
 // Print tool header message
-console.log("This program will update your Madden 24 franchise file to use the 6 team playoff format. This tool must be run during wildcard week.\n")
+console.log("This program will update your Madden 24/25 franchise file to use the 6 team playoff format. This tool must be run during wildcard week.\n")
 
 // Set up franchise file
-const gameYear = FranchiseUtils.YEARS.M24;
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const validGameYears = [
+	FranchiseUtils.YEARS.M24,
+	FranchiseUtils.YEARS.M25
+];
+const franchise = FranchiseUtils.init(validGameYears);
+const tables = FranchiseUtils.getTablesObject(franchise);
 
 franchise.on('ready', async function () {
-
-	FranchiseUtils.validateGameYears(franchise,gameYear);
 	
     // Get required tables
 	const teamTable = franchise.getTableByUniqueId(tables.teamTable);
@@ -78,16 +79,17 @@ franchise.on('ready', async function () {
 			let teamRowBinVal = homeTeamBinVal.slice(15);
 			let homeTeamRowNum = await FranchiseUtils.bin2Dec(teamRowBinVal);
 			
-			// If the home team is the 2 seed, update the game type to offseason
+			// If the home team is the 2 seed, update the game type to offseason and set the away team ref to the home team (2 seed) ref
 			if(twoSeedTeamRows.includes(homeTeamRowNum))
 			{
 				seasonGameTable.records[j]['SeasonWeekType'] = 'OffSeason';
+				seasonGameTable.records[j]['AwayTeam'] = homeTeamBinVal;
 			}
 		}
     }
 	
 	// Program complete, so print success message, save the franchise file, and exit
-	console.log("\nPlayoff format updated successfully.\n");
+	console.log("\nPlayoff format updated successfully. If you are usering one of the 2 seeds, do not attempt to play the \"game\" that appears in the menu during wildcard week. If you do, the game will crash.\n");
     await FranchiseUtils.saveFranchiseFile(franchise);
 	FranchiseUtils.EXIT_PROGRAM();
   

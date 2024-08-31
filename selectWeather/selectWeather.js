@@ -3,15 +3,16 @@ const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 // Print tool header message
-console.log("This program will allow you to update the weather for a game in your Madden 24 franchise file. This tool must be run during the regular season or playoffs.\n")
+console.log("This program will allow you to update the weather for a game in your Madden 24 or 25 franchise file. This tool must be run during the regular season or playoffs.\n")
 
 // Set up franchise file
-const gameYear = FranchiseUtils.YEARS.M24;
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const validGameYears = [
+	FranchiseUtils.YEARS.M24,
+	FranchiseUtils.YEARS.M25
+];
+const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
-
-// List of week types when the tool can be run
-const validWeekTypes = ['RegularSeason','WildcardPlayoff','DivisionalPlayoff','ConferencePlayoff','SuperBowl'];
+const gameYear = parseInt(franchise.schema.meta.gameYear);
 
 // List of wind options
 const windOptions = ['Calm', 'LightBreeze', 'Moderate', 'VeryWindy'];
@@ -25,7 +26,7 @@ const clearRand = FranchiseUtils.getRandomNumber(0,3);
 let weatherOptions = ['Snow', 'Rain (Warm)', 'Rain (Cold)', 'Clear (Warm)', 'Clear (Cold)', 'Overcast (Warm)', 'Overcast (Cold)'];
 
 // Weather values for each option in order of Wind, Precipitation, CloudCover, Weather, and Temperature values
-let snowValues = [windOptions[snowRand], 'Heavy', 'Overcast', 'Snow', 0];
+let snowValues = [windOptions[snowRand], gameYear >= FranchiseUtils.YEARS.M25 ? 'Medium' : 'Heavy', 'Overcast', 'Snow', 0]; // Override for M25 precipitation requirement
 let rainWarmValues = [windOptions[rainRand], 'Heavy', 'Overcast', 'Rain', 70];
 let rainColdValues = [windOptions[rainRand], 'Heavy', 'Overcast', 'Rain', 35];
 let clearWarmValues = [windOptions[clearRand], 'None', 'None', 'Clear', 70];
@@ -113,9 +114,6 @@ async function handleRoof(state, game, homeTeam, seasonGameTable, teamTable)
 
 
 franchise.on('ready', async function () {
-
-	// Validate that the file is for a valid game year
-	FranchiseUtils.validateGameYears(franchise,gameYear);
 	
     // Get required tables
 	const teamTable = franchise.getTableByUniqueId(tables.teamTable);
