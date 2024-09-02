@@ -15,10 +15,10 @@ const sigAbilityJson = JSON.parse(fs.readFileSync('lookupFiles/signature_abiliti
 const allAssetNames = Object.keys(JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8')));
 const presentationIdLookup = JSON.parse(fs.readFileSync('lookupFiles/presentation_id_lookup.json', 'utf-8'));
 const commentaryLookup = JSON.parse(fs.readFileSync('lookupFiles/commentary_lookup.json', 'utf-8'));
-const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
-const TRANSFER_SCHEDULE_FUNCTIONS = require('../Utils/transferSchedule');
-const FranchiseUtils = require('../Utils/FranchiseUtils');
-const { tables } = require('../Utils/FranchiseTableId');
+const characterVisualFunctions = require('../../Utils/characterVisualsLookups/characterVisualFunctions');
+const TRANSFER_SCHEDULE_FUNCTIONS = require('../../Utils/transferSchedule');
+const FranchiseUtils = require('../../Utils/FranchiseUtils');
+const { tables } = require('../../Utils/FranchiseTableId');
 const DEFAULT_PLAYER_ROW = 755;
 
 const VALID_GAME_YEARS = [FranchiseUtils.YEARS.M22,FranchiseUtils.YEARS.M24];
@@ -134,7 +134,7 @@ async function importTables(tableToEdit,filePath,keepColumns,deleteColumns,zeroC
   const table = await importTableData({ inputFilePath: filePath });
 
   await table.forEach(async function (record,i) { //If the TalentStatus column exists, do this check
-    numCheck = await FranchiseUtils.hasNumber(record.TalentStatus);
+    numCheck = FranchiseUtils.hasNumber(record.TalentStatus);
     if (numCheck) {
       record.TalentStatus = 'NotOwned';
       checkInvalidRows.push(i);
@@ -971,7 +971,7 @@ async function handleTable(sourceFranchise,targetFranchise,currentTable,ignoreCo
       if (currentCol === 'InjurySeverity' || currentCol === 'CaptainsPatch' || currentCol === 'PLYR_HOME_STATE' || currentCol === 'PlayerVisMoveType' || currentCol === 'TRAIT_COVER_BALL') {
         // We have to do this because Madden is...
         sourceFranchise._settings['autoUnempty'] = false;
-        let numberCheck = await FranchiseUtils.hasNumber(currentTable.records[rows][currentCol]);
+        let numberCheck = FranchiseUtils.hasNumber(currentTable.records[rows][currentCol]);
   
         if (numberCheck) {
           if (currentCol === 'PlayerVisMoveType') {

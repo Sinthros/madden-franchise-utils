@@ -7,8 +7,10 @@
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 let tables = null;
 let franchise = null;
+const path = require('path');
 const fs = require('fs');
-const teamLookup = JSON.parse(fs.readFileSync('teamLookup.json', 'utf8'));
+const teamLookupPath = path.join(__dirname, 'teamLookup.json');
+const teamLookup = JSON.parse(fs.readFileSync(teamLookupPath, 'utf8'));
 
 const REGULAR_SEASON_WEEKS = 18;
 const PRESEASON_WEEKS = 4;
@@ -385,6 +387,7 @@ async function transferSchedule(sourceScheduleJson) {
   }  
   
   await convertSchedule(sourceScheduleJson, seasonGameTable, TOTAL_GAMES);
+  console.log("Did we do it?")
   return true;
 };
 

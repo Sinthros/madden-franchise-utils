@@ -160,6 +160,7 @@ const tables = {
     //Acquisition tables
     playerAcquisitionEvaluationTable: 2531183555,
     playerAcquisitionEvaluationArrayTable: 498911520,
+    playerAcquisitionEvaluationArrayArrayTable: 427676823,
 
     // Stadium
     stadiumPartInfoTable: 3336445590,
@@ -311,6 +312,7 @@ const tablesM25 = {
     teamTradePackageTable: 1052474922,
     playerAcquisitionEvaluationTable: 2531183555,
     playerAcquisitionEvaluationArrayTable: 583473893,
+    playerAcquisitionEvaluationArrayArrayTable: 1502069987,
     stadiumPartInfoTable: 3336445590,
     stadiumTable: 2511317894,
     presentationTable: 3947910319,

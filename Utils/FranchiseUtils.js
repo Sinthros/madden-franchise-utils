@@ -670,8 +670,7 @@ async function emptyResignTable(franchise) {
     const resignTable = franchise.getTableByUniqueId(tables.reSignTable);
     const resignArrayTable = franchise.getTableByUniqueId(tables.reSignArrayTable);
     await readTableRecords([resignTable,resignArrayTable]);
-    console.log(resignTable.header.recordCapacity)
-
+    
     const defaultColumns = {
       "Team": ZERO_REF,
       "Player": ZERO_REF,
