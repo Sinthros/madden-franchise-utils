@@ -182,6 +182,7 @@ const tablesM25 = {
     depthChartPlayerTable: 889352590,
     practiceSquadTable: 1504607832,
     draftClassTable: 786598926,
+    focusTrainingTable: 80738141,
 
     // As of M25, Offense/Defensive active abilities are separated to 2 tables
     offenseActiveAbilityArrayTable: 4183613527,
@@ -317,14 +318,9 @@ const tablesM25 = {
     hallOfFamePlayerTable: 2752828393,
     retiredCoachTable: 2068722924,
     hallOfFameCoachTable: 1455634092,
-    negotiationTable: 298416424,
     pendingSeasonGameTable: 2877284424,
     draftInfoTable: 1709168449,
     teamSeasonStatsTable: 1663182587,
-    activeTalentTreeTable: 1386036480,
-    talentNodeStatusTable: 4148550679,
-    talentNodeStatusArrayTable: 2516681065,
-    talentSubTreeStatusTable: 1725084110,
     advanceStageRequestTable: 3867341041,
     advanceStageRequestArrayTable: 41989759,
     manageRosterRequestTable: 3307901321,
