@@ -53,6 +53,7 @@ const OLINE_POSITIONS = ['LT','LG','C','RG','RT'];
 const DEFENSIVE_LINE_POSITIONS = ['DT','LE','RE'];
 const LINEBACKER_POSITIONS = ['MLB','LOLB','ROLB'];
 const DEFENSIVE_BACK_POSITIONS = ['CB','FS','SS'];
+const ALL_DEFENSIVE_POSITIONS = [...DEFENSIVE_LINE_POSITIONS, ...LINEBACKER_POSITIONS, ...DEFENSIVE_BACK_POSITIONS];
 const SPECIAL_TEAM_POSITIONS = ['K','P'];
 
 const COACH_SKIN_TONES = ['SkinTone1', 'SkinTone2', 'SkinTone3', 'SkinTone4', 'SkinTone5', 'SkinTone6', 'SkinTone7'];
@@ -111,17 +112,21 @@ const CPU_CONTROL_SETTINGS = [
  * @param {boolean} [options.isAutoUnemptyEnabled=false] - If true, rows will always be unemptied upon editing. If you aren't sure, leave this as false.
  * @param {boolean} [options.isFtcFile=false] - Is the franchise file an FTC file?
  * @param {boolean} [options.promptForBackup=true] - Prompt the user to make a backup of their selected save file?
+ * @param {boolean} [options.customYearMessage=null] - Custom message when selecting a valid year.
+ * @param {boolean} [options.customFranchiseMessage=null] - Custom message when selecting a franchise file.
  * @returns {Object} - The Franchise object.
  */
 function init(validGameYears, options = {}) {
   const {
     isAutoUnemptyEnabled = false,
     isFtcFile = false,
-    promptForBackup = true
+    promptForBackup = true,
+    customYearMessage = null,
+    customFranchiseMessage = null,
   } = options;
 
-  const gameYear = getGameYear(validGameYears);
-  const franchise = selectFranchiseFile(gameYear, isAutoUnemptyEnabled, isFtcFile);
+  const gameYear = getGameYear(validGameYears, customYearMessage);
+  const franchise = selectFranchiseFile(gameYear, isAutoUnemptyEnabled, isFtcFile, customFranchiseMessage);
   validateGameYears(franchise, validGameYears);
 
   if (promptForBackup) {
@@ -153,7 +158,7 @@ function init(validGameYears, options = {}) {
  * @param {boolean} [isFtcFile=false] - Whether the file is an FTC file. You can almost always leave this as false.
  * @returns {Object} - The selected Franchise object.
  */
-function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile = false) {
+function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile = false, customMessage = null) {
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
   const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
   const filePrefix = isFtcFile ? FTC_FILE_INIT_KWD : BASE_FILE_INIT_KWD;
@@ -170,7 +175,11 @@ function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile =
 
   while (true) {
     try {
-      console.log(`Please enter the name of your Madden ${gameYear} franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.`);
+      const defaultMessage = `Please enter the name of your Madden ${gameYear} franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.`;
+
+      const message = customMessage !== null ? customMessage : defaultMessage;
+      console.log(message);
+      
       let fileName = prompt().trim(); // Remove leading/trailing spaces
 
       if (fileName === "0") {
@@ -299,7 +308,7 @@ async function readTableRecords(tablesList, continueIfError = false, franchise =
 
  * @returns {number} - Returns the selected gameYear
  */
-function getGameYear(validGameYears) {
+function getGameYear(validGameYears, customMessage = null) {
     // If we didn't pass through an array, simply return the value
     if (!Array.isArray(validGameYears)) {
         return parseInt(validGameYears);
@@ -313,7 +322,9 @@ function getGameYear(validGameYears) {
     const validGameYearsStr = validGameYears.map(String);
 
     while (true) {
-        console.log(`Select the version of Madden your franchise file uses. Valid inputs are ${validGameYears.join(', ')}`);
+        const defaultMessage = `Select the version of Madden your franchise file uses. Valid inputs are ${validGameYears.join(', ')}`;
+        const message = customMessage !== null ? customMessage : defaultMessage;
+        console.log(message);
         gameYear = prompt();
 
         if (validGameYearsStr.includes(String(gameYear))) {
@@ -437,27 +448,26 @@ async function emptyHistoryTables(franchise) {
             }
         }
      }
+
+     const defaultColumns = {
+      "OldTeam": ZERO_REF,
+      "NewTeam": ZERO_REF,
+      "SeasonYear": 0,
+      "TransactionId": 0,
+      "SeasonStage": "PreSeason",
+      "ContractStatus": "Drafted",
+      "OldContractStatus": "Drafted",
+      "SeasonWeek": 0,
+      "FifthYearOptionCapHit": 0,
+      "ContractLength": 0,
+      "ContractTotalSalary": 0,
+      "CapSavingsThisYear": 0,
+      "ContractBonus": 0,
+      "ContractSalary": 0
+    };
+
+    emptyTable(transactionHistoryEntry, defaultColumns);
   
-    for (let i = 0; i < transactionHistoryEntry.header.recordCapacity;i++) {
-        if (!transactionHistoryEntry.records[i].isEmpty) {
-        const record = transactionHistoryEntry.records[i];
-        record.OldTeam = ZERO_REF;
-        record.NewTeam = ZERO_REF;
-        record.SeasonYear = 0;
-        record.TransactionId = 0;
-        record.SeasonStage = 'PreSeason';
-        record.ContractStatus = 'Drafted';
-        record.OldContractStatus = 'Drafted';
-        record.SeasonWeek = 0;
-        record.FifthYearOptionCapHit = 0;
-        record.ContractLength = 0;
-        record.ContractTotalSalary = 0;
-        record.CapSavingsThisYear = 0;
-        record.ContractBonus = 0;
-        record.ContractSalary = 0;
-        record.empty();
-        }
-     }
     // I wouldn't recommend using this part - It shouldn't be necessary and has over 65k rows
     /*for (let i = 0; i < historyEntry.header.recordCapacity;i++) {
         if (!historyEntry.records[i].isEmpty) {
@@ -482,21 +492,19 @@ async function emptyHistoryTables(franchise) {
 };
 
 
-async function formatHeaders(table) {
+function getColumnNames(table) {
   if (table.offsetTable) {
-      if (this.showHeaderTypes) {
-          return table.offsetTable.map((offset) => {
-              return `${offset.name} <div class="header-type">${offset.type}</div>`;
-          });
-      } else {
-          return table.offsetTable.map((offset) => {
-              return offset.name;
-          });
-      }
+    return table.offsetTable.map((offset) => {
+      return offset.name;
+    });
+  } else if (table._offsetTable) {
+    return table._offsetTable.map((offset) => {
+      return offset.name;
+    });
   } else {
-      return [];
+    return [];
   }
-};
+}
 
 /**
  * Empties the Character Visuals table entirely.
@@ -507,20 +515,13 @@ async function formatHeaders(table) {
 async function emptyCharacterVisualsTable(franchise) {
     const tables = getTablesObject(franchise);
     const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
-    await characterVisuals.readRecords();
-  
-    for (let i = 0; i < characterVisuals.header.recordCapacity;i++) {
-      const record = characterVisuals.records[i];
-        if (!record.isEmpty) {
-          record.RawData = {};
-          record.empty();
-        }
-    }
+    await readTableRecords([characterVisuals]);
+
+    emptyTable(characterVisuals, {"RawData": {}});
 };
 
 // Regenerates all marketing tables based on top player personalities in the file
 // franchise: Your franchise object
-// tables: The tables object from FranchiseTableId
 async function regenerateMarketingTables(franchise) {
     const tables = getTablesObject(franchise);
     const playerTable = franchise.getTableByUniqueId(tables.playerTable);
@@ -625,41 +626,39 @@ async function emptyAcquisitionTables(franchise) {
     const tables = getTablesObject(franchise);
     const playerAcquisitionEvaluation = franchise.getTableByUniqueId(tables.playerAcquisitionEvaluationTable);
     const playerAcquisitionEvaluationArray = franchise.getTableByUniqueId(tables.playerAcquisitionEvaluationArrayTable);
-  
-    await playerAcquisitionEvaluation.readRecords();
-    await playerAcquisitionEvaluationArray.readRecords();
-  
-    for (let i = 0; i < playerAcquisitionEvaluation.header.recordCapacity;i++) {
-      if (playerAcquisitionEvaluation.records[i].isEmpty) {
-        continue;
-      }
 
-      const record = playerAcquisitionEvaluation.records[i];
-      record.Player = ZERO_REF;
-      record.IsPlayerSuperstar = false;
-      record.IsPlayerXFactor = false;
-      record.AddedValue = 0;
-      record.DevelopmentValue = 0;
-      record.Value = 0;
-      record.FreeAgentComparisonValue = 0;
-      record.ImportanceValue = 0;
-      record.TeamSchemeOverallValue = 0;
-      record.TeamTradePhilosophyValue = 0;
-      record.AcquisitionType = "Signed";
-      record.Rank = 0;
-      record.BestSchemeOverallValue = 0;
-      record.CoachTradeInfluenceValue = 0;
-      record.ContractValue = 0;
-      record.IsPlayerHidden = false;
-      record.empty();
-    }
   
-    for (let i = 0; i < playerAcquisitionEvaluationArray.header.recordCapacity;i++) {
-      if (playerAcquisitionEvaluationArray.records[i].isEmpty) {
-        continue;
-      }
-      for (j = 0; j < playerAcquisitionEvaluationArray.header.numMembers;j++) {
-        playerAcquisitionEvaluationArray.records[i][`PlayerAcquisitionEvaluation${j}`] = ZERO_REF;
+
+    await readTableRecords([playerAcquisitionEvaluation, playerAcquisitionEvaluationArray]);
+
+    const defaultColumns = {
+      "Player": ZERO_REF,
+      "IsPlayerSuperstar": false,
+      "IsPlayerXFactor": false,
+      "AddedValue": 0,
+      "DevelopmentValue": 0,
+      "Value": 0,
+      "FreeAgentComparisonValue": 0,
+      "ImportanceValue": 0,
+      "TeamSchemeOverallValue": 0,
+      "TeamTradePhilosophyValue": 0,
+      "AcquisitionType": "Signed",
+      "Rank": 0,
+      "BestSchemeOverallValue": 0,
+      "CoachTradeInfluenceValue": 0,
+      "ContractValue": 0,
+      "IsPlayerHidden": false
+    };
+
+    emptyTable(playerAcquisitionEvaluation, defaultColumns);
+  
+    for (let i = 0; i < playerAcquisitionEvaluationArray.header.recordCapacity; i++) {
+      const record = playerAcquisitionEvaluationArray.records[i];
+
+      if (!record.isEmpty) {
+        for (let j = 0; j < playerAcquisitionEvaluationArray.header.numMembers; j++) {
+          record[`PlayerAcquisitionEvaluation${j}`] = ZERO_REF;
+        }
       }
     }
   
@@ -669,56 +668,119 @@ async function emptyAcquisitionTables(franchise) {
 async function emptyResignTable(franchise) {
     const tables = getTablesObject(franchise);
     const resignTable = franchise.getTableByUniqueId(tables.reSignTable);
-    const resignArrayTable = franchise.getTableByUniqueId(tables.reSignArrayTable)
-    await resignTable.readRecords();
-    await resignArrayTable.readRecords();
+    const resignArrayTable = franchise.getTableByUniqueId(tables.reSignArrayTable);
+    await readTableRecords([resignTable,resignArrayTable]);
+    console.log(resignTable.header.recordCapacity)
 
-    for (let i = 0; i < resignTable.header.recordCapacity; i++) {
-        //Iterate through resign table and set default values
+    const defaultColumns = {
+      "Team": ZERO_REF,
+      "Player": ZERO_REF,
+      "ActiveRequestID": "-2147483648",
+      "NegotiationWeek": 0,
+      "TeamReSignInterest": 0,
+      "ContractSalary": 0,
+      "NegotiationCount": 0,
+      "PlayerReSignInterest": 0,
+      "ContractBonus": 0,
+      "PreviousOfferedContractBonus": 0,
+      "PreviousOfferedContractSalary": 0,
+      "FairMarketContractBonus": 0,
+      "FairMarketContractSalary": 0,
+      "ActualDesiredContractBonus": 0,
+      "ActualDesiredContractSalary": 0,
+      "LatestOfferStage": "PreSeason",
+      "ContractLength": 0,
+      "FairMarketContractLength": 0,
+      "PreviousOfferedContractLength": 0,
+      "PreviousReSignStatus": "Invalid",
+      "ReSignStatus": "NotReady",
+      "LatestOfferWeek": 0,
+      "PlayerPreviousReSignInterest": 0,
+      "InitialContract": false,
+      "NegotiationsEnded": false,
+      "ActualDesiredContractLength": 0
+    };
 
-        const resignRecord = resignTable.records[i];
-        resignRecord.Team = ZERO_REF;
-        resignRecord.Player = ZERO_REF;
-        resignRecord.ActiveRequestID = "-2147483648";
-        resignRecord.NegotiationWeek = 0;
-        resignRecord.TeamReSignInterest = 0;
-        resignRecord.ContractSalary = 0;
-        resignRecord.NegotiationCount = 0;
-        resignRecord.PlayerReSignInterest = 0;
-        resignRecord.ContractBonus = 0;
-        resignRecord.PreviousOfferedContractBonus = 0;
-        resignRecord.PreviousOfferedContractSalary = 0;
-        resignRecord.FairMarketContractBonus = 0;
-        resignRecord.FairMarketContractSalary = 0;
-        resignRecord.ActualDesiredContractBonus = 0;
-        resignRecord.ActualDesiredContractSalary = 0;
-        resignRecord.LatestOfferStage = "PreSeason";
-        resignRecord.ContractLength = 0;
-        resignRecord.FairMarketContractLength = 0;
-        resignRecord.PreviousOfferedContractLength = 0;
-        resignRecord.PreviousReSignStatus = "Invalid";
-        resignRecord.ReSignStatus = "NotReady";
-        resignRecord.LatestOfferWeek = 0;
-        resignRecord.PlayerPreviousReSignInterest = 0;
-        resignRecord.InitialContract = false;
-        resignRecord.NegotiationsEnded = false;
-        resignRecord.ActualDesiredContractLength = 0;
-        
+    emptyTable(resignTable, defaultColumns);
 
-
-        //This results in every row being emptied
-        if (!resignRecord.isEmpty) {
-            resignRecord.empty();
-        }
-
-    }
 
     //Iterate through the resign array table and zero everything out
     for (let i = 0; i < resignArrayTable.header.numMembers; i++) {
         resignArrayTable.records[0][`PlayerReSignNegotiation${i}`] = ZERO_REF;
     }
-  
 };
+
+
+
+/**
+ * Empties all records in the input table and sets default values for specified columns.
+ * You can view FranchiseUtils.emptyResignTable() for a full example of using this function
+ *
+ * @param {Object} table - The table object containing records to be emptied.
+ * @param {Object} [defaultColumns={}] - An optional object where keys are column names and values are the default values to set.
+ */
+function emptyTable(table, defaultColumns = {}) {
+  const entries = Object.entries(defaultColumns);
+  const tableColumns = getColumnNames(table);
+
+  for (let i = 0; i < table.header.recordCapacity; i++) {
+    const record = table.records[i];
+
+    // Set default values for specified columns
+    for (const [key, value] of entries) {
+      if (tableColumns.includes(key)) {
+        record[key] = value;
+      }
+    }
+
+    // Empty the record if it's not already empty
+    if (!record.isEmpty) {
+      record.empty();
+    }
+  }
+}
+
+
+/**
+ * Adds a record to the targetTable by copying all values into the first empty row of the table.
+ * This was created for the Franchise Transfer Tool.
+ * If using this function, make SURE you set isAutoUnemptyEnabled = true
+ *
+ * @param {Object} record - The record to add to the targetTable. For example, this could be table.records[0].
+ * @param {Object} [targetTable] - The table to add the record to.
+ * @param {Object} [columnLookup={}] - This is only needed if transferring between different games, as schema values may differ in certain columns.
+ */
+function addRecordToTable(record, targetTable, options = {}) {
+
+  const {
+    columnLookup = {},
+    zeroColumns = [],
+    keepColumns = [],
+    ignoreColumns = [],
+    useSameIndex = false,
+  } = options;
+
+  const isEmpty = record.isEmpty;
+  const recordColumns = getColumnNames(record);
+  const tableColumns = getColumnNames(targetTable);
+  const recordIndex =  useSameIndex ? record.index : targetTable.header.nextRecordToUse;
+  const targetTableRecord = targetTable.records[recordIndex];
+
+  for (const column of recordColumns) {
+    // Only update if the column is valid in the target table
+    if (tableColumns.includes(column) && !ignoreColumns.includes(column) && (keepColumns.length === 0 || keepColumns.includes(column))) {
+      const validColumns = columnLookup[column] || {};
+      const value = record[column];
+      // Check if validColumns is an object and has the value
+      const finalValue = zeroColumns.includes(column) ? ZERO_REF : (validColumns && value in validColumns) ? validColumns[value] : value;
+      targetTableRecord[column] = finalValue;
+    }
+  }
+
+  if (isEmpty) {
+    targetTableRecord.empty();
+  }
+}
 
 // This function will remove a binary value from an array table
 // It will iterate through each row and look for the binary. If multiple rows/columns
@@ -865,7 +927,7 @@ async function fixPlayerTables(franchise) {
     const originalPlayerBin = getBinaryReferenceData(currentTable.header.tableId,0);
     const newPlayerBin = getBinaryReferenceData(mainPlayerTable.header.tableId,nextPlayerRecord);
     
-    const columnHeaders = await formatHeaders(currentTable) //Get the headers from the table
+    const columnHeaders = getColumnNames(currentTable) //Get the headers from the table
     for (let j = 0;j < columnHeaders.length;j++) {
       let currentCol = columnHeaders[j];
       mainPlayerTable.records[nextPlayerRecord][currentCol] = currentTable.records[0][currentCol];
@@ -876,7 +938,7 @@ async function fixPlayerTables(franchise) {
       const currentRelatedTable = franchise.getTableById(currentTableId);
       await currentRelatedTable.readRecords();
 
-      const currentRelatedHeaders = await formatHeaders(currentRelatedTable) //Get the headers from the table
+      const currentRelatedHeaders = getColumnNames(currentRelatedTable) //Get the headers from the table
 
 
       try {
@@ -1198,7 +1260,7 @@ function validateGameYears(franchise, validGameYears) {
 function EXIT_PROGRAM() {
   console.log("Enter anything to exit.");
   prompt();
-  process.exit(0);
+  process.exit(1);
 };
 
 /**
@@ -1330,9 +1392,25 @@ function dec2bin(dec) {
  * @param {string} input - The string to check for numeric digits.
  * @returns {Promise<boolean>} - Returns true if the string contains at least one numeric digit, otherwise false.
  */
-async function hasNumber(input) {
+function hasNumber(input) {
   return /\d/.test(input);
 };
+
+/**
+ * Finds the key associated with a given value in an object.
+ * 
+ * @param {Object} obj - The object to search through.
+ * @param {*} value - The value to find the associated key for.
+ * @returns {string|null} - The key associated with the value, or null if not found.
+ */
+function findKeyByValue(obj, value) {
+  for (const [key, val] of Object.entries(obj)) {
+    if (val === value) {
+      return key;
+    }
+  }
+  return null;  // Return null if the value is not found
+}
   
 
 
@@ -1344,6 +1422,7 @@ module.exports = {
     getGameYear,
     readTableRecords,
     getTablesObject,
+    getColumnNames,
     calculateBestOverall,
     emptyHistoryTables,
     removeFromTable,
@@ -1351,6 +1430,8 @@ module.exports = {
     regenerateMarketingTables,
     emptyAcquisitionTables,
     emptyResignTable,
+    emptyTable,
+    addRecordToTable,
     recalculateRosterSizes,
     hasMultiplePlayerTables,
     fixPlayerTables,
@@ -1365,6 +1446,7 @@ module.exports = {
     bin2Dec,
     dec2bin,
     hasNumber,
+    findKeyByValue,
     isValidPlayer,
     validateGameYears,
     EXIT_PROGRAM,
@@ -1381,6 +1463,7 @@ module.exports = {
     DEFENSIVE_LINE_POSITIONS,
     LINEBACKER_POSITIONS,
     DEFENSIVE_BACK_POSITIONS,
+    ALL_DEFENSIVE_POSITIONS,
     SPECIAL_TEAM_POSITIONS,
     COACH_SKIN_TONES,
     COACH_APPAREL,
