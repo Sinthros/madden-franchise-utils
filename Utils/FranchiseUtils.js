@@ -436,23 +436,8 @@ async function emptyHistoryTables(franchise) {
     const transactionHistoryEntry = franchise.getTableByUniqueId(tables.transactionHistoryEntry);
     await readTableRecords([historyEntryArray,historyEntry,transactionHistoryArray,transactionHistoryEntry]);
   
-    for (let i = 0; i < historyEntryArray.header.recordCapacity;i++) {
-        if (!historyEntryArray.records[i].isEmpty) {
-            for (let j = 0; j < historyEntryArray.header.numMembers;j++) {
-            historyEntryArray.records[i][`HistoryEntry${j}`] = ZERO_REF;
-
-            }
-        }
-     }
-  
-    for (let i = 0; i < transactionHistoryArray.header.recordCapacity;i++) {
-        if (!transactionHistoryArray.records[i].isEmpty) {
-            for (let j = 0; j < transactionHistoryArray.header.numMembers;j++) {
-            transactionHistoryArray.records[i][`TransactionHistoryEntry${j}`] = ZERO_REF;
-
-            }
-        }
-     }
+    clearArrayTable(historyEntryArray);
+    clearArrayTable(transactionHistoryArray);
 
      const defaultColumns = {
       "OldTeam": ZERO_REF,
@@ -544,9 +529,9 @@ async function regenerateMarketingTables(franchise) {
       let bestPersonalityArray = [];
   
       const teamIndex = teamRecord.TeamIndex;
-      const marketedPlayersRow = await bin2Dec(teamRecord.MarketedPlayers.slice(15));
+      const marketedPlayersRow = bin2Dec(teamRecord.MarketedPlayers.slice(15));
       const filteredRecords = playerTable.records.filter(record => !record.isEmpty); // Filter for where the rows aren't empty
-      const bestPersonalityPlayers = filteredRecords.filter(record => record.ContractStatus === 'Signed' && record.TeamIndex === teamIndex); // Filter nonempty players for where they're signed
+      const bestPersonalityPlayers = filteredRecords.filter(record => record.ContractStatus === CONTRACT_STATUSES.SIGNED && record.TeamIndex === teamIndex); // Filter nonempty players for where they're signed
   
       // Sort the bestPersonalityPlayers array based on PersonalityRating and then OverallRating
       const top5Players = bestPersonalityPlayers.sort((a, b) => {
@@ -571,7 +556,7 @@ async function regenerateMarketingTables(franchise) {
     }
   
     let bestPersonalityArray = [];
-    let filteredRecords = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === 'Signed'); // Filter for where the rows aren't empty
+    let filteredRecords = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.SIGNED); // Filter for where the rows aren't empty
     
     // Sort the filteredRecords array based on PersonalityRating and then OverallRating
     const topTen = filteredRecords.sort((a, b) => {
@@ -593,7 +578,7 @@ async function regenerateMarketingTables(franchise) {
   
     bestPersonalityArray = [];
   
-    filteredRecords = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === 'Signed'); // Filter for where the rows aren't empty
+    filteredRecords = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.SIGNED); // Filter for where the rows aren't empty
     
     const topPlayers = filteredRecords.sort((a, b) => {
       return b.OverallRating - a.OverallRating; // Sort by OverallRating in descending order
@@ -626,13 +611,73 @@ async function regenerateMarketingTables(franchise) {
     }
 };
 
+async function generateActiveAbilityPlayers(franchise) {
+  const tables = getTablesObject(franchise);
+  const teamTable = franchise.getTableByUniqueId(tables.teamTable);
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  await readTableRecords([teamTable,playerTable]);
+
+
+  for (let i = 0; i < teamTable.header.recordCapacity; i++) {
+    const record = teamTable.records[i];
+
+    if (!record.isEmpty && record.OffenseActiveAbilitiesPlayers !== ZERO_REF) {
+      const teamIndex = record.TeamIndex;
+      const defenseAbilityRef = record.DefenseActiveAbilitiesPlayers;
+      const offenseAbilityRef = record.OffenseActiveAbilitiesPlayers;
+
+      const offenseTableId = bin2Dec(offenseAbilityRef.slice(0,15));
+      const defenseTableId = bin2Dec(defenseAbilityRef.slice(0,15));
+      
+      const defenseRowNum = bin2Dec(defenseAbilityRef.slice(15));
+      const offenseRowNum = bin2Dec(offenseAbilityRef.slice(15));
+
+      const offenseTable = franchise.getTableById(offenseTableId);
+      const defenseTable = franchise.getTableById(defenseTableId);
+
+      await readTableRecords([offenseTable,defenseTable]);
+
+      const offenseRecord = offenseTable.records[offenseRowNum];
+      const defenseRecord = defenseTable.records[defenseRowNum];
+
+      for (j = 0; j < offenseTable.header.numMembers; j++) {
+        offenseRecord[`Player${j}`] = ZERO_REF;
+        defenseRecord[`Player${j}`] = ZERO_REF;
+      }
+
+      const players = playerTable.records.filter(record => record.ContractStatus === 'Signed' && record.TeamIndex === teamIndex
+        && record.TraitDevelopment === 'XFactor'
+      );
+
+      const offensivePlayers = players.filter(record => OFFENSIVE_SKILL_POSITIONS.includes(record.Position));
+      const defensivePlayers = players.filter(record => ALL_DEFENSIVE_POSITIONS.includes(record.Position));
+
+      // Sort and keep top 3 offensive players by OverallRating (descending)
+      const topOffensivePlayers = offensivePlayers.sort((a, b) => b.OverallRating - a.OverallRating).slice(0, offenseTable.header.numMembers);
+
+      // Sort and keep top 3 defensive players by OverallRating (descending)
+      const topDefensivePlayers = defensivePlayers.sort((a, b) => b.OverallRating - a.OverallRating).slice(0, defenseTable.header.numMembers);
+
+      // Iterate through the top offensive players using for...of with index
+      for (const [i, player] of topOffensivePlayers.entries()) {
+        const playerBinary = getBinaryReferenceData(playerTable.header.tableId,player.index);
+        offenseRecord[`Player${i}`] = playerBinary;
+      }
+
+      // Iterate through the top defensive players using for...of with index
+      for (const [i, player] of topDefensivePlayers.entries()) {
+        const playerBinary = getBinaryReferenceData(playerTable.header.tableId,player.index);
+        defenseRecord[`Player${i}`] = playerBinary;
+      }
+    }
+  }
+}
+
 // Empties the acquisition array tables
 async function emptyAcquisitionTables(franchise) {
     const tables = getTablesObject(franchise);
     const playerAcquisitionEvaluation = franchise.getTableByUniqueId(tables.playerAcquisitionEvaluationTable);
     const playerAcquisitionEvaluationArray = franchise.getTableByUniqueId(tables.playerAcquisitionEvaluationArrayTable);
-
-  
 
     await readTableRecords([playerAcquisitionEvaluation, playerAcquisitionEvaluationArray]);
 
@@ -656,16 +701,7 @@ async function emptyAcquisitionTables(franchise) {
     };
 
     emptyTable(playerAcquisitionEvaluation, defaultColumns);
-  
-    for (let i = 0; i < playerAcquisitionEvaluationArray.header.recordCapacity; i++) {
-      const record = playerAcquisitionEvaluationArray.records[i];
-
-      if (!record.isEmpty) {
-        for (let j = 0; j < playerAcquisitionEvaluationArray.header.numMembers; j++) {
-          record[`PlayerAcquisitionEvaluation${j}`] = ZERO_REF;
-        }
-      }
-    }
+    clearArrayTable(playerAcquisitionEvaluationArray);
   
 };
   
@@ -706,12 +742,30 @@ async function emptyResignTable(franchise) {
     };
 
     emptyTable(resignTable, defaultColumns);
+    clearArrayTable(resignArrayTable);
+};
 
+async function emptySignatureTables(franchise) {
 
-    //Iterate through the resign array table and zero everything out
-    for (let i = 0; i < resignArrayTable.header.numMembers; i++) {
-        resignArrayTable.records[0][`PlayerReSignNegotiation${i}`] = ZERO_REF;
-    }
+  const tables = getTablesObject(franchise);
+
+  const mainSignatureTable = franchise.getTableByUniqueId(tables.mainSigAbilityTable);
+  const secondarySignatureTable = franchise.getTableByUniqueId(tables.secondarySigAbilityTable);
+  const signatureArrayTable = franchise.getTableByUniqueId(tables.signatureArrayTable);
+  await readTableRecords([mainSignatureTable,secondarySignatureTable,signatureArrayTable]);
+
+  const defaultColumns = {
+    "Player": ZERO_REF,
+    "ActivationEnabled": false,
+    "Active": false,
+    "DeactivationEnabled": false,
+    "StartActivated": false,
+    "SlotIndex": 0
+  };
+
+  emptyTable(mainSignatureTable, defaultColumns);
+  emptyTable(secondarySignatureTable, defaultColumns);
+  clearArrayTable(signatureArrayTable);
 };
 
 
@@ -769,7 +823,6 @@ function clearArrayTable(table) {
  *
  * @param {Object} record - The record to add to the targetTable. For example, this could be table.records[0].
  * @param {Object} [targetTable] - The table to add the record to.
- * @param {Object} [columnLookup={}] - This is only needed if transferring between different games, as schema values may differ in certain columns.
  */
 function addRecordToTable(record, targetTable, options = {}) {
 
@@ -838,6 +891,18 @@ async function removeFromTable(table, binaryToRemove) {
     }
 };
 
+function addToArrayTable(table, binaryToAdd) {
+  const record = table.records[0];
+  const columns = getColumnNames(table);
+
+  for (const column of columns) {
+    if (record[column] === ZERO_REF) {
+      record[column] = binaryToAdd;
+      break;
+    }
+  }
+}
+
 async function recalculateRosterSizes(playerTable, teamTable) {
 
   for (let i = 0; i < teamTable.header.recordCapacity; i++) {
@@ -905,15 +970,17 @@ async function hasMultiplePlayerTables(franchise) {
 // This function iterates through each extra player table and adds the player to the main player table if not empty
 // If we reach the limit of the main player table, the program will exit.
 // I will likely come back and clean this function up eventually but it should work fine for now
-async function fixPlayerTables(franchise) {
+async function fixPlayerTables(franchise, forceFix = false) {
 
-  console.log("IMPORTANT: We've detected that this file has multiple player tables, which should not happen.");
-  const message = "Would you like to attempt to merge the extra player tables into the main table? This is HEAVILY recommended. Enter yes or no.";
-  const mergeTables = getYesOrNo(message);
-
-  if (!mergeTables) {
-    console.log("Continuing program without merging player tables.");
-    return;
+  if (!forceFix) {
+    console.log("IMPORTANT: We've detected that this file has multiple player tables, which should not happen.");
+    const message = "Would you like to attempt to merge the extra player tables into the main table? This is HEAVILY recommended.";
+    const mergeTables = getYesOrNo(message);
+  
+    if (!mergeTables) {
+      console.log("Continuing program without merging player tables.");
+      return;
+    }
   }
 
   const tables = getTablesObject(franchise);
@@ -1153,7 +1220,7 @@ async function removeControl(teamRow, franchise) {
   // Our row could either be from the Coach table or Owner table. We'll read the table dynamically to be safe
   const coachOwnerRow = currTeamRecord.fields.UserEntity.referenceData.rowNumber;
   const userBinary = currTeamRecord.UserEntity;
-  const coachOwnerTableId = await bin2Dec(userBinary.slice(0,15));
+  const coachOwnerTableId = bin2Dec(userBinary.slice(0,15));
 
   // Team Control Settings
   const currRecord = teamSettingTable.records[currTeamRecord.fields.TeamSetting.referenceData.rowNumber];    
@@ -1392,7 +1459,7 @@ function getRandomNumber(floor, ceiling) {
  * @param {string} binary - The binary string to convert to decimal.
  * @returns {Promise<number>} - The decimal representation of the binary string.
  */
-async function bin2Dec(binary) {
+function bin2Dec(binary) {
   return parseInt(binary, 2);
 };
 
@@ -1414,6 +1481,19 @@ function dec2bin(dec) {
  */
 function hasNumber(input) {
   return /\d/.test(input);
+};
+
+function containsNonUTF8(value) {
+  if (Buffer.isBuffer(value)) {
+    for (const byte of value) {
+      if (byte === 0 || (byte >= 0x80 && byte <= 0xbf)) {
+        return true; // Value contains non-UTF-8 byte
+      }
+    }
+    return false; // Value is valid UTF-8
+  } else {
+    return false; // Not a Buffer, so not applicable
+  }
 };
 
 /**
@@ -1456,10 +1536,13 @@ module.exports = {
     calculateBestOverall,
     emptyHistoryTables,
     removeFromTable,
+    addToArrayTable,
     emptyCharacterVisualsTable,
     regenerateMarketingTables,
+    generateActiveAbilityPlayers,
     emptyAcquisitionTables,
     emptyResignTable,
+    emptySignatureTables,
     emptyTable,
     clearArrayTable,
     addRecordToTable,
@@ -1477,6 +1560,7 @@ module.exports = {
     bin2Dec,
     dec2bin,
     hasNumber,
+    containsNonUTF8,
     findKeyByValue,
     removeSuffixes,
     isValidPlayer,

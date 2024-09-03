@@ -23,18 +23,6 @@ const signatureAbilities = {
     CBSignatureAbilities: {},
   };
 
-  async function dec2bin(dec, len) {
-    const bin = (dec >>> 0).toString(2);
-    if (len) return bin.padStart(len, '0');
-    return bin;
-  };
-
-async function bin2Dec(binary) {
-  return parseInt(binary, 2);
-  
-};
-
-
 
 const gameYear = FranchiseUtils.YEARS.M24;
 
@@ -56,10 +44,10 @@ async function getFtcReferences() {
     for (let currentRow = 0; currentRow < currentTable.header.recordCapacity; currentRow++) {
       
       let binReference = getBinaryReferenceData(currentTableId,currentRow) 
-      let assetReference = await bin2Dec(binReference) //This will match up with the reference in the assetTable
+      let assetReference = FranchiseUtils.bin2Dec(binReference) //This will match up with the reference in the assetTable
     
       let assetId = allAssets.find(obj => obj.reference === assetReference)?.assetId; //This finds our desired assetId
-      const finalBin = await dec2bin(assetId, 2); // Convert to binary
+      const finalBin = FranchiseUtils.dec2bin(assetId, 2); // Convert to binary
       const updatedJson = {
         "AssetId": assetId,
         "ShortName": currentTable.records[currentRow]['Value'],
@@ -116,20 +104,20 @@ franchise.on('ready', async function () {
         const xFactorAbilityIndices = [];
         const allAbilityIndices = [];
         const currentPositionBinary = SignatureAbilitesTable.records[0][key];
-        const rowRef = await bin2Dec(currentPositionBinary.slice(15));
+        const rowRef = FranchiseUtils.bin2Dec(currentPositionBinary.slice(15));
 
         const activeSignaturesBin = SignatureByPosition.records[rowRef]['ActiveSignatures']
         const passiveSignaturesBin = SignatureByPosition.records[rowRef]['PassiveSignatures']
         
         if (activeSignaturesBin !== FranchiseUtils.ZERO_REF) {
             signatureAbilities[key].XFactorAbilities = [];
-            const activeSignaturesRowRef = await bin2Dec(activeSignaturesBin.slice(15));
+            const activeSignaturesRowRef = FranchiseUtils.bin2Dec(activeSignaturesBin.slice(15));
             for (let i = 0;i < PositionSignatureAbilityArray.header.recordCapacity;i++) {
                 const currentPosSigAbility = PositionSignatureAbilityArray.records[activeSignaturesRowRef][`PositionSignatureAbility${i}`];
                 if (currentPosSigAbility !== FranchiseUtils.ZERO_REF) {
-                    const currentPosSigAbilityRow = await bin2Dec(currentPosSigAbility.slice(15));
+                    const currentPosSigAbilityRow = FranchiseUtils.bin2Dec(currentPosSigAbility.slice(15));
                     const abilityBin = PositionSignatureAbility.records[currentPosSigAbilityRow]['Ability'];
-                    const abilityBinRow = await bin2Dec(abilityBin.slice(15));
+                    const abilityBinRow = FranchiseUtils.bin2Dec(abilityBin.slice(15));
                     xFactorAbilityIndices.push(abilityBinRow);
                     allAbilityIndices.push({ [currentPosSigAbilityRow]: abilityBinRow });
                 }
@@ -138,13 +126,13 @@ franchise.on('ready', async function () {
 
         if (passiveSignaturesBin !== FranchiseUtils.ZERO_REF) {
             signatureAbilities[key].SuperStarAbilities = [];
-            const passiveSignaturesRowRef = await bin2Dec(passiveSignaturesBin.slice(15));
+            const passiveSignaturesRowRef = FranchiseUtils.bin2Dec(passiveSignaturesBin.slice(15));
             for (let i = 0;i < PositionSignatureAbilityArray.header.numMembers;i++) {
                 const currentPosSigAbility = PositionSignatureAbilityArray.records[passiveSignaturesRowRef][`PositionSignatureAbility${i}`];
                 if (currentPosSigAbility !== FranchiseUtils.ZERO_REF) {
-                    const currentPosSigAbilityRow = await bin2Dec(currentPosSigAbility.slice(15));
+                    const currentPosSigAbilityRow = FranchiseUtils.bin2Dec(currentPosSigAbility.slice(15));
                     const abilityBin = PositionSignatureAbility.records[currentPosSigAbilityRow]['Ability'];
-                    const abilityBinRow = await bin2Dec(abilityBin.slice(15));
+                    const abilityBinRow = FranchiseUtils.bin2Dec(abilityBin.slice(15));
                     allAbilityIndices.push({ [currentPosSigAbilityRow]: abilityBinRow });
 
                 }
@@ -166,10 +154,10 @@ franchise.on('ready', async function () {
             const abilityDescription = SignatureAbility.records[value]['Description'];
             
             const binReference = getBinaryReferenceData(PositionSignatureAbilityTableId,abilityIndex) 
-            const assetReference = await bin2Dec(binReference) //This will match up with the reference in the assetTable
+            const assetReference = FranchiseUtils.bin2Dec(binReference) //This will match up with the reference in the assetTable
 
             const assetId = allAssets.find(obj => obj.reference === assetReference)?.assetId; //This finds our desired assetId
-            const finalBin = await dec2bin(assetId,2) //Convert to binary
+            const finalBin = FranchiseUtils.dec2bin(assetId,2) //Convert to binary
 
             
             const updatedJson = { 

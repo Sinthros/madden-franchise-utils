@@ -4,14 +4,12 @@ const fs = require('fs');
 const zeroPad = (num, places) => String(num).padStart(places, '0')
 let is24To25;
 
-const teamIdentityLookup = JSON.parse(fs.readFileSync('lookupFiles/team_identity.json', 'utf8'));
-const sigAbilityJson = JSON.parse(fs.readFileSync('lookupFiles/signature_abilities_lookup.json', 'utf-8'));
 const ALL_ASSET_NAMES = JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8'));
 const COMMENTARY_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/commentary_lookup.json', 'utf-8'));
 const TRANSFER_SCHEDULE_FUNCTIONS = require('../../retroSchedules/transferScheduleFromJson');
 const SCHEDULE_FUNCTIONS = require('../../Utils/ScheduleFunctions');
 const FranchiseUtils = require('../../Utils/FranchiseUtils');
-const DEFAULT_PLAYER_ROW = 720;
+const DEFAULT_PLAYER_ROW = 720; // Default player row for Madden 25
 
 const SOURCE_VALID_YEARS = [FranchiseUtils.YEARS.M24,FranchiseUtils.YEARS.M25]
 const TARGET_VALID_YEARS = [FranchiseUtils.YEARS.M25];
@@ -26,48 +24,6 @@ const targetFranchise = FranchiseUtils.init(TARGET_VALID_YEARS, {customFranchise
 const SOURCE_TABLES = FranchiseUtils.getTablesObject(sourceFranchise);
 const TARGET_TABLES = FranchiseUtils.getTablesObject(targetFranchise);
 
-function emptySignatureTable(signatureTable) {
-  const defaultColumns = {
-    "Player": FranchiseUtils.ZERO_REF,
-    "ActivationEnabled": false,
-    "Active": false,
-    "DeactivationEnabled": false,
-    "StartActivated": false,
-    "SlotIndex": 0
-  };
-
-  FranchiseUtils.emptyTable(signatureTable, defaultColumns);
-};
-
-async function getBinaryReferenceM24(currentSignatureValue) {
-  const matchingItem = sigAbilityJson.find(item => item.binaryReferenceM24.includes(currentSignatureValue));
-  
-  if (matchingItem) {
-    return matchingItem.binaryReferenceM24;
-  } else {
-    return null;
-  }
-}
-
-async function adjustSignatureTableBinary(currentTable,currentTableNumRows) {
-  for (let rows = 0; rows<currentTableNumRows;rows++) {
-    if (!currentTable.records[rows].isEmpty) {
-      let currentSignatureValue = currentTable.records[rows]['Signature']
-      const binaryReferenceM25Value = await getBinaryReferenceM24(currentSignatureValue);
-      
-      if (binaryReferenceM25Value !== null) {
-        //console.log(`binaryReferenceM24 value for binaryReferenceM24 ${currentSignatureValue} is: ${binaryReferenceM25Value}`);
-        currentTable.records[rows]['Signature'] = binaryReferenceM25Value
-      }
-      else {
-        console.log(`No matching Madden 24 Signature Ability found for value: ${currentSignatureValue}. This should not happen. Please inform Sinthros of this message.`);
-      }
-      
-
-    }
-  }
-
-}
 
 async function handleTeamTable(teamTable) {
   const practiceTeamTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.practiceTeamTable);
@@ -81,9 +37,6 @@ async function handleTeamTable(teamTable) {
   const proBowlRosterTableId = proBowlRosterTable.header.tableId;
   const afcRosterRef = getBinaryReferenceData(proBowlRosterTableId,0);
   const nfcRosterRef = getBinaryReferenceData(proBowlRosterTableId,1);
-
-  
-  
 
   const proBowlTeamRecords = teamTable.records.filter(record => !record.isEmpty && (FranchiseUtils.NFL_CONFERENCES.includes(record.DisplayName) || record.DisplayName === 'Free Agents'));
 
@@ -142,14 +95,10 @@ async function fixPlayerTableRow() {
                 if (currentRelatedTable.records[row][currentCol] === originalPlayerBin) {
                   currentRelatedTable.records[row][currentCol] = newPlayerBin;
                   //console.log(`${currentCol} ${currentRelatedTable.header.name} ${currentTableId} ${row}`)
-  
                 }
-  
               }
-  
           }
        }
-
       } catch (e) {
         continue
       }
@@ -360,36 +309,10 @@ async function assignFranchiseUsers() {
           }
         }
       }
-
     }
   }
 };
 
-function containsNonUTF8(value) {
-  if (Buffer.isBuffer(value)) {
-    for (const byte of value) {
-      if (byte === 0 || (byte >= 0x80 && byte <= 0xbf)) {
-        return true; // Value contains non-UTF-8 byte
-      }
-    }
-    return false; // Value is valid UTF-8
-  } else {
-    return false; // Not a Buffer, so not applicable
-  }
-}
-
-
-async function handleLeagueHistoryBin(currentTable,teamIdentityLookup) {
-  foundData = teamIdentityLookup.find(item => item.teamName === 'NFL Greats');
-  const binaryReference = foundData.binaryReference;
-
-  for (let i = 0;i<currentTable.header.recordCapacity;i++) {
-    if (!currentTable.records[i].isEmpty) {
-      currentTable.records[i]['teamIdentity'] = binaryReference
-
-    }
-  }
-};
 
 async function getCoachTables() {
   
@@ -420,7 +343,7 @@ function handlePlayerTable(playerTable) {
     // Iterate over the fields to check for non-UTF8 values
     for (const field of fieldsToCheck) {
       const fieldValue = record[field];
-      const hasInvalidValue = containsNonUTF8(Buffer.from(fieldValue, 'utf-8'));
+      const hasInvalidValue = FranchiseUtils.containsNonUTF8(Buffer.from(fieldValue, 'utf-8'));
 
       if (hasInvalidValue) {
         record[field] = ""; // Set the field to an empty string if it contains invalid UTF-8
@@ -428,7 +351,7 @@ function handlePlayerTable(playerTable) {
     }
 
     if (isEmpty) {
-      record['CareerStats'] = FranchiseUtils.ZERO_REF;
+      record.CareerStats = FranchiseUtils.ZERO_REF;
 
     }
 
@@ -452,8 +375,8 @@ function handlePlayerTable(playerTable) {
     }
   }
 
-    playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === 'Expiring')
-      .forEach(record => record.ContractStatus = 'Signed');
+    playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === FranchiseUtils.CONTRACT_STATUSES.EXPIRING)
+      .forEach(record => record.ContractStatus = FranchiseUtils.CONTRACT_STATUSES.SIGNED);
 }
 
 
@@ -495,7 +418,7 @@ async function fillResignTable() {
     resignTable.records[resignTableNextRecord]["NegotiationWeek"] = 3
 
     //Get resign row binary for the array table
-    var currentResignBinary =  getBinaryReferenceData(resignTable.header.tableId,resignTableNextRecord);
+    var currentResignBinary = getBinaryReferenceData(resignTable.header.tableId,resignTableNextRecord);
     var n = 0;
     while (true) { // Find first zeroed out value in resign table and insert the binary
       if (resignArrayTable.records[0][`PlayerReSignNegotiation${n}`] === FranchiseUtils.ZERO_REF) {
@@ -512,7 +435,6 @@ async function fillResignTable() {
 
 async function handleTable(targetTable,mergedTableMappings) {
 
-  const targetUniqueId = targetTable.header.uniqueId; // Get table unique ID
   const tableKey = FranchiseUtils.findKeyByValue(TARGET_TABLES,targetTable.header.uniqueId);
   const sourceUniqueId = SOURCE_TABLES[tableKey];
   const sourceTable = sourceFranchise.getTableByUniqueId(sourceUniqueId);
@@ -561,13 +483,6 @@ async function handleTable(targetTable,mergedTableMappings) {
       FranchiseUtils.emptyTable(targetTable,{"CareerStats": FranchiseUtils.ZERO_REF,"SeasonStats": FranchiseUtils.ZERO_REF, "GameStats": FranchiseUtils.ZERO_REF, "CharacterVisuals": FranchiseUtils.ZERO_REF})
       handlePlayerTable(sourceTable);
       break;
-    case 'ActiveSignatureData':
-      if (is24To25) {
-        //await adjustSignatureTableBinary(sourceTable);
-        emptySignatureTable(targetTable);
-        return;
-      }
-      break;
     case 'Coach':
       FranchiseUtils.emptyTable(targetTable,{"CharacterVisuals": FranchiseUtils.ZERO_REF,"TeamPhilosophy": FranchiseUtils.ZERO_REF, "DefaultTeamPhilosophy": FranchiseUtils.ZERO_REF, "DefensivePlaybook": FranchiseUtils.ZERO_REF, 
         "OffensivePlaybook": FranchiseUtils.ZERO_REF, "OffensiveScheme": FranchiseUtils.ZERO_REF, "DefensiveScheme": FranchiseUtils.ZERO_REF, "ActiveTalentTree": FranchiseUtils.ZERO_REF, "GenericHeadAssetName": ""})
@@ -597,28 +512,16 @@ async function getPlayerTables() {
   const playerPracticeSquads = targetFranchise.getTableByUniqueId(TARGET_TABLES.practiceSquadTable);
   const depthChart = targetFranchise.getTableByUniqueId(TARGET_TABLES.depthChartPlayerTable);
   const teamRoadMap = targetFranchise.getTableByUniqueId(TARGET_TABLES.teamRoadmapTable);
-  const mainActiveSignature = targetFranchise.getTableByUniqueId(TARGET_TABLES.mainSigAbilityTable);
-  const secondaryActiveSignature = targetFranchise.getTableByUniqueId(TARGET_TABLES.secondarySigAbilityTable);
-  const signatureArray = targetFranchise.getTableByUniqueId(TARGET_TABLES.signatureArrayTable);
   const careerDefensiveKPReturnStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.careerDefKPReturnStatsTable);
   const careerOffensiveKPReturnStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.careerOffKPReturnStatsTable);
   const careerOLineStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.careerOLineStatsTable);
   const careerOffensiveStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.careerOffStatsTable);
   const careerDefensiveStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.careerDefStatsTable);
   const careerKickingStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.careerKickingStatsTable);
-  const playerMerchTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.playerMerchTable);
-
-  const seasonStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonStatsTable);
-  const seasonDefensiveKPReturnStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonDefKPReturnStatsTable);
-  const seasonOffensiveKPReturnStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonOffKPReturnStatsTable);
-  const seasonOLineStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonOLineStatsTable);
-  const seasonOffensiveStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonOffStatsTable);
-  const seasonDefensiveStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonDefStatsTable);
-  const seasonKickingStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonKickingStatsTable);
 
   const tableArray = [player,freeAgents,playerArray,playerPracticeSquads,
     depthChart,teamRoadMap,careerDefensiveKPReturnStats,careerOffensiveKPReturnStats,careerOLineStats,careerOffensiveStats,careerDefensiveStats,
-    careerKickingStats,mainActiveSignature,secondaryActiveSignature];
+    careerKickingStats];
 
 
   return tableArray;
@@ -742,66 +645,6 @@ async function emptyRookieStatTracker() {
     }
   }
 };
-
-async function generateActiveAbilityPlayers() {
-  const teamTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.teamTable);
-  const playerTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.playerTable);
-
-
-  for (let i = 0; i < teamTable.header.recordCapacity; i++) {
-    const record = teamTable.records[i];
-
-    if (!record.isEmpty && record.OffenseActiveAbilitiesPlayers !== FranchiseUtils.ZERO_REF) {
-      const teamIndex = record.TeamIndex;
-      const defenseAbilityRef = record.DefenseActiveAbilitiesPlayers;
-      const offenseAbilityRef = record.OffenseActiveAbilitiesPlayers;
-
-      const offenseTableId = await FranchiseUtils.bin2Dec(offenseAbilityRef.slice(0,15));
-      const defenseTableId = await FranchiseUtils.bin2Dec(defenseAbilityRef.slice(0,15));
-      
-      const defenseRowNum = await FranchiseUtils.bin2Dec(defenseAbilityRef.slice(15));
-      const offenseRowNum = await FranchiseUtils.bin2Dec(offenseAbilityRef.slice(15));
-
-      const offenseTable = targetFranchise.getTableById(offenseTableId);
-      const defenseTable = targetFranchise.getTableById(defenseTableId);
-
-      await FranchiseUtils.readTableRecords([offenseTable,defenseTable]);
-
-      const offenseRecord = offenseTable.records[offenseRowNum];
-      const defenseRecord = defenseTable.records[defenseRowNum];
-
-      for (j = 0; j < offenseTable.header.numMembers; j++) {
-        offenseRecord[`Player${j}`] = FranchiseUtils.ZERO_REF;
-        defenseRecord[`Player${j}`] = FranchiseUtils.ZERO_REF;
-      }
-
-      const players = playerTable.records.filter(record => record.ContractStatus === 'Signed' && record.TeamIndex === teamIndex
-        && record.TraitDevelopment === 'XFactor'
-      );
-
-      const offensivePlayers = players.filter(record => FranchiseUtils.OFFENSIVE_SKILL_POSITIONS.includes(record.Position));
-      const defensivePlayers = players.filter(record => FranchiseUtils.ALL_DEFENSIVE_POSITIONS.includes(record.Position));
-
-      // Sort and keep top 3 offensive players by OverallRating (descending)
-      const topOffensivePlayers = offensivePlayers.sort((a, b) => b.OverallRating - a.OverallRating).slice(0, offenseTable.header.numMembers);
-
-      // Sort and keep top 3 defensive players by OverallRating (descending)
-      const topDefensivePlayers = defensivePlayers.sort((a, b) => b.OverallRating - a.OverallRating).slice(0, defenseTable.header.numMembers);
-
-      // Iterate through the top offensive players using for...of with index
-      for (const [i, player] of topOffensivePlayers.entries()) {
-        const playerBinary = getBinaryReferenceData(playerTable.header.tableId,player.index);
-        offenseRecord[`Player${i}`] = playerBinary;
-      }
-
-      // Iterate through the top defensive players using for...of with index
-      for (const [i, player] of topDefensivePlayers.entries()) {
-        const playerBinary = getBinaryReferenceData(playerTable.header.tableId,player.index);
-        defenseRecord[`Player${i}`] = playerBinary;
-      }
-    }
-  }
-}
 
 async function emptyMediaGoals() {
   const characterActiveMediaGoal = targetFranchise.getTableByUniqueId(TARGET_TABLES.characterActiveMediaGoal);
@@ -974,8 +817,45 @@ async function clearArrayTables() {
   for (const table of allTables) {
     FranchiseUtils.clearArrayTable(table);
   }
+}
 
+async function transferPlayerAbilities() {
+  const sourceMainSignatureTable = sourceFranchise.getTableByUniqueId(SOURCE_TABLES.mainSigAbilityTable);
+  const sourceSecondarySignatureTable = sourceFranchise.getTableByUniqueId(SOURCE_TABLES.secondarySigAbilityTable);
 
+  const mainSignatureTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.mainSigAbilityTable);
+  const secondarySignatureTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.secondarySigAbilityTable);
+  const signatureArrayTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.signatureArrayTable);
+
+  await FranchiseUtils.emptySignatureTables(targetFranchise);
+
+  const processRecord = (record, primaryTable, secondaryTable, arrayTable) => {
+    if (!record.isEmpty) {
+      const nextRecordToUse = primaryTable.header.nextRecordToUse;
+      const recordCapacity = primaryTable.header.recordCapacity;
+      const secondaryNextRecord = secondaryTable.header.nextRecordToUse;
+      const secondaryRecordCapacity = secondaryTable.header.recordCapacity;
+
+      if (nextRecordToUse < recordCapacity) {
+        FranchiseUtils.addRecordToTable(record, primaryTable);
+        const binaryRef = getBinaryReferenceData(primaryTable.header.tableId, nextRecordToUse);
+        FranchiseUtils.addToArrayTable(arrayTable,binaryRef);
+      } else if (secondaryNextRecord < secondaryRecordCapacity) {
+        FranchiseUtils.addRecordToTable(record, secondaryTable);
+        const binaryRef = getBinaryReferenceData(secondaryTable.header.tableId, secondaryNextRecord);
+        FranchiseUtils.addToArrayTable(arrayTable, binaryRef);
+      }
+    }
+  };
+
+  // Process records for both main and secondary signature tables
+  for (const record of sourceMainSignatureTable.records) {
+    processRecord(record, mainSignatureTable, secondarySignatureTable, signatureArrayTable);
+  }
+
+  for (const record of sourceSecondarySignatureTable.records) {
+    processRecord(record, mainSignatureTable, secondarySignatureTable, signatureArrayTable);
+  }
 }
 
 sourceFranchise.on('ready', async function () {
@@ -994,7 +874,7 @@ sourceFranchise.on('ready', async function () {
     const allSourceTables = [];
     const allTargetTables = [];
     for (const key in SOURCE_TABLES) {
-      if (!key.includes('22')) {
+      if (!key.includes('22')) { // Ignore Madden 22 tables
         const sourceTable = sourceFranchise.getTableByUniqueId(SOURCE_TABLES[key]);
         allSourceTables.push(sourceTable);
       }
@@ -1049,7 +929,7 @@ sourceFranchise.on('ready', async function () {
     await deleteExcessFreeAgents(); // Only keep the top 3500 players
     await fixPlayerTableRow(targetFranchise);
     await emptyRookieStatTracker(); // Function to empty Rookie Tracker table (Avoid crashing)
-    await generateActiveAbilityPlayers();
+    await FranchiseUtils.generateActiveAbilityPlayers(targetFranchise);
     await clearArrayTables();
     await FranchiseUtils.emptyResignTable(targetFranchise); // Empty and fill the resign tables
     await FranchiseUtils.regenerateMarketingTables(targetFranchise);
@@ -1060,6 +940,7 @@ sourceFranchise.on('ready', async function () {
 
     await assignFranchiseUsers();
     await adjustCommentaryValues();
+    await transferPlayerAbilities();
 
     if (is24To25) {
       const message = "Would you like to remove asset names from the Player table that aren't in Madden 24's Database?";
