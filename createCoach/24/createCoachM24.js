@@ -5,10 +5,10 @@
 const prompt = require('prompt-sync')();
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const fs = require('fs');
-const CHARACTER_VISUALS_FUNCTIONS = require('../Utils/characterVisualsLookups/characterVisualFunctions');
+const CHARACTER_VISUALS_FUNCTIONS = require('../../Utils/characterVisualsLookups/characterVisualFunctions');
 const COACH_BASE_JSON = CHARACTER_VISUALS_FUNCTIONS.baseCoachVisualJson;
-const FranchiseUtils = require('../Utils/FranchiseUtils');
-const { tables } = require('../Utils/FranchiseTableId');
+const FranchiseUtils = require('../../Utils/FranchiseUtils');
+const { tables } = require('../../Utils/FranchiseTableId');
 const FORCE_QUIT_KWD = "FORCEQUIT";
 const AUTOMATIC_KWD = 'a';
 const MANUAL_KWD = 'm';
