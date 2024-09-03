@@ -51,6 +51,7 @@ const tables = {
     talentNodeStatus: 4148550679,
     talentNodeStatusArray: 232168893,
     talentSubTreeStatus: 1725084110,
+    playerPersonnelTable: 4279422699,
     // League Related
     storyTable: 53507767,
     storyArrayTable: 1350117431,
@@ -176,6 +177,7 @@ const tablesM25 = {
     playerTable: 1612938518,
     freeAgentTable: 3717720305,
     rosterTable: 1126708202,
+    proBowlRosterTable: 1567581167,
     rosterInfoTable: 2907326382,
     reSignTable: 846670960,
     reSignArrayTable: 298416424,
@@ -184,6 +186,7 @@ const tablesM25 = {
     practiceSquadTable: 1504607832,
     draftClassTable: 786598926,
     focusTrainingTable: 80738141,
+    miniGameCompletedArrayTable: 4095723150,
 
     // As of M25, Offense/Defensive active abilities are separated to 2 tables
     offenseActiveAbilityArrayTable: 4183613527,
@@ -213,6 +216,7 @@ const tablesM25 = {
     scoutFocusArrayTable: 1206464093,
     scoutPrivateArrayTable: 1252657284,
     teamTable: 637929298,
+    practiceTeamTable: 943739547,
     scoutsTable: 4003749334,
     teamScoutTable: 1925975938,
     teamRoadmapTable: 3807550398,
@@ -224,6 +228,7 @@ const tablesM25 = {
     talentNodeStatus: 4148550679,
     talentNodeStatusArray: 2516681065,
     talentSubTreeStatus: 1725084110,
+    playerPersonnelTable: 4279422699,
     storyTable: 53507767,
     storyArrayTable: 1350117431,
     tweetTable: 2206445889,

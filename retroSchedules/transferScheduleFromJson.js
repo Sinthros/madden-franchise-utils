@@ -387,7 +387,6 @@ async function transferSchedule(sourceScheduleJson) {
   }  
   
   await convertSchedule(sourceScheduleJson, seasonGameTable, TOTAL_GAMES);
-  console.log("Did we do it?")
   return true;
 };
 

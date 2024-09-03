@@ -43,7 +43,12 @@ const CONTRACT_STATUSES = {
   EXPIRING: 'Expiring',
   DELETED: 'Deleted',
   NONE: 'None'
+}
 
+const SEASON_STAGES = {
+  PRESEASON: 'PreSeason',
+  REGULAR_SEASON: 'RegularSeason',
+  OFFSEASON: 'OffSeason'
 }
 
 const NFL_CONFERENCES = ['AFC', 'NFC'];
@@ -739,6 +744,23 @@ function emptyTable(table, defaultColumns = {}) {
   }
 }
 
+/**
+ * Sets all valid records in the specified array table to ZERO_REF.
+ * 
+ * @param {Object} table - The table object containing records to be cleared.
+ */
+function clearArrayTable(table) {
+  const tableColumns = getColumnNames(table);
+
+  table.records.forEach(record => {
+    if (!record.isEmpty) {
+      tableColumns.forEach(column => {
+        record[column] = ZERO_REF;
+      });
+    }
+  });
+}
+
 
 /**
  * Adds a record to the targetTable by copying all values into the first empty row of the table.
@@ -1005,7 +1027,6 @@ async function takeControl(teamRow, franchise, controlLevel, controlSettings, se
   
   if (currTeamRecord == undefined) {
       row = franchiseUserTable.records.filter(record => record.isEmpty)[0].index;
-      //console.log(row)
       franchiseUserTable.records[row].TeamSetting = teamRecord.TeamSettingRef;
       franchiseUserTable.records[row].Team = teamBinary;
       let userBinary = null;
@@ -1410,6 +1431,16 @@ function findKeyByValue(obj, value) {
   }
   return null;  // Return null if the value is not found
 }
+
+/**
+ * Removes common suffixes (e.g., Jr., Sr., II, III, IV, V) from a name string.
+ *
+ * @param {string} name - The name string from which to remove suffixes.
+ * @returns {string} - The name string without the suffix.
+ */
+function removeSuffixes(name) {
+  return name.replace(/\s+(Jr\.?|Sr\.?|III|II|IV|V)$/g, '');
+}
   
 
 
@@ -1430,6 +1461,7 @@ module.exports = {
     emptyAcquisitionTables,
     emptyResignTable,
     emptyTable,
+    clearArrayTable,
     addRecordToTable,
     recalculateRosterSizes,
     hasMultiplePlayerTables,
@@ -1446,6 +1478,7 @@ module.exports = {
     dec2bin,
     hasNumber,
     findKeyByValue,
+    removeSuffixes,
     isValidPlayer,
     validateGameYears,
     EXIT_PROGRAM,
@@ -1467,6 +1500,7 @@ module.exports = {
     COACH_SKIN_TONES,
     COACH_APPAREL,
     CONTRACT_STATUSES,
+    SEASON_STAGES,
 
     USER_CONTROL_SETTINGS, // VARIABLES FOR USER/CPU CONTROL
     CPU_CONTROL_SETTINGS,
