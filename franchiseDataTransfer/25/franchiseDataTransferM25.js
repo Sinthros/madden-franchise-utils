@@ -38,7 +38,7 @@ async function handleTeamTable(teamTable) {
   const afcRosterRef = getBinaryReferenceData(proBowlRosterTableId,0);
   const nfcRosterRef = getBinaryReferenceData(proBowlRosterTableId,1);
 
-  const proBowlTeamRecords = teamTable.records.filter(record => !record.isEmpty && (FranchiseUtils.NFL_CONFERENCES.includes(record.DisplayName) || record.DisplayName === 'Free Agents'));
+  const proBowlTeamRecords = teamTable.records.filter(record => !record.isEmpty && (FranchiseUtils.NFL_CONFERENCES.includes(record.DisplayName) || record.DisplayName === FranchiseUtils.EXTRA_TEAM_NAMES.FREE_AGENTS));
 
   for (const record of proBowlTeamRecords) {
     record.OffensiveCoordinator = defaultOffensiveCoordinator;
@@ -47,13 +47,13 @@ async function handleTeamTable(teamTable) {
     record.PlayerPersonnel = FranchiseUtils.ZERO_REF;
 
     switch (record.DisplayName) {
-      case 'AFC':
+      case FranchiseUtils.EXTRA_TEAM_NAMES.AFC:
         record.Roster = afcRosterRef;
         break;
-      case 'NFC':
+      case FranchiseUtils.EXTRA_TEAM_NAMES.NFC:
         record.Roster = nfcRosterRef;
         break;
-      case 'Free Agents':
+      case FranchiseUtils.EXTRA_TEAM_NAMES.FREE_AGENTS:
         record.Roster = FranchiseUtils.ZERO_REF;
         break;
     }
@@ -181,12 +181,12 @@ async function deleteExcessFreeAgents() {
 async function getNeededColumns(currentTableName) {
 
   switch (currentTableName) {
-    case "Player":
+    case FranchiseUtils.TABLE_NAMES.PLAYER:
       keepColumns = [];
       deleteColumns = [];
       zeroColumns = ["GameStats","CharacterVisuals","SeasonalGoal","WeeklyGoals","SeasonStats"];
       return [keepColumns,deleteColumns,zeroColumns];
-    case "Team":
+    case FranchiseUtils.TABLE_NAMES.TEAM:
       keepColumns = ["Philosophy","HeadCoach","OffensiveCoordinator","DefensiveCoordinator","Roster","PracticeSquad","PlayerPersonnel",
         "DepthChart","ActiveRosterSize","SalCapRosterSize","SalCapNextYearRosterSize","TeamIndex",
         "Rival1TeamRef","Rival2TeamRef","Rival3TeamRef"];
@@ -203,27 +203,27 @@ async function getNeededColumns(currentTableName) {
       }
 
       return [keepColumns,deleteColumns,zeroColumns];   
-    case "Coach":
+    case FranchiseUtils.TABLE_NAMES.COACH:
       keepColumns = [];
       deleteColumns = [];
       zeroColumns = ["SeasonalGoal","WeeklyGoals","CharacterVisuals"];
       return [keepColumns,deleteColumns,zeroColumns];  
-    case "SeasonInfo":
+    case FranchiseUtils.TABLE_NAMES.SEASON_INFO:
       keepColumns = ["CurrentSeasonYear","CurrentYear"];
       deleteColumns = [];
       zeroColumns = [];
       return [keepColumns,deleteColumns,zeroColumns];  
-    case "SalaryInfo":
+    case FranchiseUtils.TABLE_NAMES.SALARY_INFO:
       keepColumns = ["TeamSalaryCap"];
       deleteColumns = [];
       zeroColumns = [];
       return [keepColumns,deleteColumns,zeroColumns];  
-    case "TeamRoadmap":
+    case FranchiseUtils.TABLE_NAMES.TEAM_ROADMAP:
       keepColumns = [];
       deleteColumns = ['Needs'];
       zeroColumns = [];
       return [keepColumns,deleteColumns,zeroColumns]; 
-    case "CoachTalentEffects":
+    case FranchiseUtils.TABLE_NAMES.COACH_TALENT_EFFECTS:
       keepColumns = [];
       deleteColumns = ['TeamRelativeAbilities'];
       zeroColumns = [];
@@ -479,11 +479,11 @@ async function handleTable(targetTable,mergedTableMappings) {
 
   // Handle specific table types
   switch (currentTableName) {
-    case 'Player':
+    case FranchiseUtils.TABLE_NAMES.PLAYER:
       FranchiseUtils.emptyTable(targetTable,{"CareerStats": FranchiseUtils.ZERO_REF,"SeasonStats": FranchiseUtils.ZERO_REF, "GameStats": FranchiseUtils.ZERO_REF, "CharacterVisuals": FranchiseUtils.ZERO_REF})
       handlePlayerTable(sourceTable);
       break;
-    case 'Coach':
+    case FranchiseUtils.TABLE_NAMES.COACH:
       FranchiseUtils.emptyTable(targetTable,{"CharacterVisuals": FranchiseUtils.ZERO_REF,"TeamPhilosophy": FranchiseUtils.ZERO_REF, "DefaultTeamPhilosophy": FranchiseUtils.ZERO_REF, "DefensivePlaybook": FranchiseUtils.ZERO_REF, 
         "OffensivePlaybook": FranchiseUtils.ZERO_REF, "OffensiveScheme": FranchiseUtils.ZERO_REF, "DefensiveScheme": FranchiseUtils.ZERO_REF, "ActiveTalentTree": FranchiseUtils.ZERO_REF, "GenericHeadAssetName": ""})
       break;
@@ -497,7 +497,7 @@ async function handleTable(targetTable,mergedTableMappings) {
   } 
 
   switch (currentTableName) {
-    case 'Team':
+    case FranchiseUtils.TABLE_NAMES.TEAM:
       await handleTeamTable(targetTable);
       break;
   }

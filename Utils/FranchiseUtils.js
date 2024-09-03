@@ -45,13 +45,28 @@ const CONTRACT_STATUSES = {
   NONE: 'None'
 }
 
+const TABLE_NAMES = {
+  PLAYER: 'Player',
+  COACH: 'Coach',
+  TEAM: 'Team',
+  SEASON_INFO: 'SeasonInfo',
+  SALARY_INFO: 'SalaryInfo',
+  TEAM_ROADMAP: 'TeamRoadmap',
+  COACH_TALENT_EFFECTS: 'CoachTalentEffects'
+}
+
 const SEASON_STAGES = {
   PRESEASON: 'PreSeason',
   REGULAR_SEASON: 'RegularSeason',
   OFFSEASON: 'OffSeason'
 }
 
-const NFL_CONFERENCES = ['AFC', 'NFC'];
+const EXTRA_TEAM_NAMES = {
+  AFC: 'AFC',
+  NFC: 'NFC',
+  FREE_AGENTS: 'Free Agents'
+} 
+const NFL_CONFERENCES = [EXTRA_TEAM_NAMES.AFC, EXTRA_TEAM_NAMES.NFC];
 
 const OFFENSIVE_SKILL_POSITIONS = ['QB', 'HB', 'FB', 'WR', 'TE'];
 const OLINE_POSITIONS = ['LT','LG','C','RG','RT'];
@@ -1573,6 +1588,7 @@ module.exports = {
     FTC_FILE_INIT_KWD,
     YES_KWD,
     NO_KWD,
+    EXTRA_TEAM_NAMES,
     NFL_CONFERENCES,
     OFFENSIVE_SKILL_POSITIONS,
     OLINE_POSITIONS,
@@ -1584,6 +1600,7 @@ module.exports = {
     COACH_SKIN_TONES,
     COACH_APPAREL,
     CONTRACT_STATUSES,
+    TABLE_NAMES,
     SEASON_STAGES,
 
     USER_CONTROL_SETTINGS, // VARIABLES FOR USER/CPU CONTROL
