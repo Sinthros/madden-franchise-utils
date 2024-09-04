@@ -181,23 +181,19 @@ function init(validGameYears, options = {}) {
 function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile = false, customMessage = null) {
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
   const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
-  const filePrefix = isFtcFile ? FTC_FILE_INIT_KWD : BASE_FILE_INIT_KWD;
+  const defaultPath = fs.existsSync(documentsDir) ? documentsDir : fs.existsSync(oneDriveDir) ? oneDriveDir : null;
   
-  let defaultPath;
-
-  if (fs.existsSync(documentsDir)) {
-    defaultPath = documentsDir;
-  } else if (fs.existsSync(oneDriveDir)) {
-    defaultPath = oneDriveDir;
-  } else {
-    console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`);
+  if (!defaultPath) {
+    console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${baseDir}, ${oneDriveDir}`);
+    return;
   }
+
+  const filePrefix = isFtcFile ? FTC_FILE_INIT_KWD : BASE_FILE_INIT_KWD;
+  const defaultMessage = `Please enter the name of your Madden ${gameYear} franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.`;
+  const message = customMessage || defaultMessage;
 
   while (true) {
     try {
-      const defaultMessage = `Please enter the name of your Madden ${gameYear} franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.`;
-
-      const message = customMessage !== null ? customMessage : defaultMessage;
       console.log(message);
       
       let fileName = prompt().trim(); // Remove leading/trailing spaces
@@ -206,15 +202,22 @@ function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile =
         EXIT_PROGRAM();
       }
 
-      const franchisePath = fileName.startsWith(filePrefix) ? path.join(defaultPath, fileName) : fileName.replace(new RegExp('/', 'g'), '\\');
-      
-      const franchise = new Franchise(franchisePath, {'autoUnempty': isAutoUnemptyEnabled});
-      return franchise;
+      // Attempt to load the franchise with the file name in uppercase first
+      try {
+        const upperCaseFileName = fileName.toUpperCase();
+        const franchisePathUpper = upperCaseFileName.startsWith(filePrefix) ? path.join(defaultPath, upperCaseFileName) : upperCaseFileName.replace(new RegExp('/', 'g'), '\\');
+        const franchise = new Franchise(franchisePathUpper, {'autoUnempty': isAutoUnemptyEnabled});
+        return franchise;
+      } catch (e) {
+        const franchisePath = fileName.startsWith(filePrefix) ? path.join(defaultPath, fileName) : fileName.replace(new RegExp('/', 'g'), '\\');
+        const franchise = new Franchise(franchisePath, {'autoUnempty': isAutoUnemptyEnabled});
+        return franchise;
+      }
     } catch (e) {
       console.log("Invalid franchise file name/path given. Please provide a valid name or path and try again.");
     }
   }
-};
+}
 
 /**
  * Selects a franchise file based on the provided game year and options.
@@ -342,10 +345,14 @@ function getGameYear(validGameYears, customMessage = null) {
     const validGameYearsStr = validGameYears.map(String);
 
     while (true) {
-        const defaultMessage = `Select the version of Madden your franchise file uses. Valid inputs are ${validGameYears.join(', ')}`;
+        const defaultMessage = `Select the version of Madden your franchise file uses. Valid inputs are ${validGameYears.join(', ')}. Or, enter 0 to exit.`;
         const message = customMessage !== null ? customMessage : defaultMessage;
         console.log(message);
         gameYear = prompt();
+
+        if (gameYear === '0') {
+          EXIT_PROGRAM();
+        }
 
         if (validGameYearsStr.includes(String(gameYear))) {
             break;
