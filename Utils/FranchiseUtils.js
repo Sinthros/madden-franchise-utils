@@ -196,8 +196,8 @@ function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile =
     try {
       console.log(message);
       
-      let fileName = prompt().trim(); // Remove leading/trailing spaces
-
+      let fileName = prompt().trim().replace(/['"]/g, '');
+      
       if (fileName === "0") {
         EXIT_PROGRAM();
       }
