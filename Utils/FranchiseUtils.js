@@ -916,7 +916,7 @@ function addToArrayTable(table, binaryToAdd) {
       break;
     }
   }
-}
+};
 
 async function recalculateRosterSizes(playerTable, teamTable) {
 
@@ -1334,7 +1334,24 @@ function isValidPlayer(playerRecord, options = {}) {
   return !playerRecord.isEmpty && 
          !invalidStatuses.has(playerRecord.ContractStatus) && 
          (includeLegends || !playerRecord.IsLegend);
-}
+};
+
+function isReferenceColumn(record, column, includeZeroRef = false, includeFtcRefs = false) {
+  const field = record.fields[column];
+  const currentValue = record[column];
+
+  // Check if the field is a reference
+  if (!field.isReference) return false;
+
+  // Check if we should skip the ZERO_REF check
+  if (!includeZeroRef && currentValue === ZERO_REF) return false;
+
+  // Check if we should skip the FTC references check (those starting with '1')
+  if (!includeFtcRefs && currentValue.startsWith('1')) return false;
+
+  // If none of the conditions failed, return true
+  return true;
+};
 
 
 /**
@@ -1534,7 +1551,11 @@ function findKeyByValue(obj, value) {
  * @returns {string} - The name string without the suffix.
  */
 function removeSuffixes(name) {
-  return name.replace(/\s+(Jr\.?|Sr\.?|III|II|IV|V)$/g, '');
+  // Remove periods from any part of the name
+  let cleanName = name.replace(/\./g, '');
+
+  // Remove common suffixes
+  return cleanName.replace(/\s+(Jr|Sr|III|II|IV|V)$/g, '');
 }
   
 
@@ -1579,6 +1600,7 @@ module.exports = {
     findKeyByValue,
     removeSuffixes,
     isValidPlayer,
+    isReferenceColumn,
     validateGameYears,
     EXIT_PROGRAM,
 
