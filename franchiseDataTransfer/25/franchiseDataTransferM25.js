@@ -6,6 +6,7 @@ let is24To25;
 
 const ALL_ASSET_NAMES = JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8'));
 const COMMENTARY_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/commentary_lookup.json', 'utf-8'));
+const ROOKIE_PLAYER_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/rookie_player_lookup.json', 'utf-8'));
 const TRANSFER_SCHEDULE_FUNCTIONS = require('../../retroSchedules/transferScheduleFromJson');
 const SCHEDULE_FUNCTIONS = require('../../Utils/ScheduleFunctions');
 const FranchiseUtils = require('../../Utils/FranchiseUtils');
@@ -373,6 +374,17 @@ function handlePlayerTable(playerTable) {
         record[field] = replacementValue;
       }
     }
+
+    // Check if `record.PLYR_ASSETNAME` matches any of the keys in `jsonObject`
+    const playerLookup = ROOKIE_PLAYER_LOOKUP[record.PLYR_ASSETNAME];
+
+    if (playerLookup && !record.isEmpty) {
+        // Iterate over each key-value pair
+        for (const [key, value] of Object.entries(playerLookup)) {
+          // Dynamically set each key-value pair in the record object
+          record[key] = value;
+        }
+    }
   }
 
     playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === FranchiseUtils.CONTRACT_STATUSES.EXPIRING)
@@ -433,46 +445,57 @@ async function fillResignTable() {
 
 };
 
+/**
+ * Replaces the binary value in a record's column based on the provided merged table mappings.
+ *
+ * @param {Array} mergedTableMappings - Array of dictionary entries mapping source IDs to target IDs.
+ * @param {Object} record - The record object containing the field to be processed.
+ * @param {string} column - The column name whose binary value is to be replaced.
+ * @returns {string} - The replaced binary value, or the original value if no replacement is made.
+ */
+function replaceBinaryValue(mergedTableMappings, record, column) {
+  const field = record.fields[column];
+  const currentValue = record[column];
+
+  // Convert tableId to binary and zero-pad it
+  const outputBin = zeroPad(FranchiseUtils.dec2bin(field.referenceData.tableId), 15);
+
+  // Find the corresponding dictionary entry in mergedTableMappings
+  const sourceTableDict = mergedTableMappings.find(table => table.sourceIdBinary === outputBin);
+
+  if (!sourceTableDict) {
+    return null; // No matching dictionary entry found
+  }
+
+  // Replace the binary value with the target binary value
+  return currentValue.replace(outputBin, sourceTableDict.targetIdBinary);
+}
+
 async function handleTable(targetTable,mergedTableMappings) {
 
   const tableKey = FranchiseUtils.findKeyByValue(TARGET_TABLES,targetTable.header.uniqueId);
   const sourceUniqueId = SOURCE_TABLES[tableKey];
   const sourceTable = sourceFranchise.getTableByUniqueId(sourceUniqueId);
   const currentTableName = targetTable.header.name;
-  console.log(currentTableName)
+  //console.log(currentTableName)
   const [keepColumns,deleteColumns,zeroColumns] = await getNeededColumns(currentTableName) // Get the columns we need for the current table
 
   const sourceColumns = await FranchiseUtils.getColumnNames(sourceTable); //Get the headers from the table
 
   sourceColumns.forEach((currentCol, colIndex) => {
     for (let i = 0; i < sourceTable.header.recordCapacity; i++) {
-      const record = sourceTable.records[i];
-  
-      try {
-        const field = record.fields[currentCol];
-        if (!field.isReference) continue; // Skip if not a bin reference column
-  
-        const currentValue = record[currentCol];
-  
-        // Skip if all zeroes OR if it starts with 1 (meaning it's a reference from the FTC files)
-        if (currentValue === FranchiseUtils.ZERO_REF || currentValue.startsWith('1')) continue;
-  
-        // Convert tableId to binary and zero-pad it
-        const outputBin = zeroPad(FranchiseUtils.dec2bin(field.referenceData.tableId), 15);
-  
-        // Find the corresponding dictionary entry in mergedTableMappings
-        const sourceTableDict = mergedTableMappings.find(table => table.sourceIdBinary === outputBin);
 
-        if (!sourceTableDict) {
-          //if (!record.isEmpty) console.log(currentCol);
-          continue; // Skip if no matching dictionary entry
+      const record = sourceTable.records[i];
+
+      if (FranchiseUtils.isReferenceColumn(record,currentCol)) {
+        try {
+          const updatedValue = replaceBinaryValue(mergedTableMappings, record, currentCol);
+          if (updatedValue !== null) {
+            record[currentCol] = updatedValue;
+          }
+        } catch (error) {
+          console.error(`Error processing column: ${currentCol} at row ${i}`, error);
         }
-        
-        // Replace the binary value with the target binary value
-        record[currentCol] = currentValue.replace(outputBin, sourceTableDict.targetIdBinary);
-  
-      } catch (error) {
-        console.error(`Error processing column: ${currentCol} at row ${i}`, error);
       }
     }
   });
@@ -819,7 +842,7 @@ async function clearArrayTables() {
   }
 }
 
-async function transferPlayerAbilities() {
+async function transferPlayerAbilities(mergedTableMappings) {
   const sourceMainSignatureTable = sourceFranchise.getTableByUniqueId(SOURCE_TABLES.mainSigAbilityTable);
   const sourceSecondarySignatureTable = sourceFranchise.getTableByUniqueId(SOURCE_TABLES.secondarySigAbilityTable);
 
@@ -835,6 +858,10 @@ async function transferPlayerAbilities() {
       const recordCapacity = primaryTable.header.recordCapacity;
       const secondaryNextRecord = secondaryTable.header.nextRecordToUse;
       const secondaryRecordCapacity = secondaryTable.header.recordCapacity;
+      const updatedPlayerBinary = replaceBinaryValue(mergedTableMappings, record, 'Player');
+      if (updatedPlayerBinary !== null && record.Player !== FranchiseUtils.ZERO_REF) {
+        record.Player = updatedPlayerBinary;
+      }
 
       if (nextRecordToUse < recordCapacity) {
         FranchiseUtils.addRecordToTable(record, primaryTable);
@@ -927,7 +954,7 @@ sourceFranchise.on('ready', async function () {
     await FranchiseUtils.emptyAcquisitionTables(targetFranchise);
 
     await deleteExcessFreeAgents(); // Only keep the top 3500 players
-    await fixPlayerTableRow(targetFranchise);
+    await fixPlayerTableRow();
     await emptyRookieStatTracker(); // Function to empty Rookie Tracker table (Avoid crashing)
     await FranchiseUtils.generateActiveAbilityPlayers(targetFranchise);
     await clearArrayTables();
@@ -940,7 +967,7 @@ sourceFranchise.on('ready', async function () {
 
     await assignFranchiseUsers();
     await adjustCommentaryValues();
-    await transferPlayerAbilities();
+    await transferPlayerAbilities(mergedTableMappings);
 
     if (is24To25) {
       const message = "Would you like to remove asset names from the Player table that aren't in Madden 24's Database?";
