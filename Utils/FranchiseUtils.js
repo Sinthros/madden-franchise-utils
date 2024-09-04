@@ -173,8 +173,8 @@ function init(validGameYears, options = {}) {
  * Selects a franchise file based on the provided game year and options.
  *
  * @param {number|string} gameYear - The Madden game year of the Franchise File object.
- * @param {boolean} [isAutoUnemptyEnabled=false] - If true, rows will always be unemptied upon editing.
- *                                                 If you aren't sure, leave this as false.
+ * @param {boolean} [isAutoUnemptyEnabled=false] - If true, rows will always be unemptied upon editing. If you aren't sure, leave this as false.
+ *                                                 Keep in mind: Editing the first column of an empty row will ALWAYS unempty the row, even if this is false.
  * @param {boolean} [isFtcFile=false] - Whether the file is an FTC file. You can almost always leave this as false.
  * @returns {Object} - The selected Franchise object.
  */
