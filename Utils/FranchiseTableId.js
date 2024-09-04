@@ -207,6 +207,10 @@ const tablesM25 = {
     // Character Visuals
     characterVisualsTable: 1429178382,
 
+    // Franchise file fingerprinting tables
+    tutorialInfoTable: 1708658566,
+    franchiseDebugModuleTable: 4212179270,
+
     // These list the divisions and the teams within them
     divisionTeamTable: 853026208,
     divisionTable: 177707037,

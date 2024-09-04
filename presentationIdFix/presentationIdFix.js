@@ -48,9 +48,12 @@ franchise.on('ready', async function () {
 	if(gameYear >= FranchiseUtils.YEARS.M24)
 	{
 		// Get the fingerprint from the franchise file if it's in the list, then set the bool to true and read the override file
-		fingerprintTable = franchise.getTableByUniqueId(tables.franchiseDebugModuleTable);
+
+		// M24 uses a different table from M25 and newer
+		fingerprintTable = gameYear === FranchiseUtils.YEARS.M24 ? franchise.getTableByUniqueId(tables.franchiseDebugModuleTable) : franchise.getTableByUniqueId(tables.tutorialInfoTable);
 		await fingerprintTable.readRecords();
-		fingerprint = fingerprintTable.records[0]['SideActivityToForce'];
+		const fingerprintFieldName = gameYear === FranchiseUtils.YEARS.M24 ? 'SideActivityToForce' : 'Message';
+		fingerprint = fingerprintTable.records[0][fingerprintFieldName];
 
 		// If it's in the fingerprint list, then set the bool to true and read the override file
 		if(customMeshFingerprints.includes(fingerprint))
