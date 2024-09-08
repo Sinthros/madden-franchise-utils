@@ -46,6 +46,11 @@ function getTableField(table) {
   const record = table.records[0];
   const columnNames = Object.keys(record._fields);
   const lowerCaseColumnNames = columnNames.map(name => name.toLowerCase());
+  console.log("Table Information:");
+  console.log(`Table Name: ${table.header.name}`);
+  console.log(`Table ID: ${table.header.tableId}`);
+  console.log(`Table Unique ID: ${table.header.uniqueId}`);
+
 
   while (true) {
     console.log(`Select a column from ${table.header.name} to get data for. If you want to print out the column names, enter 'print'. Enter 'exit' to stop searching for columns in this table.`);

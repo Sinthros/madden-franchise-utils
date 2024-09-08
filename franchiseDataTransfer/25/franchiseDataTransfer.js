@@ -317,9 +317,11 @@ async function assignFranchiseUsers() {
 
 async function getCoachTables() {
   
-  const coach = targetFranchise.getTableByUniqueId(TARGET_TABLES.coachTable);
+  const coachTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.coachTable);
   const freeAgentCoachTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.freeAgentCoachTable);
-  const team = targetFranchise.getTableByUniqueId(TARGET_TABLES.teamTable);
+  const retiredCoachTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.retiredCoachTable);
+  const hallOfFameCoachTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.hallOfFameCoachTable);
+  const teamTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.teamTable);
   const activeTalentTree = targetFranchise.getTableByUniqueId(TARGET_TABLES.activeTalentTree);
   const talentNodeStatus = targetFranchise.getTableByUniqueId(TARGET_TABLES.talentNodeStatus);
   const talentNodeStatusArray = targetFranchise.getTableByUniqueId(TARGET_TABLES.talentNodeStatusArray);
@@ -328,7 +330,8 @@ async function getCoachTables() {
   const playerPersonnel = targetFranchise.getTableByUniqueId(TARGET_TABLES.playerPersonnelTable);
 
 
-  const tableArray = [coach,freeAgentCoachTable,team,activeTalentTree,talentNodeStatus,talentNodeStatusArray,talentSubTreeStatus,coachTalentEffects,playerPersonnel];
+  const tableArray = [coachTable,freeAgentCoachTable,retiredCoachTable,hallOfFameCoachTable,
+    teamTable,activeTalentTree,talentNodeStatus,talentNodeStatusArray,talentSubTreeStatus,coachTalentEffects,playerPersonnel];
 
   return tableArray;
 };
@@ -529,8 +532,10 @@ async function handleTable(targetTable,mergedTableMappings) {
 
 
 async function getPlayerTables() {
-  const player = targetFranchise.getTableByUniqueId(TARGET_TABLES.playerTable);
+  const playerTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.playerTable);
   const freeAgents = targetFranchise.getTableByUniqueId(TARGET_TABLES.freeAgentTable);
+  const retiredPlayerTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.retiredPlayerTable);
+  const hallOfFamePlayerTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.hallOfFamePlayerTable);
   const playerArray = targetFranchise.getTableByUniqueId(TARGET_TABLES.rosterTable);
   const playerPracticeSquads = targetFranchise.getTableByUniqueId(TARGET_TABLES.practiceSquadTable);
   const depthChart = targetFranchise.getTableByUniqueId(TARGET_TABLES.depthChartPlayerTable);
@@ -542,7 +547,7 @@ async function getPlayerTables() {
   const careerDefensiveStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.careerDefStatsTable);
   const careerKickingStats = targetFranchise.getTableByUniqueId(TARGET_TABLES.careerKickingStatsTable);
 
-  const tableArray = [player,freeAgents,playerArray,playerPracticeSquads,
+  const tableArray = [playerTable,freeAgents,retiredPlayerTable,hallOfFamePlayerTable,playerArray,playerPracticeSquads,
     depthChart,teamRoadMap,careerDefensiveKPReturnStats,careerOffensiveKPReturnStats,careerOLineStats,careerOffensiveStats,careerDefensiveStats,
     careerKickingStats];
 
@@ -829,13 +834,9 @@ async function clearArrayTables() {
   const focusTrainingTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.focusTrainingTable);
   const rookieStatTrackerArray = targetFranchise.getTableByUniqueId(TARGET_TABLES.rookieStatTrackerArray);
   const storyArrayTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.storyArrayTable);
+  const tweetArrayTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.tweetArrayTable);
 
-  // Temporary
-  const activeSignatureArray = targetFranchise.getTableByUniqueId(TARGET_TABLES.signatureArrayTable);
-
-  const allTables = [draftedPlayersTable,miniGameCompleteTable,drillCompletedTable,focusTrainingTable,rookieStatTrackerArray,storyArrayTable,activeSignatureArray];
-
-  await FranchiseUtils.readTableRecords(allTables);
+  const allTables = [draftedPlayersTable,miniGameCompleteTable,drillCompletedTable,focusTrainingTable,rookieStatTrackerArray,storyArrayTable,tweetArrayTable];
 
   for (const table of allTables) {
     FranchiseUtils.clearArrayTable(table);

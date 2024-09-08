@@ -56,6 +56,7 @@ const tables = {
     storyTable: 53507767,
     storyArrayTable: 1350117431,
     tweetTable: 2206445889,
+    tweetArrayTable: 1421358464,
     seasonGameTable: 1607878349,
     pendingSeasonGamesTable: 2877284424,
     practiceEvalTable: 1009707988,
@@ -168,7 +169,12 @@ const tables = {
     stadiumTable: 2377187865,
 
     // Presentation ID
-    presentationTable: 3947910319
+    presentationTable: 3947910319,
+
+    hallOfFameCoachTable: 1455634092,
+    hallOfFamePlayerTable: 1170686064,
+    retiredPlayerTable: 3407263698,
+    retiredCoachTable: 2334648001
 }
 
 // Madden 25 tables 
@@ -232,6 +238,7 @@ const tablesM25 = {
     storyTable: 53507767,
     storyArrayTable: 1350117431,
     tweetTable: 2206445889,
+    tweetArrayTable: 1421358464,
     seasonGameTable: 1607878349,
     pendingSeasonGamesTable: 2877284424,
     practiceEvalTable: 1009707988,
