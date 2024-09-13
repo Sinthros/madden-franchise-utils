@@ -1,8 +1,9 @@
-const prompt = require('prompt-sync')();
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const fs = require('fs');
 const zeroPad = (num, places) => String(num).padStart(places, '0')
 let is24To25;
+let transferSeasonYear;
+let transferTeamNames;
 
 const ALL_ASSET_NAMES = JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8'));
 const COMMENTARY_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/commentary_lookup.json', 'utf-8'));
@@ -189,18 +190,15 @@ async function getNeededColumns(currentTableName) {
       return [keepColumns,deleteColumns,zeroColumns];
     case FranchiseUtils.TABLE_NAMES.TEAM:
       keepColumns = ["Philosophy","HeadCoach","OffensiveCoordinator","DefensiveCoordinator","Roster","PracticeSquad","PlayerPersonnel",
-        "DepthChart","ActiveRosterSize","SalCapRosterSize","SalCapNextYearRosterSize","TeamIndex",
-        "Rival1TeamRef","Rival2TeamRef","Rival3TeamRef"];
+        "DepthChart","ActiveRosterSize","SalCapRosterSize","SalCapNextYearRosterSize","TeamIndex", "TEAM_OFFPLAYBOOK","TEAM_DEFPLAYBOOK",
+        "Rival1TeamRef","Rival2TeamRef","Rival3TeamRef","TeamBuilding","ContentionPhase","PresentationId","TEAM_ORIGID","RolloverCap","TEAM_LOGO","TEAM_ORDER","TEAM_GROUP","PrestigeRank"];
       deleteColumns = [];
       zeroColumns = ["UserCharacter"];
 
-      const message = "Would you like to transfer over team names from the source file to the target file (For example: Commanders, Bears, etc)? This will also transfer over Team menu colors.";
-      const transferTeamNames = FranchiseUtils.getYesOrNo(message);
-
       if (transferTeamNames) {
-        keepColumns.push("DisplayName","ShortName","NickName","LongName",
+        keepColumns.push("DisplayName","ShortName","NickName","LongName","TEAM_PREFIX_NAME",
         "TEAM_BACKGROUNDCOLORR2","TEAM_BACKGROUNDCOLORR","TEAM_BACKGROUNDCOLORB","TEAM_BACKGROUNDCOLORB2",
-        "TEAM_BACKGROUNDCOLORG","TEAM_BACKGROUNDCOLORG2");
+        "TEAM_BACKGROUNDCOLORG","TEAM_BACKGROUNDCOLORG2","TEAM_DBASSETNAME","AssetName","UniformPrefix","UniformAssetName");
       }
 
       return [keepColumns,deleteColumns,zeroColumns];   
@@ -322,6 +320,7 @@ async function getCoachTables() {
   const retiredCoachTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.retiredCoachTable);
   const hallOfFameCoachTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.hallOfFameCoachTable);
   const teamTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.teamTable);
+  const salaryInfo = targetFranchise.getTableByUniqueId(TARGET_TABLES.salaryInfoTable);
   const activeTalentTree = targetFranchise.getTableByUniqueId(TARGET_TABLES.activeTalentTree);
   const talentNodeStatus = targetFranchise.getTableByUniqueId(TARGET_TABLES.talentNodeStatus);
   const talentNodeStatusArray = targetFranchise.getTableByUniqueId(TARGET_TABLES.talentNodeStatusArray);
@@ -331,7 +330,7 @@ async function getCoachTables() {
 
 
   const tableArray = [coachTable,freeAgentCoachTable,retiredCoachTable,hallOfFameCoachTable,
-    teamTable,activeTalentTree,talentNodeStatus,talentNodeStatusArray,talentSubTreeStatus,coachTalentEffects,playerPersonnel];
+    teamTable,salaryInfo,activeTalentTree,talentNodeStatus,talentNodeStatusArray,talentSubTreeStatus,coachTalentEffects,playerPersonnel];
 
   return tableArray;
 };
@@ -529,7 +528,15 @@ async function handleTable(targetTable,mergedTableMappings) {
   }
 };
 
+async function setOptions() {
 
+  const message = "Would you like to transfer over the Season Year from your source file to your target file?\n" +
+  "Enter YES to transfer the Season Year or NO to leave it as is in the target file. If you're transferring a file that is at or close to 30 years, you should enter NO.";
+  transferSeasonYear = FranchiseUtils.getYesOrNo(message);
+
+  const teamMsg = "Would you like to transfer over team names from the source file to the target file (For example: Commanders, Bears, etc)? This will also transfer over Team menu colors.";
+  transferTeamNames = FranchiseUtils.getYesOrNo(teamMsg);
+}
 
 async function getPlayerTables() {
   const playerTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.playerTable);
@@ -591,27 +598,24 @@ async function getDraftPickTables() {
 
 };
 
-async function getOptionalTables() {
+async function validateFiles() {
   const seasonInfo = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonInfoTable);
-  const salaryInfo = targetFranchise.getTableByUniqueId(TARGET_TABLES.salaryInfoTable);
   const sourceSeasonInfo = sourceFranchise.getTableByUniqueId(TARGET_TABLES.seasonInfoTable);
-  const leagueHistoryAward = targetFranchise.getTableByUniqueId(TARGET_TABLES.leagueHistoryAward);
-  const leagueHistoryArray = targetFranchise.getTableByUniqueId(TARGET_TABLES.leagueHistoryArray);
-  const yearSummary = targetFranchise.getTableByUniqueId(TARGET_TABLES.yearSummary);
-  const yearSummaryArray = targetFranchise.getTableByUniqueId(TARGET_TABLES.yearSummaryArray);
-  const historyTables = [leagueHistoryAward,leagueHistoryArray,yearSummary,yearSummaryArray];
 
-  const targetCurrentStage = seasonInfo.records[0]['CurrentStage'];
+  const sourceSeasonInfoRecord = sourceSeasonInfo.records[0];
+  const seasonInfoRecord = seasonInfo.records[0];
+
+  const targetCurrentStage = seasonInfoRecord.CurrentStage;
 
   if (targetCurrentStage !== FranchiseUtils.SEASON_STAGES.PRESEASON) {
-    const currentWeekType = seasonInfo.records[0]['CurrentWeekType'];
+    const currentWeekType = seasonInfoRecord['CurrentWeekType'];
     console.log(`ERROR! Target file MUST be in the PreSeason to execute this program. Your target file is currently in the ${currentWeekType}.`);
     console.log("Ensure your target franchise file is in the PreSeason before using this program.");
     FranchiseUtils.EXIT_PROGRAM();
   }
 
-  const sourceSeasonYear = sourceSeasonInfo.records[0]['CurrentSeasonYear'];
-  const sourceCurrentStage = sourceSeasonInfo.records[0]['CurrentStage'];
+  const sourceSeasonYear = sourceSeasonInfoRecord.CurrentSeasonYear;
+  const sourceCurrentStage = sourceSeasonInfoRecord.CurrentStage;
 
   if (sourceCurrentStage === FranchiseUtils.SEASON_STAGES.OFFSEASON) {
     const continueMsg = "WARNING! The source file you've selected is in the Offseason.\n" +
@@ -622,40 +626,27 @@ async function getOptionalTables() {
       FranchiseUtils.EXIT_PROGRAM();
     }
 
-    const sourceCurrentOffseasonStage = sourceSeasonInfo.records[0]['CurrentOffseasonStage'];
-    const sourceCurrentYear = sourceSeasonInfo.records[0]['CurrentYear'];
-
+    const sourceCurrentOffseasonStage = sourceSeasonInfoRecord.CurrentOffseasonStage;
+    const sourceCurrentYear = sourceSeasonInfoRecord.CurrentYear;
     if (sourceCurrentOffseasonStage < 10) {
       const updatedSeasonYear = sourceSeasonYear + 1;
       const updatedCurrentYear = sourceCurrentYear + 1;
-      sourceSeasonInfo.records[0]['CurrentSeasonYear'] = updatedSeasonYear;
-      sourceSeasonInfo.records[0]['CurrentYear'] = updatedCurrentYear;
+      sourceSeasonInfoRecord.CurrentSeasonYear = updatedSeasonYear;
+      sourceSeasonInfoRecord.CurrentYear = updatedCurrentYear;
     }
-
   }
+}
+async function getOptionalTables() {
+  const seasonInfo = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonInfoTable);
+  const leagueHistoryAward = targetFranchise.getTableByUniqueId(TARGET_TABLES.leagueHistoryAward);
+  const leagueHistoryArray = targetFranchise.getTableByUniqueId(TARGET_TABLES.leagueHistoryArray);
+  const yearSummary = targetFranchise.getTableByUniqueId(TARGET_TABLES.yearSummary);
+  const yearSummaryArray = targetFranchise.getTableByUniqueId(TARGET_TABLES.yearSummaryArray);
 
   const tableArray = [];
 
-  for (let count = 1; count <= 2; count++) {
-    let currentTable;
-
-    if (count === 1) {
-      console.log("Would you like to transfer over the Season Year from your source file to your target file?");
-      console.log("Enter YES to transfer the Season Year or NO to leave it as is in the target file.");
-      currentTable = seasonInfo;
-    } else if (count === 2) {
-      console.log("Would you like to transfer over the Salary Cap from your source file to your target file? This is heavily recommended.");
-      console.log("Enter YES to transfer the Salary Cap or NO to leave them as is in the target file.");
-      currentTable = salaryInfo;
-    }
-
-    const namePrompt = prompt(); // Get user input
-    if (namePrompt.toUpperCase() === 'YES') {
-      tableArray.push(currentTable);
-      if (count === 1) {
-        tableArray.push(...historyTables);
-      }
-    }
+  if (transferSeasonYear) {
+    tableArray.push(seasonInfo,leagueHistoryAward,leagueHistoryArray,yearSummary,yearSummaryArray)
   }
 
   return tableArray;
@@ -916,29 +907,21 @@ sourceFranchise.on('ready', async function () {
     // We read records for all tables, and we simply continue if there's an error loading a table
     await FranchiseUtils.readTableRecords(allSourceTables,true,sourceFranchise);
     await FranchiseUtils.readTableRecords(allTargetTables,true,targetFranchise);
+    
+    validateFiles();
+    setOptions();
 
     const mergedTableMappings = await getTableMappings();
 
-    const playerTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.playerTable);
-    await playerTable.readRecords();
-
-    for (let currentRow = 0; currentRow < playerTable.header.recordCapacity;currentRow++) {
-      if (playerTable.records[currentRow].isEmpty)  {
-        referencedRow = targetFranchise.getReferencesToRecord(playerTable.header.tableId,currentRow)    
-        referencedRow.forEach((table) => {
-          //console.log(`${table.tableId}: ${table.name}: ${currentRow}`)
-        })
-      }
-    }
-    const coachTables = await getCoachTables();
-    const playerTables = await getPlayerTables();
-    const awardTables = await getAwardTables();
-    const optionalTables = await getOptionalTables();
-    //const tradeTables = await getTradeTables();
-
-    const draftPickTables = await getDraftPickTables();
-
-    const allTablesArray = [optionalTables,playerTables,coachTables,awardTables,draftPickTables];
+    const [coachTables, playerTables, awardTables, optionalTables, draftPickTables] = await Promise.all([
+      getCoachTables(),
+      getPlayerTables(),
+      getAwardTables(),
+      getOptionalTables(),
+      getDraftPickTables()
+    ]);
+  
+    const allTablesArray = [optionalTables, playerTables, coachTables, awardTables, draftPickTables];
 
     console.log("Now working on transferring all table data...");
 
