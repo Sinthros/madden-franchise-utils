@@ -4,7 +4,7 @@ const { getBinaryReferenceData } = require('madden-franchise/services/utilServic
 
 const MIN_EMPTY_PLAYERS = 650;
 
-const gameYear = FranchiseUtils.YEARS.M24;
+const gameYear = [FranchiseUtils.YEARS.M24,FranchiseUtils.YEARS.M25];
 
 console.log("This program will delete the lowest rated free agent players from your file in order to ensure you have enough empty player table rows.");
 console.log("You only need to use this if you're having an issue importing a custom Draft Class, due to a recent change EA made. Thanks, EA.");
@@ -110,56 +110,10 @@ async function deleteExcessFreeAgents(franchise, playersToDelete) {
   }
 };
 
-async function emptyAcquisitionTables(franchise) {
-  const playerAcquisitionEvaluation = franchise.getTableByUniqueId(2531183555);
-  const playerAcquisitionEvaluationArray = franchise.getTableByUniqueId(498911520);
-
-  await playerAcquisitionEvaluation.readRecords();
-  await playerAcquisitionEvaluationArray.readRecords();
-
-  for (let i = 0; i < playerAcquisitionEvaluation.header.recordCapacity; i++) {
-    if (playerAcquisitionEvaluation.records[i].isEmpty) {
-      continue;
-    }
-
-    const record = playerAcquisitionEvaluation.records[i];
-    record.Player = FranchiseUtils.ZERO_REF;
-    record.isPlayerSuperstar = false;
-    record.isPlayerXFactor = false;
-    record.AddedValue = 0;
-    record.DevelopmentValue = 0;
-    record.Value = 0;
-    record.FreeAgentComparisonValue = 0;
-    record.ImportanceValue = 0;
-    record.TeamSchemeOverallValue = 0;
-    record.TeamTradePhilosophyValue = 0;
-    record.AcquisitionType = 'Signed';
-    record.Rank = 0;
-    record.BestSchemeOverallValue = 0;
-    record.CoachTradeInfluenceValue = 0;
-    record.ContractValue = 0;
-    record.IsPlayerHidden = false;
-    
-    record.empty();
-  }
-
-  for (let i = 0; i < playerAcquisitionEvaluationArray.header.recordCapacity; i++) {
-    if (playerAcquisitionEvaluationArray.records[i].isEmpty) {
-      continue;
-    }
-
-    const recordArray = playerAcquisitionEvaluationArray.records[i];
-    for (let j = 0; j < 10; j++) {
-      recordArray[`PlayerAcquisitionEvaluation${j}`] = FranchiseUtils.ZERO_REF;
-    }
-  }
-}
-
 
 franchise.on('ready', async function () {
 
   FranchiseUtils.validateGameYears(franchise,gameYear);
-
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   await playerTable.readRecords();
 
@@ -181,7 +135,7 @@ franchise.on('ready', async function () {
     FranchiseUtils.EXIT_PROGRAM();
   }
 
-  await deleteExcessFreeAgents(franchise, playersToDelete);
+  await FranchiseUtils.deleteExcessFreeAgents(franchise, {numPlayerstoDelete: playersToDelete});
 
   // This prints out empty player table references. if you see refs from 6000 (Marketing table) it's fine
   /*for (let currentRow = 0; currentRow < playerTable.header.recordCapacity;currentRow++) {
@@ -193,7 +147,7 @@ franchise.on('ready', async function () {
       })
     }
   }*/
-  await emptyAcquisitionTables(franchise);
+  await FranchiseUtils.emptyAcquisitionTables(franchise);
   await FranchiseUtils.emptyHistoryTables(franchise,tables);
   
   console.log(`Successfully deleted ${playersToDelete} free agent player rows.`);
