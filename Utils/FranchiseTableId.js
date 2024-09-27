@@ -103,8 +103,6 @@ const tables = {
     playerContractTable: 728038538,
     salaryBonusIntTable: 1553774079,
     contractOfferArrayTable: 2918938877,
-    // Retirement
-    retirementTable: 761908674,
     // User Control
     franchiseUserTable: 3429237668,
     franchiseUsersArray: 2655789119,
@@ -289,7 +287,6 @@ const tablesM25 = {
     playerContractTable: 728038538,
     salaryBonusIntTable: 2228202903,
     contractOfferArrayTable: 2918938877,
-    retirementTable: 761908674,
     franchiseUserTable: 3429237668,
     franchiseUsersArray: 899004536,
     teamSettingTable: 3073982847,
