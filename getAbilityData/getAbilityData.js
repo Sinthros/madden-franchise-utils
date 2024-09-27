@@ -24,7 +24,7 @@ const signatureAbilities = {
   };
 
 
-const gameYear = FranchiseUtils.YEARS.M24;
+const gameYear = FranchiseUtils.YEARS.M25;
 
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear,false,true);
 
@@ -33,7 +33,7 @@ const franchise = FranchiseUtils.selectFranchiseFile(gameYear,false,true);
 // Function I used to manually get certain data from FTC tables into an array, can be modified to be used however you want
 async function getFtcReferences() {
 
-    const currentTable = franchise.getTableByName('DefensivePlaybookDataType'); // Whatever table you're working with
+    const currentTable = franchise.getTableByName('TeamIdentity'); // Whatever table you're working with
                                                                                 // Change to getTableByUniqueId if using
     await currentTable.readRecords();
     const currentTableId = currentTable.header.tableId //Table ID
@@ -41,18 +41,26 @@ async function getFtcReferences() {
   
     const allAssets = franchise.assetTable; //Get all available assets and their references
   
-    for (let currentRow = 0; currentRow < currentTable.header.recordCapacity; currentRow++) {
+    for (const record of currentTable.records) {
       
-      let binReference = getBinaryReferenceData(currentTableId,currentRow) 
-      let assetReference = FranchiseUtils.bin2Dec(binReference) //This will match up with the reference in the assetTable
+      const binReference = getBinaryReferenceData(currentTableId,record.index) 
+      const assetReference = FranchiseUtils.bin2Dec(binReference) //This will match up with the reference in the assetTable
     
-      let assetId = allAssets.find(obj => obj.reference === assetReference)?.assetId; //This finds our desired assetId
+      const assetId = allAssets.find(obj => obj.reference === assetReference)?.assetId; //This finds our desired assetId
       const finalBin = FranchiseUtils.dec2bin(assetId, 2); // Convert to binary
+
       const updatedJson = {
+        "TeamId": record.index,
         "AssetId": assetId,
-        "ShortName": currentTable.records[currentRow]['Value'],
-        "Value": currentTable.records[currentRow]['Value'],
-        "Bin": finalBin
+        "Binary": finalBin,
+        "UniformPrefix": record.UniformPrefix,
+        "UniformAssetName": record.UniformAssetName,
+        "TEAM_PREFIX_NAME": record.TEAM_PREFIX_NAME,
+        "TEAM_DBASSETNAME": record.TEAM_DBASSETNAME,
+        "TEAM_AFL_DISPLAYNAME": record.TEAM_AFL_DISPLAYNAME,
+        "NickName": record.NickName,
+        "DisplayName": record.DisplayName,
+        "AssetName": record.AssetName
       };
       
       
@@ -75,7 +83,13 @@ async function getFtcReferences() {
   };
 
 franchise.on('ready', async function () {
-  //const json = await getFtcReferences();
+    const json = await getFtcReferences();
+    // Convert array to JSON string
+const teamIdentityStr = JSON.stringify(json, null, 2); // `null, 2` formats the JSON nicely
+
+// Write the JSON string to a file
+fs.writeFileSync('output.json', teamIdentityStr, 'utf8');
+process.exit(0)
 
     const SignatureAbilitesTable = franchise.getTableByUniqueId(tables.signatureAbilitesFtcTable);
     const SignatureByPosition = franchise.getTableByUniqueId(tables.signatureByPositionFtcTable);
