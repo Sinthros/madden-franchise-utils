@@ -527,7 +527,21 @@ function getColumnNames(table) {
 async function emptyCharacterVisualsTable(franchise) {
     const tables = getTablesObject(franchise);
     const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
-    await readTableRecords([characterVisuals]);
+    const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+    const coachTable = franchise.getTableByUniqueId(tables.coachTable);
+    await readTableRecords([characterVisuals,playerTable,coachTable]);
+
+    for (const record of playerTable.records) {
+      if (!record.isEmpty) {
+        record.CharacterVisuals = ZERO_REF;
+      }
+    }
+
+    for (const record of coachTable.records) {
+      if (!record.isEmpty) {
+        record.CharacterVisuals = ZERO_REF;
+      }
+    }
 
     emptyTable(characterVisuals, {"RawData": {}});
 };
@@ -1297,6 +1311,112 @@ async function removeControl(teamRow, franchise) {
 
 }
 
+async function removePlayerVisuals(franchise,playerRecord) {
+  const visualsBinary = playerRecord.CharacterVisuals;
+  if (visualsBinary !== ZERO_REF && !visualsBinary.startsWith('1')) {
+    const characterVisualsRow = bin2Dec(visualsBinary.slice(15));
+    // Dynamically get the table ID for CharacterVisuals
+    // This is required because if there's too many players/coaches, the game generates more Visuals tables
+    // So instead of always calling the main one, we instead dynamically get the table ID through the binary.
+    const characterVisualsTableId = bin2Dec(visualsBinary.slice(0,15));
+    const characterVisualsTable = franchise.getTableById(characterVisualsTableId);
+    await readTableRecords([characterVisualsTable]);
+
+    // Then, get the record for the player and empty it
+    const visualsRecord = characterVisualsTable.records[characterVisualsRow];
+    visualsRecord.RawData = {};
+    visualsRecord.empty();
+
+    playerRecord.CharacterVisuals = ZERO_REF;
+  }
+
+}
+
+async function deleteExcessFreeAgents(franchise, options = {}) {
+
+  const {
+    numPlayersToDelete = null
+  } = options;
+
+  const tables = getTablesObject(franchise);
+
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  const freeAgentsTable = franchise.getTableByUniqueId(tables.freeAgentTable);
+  const drillCompletedTable = franchise.getTableByUniqueId(tables.drillCompletedTable);
+
+  await readTableRecords([playerTable,freeAgentsTable,drillCompletedTable]);
+
+  const activePlayerRecords = playerTable.records.filter(record => 
+    !record.isEmpty && 
+    isValidPlayer(record, {
+      includeDraftPlayers: true,
+      includeFreeAgents: true,
+      includePracticeSquad: true,
+      includeSignedPlayers: true,
+      includeExpiringPlayers: true,
+      includeDeletedPlayers: false,
+      includeCreatedPlayers: false,
+      includeLegends: false,
+      includeNoneTypePlayers: false
+    })
+  );
+  
+  const freeAgentRecords = activePlayerRecords.filter(record => record.ContractStatus === CONTRACT_STATUSES.FREE_AGENT) // Filter active players for where they're free agents
+
+  let allFreeAgentsBinary = [];
+  const worstFreeAgentsBinary = [];
+
+  const numTotalPlayersDesired = freeAgentsTable.header.numMembers; //Max amount of free agents (this is relevant for a fantasy draft)
+  const totalNumCurrentPlayers = activePlayerRecords.length; //Get the current number of players
+
+  freeAgentRecords.forEach((freeAgentRecord) => {
+    const rowIndex = playerTable.records.indexOf(freeAgentRecord);
+    const currentBinary = getBinaryReferenceData(playerTable.header.tableId,rowIndex);
+    allFreeAgentsBinary.push(currentBinary);
+  });
+  
+
+  if (totalNumCurrentPlayers > numTotalPlayersDesired) { // If we're above 3500 total players...
+    const numExtraPlayers = totalNumCurrentPlayers - numTotalPlayersDesired; // Calculate excess players
+
+    // Determine the number of players to delete
+    const playersToDelete = (numPlayersToDelete != null && 
+                             Number.isInteger(numPlayersToDelete) && 
+                             numPlayersToDelete > 0) 
+                             ? numPlayersToDelete 
+                             : Math.max(numExtraPlayers, 0); // Ensure non-negative value
+    
+    // Sort the free agents by OverallRating and slice the array safely
+    const worstFreeAgents = freeAgentRecords
+      .sort((a, b) => a.OverallRating - b.OverallRating)
+      .slice(0, Math.min(playersToDelete, freeAgentRecords.length)); // Ensure we don't exceed the array length
+
+    for (const freeAgentRecord of worstFreeAgents) {
+      const currentBinary = getBinaryReferenceData(playerTable.header.tableId, freeAgentRecord.index);
+      worstFreeAgentsBinary.push(currentBinary);
+      freeAgentRecord.ContractStatus = CONTRACT_STATUSES.DELETED; // Mark as deleted and empty the row
+      freeAgentRecord.CareerStats = ZERO_REF;
+      freeAgentRecord.SeasonStats = ZERO_REF;
+      freeAgentRecord.GameStats = ZERO_REF;
+      freeAgentRecord.College = ZERO_REF;
+      freeAgentRecord.PLYR_ASSETNAME = "";
+      freeAgentRecord.empty();
+      await removeFromTable(drillCompletedTable, currentBinary);
+      await removePlayerVisuals(franchise,freeAgentRecord);
+    }
+
+    //Filter for where we aren't including the worstFreeAgentBin
+    allFreeAgentsBinary = allFreeAgentsBinary.filter((bin) => !worstFreeAgentsBinary.includes(bin));
+  
+    while (allFreeAgentsBinary.length < numTotalPlayersDesired) { //Fill up the remainder with zeroed out binary
+      allFreeAgentsBinary.push(ZERO_REF)
+    }
+
+    //One liner to set the FA table binary = our free agent binary
+    allFreeAgentsBinary.forEach((val, index) => { freeAgentsTable.records[0].fieldsArray[index].value = val; })
+  }
+};
+
 /**
  * Determines if a player is valid based on various criteria.
  *
@@ -1594,6 +1714,8 @@ module.exports = {
     fixPlayerTables,
     takeControl,
     removeControl,
+    deleteExcessFreeAgents,
+    removePlayerVisuals,
 
     getYesOrNo, // UTILITY FUNCTIONS
     shuffleArray,
