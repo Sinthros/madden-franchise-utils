@@ -8,16 +8,21 @@ const prompt = require('prompt-sync')();
 const fs = require('fs');
 const directoryPath = path.join(__dirname, 'schedules');
 const FranchiseUtils = require('../Utils/FranchiseUtils');
-const { tables } = require('../Utils/FranchiseTableId');
 const TRANSFER_SCHEDULE_FUNCTIONS = require('./transferScheduleFromJson');
-const gameYear = FranchiseUtils.YEARS.M24;
 const autoUnempty = true;
 
 console.log("In this program, you can insert any previous year's NFL schedule into your Franchise File.");
-console.log("This only works with Madden 24 Franchise Files, and if your Franchise file is in the PreSeason.");
+console.log("This only works with Madden 24 and 25 Franchise Files, and if your Franchise file is in the PreSeason.");
 
 
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
+// Set up franchise file
+const validGames = [
+	FranchiseUtils.YEARS.M24,
+	FranchiseUtils.YEARS.M25
+];
+const franchise = FranchiseUtils.init(validGames, {isAutoUnemptyEnabled: autoUnempty});
+const tables = FranchiseUtils.getTablesObject(franchise);
+const gameYear = parseInt(franchise.schema.meta.gameYear);
 
 let minYear = 1970;
 let maxYear = 2023;
