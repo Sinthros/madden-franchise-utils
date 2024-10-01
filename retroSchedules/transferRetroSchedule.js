@@ -22,7 +22,6 @@ const validGames = [
 ];
 const franchise = FranchiseUtils.init(validGames, {isAutoUnemptyEnabled: autoUnempty});
 const tables = FranchiseUtils.getTablesObject(franchise);
-const gameYear = parseInt(franchise.schema.meta.gameYear);
 
 let minYear = 1970;
 let maxYear = 2023;
@@ -107,8 +106,6 @@ async function processSelectedYear(year) {
 
 
 franchise.on('ready', async function () {
-  
-  FranchiseUtils.validateGameYears(franchise,gameYear);
   
   // Start the user prompt
   const sourceScheduleJson = await promptUser();
