@@ -43,7 +43,7 @@ const franchise = FranchiseUtils.selectFranchiseFile(gameYear, autoUnempty);
 const tables = FranchiseUtils.getTablesObject(franchise);
 const useJsonStrategy = false;
 
-// List of relevant equipment columns in the player table
+// List of relevant equipment/other columns in the player table
 const equipmentCols = ['PLYR_EYEPAINT', 'PlayerVisMoveType', 'PLYR_RIGHTARMSLEEVE', 'PLYR_QBSTYLE', 'PLYR_GRASSLEFTELBOW', 'PLYR_RIGHTTHIGH', 'PLYR_RIGHTSPAT', 'PLYR_RIGHTSHOE', 'PLYR_GRASSLEFTHAND', 'PLYR_GRASSRIGHTHAND', 'PLYR_GRASSRIGHTELBOW', 'PLYR_GRASSLEFTWRIST', 'PLYR_GRASSRIGHTWRIST', 'PLYR_VISOR', 'PLYR_HELMET', 'PLYR_FACEMASK', 'PLYR_JERSEYSLEEVE', 'PLYR_JERSEY_STATE', 'PLYR_LEFTSPAT', 'PLYR_LEFTSHOE', 'PLYR_LEFTARMSLEEVE', 'PLYR_MOUTHPIECE', 'PLYR_TOWEL', 'PLYR_STANCE', 'PLYR_SOCK_HEIGHT', 'RunningStyleRating', 'PLYR_FLAKJACKET', 'PLYR_BACKPLATE'];
 
 /**
@@ -55,8 +55,10 @@ const equipmentCols = ['PLYR_EYEPAINT', 'PlayerVisMoveType', 'PLYR_RIGHTARMSLEEV
 */
 async function copyEquipment(targetRow, sourceRow, playerTable)
 {
+	// Get all columns in the table
 	const keys = Object.keys(playerTable.records[sourceRow]);
 	
+	// Not all columns are present in all games, so we must check if the column exists before copying
 	for (let i = 0; i < equipmentCols.length; i++)
 	{		
 		if(keys.includes(equipmentCols[i]))
@@ -77,12 +79,14 @@ async function copyEquipment(targetRow, sourceRow, playerTable)
  */
 async function copyEquipmentJson(targetRow, sourceRow, playerTable, visualsTable)
 {
+	// Get row numbers for each player's CharacterVisuals data
 	const sourceVisualsRow = FranchiseUtils.bin2Dec(playerTable.records[sourceRow]['CharacterVisuals'].slice(15));
 	const targetVisualsRow = FranchiseUtils.bin2Dec(playerTable.records[targetRow]['CharacterVisuals'].slice(15));
 
 	let sourceVisualsData;
 	let targetVisualsData;
 
+	// Attempt to parse the JSON data for both players, if either fails, then chances are the player was edited in-game and is no longer JSON, so we skip
 	try
 	{
 		sourceVisualsData = JSON.parse(visualsTable.records[sourceVisualsRow]['RawData']);
@@ -98,6 +102,7 @@ async function copyEquipmentJson(targetRow, sourceRow, playerTable, visualsTable
 
 	let sourceEquipmentLoadouts;
 
+	// Find the equipment loadouts for the source player
 	for (let i = 0; i < sourceVisualsLoadouts.length; i++)
 	{
 		if(sourceVisualsLoadouts[i]['loadoutType'] === 'PlayerOnField')
@@ -107,11 +112,13 @@ async function copyEquipmentJson(targetRow, sourceRow, playerTable, visualsTable
 		}
 	}
 
+	// If the player doesn't have equipment loadouts for some reason, we can't continue, so skip
 	if(!sourceEquipmentLoadouts)
 	{
 		return;
 	}
 
+	// Update the equipment loadouts for the target player if it exists
 	for(let i = 0; i < targetVisualsLoadouts.length; i++)
 	{
 		if(targetVisualsLoadouts[i]['loadoutType'] === 'PlayerOnField')
@@ -121,8 +128,10 @@ async function copyEquipmentJson(targetRow, sourceRow, playerTable, visualsTable
 		}
 	}
 
+	// Update the target player's JSON data with the new equipment loadouts
 	targetVisualsData['loadouts'] = targetVisualsLoadouts;
 
+	// Attempt to update the target player's JSON data
 	try
 	{
 		visualsTable.records[targetVisualsRow]['RawData'] = JSON.stringify(targetVisualsData);
@@ -234,10 +243,7 @@ franchise.on('ready', async function () {
 	FranchiseUtils.validateGameYears(franchise,gameYear);
 
 	// No equipment columns in M25+, so we must use the JSON strategy
-	if (gameYear >= FranchiseUtils.YEARS.M25)
-	{
-		useJsonStrategy = true;
-	}
+	useJsonStrategy = gameYear >= FranchiseUtils.YEARS.M25;
 	
     // Get required tables
 	const playerTable = franchise.getTableByUniqueId(tables.playerTable);
