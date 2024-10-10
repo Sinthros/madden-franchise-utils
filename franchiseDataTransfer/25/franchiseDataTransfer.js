@@ -121,65 +121,6 @@ async function fixPlayerTableRow() {
 
 };
 
-async function deleteExcessFreeAgents() {
-  const playerTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.playerTable);
-  const freeAgentsTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.freeAgentTable);
-  const drillCompletedTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.drillCompletedTable);
-  await playerTable.readRecords();
-  await freeAgentsTable.readRecords();
-  await drillCompletedTable.readRecords();
-
-
-  const freeAgentNumMembers = freeAgentsTable.header.numMembers;
-  const filteredRecords = playerTable.records.filter(record => !record.isEmpty); //Filter for where the rows aren't empty
-  const numSignedPlayers = filteredRecords.filter(record => record.ContractStatus === 'Signed') // Filter nonempty players for where they're signed
-  const numFreeAgents = filteredRecords.filter(record => record.ContractStatus === 'FreeAgent') // Filter nonempty players for where they're free agents
-  var allFreeAgentsBinary = [];
-  const worstFreeAgentsBinary = [];
-
-  const numTotalPlayersDesired = 3500 //Max amount of free agents (this is relevant for a fantasy draft)
-  const totalNumCurrentPlayers = numSignedPlayers.length + numFreeAgents.length; //Get the current number of players
-
-  numFreeAgents.forEach((freeAgentRecord) => {
-    const rowIndex = playerTable.records.indexOf(freeAgentRecord);
-    currentBin = getBinaryReferenceData(playerTable.header.tableId,rowIndex)
-    allFreeAgentsBinary.push(currentBin)
-    
-  });
-  
-
-  if (totalNumCurrentPlayers > numTotalPlayersDesired) { // If we're above 3500 total players...
-    const numExtraPlayers = totalNumCurrentPlayers - numTotalPlayersDesired; // Get the excess amount of players 
-    const worstFreeAgents = numFreeAgents.sort((a, b) => a.OverallRating - b.OverallRating).slice(0, numExtraPlayers);  // Get the worst free agents up till the amount of extra players
-
-    for (const freeAgentRecord of worstFreeAgents) {
-      const rowIndex = playerTable.records.indexOf(freeAgentRecord); 
-      const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
-      worstFreeAgentsBinary.push(currentBin);
-      playerTable.records[rowIndex]['ContractStatus'] = 'Deleted'; // Mark as deleted and empty the row
-      playerTable.records[rowIndex].CareerStats = FranchiseUtils.ZERO_REF; // If we don't zero these out the game will crash
-      playerTable.records[rowIndex].SeasonStats = FranchiseUtils.ZERO_REF;
-      playerTable.records[rowIndex].GameStats = FranchiseUtils.ZERO_REF;
-      playerTable.records[rowIndex].CharacterVisuals = FranchiseUtils.ZERO_REF;
-      playerTable.records[rowIndex].College = FranchiseUtils.ZERO_REF;
-      playerTable.records[rowIndex].PLYR_ASSETNAME = "";
-      playerTable.records[rowIndex].empty();
-      await FranchiseUtils.removeFromTable(drillCompletedTable, currentBin);
-    }
-
-    //Filter for where we aren't including the worstFreeAgentBin
-    allFreeAgentsBinary = allFreeAgentsBinary.filter((bin) => !worstFreeAgentsBinary.includes(bin));
-  
-    while (allFreeAgentsBinary.length < freeAgentNumMembers) { //Fill up the remainder with zeroed out binary
-      allFreeAgentsBinary.push(FranchiseUtils.ZERO_REF)
-    }
-
-    //One liner to set the FA table binary = our free agent binary
-    allFreeAgentsBinary.forEach((val, index) => { freeAgentsTable.records[0].fieldsArray[index].value = val; })
-    //console.log(worstFreeAgents.length)
-  }
-};
-
 async function getNeededColumns(currentTableName) {
 
   switch (currentTableName) {
@@ -367,8 +308,9 @@ function handlePlayerTable(playerTable) {
     }
   }
 
-    playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === FranchiseUtils.CONTRACT_STATUSES.EXPIRING)
-      .forEach(record => record.ContractStatus = FranchiseUtils.CONTRACT_STATUSES.SIGNED);
+  // Set all expiring players to signed
+  playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === FranchiseUtils.CONTRACT_STATUSES.EXPIRING)
+    .forEach(record => record.ContractStatus = FranchiseUtils.CONTRACT_STATUSES.SIGNED);
 }
 
 
@@ -491,8 +433,7 @@ async function handleTable(targetTable,mergedTableMappings) {
       break;
   }
 
-  for (let i = 0; i < sourceTable.header.recordCapacity; i++) {
-    const sourceRecord = sourceTable.records[i];
+  for (const sourceRecord of sourceTable.records) {
     // Here we add the record from the source table to the target
     // We set our ignoreColumns, zeroColumns, and keepColumns, and specify to use the same index from the source table in the target table to keep the same structure
     FranchiseUtils.addRecordToTable(sourceRecord, targetTable, { ignoreColumns: deleteColumns, zeroColumns: zeroColumns, keepColumns: keepColumns, useSameIndex: true  })
@@ -867,8 +808,8 @@ sourceFranchise.on('ready', async function () {
       await FranchiseUtils.fixPlayerTables(sourceFranchise);
     }
 
-    const sourceGameYear = sourceFranchise.schema.meta.gameYear // Get the game year of the source file
-    const targetGameYear = targetFranchise.schema.meta.gameYear // Get the game year of the target file
+    const sourceGameYear = sourceFranchise.schema.meta.gameYear;
+    const targetGameYear = targetFranchise.schema.meta.gameYear;
 
     is24To25 = sourceGameYear === FranchiseUtils.YEARS.M24 && targetGameYear === FranchiseUtils.YEARS.M25;
 
@@ -910,10 +851,10 @@ sourceFranchise.on('ready', async function () {
       await handleTable(currentTable, mergedTableMappings);
     }
 
-    await FranchiseUtils.emptyHistoryTables(targetFranchise); // Function to empty history tables (Avoid crashing)
+    await FranchiseUtils.emptyHistoryTables(targetFranchise); // Empty history/acquisition tables
     await FranchiseUtils.emptyAcquisitionTables(targetFranchise);
 
-    await deleteExcessFreeAgents(); // Only keep the top 3500 players
+    await FranchiseUtils.deleteExcessFreeAgents(targetFranchise); // Only keep the top 3500 players
     await fixPlayerTableRow();
     await emptyRookieStatTracker(); // Function to empty Rookie Tracker table (Avoid crashing)
     await FranchiseUtils.generateActiveAbilityPlayers(targetFranchise);
@@ -958,7 +899,6 @@ sourceFranchise.on('ready', async function () {
 
     await FranchiseUtils.saveFranchiseFile(targetFranchise);
     FranchiseUtils.EXIT_PROGRAM();
-    
 })});
 
 

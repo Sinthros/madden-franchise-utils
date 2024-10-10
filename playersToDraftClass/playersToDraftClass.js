@@ -264,14 +264,21 @@ async function createNewDraftClass(franchise,draftTableArrayId) {
   }
 
   const draftPlayerNumMembers = draftPlayerArray.header.numMembers;
-  const filteredRecords = playerTable.records.filter(record => !record.isEmpty); //Filter for where the rows aren't empty
-  const targetPlayers = filteredRecords.filter(record => record.YearsPro === yearsProNumber && !['None'].includes(record.ContractStatus)); // Get valid players
+  const includeDeletedPlayers = FranchiseUtils.getYesOrNo(
+    "Would you like to include 'Deleted' players? This includes players that are deleted at the end of the preseason. If you aren't sure, it's safe to enter yes."
+  );
+  
+  // Filter valid player records based on the specified conditions
+  const finalPlayers = playerTable.records.filter(record => !record.isEmpty && record.YearsPro === yearsProNumber)
+    .filter(record => includeDeletedPlayers || record.ContractStatus !== FranchiseUtils.CONTRACT_STATUSES.DELETED)
+    .filter(record => record.ContractStatus !== FranchiseUtils.CONTRACT_STATUSES.NONE);
+
   if (draftPlayerNumMembers < 450) {
     console.log(`Warning: This Franchise File can only handle a maximum of ${draftPlayerNumMembers} Draft Players. This is likely due to someone changing the Draft Class limit.`)
     console.log("Please note that this could result in not retrieving all desired players.");
   }
 
-  const sortedTargetPlayers = targetPlayers.sort((a, b) => {
+  const sortedTargetPlayers = finalPlayers.sort((a, b) => {
     if (a.PLYR_DRAFTROUND !== b.PLYR_DRAFTROUND) {
       // If the DRAFT_ROUND is different, sort by DRAFT_ROUND in ascending order
       return a.PLYR_DRAFTROUND - b.PLYR_DRAFTROUND;
