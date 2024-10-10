@@ -153,7 +153,6 @@ function jsonToIson(json, buffer, offset = 0)
 			buffer.writeUInt16LE(stringKey, offset); // Write the string key (2 bytes)
 			offset += 2;
 		} else {
-			offset = writeByte(buffer, offset, ISON_STRING); // Write string type
 			offset = writeString(buffer, offset, json); // Write the string value
 		}
 	} else if (typeof json === 'number' && !Number.isInteger(json)) {
