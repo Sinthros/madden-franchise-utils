@@ -276,10 +276,10 @@
     "GenericHeadAssetName": ""
   },
   "Pete Carroll": {
-    "AssetName": "",
+    "AssetName": "CarrollPete_C_PRO",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Jerrod Johnson": {
     "AssetName": "",
@@ -480,16 +480,16 @@
     "GenericHeadAssetName": ""
   },
   "Nathaniel Hackett": {
-    "AssetName": "",
+    "AssetName": "HackettNathaniel_C_PRO",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Jon Gruden": {
-    "AssetName": "",
+    "AssetName": "GrudenJon_C_PRO",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Aaron Glenn": {
     "AssetName": "",
@@ -504,10 +504,10 @@
     "GenericHeadAssetName": ""
   },
   "Josh McDaniels": {
-    "AssetName": "",
+    "AssetName": "McDanielsJosh_C_PRO",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Joe Barry": {
     "AssetName": "",
@@ -540,10 +540,10 @@
     "GenericHeadAssetName": ""
   },
   "Sean Payton": {
-    "AssetName": "",
+    "AssetName": "PaytonSean_C_PRO",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Patrick Graham": {
     "AssetName": "",
@@ -570,22 +570,22 @@
     "GenericHeadAssetName": ""
   },
   "Frank Reich": {
-    "AssetName": "",
+    "AssetName": "ReichFrank_C_PRO",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Ron Rivera": {
-    "AssetName": "",
+    "AssetName": "RiveraRon_C_PRO",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Demeco Ryans": {
-    "AssetName": "",
+    "AssetName": "RyansDeMeco_C_PRO",
     "PresentationId": 32767,
-    "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "Portrait": 29,
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Joe Woods": {
     "AssetName": "",
@@ -612,16 +612,16 @@
     "GenericHeadAssetName": ""
   },
   "Arthur Smith": {
-    "AssetName": "",
+    "AssetName": "SmithArthur_C_PRO",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Brandon Staley": {
-    "AssetName": "",
+    "AssetName": "StaleyBrandon_C_PRO",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Teryl Austin": {
     "AssetName": "",
@@ -660,10 +660,10 @@
     "GenericHeadAssetName": ""
   },
   "Brian Flores": {
-    "AssetName": "",
+    "AssetName": "FloresBrian_C_PRO",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Wes Phillips": {
     "AssetName": "",
@@ -672,10 +672,10 @@
     "GenericHeadAssetName": ""
   },
   "Mike Vrabel": {
-    "AssetName": "",
+    "AssetName": "VrabelMike_C_PRO",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Jack Del Rio": {
     "AssetName": "",
@@ -762,10 +762,10 @@
     "GenericHeadAssetName": ""
   },
   "Jim Caldwell": {
-    "AssetName": "",
+    "AssetName": "CaldwellJim",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Jim Leonhard": {
     "AssetName": "",
@@ -780,10 +780,10 @@
     "GenericHeadAssetName": ""
   },
   "Mike Zimmer": {
-    "AssetName": "",
+    "AssetName": "ZimmerMike",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Matt Patricia": {
     "AssetName": "",
@@ -798,16 +798,16 @@
     "GenericHeadAssetName": ""
   },
   "Lovie Smith": {
-    "AssetName": "",
+    "AssetName": "SmithLovie_C_PRO",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Kliff Kingsbury": {
-    "AssetName": "",
+    "AssetName": "KingsburyKliff_C_PRO",
     "PresentationId": 32767,
     "Portrait": 0,
-    "GenericHeadAssetName": ""
+    "GenericHeadAssetName": "MustBeUnique"
   },
   "Nick Caley": {
     "AssetName": "",
