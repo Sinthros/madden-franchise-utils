@@ -1,0 +1,878 @@
+{
+  "Dennis Allen": {
+    "AssetName": "AllenDennis_C_PRO",
+    "PresentationId": 96,
+    "Portrait": 26,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Todd Bowles": {
+    "AssetName": "BowlesTodd_C_PRO",
+    "PresentationId": 86,
+    "Portrait": 5,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Brian Callahan": {
+    "AssetName": "CallahanBrian_C_PRO",
+    "PresentationId": 745,
+    "Portrait": 30,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Dan Campbell": {
+    "AssetName": "CampbellDan_C_PRO",
+    "PresentationId": 374,
+    "Portrait": 18,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Dave Canales": {
+    "AssetName": "CanalesDave_C_PRO",
+    "PresentationId": 397,
+    "Portrait": 20,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Brian Daboll": {
+    "AssetName": "DabollBrian_C_PRO",
+    "PresentationId": 94,
+    "Portrait": 15,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Matt Eberflus": {
+    "AssetName": "EberflusMatt_C_PRO",
+    "PresentationId": 87,
+    "Portrait": 0,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Jonathan Gannon": {
+    "AssetName": "GannonJonathan_C_PRO",
+    "PresentationId": 395,
+    "Portrait": 6,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Jim Harbaugh": {
+    "AssetName": "HarbaughJim_C_PRO",
+    "PresentationId": 20,
+    "Portrait": 7,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "John Harbaugh": {
+    "AssetName": "HarbaughJohn_C_PRO",
+    "PresentationId": 92,
+    "Portrait": 24,
+    "GenericHeadAssetName": "harbaughJohn"
+  },
+  "Matt LaFleur": {
+    "AssetName": "LeFleurMatt_C_PRO",
+    "PresentationId": 132,
+    "Portrait": 19,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Mike Macdonald": {
+    "AssetName": "MacdonaldMike_C_PRO",
+    "PresentationId": 743,
+    "Portrait": 27,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "John Madden": {
+    "AssetName": "MaddenJohn_C_PRO",
+    "PresentationId": 362,
+    "Portrait": 44,
+    "GenericHeadAssetName": ""
+  },
+  "Jerod Mayo": {
+    "AssetName": "MayoJerod_C_PRO",
+    "PresentationId": 746,
+    "Portrait": 21,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Mike McCarthy": {
+    "AssetName": "McCarthyMike_C_PRO",
+    "PresentationId": 5,
+    "Portrait": 10,
+    "GenericHeadAssetName": "mcCarthyMike"
+  },
+  "Mike McDaniel": {
+    "AssetName": "McDanielMike_C_PRO",
+    "PresentationId": 85,
+    "Portrait": 11,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Sean McDermott": {
+    "AssetName": "McDermottSean_C_PRO",
+    "PresentationId": 250,
+    "Portrait": 2,
+    "GenericHeadAssetName": "McDermottSean"
+  },
+  "Sean McVay": {
+    "AssetName": "McVaySean_C_PRO",
+    "PresentationId": 378,
+    "Portrait": 23,
+    "GenericHeadAssetName": "McVaySean"
+  },
+  "Raheem Morris": {
+    "AssetName": "MorrisRaheem_C_PRO",
+    "PresentationId": 744,
+    "Portrait": 13,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Kevin O'Connell": {
+    "AssetName": "OConnellKevin_C_PRO",
+    "PresentationId": 95,
+    "Portrait": 31,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Doug Pederson": {
+    "AssetName": "PedersonDoug_C_PRO",
+    "PresentationId": 98,
+    "Portrait": 16,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Antonio Pierce": {
+    "AssetName": "PierceAntonio_C_PRO",
+    "PresentationId": 396,
+    "Portrait": 22,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Dan Quinn": {
+    "AssetName": "QuinnDan_C_PRO",
+    "PresentationId": 304,
+    "Portrait": 25,
+    "GenericHeadAssetName": "QuinnDan"
+  },
+  "Andy Reid": {
+    "AssetName": "ReidAndy",
+    "PresentationId": 12,
+    "Portrait": 8,
+    "GenericHeadAssetName": "ReidAndy"
+  },
+  "Robert Saleh": {
+    "AssetName": "SalehRobert_C_PRO",
+    "PresentationId": 368,
+    "Portrait": 17,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Kyle Shanahan": {
+    "AssetName": "ShanahanKyle_C_PRO",
+    "PresentationId": 558,
+    "Portrait": 14,
+    "GenericHeadAssetName": "ShanahanKyle"
+  },
+  "Nick Sirianni": {
+    "AssetName": "SirianniNick_C_PRO",
+    "PresentationId": 361,
+    "Portrait": 12,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Kevin Stefanski": {
+    "AssetName": "StefanskiKevin_C_PRO",
+    "PresentationId": 7,
+    "Portrait": 4,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Shane Steichen": {
+    "AssetName": "SteichenShane_C_PRO",
+    "PresentationId": 393,
+    "Portrait": 9,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Zac Taylor": {
+    "AssetName": "TaylorZac_C_PRO",
+    "PresentationId": 3,
+    "Portrait": 1,
+    "GenericHeadAssetName": "MustBeUnique"
+  },
+  "Mike Tomlin": {
+    "AssetName": "TomlinMike_C_PRO",
+    "PresentationId": 273,
+    "Portrait": 28,
+    "GenericHeadAssetName": "TomlinMike"
+  },
+  " ": {
+    "AssetName": "",
+    "PresentationId": 0,
+    "Portrait": 7999,
+    "GenericHeadAssetName": ""
+  },
+  "Steve Wilks": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Brian Griese": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Alan Williams": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Luke Getsy": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Lou Anarumo": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Al Holcomb": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Ken Dorsey": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Vance Joseph": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Joe Lombardi": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Jim Schwartz": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Alex Van Pelt": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Larry Foote": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Nick Rallis": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Drew Petzing": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Pete Carroll": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Jerrod Johnson": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Derrick Ansley": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Kellen Moore": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Steve Spagnuolo": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Matt Nagy": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Gus Bradley": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Jim Bob Cooter": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Brian Schottenheimer": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Leonard Hankerson": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Zac Robinson": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Vic Fangio": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Frank Smith": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Josh McCown": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Sean Desai": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Brian Johnson": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Chris Shula": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "DeMarcus Covington": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Brad Idzik": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Jeff Hafley": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Jimmy Lake": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Joe Whitt": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Liam Coen": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Bobby Babich": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Anthony Weaver": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Ryan Nielsen": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Dave Ragone": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Bill Belichick": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Don Martindale": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Mike Kafka": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Tanner Engstrand": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Mike Caldwell": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Press Taylor": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Jeff Ulbrich": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Nathaniel Hackett": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Jon Gruden": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Aaron Glenn": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Ben Johnson": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Josh McDaniels": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Joe Barry": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Adam Stenavich": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Ejiro Evero": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Thomas Brown": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Bill O'Brien": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Sean Payton": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Patrick Graham": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Mick Lombardi": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Mike LaFleur": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Todd Monken": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Frank Reich": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Ron Rivera": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Demeco Ryans": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Joe Woods": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Pete Carmichael": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Clint Hurtt": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Shane Waldron": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Arthur Smith": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Brandon Staley": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Teryl Austin": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Matt Canada": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Matt Burke": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Bobby Slowik": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Shane Bowen": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Tim Kelly": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Brian Flores": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Wes Phillips": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Mike Vrabel": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Jack Del Rio": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Eric Bieniemy": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Steve Belichick": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Eric Washington": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Al Harris": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Leslie Frazier": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Phil Snow": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Joe Brady": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Cristian Garcia": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Bo Hardegree": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Eddie Faulkner": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Chris Tabor": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Giff Smith": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Lincoln Riley": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Jim Caldwell": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Jim Leonhard": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Jesse Minter": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Mike Zimmer": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Matt Patricia": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Thad Lewis": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Lovie Smith": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Kliff Kingsbury": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Nick Caley": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Darrell Bevell": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Zach Orr": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Klint Kubiak": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Nick Holz": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Dennard Wilson": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Greg Roman": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Dan Pitcher": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Aden Durde": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Ryan Grubb": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  },
+  "Nick Sorensen": {
+    "AssetName": "",
+    "PresentationId": 32767,
+    "Portrait": 0,
+    "GenericHeadAssetName": ""
+  }
+}
