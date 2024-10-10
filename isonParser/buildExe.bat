@@ -1,0 +1,1 @@
+nexe --build -i isonParser.js -t x64-14.15.3 -r "../Utils/FranchiseUtils.js" -r "lookupFiles/*.json" -o "isonParser.exe" --verbose 
