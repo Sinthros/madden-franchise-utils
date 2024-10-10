@@ -2,9 +2,10 @@
 const fs = require('fs');
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
+const isonFunctions = require('../isonParser/isonFunctions');
 
 // Required lookups
-const allAssetNames = Object.keys(JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8')));
+let allAssetNames = Object.keys(JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8')));
 
 // Valid game years
 const validYears = [
@@ -41,7 +42,12 @@ const gameYear = FranchiseUtils.getGameYear(validYears);
 const autoUnempty = true;
 const franchise = FranchiseUtils.selectFranchiseFile(gameYear, autoUnempty);
 const tables = FranchiseUtils.getTablesObject(franchise);
-const useJsonStrategy = false;
+let useJsonStrategy = false;
+
+if(gameYear === FranchiseUtils.YEARS.M25)
+{
+	allAssetNames = JSON.parse(fs.readFileSync('lookupFiles/all_asset_names_m25.json', 'utf-8'));
+}
 
 // List of relevant equipment/other columns in the player table
 const equipmentCols = ['PLYR_EYEPAINT', 'PlayerVisMoveType', 'PLYR_RIGHTARMSLEEVE', 'PLYR_QBSTYLE', 'PLYR_GRASSLEFTELBOW', 'PLYR_RIGHTTHIGH', 'PLYR_RIGHTSPAT', 'PLYR_RIGHTSHOE', 'PLYR_GRASSLEFTHAND', 'PLYR_GRASSRIGHTHAND', 'PLYR_GRASSRIGHTELBOW', 'PLYR_GRASSLEFTWRIST', 'PLYR_GRASSRIGHTWRIST', 'PLYR_VISOR', 'PLYR_HELMET', 'PLYR_FACEMASK', 'PLYR_JERSEYSLEEVE', 'PLYR_JERSEY_STATE', 'PLYR_LEFTSPAT', 'PLYR_LEFTSHOE', 'PLYR_LEFTARMSLEEVE', 'PLYR_MOUTHPIECE', 'PLYR_TOWEL', 'PLYR_STANCE', 'PLYR_SOCK_HEIGHT', 'RunningStyleRating', 'PLYR_FLAKJACKET', 'PLYR_BACKPLATE'];
@@ -89,8 +95,8 @@ async function copyEquipmentJson(targetRow, sourceRow, playerTable, visualsTable
 	// Attempt to parse the JSON data for both players, if either fails, then chances are the player was edited in-game and is no longer JSON, so we skip
 	try
 	{
-		sourceVisualsData = JSON.parse(visualsTable.records[sourceVisualsRow]['RawData']);
-		targetVisualsData = JSON.parse(visualsTable.records[targetVisualsRow]['RawData']);
+		sourceVisualsData = isonFunctions.isonVisualsToJson(visualsTable, sourceVisualsRow);
+		targetVisualsData = isonFunctions.isonVisualsToJson(visualsTable, targetVisualsRow);
 	}
 	catch (e)
 	{
@@ -134,7 +140,7 @@ async function copyEquipmentJson(targetRow, sourceRow, playerTable, visualsTable
 	// Attempt to update the target player's JSON data
 	try
 	{
-		visualsTable.records[targetVisualsRow]['RawData'] = JSON.stringify(targetVisualsData);
+		isonFunctions.jsonVisualsToIson(visualsTable, targetVisualsRow, targetVisualsData);
 	}
 	catch (e)
 	{
