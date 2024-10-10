@@ -134,9 +134,9 @@
 			return offset;
 		}
 
-		offset = writeByte(buffer, offset, ISON_STRING); // Write string type		
+		offset = writeByte(buffer, offset, ISON_STRING); // Write string type	
 		const strBuffer = Buffer.from(value, 'utf8');
-		buffer.WriteUInt32LE(strBuffer.length, offset); // Write the string length (4 bytes)
+		buffer.writeUInt32LE(strBuffer.length, offset); // Write the string length (4 bytes)
 		offset += 4;
 		return writeBytes(buffer, offset, strBuffer);
 	}
@@ -165,7 +165,6 @@
 				buffer.writeUInt16LE(stringKey, offset); // Write the string key (2 bytes)
 				offset += 2;
 			} else {
-				offset = writeByte(buffer, offset, ISON_STRING); // Write string type
 				offset = writeString(buffer, offset, json); // Write the string value
 			}
 		} else if (typeof json === 'number' && !Number.isInteger(json)) {
@@ -254,7 +253,6 @@
 	function readObject() {
 		let obj = {};
 		let byte;
-
 		do {
 			byte = readBytes(1).readUInt8(0);
 			if (byte === ISON_KEYVALUEPAIR) {
