@@ -124,7 +124,7 @@ function writeString(buffer, offset, value) {
 
 	offset = writeByte(buffer, offset, ISON_STRING); // Write string type		
 	const strBuffer = Buffer.from(value, 'utf8');
-	buffer.WriteUInt32LE(strBuffer.length, offset); // Write the string length (4 bytes)
+	buffer.writeUInt32LE(strBuffer.length, offset); // Write the string length (4 bytes)
 	offset += 4;
 	return writeBytes(buffer, offset, strBuffer);
 }
