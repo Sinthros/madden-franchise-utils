@@ -38,7 +38,7 @@ function convertMinutesToTime(minutes)
  * Converts a day of the week to its three letter variant
  * 
  * @param {string} day The full day of the week 
- * @returns {strng} The three letter abbreviation of the day
+ * @returns {string} The three letter abbreviation of the day
  */
 function parseDay(day)
 {

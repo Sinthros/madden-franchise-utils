@@ -316,7 +316,7 @@ function shouldProcessGame(record, currentWeek, weekType,isLeagueStarted) {
 
 async function convertSchedule(sourceSeasonGameTable, seasonGameTable, mergedTableMappings, TOTAL_GAMES,is22To24, targetFranchise) {
 
-  console.log("Now working on converting the schedule from your source Franchise file over to your target Madden 24 Franchise file...");
+  console.log("Now working on converting the schedule from your source Franchise file over to your target Franchise file...");
 
   // Separate the assignment from the promise
   const [
