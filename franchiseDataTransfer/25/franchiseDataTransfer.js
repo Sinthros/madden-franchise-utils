@@ -7,10 +7,13 @@ let transferTeamNames;
 
 const ALL_ASSET_NAMES = JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8'));
 const COMMENTARY_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/commentary_lookup.json', 'utf-8'));
+const COACH_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/coach_lookup.json', 'utf-8'));
 const ROOKIE_PLAYER_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/rookie_player_lookup.json', 'utf-8'));
 const TRANSFER_SCHEDULE_FUNCTIONS = require('../../retroSchedules/transferScheduleFromJson');
 const SCHEDULE_FUNCTIONS = require('../../Utils/ScheduleFunctions');
 const FranchiseUtils = require('../../Utils/FranchiseUtils');
+const ISON_FUNCTIONS = require('../../isonParser/isonFunctions');
+const VISUAL_FUNCTIONS = require('../../Utils/characterVisualsLookups/characterVisualFunctions');
 const DEFAULT_PLAYER_ROW = 720; // Default player row for Madden 25
 
 const SOURCE_VALID_YEARS = [FranchiseUtils.YEARS.M24,FranchiseUtils.YEARS.M25]
@@ -254,6 +257,21 @@ function getCoachTables() {
   return tableArray;
 }
 
+function handleCoachTable(coachTable) {
+  for (const record of coachTable.records) {
+    const isEmpty = record.isEmpty;
+
+    const fullName = `${record.FirstName} ${record.LastName}`;
+
+    const coachLookup = COACH_LOOKUP[fullName];
+
+    if (coachLookup && !isEmpty) {
+      for (const [key, value] of Object.entries(coachLookup)) {
+        record[key] = value;
+      }
+    }
+  }
+}
 function handlePlayerTable(playerTable) {
   for (let i = 0; i < playerTable.header.recordCapacity; i++) {
     const record = playerTable.records[i];
@@ -274,7 +292,6 @@ function handlePlayerTable(playerTable) {
 
     if (isEmpty) {
       record.CareerStats = FranchiseUtils.ZERO_REF;
-
     }
 
     // Dictionary for fields and their replacement values when a number is detected
@@ -408,7 +425,8 @@ async function handleTable(targetTable,mergedTableMappings) {
 
       const record = sourceTable.records[i];
 
-      if (FranchiseUtils.isReferenceColumn(record,currentCol)) {
+      // We need to leave CharacterVisuals untouched
+      if (FranchiseUtils.isReferenceColumn(record,currentCol) && currentCol !== 'CharacterVisuals') {
         try {
           const updatedValue = replaceBinaryValue(mergedTableMappings, record, currentCol);
           if (updatedValue !== null) {
@@ -424,19 +442,25 @@ async function handleTable(targetTable,mergedTableMappings) {
   // Handle specific table types
   switch (currentTableName) {
     case FranchiseUtils.TABLE_NAMES.PLAYER:
-      FranchiseUtils.emptyTable(targetTable,{"CareerStats": FranchiseUtils.ZERO_REF,"SeasonStats": FranchiseUtils.ZERO_REF, "GameStats": FranchiseUtils.ZERO_REF, "CharacterVisuals": FranchiseUtils.ZERO_REF})
+      FranchiseUtils.emptyTable(targetTable,{"CareerStats": FranchiseUtils.ZERO_REF,"SeasonStats": FranchiseUtils.ZERO_REF, "GameStats": FranchiseUtils.ZERO_REF, "CharacterVisuals": FranchiseUtils.ZERO_REF, "GenericHeadAssetName": ""})
       handlePlayerTable(sourceTable);
       break;
     case FranchiseUtils.TABLE_NAMES.COACH:
       FranchiseUtils.emptyTable(targetTable,{"CharacterVisuals": FranchiseUtils.ZERO_REF,"TeamPhilosophy": FranchiseUtils.ZERO_REF, "DefaultTeamPhilosophy": FranchiseUtils.ZERO_REF, "DefensivePlaybook": FranchiseUtils.ZERO_REF, 
-        "OffensivePlaybook": FranchiseUtils.ZERO_REF, "OffensiveScheme": FranchiseUtils.ZERO_REF, "DefensiveScheme": FranchiseUtils.ZERO_REF, "ActiveTalentTree": FranchiseUtils.ZERO_REF, "GenericHeadAssetName": ""})
+        "OffensivePlaybook": FranchiseUtils.ZERO_REF, "OffensiveScheme": FranchiseUtils.ZERO_REF, "DefensiveScheme": FranchiseUtils.ZERO_REF, "ActiveTalentTree": FranchiseUtils.ZERO_REF, "GenericHeadAssetName": ""});
+      handleCoachTable(sourceTable);
       break;
   }
 
   for (const sourceRecord of sourceTable.records) {
     // Here we add the record from the source table to the target
     // We set our ignoreColumns, zeroColumns, and keepColumns, and specify to use the same index from the source table in the target table to keep the same structure
-    FranchiseUtils.addRecordToTable(sourceRecord, targetTable, { ignoreColumns: deleteColumns, zeroColumns: zeroColumns, keepColumns: keepColumns, useSameIndex: true  })
+    const targetRecord = FranchiseUtils.addRecordToTable(sourceRecord, targetTable, { ignoreColumns: deleteColumns, zeroColumns: zeroColumns, keepColumns: keepColumns, useSameIndex: true  })
+
+    if (currentTableName === FranchiseUtils.TABLE_NAMES.PLAYER || currentTableName === FranchiseUtils.TABLE_NAMES.COACH) {
+      await handleCharacterVisuals(sourceRecord,targetRecord,currentTableName);
+
+    }
   } 
 
   switch (currentTableName) {
@@ -445,6 +469,76 @@ async function handleTable(targetTable,mergedTableMappings) {
       break;
   }
 };
+
+async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableName) {
+  if (targetRecord.isEmpty) return;
+  let characterVisuals = sourceRecord.CharacterVisuals;
+  const sourcePlayerTable = sourceFranchise.getTableByUniqueId(SOURCE_TABLES.playerTable);
+  const sourceCoachTable = sourceFranchise.getTableByUniqueId(SOURCE_TABLES.coachTable);
+  const targetVisualsTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.characterVisualsTable);
+  const nextRecord = targetVisualsTable.header.nextRecordToUse;
+
+  let characterVisualsRow;
+  let characterVisualsTableId;
+  let jsonData;
+  let genericHead;
+  
+  const isPlayer = currentTableName === FranchiseUtils.TABLE_NAMES.PLAYER;
+
+  if (characterVisuals !== FranchiseUtils.ZERO_REF) {
+    characterVisualsRow = FranchiseUtils.bin2Dec(characterVisuals.slice(15));
+    characterVisualsTableId = FranchiseUtils.bin2Dec(characterVisuals.slice(0,15));
+    const visualsTable = sourceFranchise.getTableById(characterVisualsTableId);
+    await visualsTable.readRecords();
+
+    const visualsRecord = visualsTable.records[characterVisualsRow];
+
+    if (is24To25) {
+      try {
+        jsonData = JSON.parse(visualsRecord.RawData);
+      } catch (error) {
+          jsonData = isPlayer ? await VISUAL_FUNCTIONS.getGeneratedPlayerVisual(sourcePlayerTable,sourceRecord.index)
+          : VISUAL_FUNCTIONS.getGeneratedCoachVisual(sourceCoachTable,sourceRecord.index);
+      }
+    }
+    else {
+      try {
+        jsonData = ISON_FUNCTIONS.isonVisualsToJson(visualsTable,sourceRecord.index);
+      } catch (error) {
+        console.error(error);
+        return;
+      }
+    }
+
+  }
+  else if (is24To25) {
+    jsonData = isPlayer ? await VISUAL_FUNCTIONS.getGeneratedPlayerVisual(sourcePlayerTable,sourceRecord.index)
+    : VISUAL_FUNCTIONS.getGeneratedCoachVisual(sourceCoachTable,sourceRecord.index);
+  }
+  else {
+    return;
+  }
+
+  genericHead = is24To25 ? jsonData.genericHeadName : targetRecord.GenericHeadAssetName;
+  FranchiseUtils.removeKeyFromJson(jsonData,"genericHeadName");
+  FranchiseUtils.removeKeyFromJson(jsonData,"genericHead");
+  FranchiseUtils.removeKeyFromJson(jsonData,"skinToneScale");
+  FranchiseUtils.removeKeyFromJson(jsonData,"containerId");
+
+  if (!isPlayer) {
+    jsonData.assetName = targetRecord.AssetName;
+  }
+
+  ISON_FUNCTIONS.jsonVisualsToIson(targetVisualsTable,nextRecord,jsonData);
+
+  const binary = getBinaryReferenceData(targetVisualsTable.header.tableId, nextRecord);
+
+  targetRecord.CharacterVisuals = binary;
+
+  const genericHeadAssetName = typeof genericHead !== 'undefined' ? genericHead : "";
+  targetRecord.GenericHeadAssetName = genericHeadAssetName;
+
+}
 
 async function setOptions() {
 
@@ -780,11 +874,11 @@ async function transferPlayerAbilities(mergedTableMappings) {
       }
 
       if (nextRecordToUse < recordCapacity) {
-        FranchiseUtils.addRecordToTable(record, primaryTable);
+        const targetRecord = FranchiseUtils.addRecordToTable(record, primaryTable);
         const binaryRef = getBinaryReferenceData(primaryTable.header.tableId, nextRecordToUse);
         FranchiseUtils.addToArrayTable(arrayTable,binaryRef);
       } else if (secondaryNextRecord < secondaryRecordCapacity) {
-        FranchiseUtils.addRecordToTable(record, secondaryTable);
+        const targetRecord = FranchiseUtils.addRecordToTable(record, secondaryTable);
         const binaryRef = getBinaryReferenceData(secondaryTable.header.tableId, secondaryNextRecord);
         FranchiseUtils.addToArrayTable(arrayTable, binaryRef);
       }
@@ -844,6 +938,9 @@ sourceFranchise.on('ready', async function () {
       getAwardTables(),
       getDraftPickTables(),
     ];
+
+    // We need to empty visuals from the target table since we're repopulating them later
+    await FranchiseUtils.emptyCharacterVisualsTable(targetFranchise)
     
     console.log("Now working on transferring all table data...");
 
@@ -855,15 +952,15 @@ sourceFranchise.on('ready', async function () {
     await FranchiseUtils.emptyAcquisitionTables(targetFranchise);
 
     await FranchiseUtils.deleteExcessFreeAgents(targetFranchise); // Only keep the top 3500 players
-    await fixPlayerTableRow();
+    await fixPlayerTableRow(); // Adjust the default player table row if needed
     await emptyRookieStatTracker(); // Function to empty Rookie Tracker table (Avoid crashing)
     await FranchiseUtils.generateActiveAbilityPlayers(targetFranchise);
-    await clearArrayTables();
+    await clearArrayTables(); // Clear out various array tables
     await FranchiseUtils.emptyResignTable(targetFranchise); // Empty and fill the resign tables
-    await FranchiseUtils.regenerateMarketingTables(targetFranchise);
     await fillResignTable();
+    await FranchiseUtils.regenerateMarketingTables(targetFranchise);
 
-    await emptyMediaGoals(); // Function to empty Media Goals table (Avoid crashing)
+    await emptyMediaGoals(); // Empty media goals table
     await adjustSeasonGameTable(); // Function to update SeasGame table based on current SeasonYear
 
     await assignFranchiseUsers();
@@ -871,7 +968,7 @@ sourceFranchise.on('ready', async function () {
     await transferPlayerAbilities(mergedTableMappings);
 
     if (is24To25) {
-      const message = "Would you like to remove asset names from the Player table that aren't in Madden 24's Database?";
+      const message = "Would you like to remove asset names from the Player table that aren't in Madden 25's Database?";
       const removeAssetNames = FranchiseUtils.getYesOrNo(message);
 
       if (removeAssetNames) {
