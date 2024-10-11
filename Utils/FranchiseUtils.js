@@ -890,6 +890,8 @@ function addRecordToTable(record, targetTable, options = {}) {
   if (isEmpty) {
     targetTableRecord.empty();
   }
+
+  return targetTableRecord;
 }
 
 // This function will remove a binary value from an array table
@@ -1588,6 +1590,12 @@ async function shuffleArray(array) {
   }
 }
 
+function removeKeyFromJson(jsonData, key) {
+  if (jsonData.hasOwnProperty(key)) {
+      delete jsonData[key];
+  }
+}
+
 /**
  * Generates a random integer between a specified floor and ceiling value (inclusive).
  *
@@ -1719,6 +1727,7 @@ module.exports = {
 
     getYesOrNo, // UTILITY FUNCTIONS
     shuffleArray,
+    removeKeyFromJson,
     getUserInput,
     getUserInputNumber,
     getRandomNumber,
