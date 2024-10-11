@@ -1,11 +1,14 @@
-
 // Required modules
 const FranchiseUtils = require('../Utils/FranchiseUtils');
+const path = require('path');
 const fs = require('fs');
 const zlib = require('zlib');
 
 // Required lookup files
-const stringLookup = JSON.parse(fs.readFileSync('lookupFiles/internedStringLookup.json'), 'utf8');
+const filePath = path.resolve(__dirname, 'lookupFiles', 'internedStringLookup.json');
+
+// Read and parse the JSON file
+const stringLookup = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 const reverseStringLookup = {}; // Create a reverse lookup for JSON -> ISON
 for (let key in stringLookup) {
 	reverseStringLookup[stringLookup[key].toLowerCase()] = parseInt(key); // Create reverse lookup
