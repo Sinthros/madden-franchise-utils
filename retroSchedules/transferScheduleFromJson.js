@@ -9,7 +9,7 @@ let tables = null;
 let franchise = null;
 const path = require('path');
 const fs = require('fs');
-const teamLookupPath = path.join(__dirname, 'teamLookup.json');
+const teamLookupPath = path.resolve(__dirname, 'teamLookup.json');
 const teamLookup = JSON.parse(fs.readFileSync(teamLookupPath, 'utf8'));
 
 const REGULAR_SEASON_WEEKS = 18;
@@ -262,7 +262,7 @@ async function processGame(game, seasonGameTable, weekStartOccurrences,numGamesH
 
 async function convertSchedule(sourceScheduleJson, seasonGameTable, TOTAL_GAMES) {
 
-  console.log("Now working on inserting this schedule into your target Madden 24 Franchise file...");
+  console.log("Now working on inserting this schedule into your target Madden Franchise file...");
 
   // Separate the assignment from the promise
   const [
