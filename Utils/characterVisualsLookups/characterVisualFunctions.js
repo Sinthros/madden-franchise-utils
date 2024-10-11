@@ -410,24 +410,29 @@ async function getCharacterVisualsTable(franchise,currentTable,mainCharacterVisu
 }
 
 async function regenerateCoachVisual(franchise,coachTable,mainCharacterVisualsTable,row) {
-  const mainCharacterVisualsId = mainCharacterVisualsTable.header.tableId;
-  let jsonToUpdate = JSON.parse(JSON.stringify(baseCoachVisualJson)); // Get our current base JSON
 
-  const coachValues = await getCoachValues(coachTable, row);
-  jsonToUpdate = await updateCoachVisuals(coachValues,jsonToUpdate,visualMorphKeys)
-  jsonToUpdate = await removeEmptyCoachBlends(jsonToUpdate)
+  const coachJson = getGeneratedCoachVisual(coachTable,row);
+  const mainCharacterVisualsId = mainCharacterVisualsTable.header.tableId;
 
   const { currentCharacterVisualsTable, characterVisualsRow, characterVisualsTableId } = await getCharacterVisualsTable(franchise,coachTable,mainCharacterVisualsTable,row)
   if (characterVisualsTableId !== mainCharacterVisualsId) { // If a different table besides the main one, we need to read it
     await currentCharacterVisualsTable.readRecords();
   }
 
-  currentCharacterVisualsTable.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
+  currentCharacterVisualsTable.records[characterVisualsRow]['RawData'] = coachJson; //Set the RawData of the CharacterVisuals row = our updated JSON
 }
 
-async function regeneratePlayerVisual(franchise,playerTable,mainCharacterVisualsTable,row,regenerateUpdatedPlayers = false) {
+async function getGeneratedCoachVisual(coachTable,row) {
+  let jsonToUpdate = JSON.parse(JSON.stringify(baseCoachVisualJson)); // Get our current base JSON
 
-  const mainCharacterVisualsId = mainCharacterVisualsTable.header.tableId;
+  const coachValues = await getCoachValues(coachTable, row);
+  jsonToUpdate = await updateCoachVisuals(coachValues,jsonToUpdate,visualMorphKeys);
+  jsonToUpdate = await removeEmptyCoachBlends(jsonToUpdate);
+
+  return jsonToUpdate;
+
+}
+async function getGeneratedPlayerVisual(playerTable,row) {
   //This is a roundabout way to get a unique version of the base player JSON for each player, since we'll be editing it
   let jsonToUpdate = JSON.parse(JSON.stringify(basePlayerVisualJson));
   const gearValues = await getPlayerGearValues(playerTable, row); //Get all the gear values for this player
@@ -465,6 +470,14 @@ async function regeneratePlayerVisual(franchise,playerTable,mainCharacterVisuals
 
   jsonToUpdate = await removeEmptyPlayerBlends(jsonToUpdate);
 
+  return jsonToUpdate;
+
+}
+async function regeneratePlayerVisual(franchise,playerTable,mainCharacterVisualsTable,row,regenerateUpdatedPlayers = false) {
+
+  const playerJson = getGeneratedPlayerVisual(playerTable,row);
+  const mainCharacterVisualsId = mainCharacterVisualsTable.header.tableId;
+
   const { currentCharacterVisualsTable, characterVisualsRow, characterVisualsTableId } = await getCharacterVisualsTable(franchise,playerTable,mainCharacterVisualsTable,row)
   if (characterVisualsTableId !== mainCharacterVisualsId) {
     await currentCharacterVisualsTable.readRecords();
@@ -478,7 +491,7 @@ async function regeneratePlayerVisual(franchise,playerTable,mainCharacterVisuals
     }
   }
 
-  currentCharacterVisualsTable.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
+  currentCharacterVisualsTable.records[characterVisualsRow]['RawData'] = playerJson; //Set the RawData of the CharacterVisuals row = our updated JSON
 
 };
 
@@ -529,6 +542,8 @@ module.exports = {
   getCharacterVisualsTable,
   regenerateCoachVisual,
   regeneratePlayerVisual,
+  getGeneratedPlayerVisual,
+  getGeneratedCoachVisual,
   baseCoachVisualJson,
   allCoachVisuals
 
