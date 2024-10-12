@@ -12,6 +12,13 @@ const validGames = [
 const franchise = FranchiseUtils.init(validGames);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
+const bodyTypeMap = {
+	0: 'Thin',
+	1: 'Standard',
+	2: 'Muscular',
+	3: 'Heavy' 
+};
+
 // Function to approximate the body type based on the visuals JSON
 function approximateBodyType(visualsObject)
 {
@@ -64,10 +71,6 @@ function approximateBodyType(visualsObject)
 	if(blends[0].hasOwnProperty('baseBlend'))
 	{
 		gutBase = blends[0]['baseBlend'];
-		if(gutBase < 0.5)
-		{
-			console.log(`gutBase: ${gutBase}`);
-		}
 	}
 
 	if(blends[0].hasOwnProperty('barycentricBlend'))
@@ -134,7 +137,7 @@ franchise.on('ready', async function () {
 		}
 
 		// Get the body type based on the visuals
-		const bodyType = approximateBodyType(visualsJson);
+		const bodyType = visualsJson.hasOwnProperty("bodyType") ? bodyTypeMap[visualsJson['bodyType']] : approximateBodyType(visualsJson);
 
 		// Update the player's body type
 		playerTable.records[i]['CharacterBodyType'] = bodyType;
