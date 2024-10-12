@@ -13,8 +13,7 @@ const franchise = FranchiseUtils.init(validGames);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 const bodyTypeMap = {
-	0: 'Thin',
-	1: 'Standard',
+	1: 'Thin',
 	2: 'Muscular',
 	3: 'Heavy' 
 };
