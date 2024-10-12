@@ -1,0 +1,1 @@
+nexe --build -i bodyTypeFix.js -t x64-14.15.3 -r "../Utils/FranchiseUtils.js" -r "../isonParser/lookupFiles/*.json" -o "bodyTypeFix.exe" --verbose 
