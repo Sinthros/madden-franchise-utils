@@ -134,15 +134,19 @@ async function getCoachValues(coachTable, i) {
   return [assetName, genericHeadName, firstName, lastName, height, skinTone];
 };
 
-async function updateCoachVisuals(coachValues, jsonToUpdate,visualMorphKeys, size = "N/A") {
+async function updateCoachVisuals(coachValues, jsonToUpdate,visualMorphKeys, size = "N/A", coachLookup = null) {
   let [assetName, genericHeadName, firstName, lastName, height, skinTone] = coachValues;
 
-  // Get lookup values if they exist for this coach, OR get the default lookup values
-  let visualsLookup = allCoachVisuals["DefaultValue"];
+  if (coachLookup === null) {
+    coachLookup = allCoachVisuals;
+  }
 
-  if(allCoachVisuals.hasOwnProperty(assetName))
+  // Get lookup values if they exist for this coach, OR get the default lookup values
+  let visualsLookup = coachLookup["DefaultValue"];
+
+  if(coachLookup.hasOwnProperty(assetName))
   {
-    visualsLookup = allCoachVisuals[assetName];
+    visualsLookup = coachLookup[assetName];
 
     // If lookup values exist for this coach, the genericHeadName needs to be MustBeUnique for the cyberface to work properly
     genericHeadName = 'MustBeUnique';
@@ -163,9 +167,12 @@ async function updateCoachVisuals(coachValues, jsonToUpdate,visualMorphKeys, siz
   jsonToUpdate.skinTone = skinTone;
   jsonToUpdate.containerId = visualsLookup['containerId'];
 
-  // Get the generic head value or the default value if we can't find it
-  const genericHead = allCoachVisuals["genericHead"][genericHeadName] || allCoachVisuals["genericHead"]["DefaultValue"];
-  jsonToUpdate.genericHead = genericHead;
+  if (coachLookup["genericHead"] && coachLookup["genericHead"][genericHeadName]) {
+    jsonToUpdate.genericHead = coachLookup["genericHead"][genericHeadName];
+  }
+  else if (coachLookup["genericHead"] && coachLookup["genericHead"]["DefaultValue"]) {
+    jsonToUpdate.genericHead = coachLookup["genericHead"]["DefaultValue"];
+  }
 
   const coachOnFieldLoadout = jsonToUpdate.loadouts.find(loadout => loadout.loadoutType === "CoachOnField");
 
@@ -422,11 +429,11 @@ async function regenerateCoachVisual(franchise,coachTable,mainCharacterVisualsTa
   currentCharacterVisualsTable.records[characterVisualsRow]['RawData'] = coachJson; //Set the RawData of the CharacterVisuals row = our updated JSON
 }
 
-async function getGeneratedCoachVisual(coachTable,row) {
+async function getGeneratedCoachVisual(coachTable,row, size = "N/A", coachLookup = allCoachVisuals) {
   let jsonToUpdate = JSON.parse(JSON.stringify(baseCoachVisualJson)); // Get our current base JSON
 
   const coachValues = await getCoachValues(coachTable, row);
-  jsonToUpdate = await updateCoachVisuals(coachValues,jsonToUpdate,visualMorphKeys);
+  jsonToUpdate = await updateCoachVisuals(coachValues,jsonToUpdate,visualMorphKeys,size,coachLookup);
   jsonToUpdate = await removeEmptyCoachBlends(jsonToUpdate);
 
   return jsonToUpdate;
