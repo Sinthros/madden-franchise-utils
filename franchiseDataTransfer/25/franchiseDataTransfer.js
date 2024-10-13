@@ -1,9 +1,13 @@
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const fs = require('fs');
 const zeroPad = (num, places) => String(num).padStart(places, '0')
+
 let is24To25;
+
+// Options
 let transferSeasonYear;
 let transferTeamNames;
+let transferStadiums;
 
 const ALL_ASSET_NAMES = JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8'));
 const COMMENTARY_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/commentary_lookup.json', 'utf-8'));
@@ -14,6 +18,7 @@ const SCHEDULE_FUNCTIONS = require('../../Utils/ScheduleFunctions');
 const FranchiseUtils = require('../../Utils/FranchiseUtils');
 const ISON_FUNCTIONS = require('../../isonParser/isonFunctions');
 const VISUAL_FUNCTIONS = require('../../Utils/characterVisualsLookups/characterVisualFunctions');
+const COACH_VISUAL_LOOKUP_M25 = JSON.parse(fs.readFileSync('../../Utils/characterVisualsLookups/25/coachVisualsLookup.json', 'utf-8'));
 const DEFAULT_PLAYER_ROW = 720; // Default player row for Madden 25
 
 const SOURCE_VALID_YEARS = [FranchiseUtils.YEARS.M24,FranchiseUtils.YEARS.M25]
@@ -133,7 +138,7 @@ async function getNeededColumns(currentTableName) {
       zeroColumns = ["GameStats","CharacterVisuals","SeasonalGoal","WeeklyGoals","SeasonStats"];
       return [keepColumns,deleteColumns,zeroColumns];
     case FranchiseUtils.TABLE_NAMES.TEAM:
-      keepColumns = ["Philosophy","HeadCoach","OffensiveCoordinator","DefensiveCoordinator","Roster","PracticeSquad","PlayerPersonnel",
+      keepColumns = ["Philosophy","HeadCoach","OffensiveCoordinator","DefensiveCoordinator","Roster","PracticeSquad","PlayerPersonnel", "City",
         "DepthChart","ActiveRosterSize","SalCapRosterSize","SalCapNextYearRosterSize","TeamIndex", "TEAM_OFFPLAYBOOK","TEAM_DEFPLAYBOOK",
         "Rival1TeamRef","Rival2TeamRef","Rival3TeamRef","TeamBuilding","ContentionPhase","PresentationId","TEAM_ORIGID","RolloverCap","TEAM_LOGO","TEAM_ORDER","TEAM_GROUP","PrestigeRank"];
       deleteColumns = [];
@@ -460,9 +465,9 @@ async function handleTable(targetTable,mergedTableMappings) {
     if (currentTableName === FranchiseUtils.TABLE_NAMES.PLAYER || currentTableName === FranchiseUtils.TABLE_NAMES.COACH) {
       await handleCharacterVisuals(sourceRecord,targetRecord,currentTableName);
     }
-    if (currentTableName === FranchiseUtils.TABLE_NAMES.TEAM) {
-      await transferStadium(sourceRecord,targetRecord);
 
+    if (currentTableName === FranchiseUtils.TABLE_NAMES.TEAM && transferStadiums) {
+      await transferStadium(sourceRecord,targetRecord);
     }
   } 
 
@@ -481,27 +486,25 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
   const targetVisualsTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.characterVisualsTable);
   const nextRecord = targetVisualsTable.header.nextRecordToUse;
 
-  let characterVisualsRow;
-  let characterVisualsTableId;
   let jsonData;
   let genericHead;
   
   const isPlayer = currentTableName === FranchiseUtils.TABLE_NAMES.PLAYER;
 
   if (characterVisuals !== FranchiseUtils.ZERO_REF) {
-    characterVisualsRow = FranchiseUtils.bin2Dec(characterVisuals.slice(15));
-    characterVisualsTableId = FranchiseUtils.bin2Dec(characterVisuals.slice(0,15));
+    const characterVisualsRow = FranchiseUtils.bin2Dec(characterVisuals.slice(15));
+    const characterVisualsTableId = FranchiseUtils.bin2Dec(characterVisuals.slice(0,15));
     const visualsTable = sourceFranchise.getTableById(characterVisualsTableId);
     await visualsTable.readRecords();
 
     const visualsRecord = visualsTable.records[characterVisualsRow];
 
     if (is24To25) {
-      try {
-        jsonData = JSON.parse(visualsRecord.RawData);
+      try { // We should always regenerate coach visuals if from 24 to 25
+        jsonData = isPlayer ? JSON.parse(visualsRecord.RawData) : await VISUAL_FUNCTIONS.getGeneratedCoachVisual(sourceCoachTable,sourceRecord.index,"N/A",COACH_VISUAL_LOOKUP_M25);
       } catch (error) {
           jsonData = isPlayer ? await VISUAL_FUNCTIONS.getGeneratedPlayerVisual(sourcePlayerTable,sourceRecord.index)
-          : VISUAL_FUNCTIONS.getGeneratedCoachVisual(sourceCoachTable,sourceRecord.index);
+          : await VISUAL_FUNCTIONS.getGeneratedCoachVisual(sourceCoachTable,sourceRecord.index,"N/A",COACH_VISUAL_LOOKUP_M25);
       }
     }
     else {
@@ -514,32 +517,32 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
     }
 
   }
-  else if (is24To25) {
+
+  else if (is24To25) { // If source file is 24, we can generate the visual
     jsonData = isPlayer ? await VISUAL_FUNCTIONS.getGeneratedPlayerVisual(sourcePlayerTable,sourceRecord.index)
-    : VISUAL_FUNCTIONS.getGeneratedCoachVisual(sourceCoachTable,sourceRecord.index);
+    : await VISUAL_FUNCTIONS.getGeneratedCoachVisual(sourceCoachTable,sourceRecord.index,"N/A",COACH_VISUAL_LOOKUP_M25);
   }
-  else {
+  else { // If source file is 25 and they have no visual, return
     return;
   }
 
   genericHead = is24To25 ? jsonData.genericHeadName : targetRecord.GenericHeadAssetName;
-  FranchiseUtils.removeKeyFromJson(jsonData,"genericHeadName");
+
+  FranchiseUtils.removeKeyFromJson(jsonData,"genericHeadName"); // Remove unneeded keys from the json
   FranchiseUtils.removeKeyFromJson(jsonData,"genericHead");
   FranchiseUtils.removeKeyFromJson(jsonData,"skinToneScale");
   FranchiseUtils.removeKeyFromJson(jsonData,"containerId");
+  FranchiseUtils.removeKeyFromJson(jsonData,"assetName");
+  FranchiseUtils.removeKeyFromJson(jsonData,"heightInches");
 
-  if (!isPlayer) {
-    jsonData.assetName = targetRecord.AssetName;
-  }
+  ISON_FUNCTIONS.jsonVisualsToIson(targetVisualsTable,nextRecord,jsonData); // Set the data in the visuals table
 
-  ISON_FUNCTIONS.jsonVisualsToIson(targetVisualsTable,nextRecord,jsonData);
 
-  const binary = getBinaryReferenceData(targetVisualsTable.header.tableId, nextRecord);
+  targetRecord.CharacterVisuals = getBinaryReferenceData(targetVisualsTable.header.tableId, nextRecord);
 
-  targetRecord.CharacterVisuals = binary;
+  targetRecord.GenericHeadAssetName = typeof genericHead !== 'undefined' ? genericHead : "";
 
-  const genericHeadAssetName = typeof genericHead !== 'undefined' ? genericHead : "";
-  targetRecord.GenericHeadAssetName = genericHeadAssetName;
+  if (is24To25) targetRecord.CharacterBodyType = FranchiseUtils.approximateBodyType(jsonData);
 
 }
 
@@ -547,10 +550,9 @@ async function transferStadium(sourceRecord, targetRecord) {
   
   if (targetRecord.isEmpty || FranchiseUtils.NFL_CONFERENCES.includes(targetRecord.DisplayName) || !targetRecord.TEAM_VISIBLE) return;
 
-  // If an FTC reference, we don't need to do anything
+  // If it's a binary reference (not FTC) add the record to the target stadium table
   if (FranchiseUtils.isReferenceColumn(sourceRecord,'Stadium')) {
     const targetStadiumTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.stadiumTable);
-    const nextRecord = targetStadiumTable.header.nextRecordToUse;
 
     const stadiumRef = sourceRecord.Stadium;
     const stadiumRow = FranchiseUtils.bin2Dec(stadiumRef.slice(15));
@@ -565,7 +567,11 @@ async function transferStadium(sourceRecord, targetRecord) {
     const targetStadiumRecord = await FranchiseUtils.addRecordToTable(stadiumRecord,targetStadiumTable);
 
     targetRecord.Stadium = getBinaryReferenceData(targetStadiumTable.header.tableId, targetStadiumRecord.index);
+  }
 
+  // If it's an FTC reference, we can just set it in the target record
+  else if (FranchiseUtils.isReferenceColumn(sourceRecord,'Stadium',false,true)) {
+    targetRecord.Stadium = sourceRecord.Stadium;
   }
 
 }
@@ -576,8 +582,11 @@ async function setOptions() {
   "Enter YES to transfer the Season Year or NO to leave it as is in the target file. If you're transferring a file that is at or close to 30 years, you should enter NO.";
   transferSeasonYear = FranchiseUtils.getYesOrNo(message);
 
-  const teamMsg = "Would you like to transfer over team names from the source file to the target file (For example: Commanders, Bears, etc)? This will also transfer over Team menu colors.";
+  const teamMsg = "Would you like to transfer over team names from your source file to your target file (For example: Commanders, Bears, etc)? This will also transfer over Team menu colors.";
   transferTeamNames = FranchiseUtils.getYesOrNo(teamMsg);
+
+  const stadiumMsg = "Would you like to transfer over stadiums from your source file to your target file?";
+  transferStadiums = FranchiseUtils.getYesOrNo(stadiumMsg);
 }
 
 function getPlayerTables() {
