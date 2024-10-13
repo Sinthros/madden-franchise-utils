@@ -1428,93 +1428,37 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
 
 
 // Function to approximate the body type based on the visuals JSON
-function approximateBodyType(visualsObject)
-{
-	let morphLoadout;
-	
-	// Find the morph loadout
-	for(let i = 0; i < visualsObject['loadouts'].length; ++i)
-	{
-		if(visualsObject['loadouts'][i].hasOwnProperty('loadoutCategory') && visualsObject['loadouts'][i]['loadoutCategory'] === 'Base')
-		{
-			morphLoadout = visualsObject['loadouts'][i];
-			break;
-		}
-	}
+function approximateBodyType(visualsObject) {
+    // Find the morph loadout for the 'Base' category
+    const morphLoadout = visualsObject.loadouts.find(loadout =>
+        loadout.loadoutCategory === 'Base'
+    );
 
-	if(!morphLoadout || !morphLoadout.hasOwnProperty('loadoutElements'))
-	{
-		return 'Thin';
-	}
+    if (!morphLoadout || !morphLoadout.loadoutElements) {
+        return 'Thin';
+    }
 
-	// Try to find the gut morph value
-	let gutMorph;
+    // Find the 'Gut' morph element
+    const gutMorph = morphLoadout.loadoutElements.find(element =>
+        element.slotType === 'Gut'
+    );
 
-	for(let i = 0; i < morphLoadout['loadoutElements'].length; ++i)
-	{
-		if(morphLoadout['loadoutElements'][i]["slotType"] === "Gut")
-		{
-			gutMorph = morphLoadout['loadoutElements'][i];
-			break;
-		}
-	}
+    if (!gutMorph || !gutMorph.blends || gutMorph.blends.length === 0) {
+        return 'Thin';
+    }
 
-	if(!gutMorph || !gutMorph.hasOwnProperty('blends'))
-	{
-		return 'Thin';
-	}
+    // Extract blend values
+    const { baseBlend: gutBase, barycentricBlend: gutBarycentric } = gutMorph.blends[0];
 
-	// Get the blends array
-	const blends = gutMorph['blends'];
+    // Return the body type based on blend values
+    if (gutBase <= 0.5) return 'Standard';
+    if (gutBarycentric < 0.5) return 'Thin';
+    if (gutBarycentric < 1.35) return 'Muscular';
+    if (gutBarycentric < 2.70) return 'Heavy';
+    if (gutBarycentric < 2.90) return 'Muscular';
 
-	if(blends.length === 0)
-	{
-		return 'Thin';
-	}
-
-	// Get the two blend values
-	let gutBase;
-	let gutBarycentric;
-
-	if(blends[0].hasOwnProperty('baseBlend'))
-	{
-		gutBase = blends[0]['baseBlend'];
-	}
-
-	if(blends[0].hasOwnProperty('barycentricBlend'))
-	{
-		gutBarycentric = blends[0]['barycentricBlend'];
-	}
-
-
-	if(gutBase <= 0.5)
-	{
-		return 'Standard';
-	}
-
-	if(gutBarycentric < 0.5)
-	{
-		return 'Thin';
-	}
-
-	if(gutBarycentric >= 0.5 && gutBarycentric < 1.35)
-	{
-		return 'Muscular';
-	}
-
-	if(gutBarycentric >= 1.35 && gutBarycentric < 2.70)
-	{
-		return 'Heavy';
-	}
-
-	if(gutBarycentric >= 2.70 && gutBarycentric < 2.90)
-	{
-		return 'Muscular';
-	}
-
-	return 'Thin';
+    return 'Thin';
 }
-
 /**
  * Determines if a player is valid based on various criteria.
  *
