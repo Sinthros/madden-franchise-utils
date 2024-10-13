@@ -52,7 +52,8 @@ const TABLE_NAMES = {
   SEASON_INFO: 'SeasonInfo',
   SALARY_INFO: 'SalaryInfo',
   TEAM_ROADMAP: 'TeamRoadmap',
-  COACH_TALENT_EFFECTS: 'CoachTalentEffects'
+  COACH_TALENT_EFFECTS: 'CoachTalentEffects',
+  STADIUM: 'Stadium'
 }
 
 const SEASON_STAGES = {
@@ -78,6 +79,12 @@ const SPECIAL_TEAM_POSITIONS = ['K','P'];
 
 const COACH_SKIN_TONES = ['SkinTone1', 'SkinTone2', 'SkinTone3', 'SkinTone4', 'SkinTone5', 'SkinTone6', 'SkinTone7'];
 const COACH_APPAREL = ['Facility1', 'Facility2', 'Practice1', 'Practice2', 'Practice3', 'Staff1', 'Staff2', 'Staff3', 'Staff4'];
+
+const BODY_MAP = {
+	1: 'Thin',
+	2: 'Muscular',
+	3: 'Heavy' 
+};
 
 // Default FULL_CONTROL settings
 const USER_CONTROL_SETTINGS = [
@@ -1419,6 +1426,95 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
   }
 };
 
+
+// Function to approximate the body type based on the visuals JSON
+function approximateBodyType(visualsObject)
+{
+	let morphLoadout;
+	
+	// Find the morph loadout
+	for(let i = 0; i < visualsObject['loadouts'].length; ++i)
+	{
+		if(visualsObject['loadouts'][i].hasOwnProperty('loadoutCategory') && visualsObject['loadouts'][i]['loadoutCategory'] === 'Base')
+		{
+			morphLoadout = visualsObject['loadouts'][i];
+			break;
+		}
+	}
+
+	if(!morphLoadout || !morphLoadout.hasOwnProperty('loadoutElements'))
+	{
+		return 'Thin';
+	}
+
+	// Try to find the gut morph value
+	let gutMorph;
+
+	for(let i = 0; i < morphLoadout['loadoutElements'].length; ++i)
+	{
+		if(morphLoadout['loadoutElements'][i]["slotType"] === "Gut")
+		{
+			gutMorph = morphLoadout['loadoutElements'][i];
+			break;
+		}
+	}
+
+	if(!gutMorph || !gutMorph.hasOwnProperty('blends'))
+	{
+		return 'Thin';
+	}
+
+	// Get the blends array
+	const blends = gutMorph['blends'];
+
+	if(blends.length === 0)
+	{
+		return 'Thin';
+	}
+
+	// Get the two blend values
+	let gutBase;
+	let gutBarycentric;
+
+	if(blends[0].hasOwnProperty('baseBlend'))
+	{
+		gutBase = blends[0]['baseBlend'];
+	}
+
+	if(blends[0].hasOwnProperty('barycentricBlend'))
+	{
+		gutBarycentric = blends[0]['barycentricBlend'];
+	}
+
+
+	if(gutBase <= 0.5)
+	{
+		return 'Standard';
+	}
+
+	if(gutBarycentric < 0.5)
+	{
+		return 'Thin';
+	}
+
+	if(gutBarycentric >= 0.5 && gutBarycentric < 1.35)
+	{
+		return 'Muscular';
+	}
+
+	if(gutBarycentric >= 1.35 && gutBarycentric < 2.70)
+	{
+		return 'Heavy';
+	}
+
+	if(gutBarycentric >= 2.70 && gutBarycentric < 2.90)
+	{
+		return 'Muscular';
+	}
+
+	return 'Thin';
+}
+
 /**
  * Determines if a player is valid based on various criteria.
  *
@@ -1663,6 +1759,10 @@ function containsNonUTF8(value) {
   }
 };
 
+function removeNonUTF8(value) {
+  return value.replace(/[^\x00-\x7F]+/g, ''); // Remove non-ASCII characters
+}
+
 /**
  * Finds the key associated with a given value in an object.
  * 
@@ -1724,6 +1824,7 @@ module.exports = {
     removeControl,
     deleteExcessFreeAgents,
     removePlayerVisuals,
+    approximateBodyType,
 
     getYesOrNo, // UTILITY FUNCTIONS
     shuffleArray,
@@ -1734,6 +1835,7 @@ module.exports = {
     bin2Dec,
     dec2bin,
     hasNumber,
+    removeNonUTF8,
     containsNonUTF8,
     findKeyByValue,
     removeSuffixes,

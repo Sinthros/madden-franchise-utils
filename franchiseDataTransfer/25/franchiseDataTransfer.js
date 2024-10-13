@@ -426,7 +426,7 @@ async function handleTable(targetTable,mergedTableMappings) {
       const record = sourceTable.records[i];
 
       // We need to leave CharacterVisuals untouched
-      if (FranchiseUtils.isReferenceColumn(record,currentCol) && currentCol !== 'CharacterVisuals') {
+      if (FranchiseUtils.isReferenceColumn(record,currentCol) && currentCol !== 'CharacterVisuals' && currentCol !== 'Stadium') {
         try {
           const updatedValue = replaceBinaryValue(mergedTableMappings, record, currentCol);
           if (updatedValue !== null) {
@@ -459,6 +459,9 @@ async function handleTable(targetTable,mergedTableMappings) {
 
     if (currentTableName === FranchiseUtils.TABLE_NAMES.PLAYER || currentTableName === FranchiseUtils.TABLE_NAMES.COACH) {
       await handleCharacterVisuals(sourceRecord,targetRecord,currentTableName);
+    }
+    if (currentTableName === FranchiseUtils.TABLE_NAMES.TEAM) {
+      await transferStadium(sourceRecord,targetRecord);
 
     }
   } 
@@ -537,6 +540,33 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
 
   const genericHeadAssetName = typeof genericHead !== 'undefined' ? genericHead : "";
   targetRecord.GenericHeadAssetName = genericHeadAssetName;
+
+}
+
+async function transferStadium(sourceRecord, targetRecord) {
+  
+  if (targetRecord.isEmpty || FranchiseUtils.NFL_CONFERENCES.includes(targetRecord.DisplayName) || !targetRecord.TEAM_VISIBLE) return;
+
+  // If an FTC reference, we don't need to do anything
+  if (FranchiseUtils.isReferenceColumn(sourceRecord,'Stadium')) {
+    const targetStadiumTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.stadiumTable);
+    const nextRecord = targetStadiumTable.header.nextRecordToUse;
+
+    const stadiumRef = sourceRecord.Stadium;
+    const stadiumRow = FranchiseUtils.bin2Dec(stadiumRef.slice(15));
+    const tableId = FranchiseUtils.bin2Dec(stadiumRef.slice(0,15));
+
+    const stadiumTable = sourceFranchise.getTableById(tableId);
+    await stadiumTable.readRecords();
+
+    const stadiumRecord = stadiumTable.records[stadiumRow];
+    stadiumRecord.Name = FranchiseUtils.removeNonUTF8(stadiumRecord.Name);
+
+    const targetStadiumRecord = await FranchiseUtils.addRecordToTable(stadiumRecord,targetStadiumTable);
+
+    targetRecord.Stadium = getBinaryReferenceData(targetStadiumTable.header.tableId, targetStadiumRecord.index);
+
+  }
 
 }
 
@@ -940,7 +970,11 @@ sourceFranchise.on('ready', async function () {
     ];
 
     // We need to empty visuals from the target table since we're repopulating them later
-    await FranchiseUtils.emptyCharacterVisualsTable(targetFranchise)
+    await FranchiseUtils.emptyCharacterVisualsTable(targetFranchise);
+    const stadiumTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.stadiumTable);
+
+    FranchiseUtils.emptyTable(stadiumTable)
+    await clearArrayTables(); // Clear out various array tables
     
     console.log("Now working on transferring all table data...");
 
@@ -955,7 +989,6 @@ sourceFranchise.on('ready', async function () {
     await fixPlayerTableRow(); // Adjust the default player table row if needed
     await emptyRookieStatTracker(); // Function to empty Rookie Tracker table (Avoid crashing)
     await FranchiseUtils.generateActiveAbilityPlayers(targetFranchise);
-    await clearArrayTables(); // Clear out various array tables
     await FranchiseUtils.emptyResignTable(targetFranchise); // Empty and fill the resign tables
     await fillResignTable();
     await FranchiseUtils.regenerateMarketingTables(targetFranchise);
