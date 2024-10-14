@@ -1,1 +1,1 @@
-nexe --build -i isonParser.js -t x64-14.15.3 -r "../Utils/FranchiseUtils.js" -r "./isonFunctions.js" -r "lookupFiles/*.json" -o "isonParser.exe" --verbose 
+nexe --build -i isonParser.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "../Utils/FranchiseUtils.js" -r "./isonFunctions.js" -r "lookupFiles/*.json" -o "isonParser.exe" --verbose 
