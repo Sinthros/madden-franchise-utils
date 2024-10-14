@@ -287,18 +287,6 @@ function handlePlayerTable(playerTable) {
 
       if (record.YearDrafted === -1) record.YearDrafted--;
     }
-    // Fields to check for invalid UTF-8 values
-    const fieldsToCheck = ['PLYR_ASSETNAME', 'FirstName', 'LastName'];
-
-    // Iterate over the fields to check for non-UTF8 values
-    for (const field of fieldsToCheck) {
-      const fieldValue = record[field];
-      const hasInvalidValue = FranchiseUtils.containsNonUTF8(Buffer.from(fieldValue, 'utf-8'));
-
-      if (hasInvalidValue) {
-        record[field] = FranchiseUtils.removeNonUTF8(fieldValue);
-      }
-    }
 
     if (isEmpty) {
       record.CareerStats = FranchiseUtils.ZERO_REF;
@@ -447,6 +435,12 @@ async function handleTable(targetTable,mergedTableMappings) {
         } catch (error) {
           console.error(`Error processing column: ${currentCol} at row ${i}`, error);
         }
+      }
+      
+      const fieldOffset = record._fields[currentCol].offset;
+
+      if (fieldOffset.type === 'string') {
+        record[currentCol] = FranchiseUtils.removeNonUTF8(record[currentCol]);
       }
     }
   });

@@ -1710,7 +1710,7 @@ function containsNonUTF8(value) {
 };
 
 function removeNonUTF8(value) {
-  return value.replace(/[^\x00-\x7F]+/g, ''); // Remove non-ASCII characters
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
 /**
