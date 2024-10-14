@@ -8,11 +8,12 @@ let is24To25;
 let transferSeasonYear;
 let transferTeamNames;
 let transferStadiums;
+let transferPlayerAssets;
 
 const ALL_ASSET_NAMES = JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8'));
 const COMMENTARY_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/commentary_lookup.json', 'utf-8'));
 const COACH_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/coach_lookup.json', 'utf-8'));
-const ROOKIE_PLAYER_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/rookie_player_lookup.json', 'utf-8'));
+const PLAYER_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/player_lookup.json', 'utf-8'));
 const TRANSFER_SCHEDULE_FUNCTIONS = require('../../retroSchedules/transferScheduleFromJson');
 const SCHEDULE_FUNCTIONS = require('../../Utils/ScheduleFunctions');
 const FranchiseUtils = require('../../Utils/FranchiseUtils');
@@ -278,10 +279,14 @@ function handleCoachTable(coachTable) {
   }
 }
 function handlePlayerTable(playerTable) {
-  for (let i = 0; i < playerTable.header.recordCapacity; i++) {
-    const record = playerTable.records[i];
+  for (const record of playerTable.records) {
     const isEmpty = record.isEmpty;
+    
+    if (is24To25) {
+      record.YearDrafted--; // If transferring from 24 to 25, we need to account for the year difference
 
+      if (record.YearDrafted === -1) record.YearDrafted--;
+    }
     // Fields to check for invalid UTF-8 values
     const fieldsToCheck = ['PLYR_ASSETNAME', 'FirstName', 'LastName'];
 
@@ -291,7 +296,7 @@ function handlePlayerTable(playerTable) {
       const hasInvalidValue = FranchiseUtils.containsNonUTF8(Buffer.from(fieldValue, 'utf-8'));
 
       if (hasInvalidValue) {
-        record[field] = ""; // Set the field to an empty string if it contains invalid UTF-8
+        record[field] = FranchiseUtils.removeNonUTF8(fieldValue);
       }
     }
 
@@ -318,15 +323,17 @@ function handlePlayerTable(playerTable) {
       }
     }
 
-    // Check if `record.PLYR_ASSETNAME` matches any of the keys in `jsonObject`
-    const playerLookup = ROOKIE_PLAYER_LOOKUP[record.PLYR_ASSETNAME];
-
-    if (playerLookup && !record.isEmpty) {
-        // Iterate over each key-value pair
-        for (const [key, value] of Object.entries(playerLookup)) {
-          // Dynamically set each key-value pair in the record object
-          record[key] = value;
-        }
+    if (transferPlayerAssets) {
+      // Update player assets
+      const playerLookup = PLAYER_LOOKUP[record.PLYR_ASSETNAME];
+        
+      if (playerLookup && !record.isEmpty) {
+          // Iterate over each key-value pair
+          for (const [key, value] of Object.entries(playerLookup)) {
+            // Dynamically set each key-value pair in the record object
+            record[key] = value;
+          }
+      }
     }
   }
 
@@ -528,12 +535,18 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
 
   genericHead = is24To25 ? jsonData.genericHeadName : targetRecord.GenericHeadAssetName;
 
-  FranchiseUtils.removeKeyFromJson(jsonData,"genericHeadName"); // Remove unneeded keys from the json
-  FranchiseUtils.removeKeyFromJson(jsonData,"genericHead");
-  FranchiseUtils.removeKeyFromJson(jsonData,"skinToneScale");
-  FranchiseUtils.removeKeyFromJson(jsonData,"containerId");
-  FranchiseUtils.removeKeyFromJson(jsonData,"assetName");
-  FranchiseUtils.removeKeyFromJson(jsonData,"heightInches");
+  const keysToRemove = [
+    "genericHeadName",
+    "genericHead",
+    "skinToneScale",
+    "containerId",
+    "assetName",
+    "heightInches"
+  ];
+  
+  keysToRemove.forEach(key => {
+    FranchiseUtils.removeKeyFromJson(jsonData, key);
+  });
 
   ISON_FUNCTIONS.jsonVisualsToIson(targetVisualsTable,nextRecord,jsonData); // Set the data in the visuals table
 
@@ -579,14 +592,17 @@ async function transferStadium(sourceRecord, targetRecord) {
 async function setOptions() {
 
   const message = "Would you like to transfer over the Season Year from your source file to your target file?\n" +
-  "Enter YES to transfer the Season Year or NO to leave it as is in the target file. If you're transferring a file that is at or close to 30 years, you should enter NO.";
+  "Enter yes or no. If you're transferring a file that is at or close to 30 years, you should enter NO.";
   transferSeasonYear = FranchiseUtils.getYesOrNo(message);
 
-  const teamMsg = "Would you like to transfer over team names from your source file to your target file (For example: Commanders, Bears, etc)? This will also transfer over Team menu colors.";
+  const teamMsg = "Would you like to transfer over team names from your source file to your target file (For example: Commanders, Bears, etc)? This will also transfer over Team menu colors. Enter yes or no.";
   transferTeamNames = FranchiseUtils.getYesOrNo(teamMsg);
 
-  const stadiumMsg = "Would you like to transfer over stadiums from your source file to your target file?";
+  const stadiumMsg = "Would you like to transfer over stadiums from your source file to your target file? Enter yes or no.";
   transferStadiums = FranchiseUtils.getYesOrNo(stadiumMsg);
+
+  const playerMsg = "Would you like to have Player Asset Names updated in your target file? Enter yes or no (If you don't know what this means, enter yes).";
+  transferPlayerAssets = FranchiseUtils.getYesOrNo(playerMsg);
 }
 
 function getPlayerTables() {
