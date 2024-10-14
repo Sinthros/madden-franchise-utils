@@ -1522,6 +1522,12 @@ function isReferenceColumn(record, column, includeZeroRef = false, includeFtcRef
   return true;
 };
 
+function isFtcReference(record,column) {
+  const field = record.fields[column];
+  const currentValue = record[column];
+
+  return field.isReference && currentValue.startsWith('1');
+}
 
 /**
  * Validates the game year of the franchise file against the valid game years for the program.
@@ -1785,6 +1791,7 @@ module.exports = {
     removeSuffixes,
     isValidPlayer,
     isReferenceColumn,
+    isFtcReference,
     validateGameYears,
     EXIT_PROGRAM,
 
