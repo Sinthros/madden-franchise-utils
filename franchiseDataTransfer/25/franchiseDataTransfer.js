@@ -281,7 +281,7 @@ function handleCoachTable(coachTable) {
 function handlePlayerTable(playerTable) {
   for (const record of playerTable.records) {
     const isEmpty = record.isEmpty;
-    
+
     if (is24To25) {
       record.YearDrafted--; // If transferring from 24 to 25, we need to account for the year difference
 
@@ -487,7 +487,13 @@ async function handleTable(targetTable,mergedTableMappings) {
 
 async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableName) {
   if (targetRecord.isEmpty) return;
+
   let characterVisuals = sourceRecord.CharacterVisuals;
+  if (FranchiseUtils.isFtcReference(sourceRecord,'CharacterVisuals')) {
+    targetRecord.CharacterVisuals = characterVisuals;
+    return;
+  }
+
   const sourcePlayerTable = sourceFranchise.getTableByUniqueId(SOURCE_TABLES.playerTable);
   const sourceCoachTable = sourceFranchise.getTableByUniqueId(SOURCE_TABLES.coachTable);
   const targetVisualsTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.characterVisualsTable);
@@ -516,7 +522,7 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
     }
     else {
       try {
-        jsonData = ISON_FUNCTIONS.isonVisualsToJson(visualsTable,sourceRecord.index);
+        jsonData = ISON_FUNCTIONS.isonVisualsToJson(visualsTable,characterVisualsRow);
       } catch (error) {
         console.error(error);
         return;
@@ -534,6 +540,10 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
   }
 
   genericHead = is24To25 ? jsonData.genericHeadName : targetRecord.GenericHeadAssetName;
+
+  if (jsonData === null) {
+    jsonData = {}; // Should never happen, but just to be safe
+  }
 
   const keysToRemove = [
     "genericHeadName",
