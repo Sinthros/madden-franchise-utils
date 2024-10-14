@@ -20,6 +20,7 @@ const BASE_FILE_INIT_KWD = 'CAREER';
 const FTC_FILE_INIT_KWD = 'franchise-';
 const YES_KWD = "YES";
 const NO_KWD = "NO";
+const FORCEQUIT_KWD = "FORCEQUIT"
 
 // GAME YEARS
 const YEARS = {
@@ -1611,6 +1612,23 @@ function getYesOrNo(message) {
   }
 };
 
+function getYesNoForceQuit(message) {
+  while (true) {
+      console.log(message);
+      const input = prompt().trim().toUpperCase();
+
+      if (input === YES_KWD) {
+          return YES_KWD;
+      } else if (input === NO_KWD) {
+          return NO_KWD;
+      } else if (input === FORCEQUIT_KWD) {
+        return FORCEQUIT_KWD;
+      } else {
+          console.log(`Invalid input. Please enter ${YES_KWD}, ${NO_KWD}, or ${FORCEQUIT_KWD} .`);
+      }
+  }
+};
+
 /**
  * Prompts the user to choose between two valid values and returns the chosen value.
  *
@@ -1811,6 +1829,7 @@ module.exports = {
     approximateBodyType,
 
     getYesOrNo, // UTILITY FUNCTIONS
+    getYesNoForceQuit,
     shuffleArray,
     removeKeyFromJson,
     getUserInput,
@@ -1835,6 +1854,7 @@ module.exports = {
     FTC_FILE_INIT_KWD,
     YES_KWD,
     NO_KWD,
+    FORCEQUIT_KWD,
     EXTRA_TEAM_NAMES,
     NFL_CONFERENCES,
     OFFENSIVE_SKILL_POSITIONS,
