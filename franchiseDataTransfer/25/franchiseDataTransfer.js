@@ -163,7 +163,7 @@ async function getNeededColumns(currentTableName) {
       zeroColumns = [];
       return [keepColumns,deleteColumns,zeroColumns];  
     case FranchiseUtils.TABLE_NAMES.SALARY_INFO:
-      keepColumns = ["TeamSalaryCap"];
+      keepColumns = ["TeamSalaryCap","InitialSalaryCap"];
       deleteColumns = [];
       zeroColumns = [];
       return [keepColumns,deleteColumns,zeroColumns];  
@@ -1028,6 +1028,7 @@ sourceFranchise.on('ready', async function () {
     await assignFranchiseUsers();
     await adjustCommentaryValues();
     await transferPlayerAbilities(mergedTableMappings);
+    await FranchiseUtils.reorderTeams(targetFranchise);
 
     if (is24To25) {
       const message = "Would you like to remove asset names from the Player table that aren't in Madden 25's Database?";
