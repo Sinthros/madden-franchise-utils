@@ -72,6 +72,7 @@ const tables = {
     yearSummary: 2136473174,
     leagueHistoryArray: 444189422,
     leagueHistoryAward: 335278464,
+    leagueTable: 1056825014,
     salaryInfoTable: 3759217828,
     salCapIncreaseTable: 734850521,
     // Player Stats
@@ -256,6 +257,7 @@ const tablesM25 = {
     yearSummary: 2592669074,
     leagueHistoryArray: 2466957052,
     leagueHistoryAward: 2655641637,
+    leagueTable: 1056825014,
     salaryInfoTable: 3759217828,
     salCapIncreaseTable: 734850521,
 
