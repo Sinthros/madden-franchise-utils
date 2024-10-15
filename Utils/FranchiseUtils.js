@@ -192,12 +192,15 @@ function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile =
   const defaultPath = fs.existsSync(documentsDir) ? documentsDir : fs.existsSync(oneDriveDir) ? oneDriveDir : null;
   
   if (!defaultPath) {
-    console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${baseDir}, ${oneDriveDir}`);
-    return;
+    console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`);
   }
 
   const filePrefix = isFtcFile ? FTC_FILE_INIT_KWD : BASE_FILE_INIT_KWD;
-  const defaultMessage = `Please enter the name of your Madden ${gameYear} franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.`;
+  let defaultMessage = `Please enter the name of your Madden ${gameYear} franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.`;
+  if(!defaultPath)
+  {
+    defaultMessage = `Please enter the full path to your Madden ${gameYear} franchise file. Or, enter 0 to exit.`;
+  }
   const message = customMessage || defaultMessage;
 
   while (true) {

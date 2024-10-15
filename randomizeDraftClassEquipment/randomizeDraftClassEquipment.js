@@ -4,9 +4,6 @@ const FranchiseUtils = require('../Utils/FranchiseUtils');
 const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
 const isonFunctions = require('../isonParser/isonFunctions');
 
-// Required lookups
-let allAssetNames = Object.keys(JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8')));
-
 // Valid game years
 const validYears = [
 	FranchiseUtils.YEARS.M24,
@@ -38,16 +35,22 @@ for(let i = 0; i < validYears.length; i++)
 console.log(`This program will update all draft class player equipment based on existing players. Only Madden ${validYearsMessage} franchise files are supported.\n`)
 
 // Set up franchise file
-const gameYear = FranchiseUtils.getGameYear(validYears);
-const autoUnempty = true;
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear, autoUnempty);
+const franchise = FranchiseUtils.init(validYears, {isAutoUnemptyEnabled: true});
+const gameYear = franchise.schema.meta.gameYear;
 const tables = FranchiseUtils.getTablesObject(franchise);
-let useJsonStrategy = false;
 
-if(gameYear === FranchiseUtils.YEARS.M25)
+// No equipment columns in M25+, so we must use the JSON strategy
+let useJsonStrategy = gameYear >= FranchiseUtils.YEARS.M25;
+
+const lookupFileName = `all_asset_names_m${gameYear}.json`;
+
+if(!fs.existsSync(`lookupFiles/${lookupFileName}`))
 {
-	allAssetNames = JSON.parse(fs.readFileSync('lookupFiles/all_asset_names_m25.json', 'utf-8'));
+	console.log(`\nAssetname lookup file for Madden ${gameYear} not found. Unable to continue.`);
+	FranchiseUtils.EXIT_PROGRAM();
 }
+
+const allAssetNames = Object.keys(JSON.parse(fs.readFileSync(`lookupFiles/${lookupFileName}`, 'utf-8')));
 
 // List of relevant equipment/other columns in the player table
 const equipmentCols = ['PLYR_EYEPAINT', 'PlayerVisMoveType', 'PLYR_RIGHTARMSLEEVE', 'PLYR_QBSTYLE', 'PLYR_GRASSLEFTELBOW', 'PLYR_RIGHTTHIGH', 'PLYR_RIGHTSPAT', 'PLYR_RIGHTSHOE', 'PLYR_GRASSLEFTHAND', 'PLYR_GRASSRIGHTHAND', 'PLYR_GRASSRIGHTELBOW', 'PLYR_GRASSLEFTWRIST', 'PLYR_GRASSRIGHTWRIST', 'PLYR_VISOR', 'PLYR_HELMET', 'PLYR_FACEMASK', 'PLYR_JERSEYSLEEVE', 'PLYR_JERSEY_STATE', 'PLYR_LEFTSPAT', 'PLYR_LEFTSHOE', 'PLYR_LEFTARMSLEEVE', 'PLYR_MOUTHPIECE', 'PLYR_TOWEL', 'PLYR_STANCE', 'PLYR_SOCK_HEIGHT', 'RunningStyleRating', 'PLYR_FLAKJACKET', 'PLYR_BACKPLATE'];
@@ -216,7 +219,7 @@ async function enumeratePlayers(playerTable, draftRows, nflRows, miscRows)
     for (let i = 0; i < numRows; i++) 
 	{ 
         // If it's an empty row or invalid player, skip this row
-		if (playerTable.records[i].isEmpty || invalidStatuses.includes(playerTable.records[i]['ContractStatus']))
+		if (FranchiseUtils.isValidPlayer(playerTable.records[i], {includeDraftPlayers: true}))
 		{
 			continue;
         }
@@ -246,10 +249,7 @@ async function enumeratePlayers(playerTable, draftRows, nflRows, miscRows)
 
 franchise.on('ready', async function () {
 
-	FranchiseUtils.validateGameYears(franchise,gameYear);
-
-	// No equipment columns in M25+, so we must use the JSON strategy
-	useJsonStrategy = gameYear >= FranchiseUtils.YEARS.M25;
+	
 	
     // Get required tables
 	const playerTable = franchise.getTableByUniqueId(tables.playerTable);

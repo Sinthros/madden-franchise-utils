@@ -1,0 +1,34 @@
+{
+  "NO HELMETS on any Players": [
+    {
+      "SlotName": "GearHelmet", 
+      "GearAsset": "GearHelmet_None"
+    }
+  ],
+  "NO MOUTHPIECE on any Players": [
+    {
+      "SlotName": "Mouthpiece", 
+      "GearAsset": "GearMouthpiece_None"
+    }
+  ],
+  "NO FACEPAINT on any Players": [
+    {
+      "SlotName": "FacePaint", 
+      "GearAsset": "FaceMarks_None"
+    }
+  ],
+  "SMALL SHOULDER PADS on all Players": [
+    {
+      "SlotName": "Shoulderpads", 
+      "GearAsset": "Small_Pads"
+    }
+  ],
+  "COMBINE JERSEY on all Players": [
+    {
+      "SlotName": "JerseyStyle", 
+      "GearAsset": "Narrative_Combine"
+    }
+  ]
+}
+
+
