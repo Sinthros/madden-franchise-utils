@@ -4,3 +4,4 @@ node_modules/
 **/*.xlsx
 generateSchema/output/**
 updateAllRosters/
+spotrac/

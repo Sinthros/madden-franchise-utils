@@ -20,6 +20,7 @@ const BASE_FILE_INIT_KWD = 'CAREER';
 const FTC_FILE_INIT_KWD = 'franchise-';
 const YES_KWD = "YES";
 const NO_KWD = "NO";
+const FORCEQUIT_KWD = "FORCEQUIT"
 
 // GAME YEARS
 const YEARS = {
@@ -1426,6 +1427,39 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
   }
 };
 
+async function reorderTeams(franchise) {
+
+  const tables = getTablesObject(franchise);
+  const leagueTable = franchise.getTableByUniqueId(tables.leagueTable);
+  const teamTable = franchise.getTableByUniqueId(tables.teamTable);
+  await readTableRecords([leagueTable,teamTable]);
+
+  const sortedTeamsBinary = leagueTable.records[0].SortedTeams;
+
+  const tableId = bin2Dec(sortedTeamsBinary.slice(0,15));  
+  const rowNum = bin2Dec(sortedTeamsBinary.slice(15));
+
+  const sortedTeamTable = franchise.getTableById(tableId);
+  await sortedTeamTable.readRecords();
+
+  // Get binary data for all non-empty rows in the teamTable, sorted by DisplayName
+  const allRowBinaryData = teamTable.records
+    .map((record, index) => ({ record, index })) // Create an array of objects with record and its index
+    .filter(({ record }) => !record.isEmpty && !NFL_CONFERENCES.includes(record.DisplayName) && record.TEAM_VISIBLE ) // Filter out empty records
+    .sort(({ record: a }, { record: b }) => { // Sort by DisplayName
+      const displayNameA = a.DisplayName === '49ers' ? 'FortyNiners' : a.DisplayName;
+      const displayNameB = b.DisplayName === '49ers' ? 'FortyNiners' : b.DisplayName;
+      return displayNameA.localeCompare(displayNameB);
+    })
+    .map(({ record, index }) => getBinaryReferenceData(teamTable.header.tableId, index)); // Get the binary
+
+
+  const record = sortedTeamTable.records[rowNum];
+
+  // One-liner to set the record's fieldsArray values to allRowBinaryData
+  allRowBinaryData.forEach((val, index) => { record.fieldsArray[index].value = val; });
+
+}
 
 // Function to approximate the body type based on the visuals JSON
 function approximateBodyType(visualsObject) {
@@ -1578,6 +1612,23 @@ function getYesOrNo(message) {
   }
 };
 
+function getYesNoForceQuit(message) {
+  while (true) {
+      console.log(message);
+      const input = prompt().trim().toUpperCase();
+
+      if (input === YES_KWD) {
+          return YES_KWD;
+      } else if (input === NO_KWD) {
+          return NO_KWD;
+      } else if (input === FORCEQUIT_KWD) {
+        return FORCEQUIT_KWD;
+      } else {
+          console.log(`Invalid input. Please enter ${YES_KWD}, ${NO_KWD}, or ${FORCEQUIT_KWD} .`);
+      }
+  }
+};
+
 /**
  * Prompts the user to choose between two valid values and returns the chosen value.
  *
@@ -1710,7 +1761,7 @@ function containsNonUTF8(value) {
 };
 
 function removeNonUTF8(value) {
-  return value.replace(/[^\x00-\x7F]+/g, ''); // Remove non-ASCII characters
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
 /**
@@ -1773,10 +1824,12 @@ module.exports = {
     takeControl,
     removeControl,
     deleteExcessFreeAgents,
+    reorderTeams,
     removePlayerVisuals,
     approximateBodyType,
 
     getYesOrNo, // UTILITY FUNCTIONS
+    getYesNoForceQuit,
     shuffleArray,
     removeKeyFromJson,
     getUserInput,
@@ -1801,6 +1854,7 @@ module.exports = {
     FTC_FILE_INIT_KWD,
     YES_KWD,
     NO_KWD,
+    FORCEQUIT_KWD,
     EXTRA_TEAM_NAMES,
     NFL_CONFERENCES,
     OFFENSIVE_SKILL_POSITIONS,
