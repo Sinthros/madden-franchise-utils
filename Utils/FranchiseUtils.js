@@ -1761,7 +1761,11 @@ function containsNonUTF8(value) {
 };
 
 function removeNonUTF8(value) {
-  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  // Normalize the string and remove diacritics (accents)
+  let normalized = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  
+  // Remove all non-ASCII characters
+  return normalized.replace(/[^\x00-\x7F]/g, '');
 }
 
 /**
