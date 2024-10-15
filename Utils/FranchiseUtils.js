@@ -191,7 +191,7 @@ function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile =
   const defaultPath = fs.existsSync(documentsDir) ? documentsDir : fs.existsSync(oneDriveDir) ? oneDriveDir : null;
   
   if (!defaultPath) {
-    console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${baseDir}, ${oneDriveDir}`);
+    console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`);
     return;
   }
 
