@@ -70,9 +70,6 @@ franchise.on('ready', async function () {
 			}
 		}
 	}
-
-	// Types of players that are not relevant for our purposes and can be skipped
-	const invalidStatuses = ['Draft','Retired','Deleted','None','Created'];
 	
 	// Number of rows in the player table
     const numRows = playerTable.header.recordCapacity; 
@@ -84,7 +81,7 @@ franchise.on('ready', async function () {
     for (let i = 0; i < numRows; i++) 
 	{ 
         // If it's an empty row or invalid player, skip this row
-		if (playerTable.records[i].isEmpty || invalidStatuses.includes(playerTable.records[i]['ContractStatus']))
+		if (!FranchiseUtils.isValidPlayer(playerTable.records[i]))
 		{
 			continue;
         }
