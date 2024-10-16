@@ -524,50 +524,48 @@ async function handleSeasonStats(sourceRecord, targetRecord) {
   if (targetRecord.isEmpty) return;
 
   const seasonStatsRef = sourceRecord.SeasonStats;
-
   const targetStatsArray = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonStatsTable);
   const nextRecord = targetStatsArray.header.nextRecordToUse;
 
-  if (FranchiseUtils.isReferenceColumn(sourceRecord,'SeasonStats')) {
-    const targetNextRecord = targetStatsArray.records[nextRecord];
+  // Check if source has reference data for SeasonStats
+  if (!FranchiseUtils.isReferenceColumn(sourceRecord, 'SeasonStats')) return;
 
-    const refData = FranchiseUtils.getRowAndTableIdFromRef(seasonStatsRef);
-    const seasonStatsArray = sourceFranchise.getTableById(refData.tableId);
-    await seasonStatsArray.readRecords();
+  const targetNextRecord = targetStatsArray.records[nextRecord];
+  const refData = FranchiseUtils.getRowAndTableIdFromRef(seasonStatsRef);
+  const seasonStatsArray = sourceFranchise.getTableById(refData.tableId);
+  await seasonStatsArray.readRecords();
+  const arrayRecord = seasonStatsArray.records[refData.row];
 
-    const arrayRecord = seasonStatsArray.records[refData.row];
+  for (let i = 0; i < seasonStatsArray.header.numMembers; i++) {
+    const column = `SeasonStats${i}`;
+    const sourceColumnValue = arrayRecord[column];
 
-    for (let i = 0; i < seasonStatsArray.header.numMembers; i++) {
-      const column = `SeasonStats${i}`;
-      if (FranchiseUtils.isFtcReference(arrayRecord,column)) {
-        targetNextRecord[column] = arrayRecord[column];
-      }
-      else if (FranchiseUtils.isReferenceColumn(arrayRecord,column,false,false)) {
-        const sourceStatsData = FranchiseUtils.getRowAndTableIdFromRef(arrayRecord[column]);
+    // Simplified check: FtcReference or simple reference
+    if (FranchiseUtils.isFtcReference(arrayRecord, column)) {
+      targetNextRecord[column] = sourceColumnValue;
+    } else if (FranchiseUtils.isReferenceColumn(arrayRecord, column, false, false)) {
+      const sourceStatsData = FranchiseUtils.getRowAndTableIdFromRef(sourceColumnValue);
+      const statsTable = sourceFranchise.getTableById(sourceStatsData.tableId);
 
-        const statsTable = sourceFranchise.getTableById(sourceStatsData.tableId);
-        await statsTable.readRecords();
-        const tableName = statsTable.header.name;
+      await statsTable.readRecords();
+      const targetStatsTable = targetFranchise.getTableByName(statsTable.header.name);
+      await targetStatsTable.readRecords();
 
-        const targetStatsTable = targetFranchise.getTableByName(tableName);
-        await targetStatsTable.readRecords();
+      const statsRecord = statsTable.records[sourceStatsData.row];
+      const targetStatsRecord = FranchiseUtils.addRecordToTable(statsRecord, targetStatsTable);
 
-        const statsRecord = statsTable.records[sourceStatsData.row];
+      // Adjust season year if applicable
+      if (is24To25) targetStatsRecord.SEAS_YEAR--;
 
-        const targetStatsRecord = FranchiseUtils.addRecordToTable(statsRecord,targetStatsTable);
-
-        if (is24To25) targetStatsRecord.SEAS_YEAR--;
-
-        targetNextRecord[column] = getBinaryReferenceData(targetStatsTable.header.tableId,targetStatsRecord.index);
-
-
-      }
-      else {
-        targetNextRecord[column] = arrayRecord[column];
-      }
+      targetNextRecord[column] = getBinaryReferenceData(targetStatsTable.header.tableId, targetStatsRecord.index);
+    } else {
+      // If not an FTC or defined reference, set to zeroes
+      targetNextRecord[column] = FranchiseUtils.ZERO_REF;
     }
-    targetRecord.SeasonStats = getBinaryReferenceData(targetStatsArray.header.tableId,nextRecord);
   }
+
+  // Update target record SeasonStats reference
+  targetRecord.SeasonStats = getBinaryReferenceData(targetStatsArray.header.tableId, nextRecord);
 }
 async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableName) {
   if (targetRecord.isEmpty) return;
