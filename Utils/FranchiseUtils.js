@@ -821,12 +821,14 @@ async function emptySignatureTables(franchise) {
  * @param {Object} table - The table object containing records to be emptied.
  * @param {Object} [defaultColumns={}] - An optional object where keys are column names and values are the default values to set.
  */
-function emptyTable(table, defaultColumns = {}) {
+function emptyTable(table, defaultColumns = {}, rowsToIgnore = []) {
   const entries = Object.entries(defaultColumns);
   const tableColumns = getColumnNames(table);
 
   for (let i = 0; i < table.header.recordCapacity; i++) {
     const record = table.records[i];
+
+    if (rowsToIgnore.includes(record.index)) continue;
 
     // Set default values for specified columns
     for (const [key, value] of entries) {
@@ -1493,6 +1495,13 @@ function approximateBodyType(visualsObject) {
 
     return 'Thin';
 }
+
+function getRowAndTableIdFromRef(binary) {
+  const row = bin2Dec(binary.slice(15));
+  const tableId = bin2Dec(binary.slice(0,15));
+
+  return { row, tableId };
+}
 /**
  * Determines if a player is valid based on various criteria.
  *
@@ -1831,6 +1840,7 @@ module.exports = {
     reorderTeams,
     removePlayerVisuals,
     approximateBodyType,
+    getRowAndTableIdFromRef,
 
     getYesOrNo, // UTILITY FUNCTIONS
     getYesNoForceQuit,
