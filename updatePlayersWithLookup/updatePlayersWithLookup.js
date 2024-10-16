@@ -14,6 +14,7 @@ const validGameYears = [
 ];
 const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
+const gameYear = parseInt(franchise.schema.meta.gameYear);
 
 // Set up the excel lookup file
 console.log("Enter the path to the lookup Excel file: ");
@@ -59,7 +60,10 @@ if(numSearchColumns > 1)
 
 // Ask user if they want to update CharacterVisuals for edited players (if applicable)
 let updateVisuals = false;
-updateVisuals = FranchiseUtils.getYesOrNo("Do you want to update CharacterVisuals for edited players? Choose yes if you will be updating any columns related to player appearance. (yes/no)");
+if(gameYear === FranchiseUtils.YEARS.M24)
+{
+	updateVisuals = FranchiseUtils.getYesOrNo("Do you want to update CharacterVisuals for edited players? Choose yes if you will be updating any columns related to player appearance. (yes/no)");
+}
 
 // Ask user if they want to also update draft class players
 let updateDraftClass = false;
@@ -85,15 +89,6 @@ franchise.on('ready', async function () {
 
 	// Read required tables
 	await FranchiseUtils.readTableRecords([playerTable, characterVisualsTable]);
-
-	// Types of players that are not relevant for our purposes and can be skipped
-	let invalidStatuses = ['Retired','Deleted','None','Created'];
-
-	// If not updating draft class players, add Draft to the list of invalid statuses
-	if (!updateDraftClass)
-	{
-		invalidStatuses.push('Draft');
-	}
 	
 	// Number of rows in the player table
     const numRows = playerTable.header.recordCapacity;
@@ -123,7 +118,7 @@ franchise.on('ready', async function () {
     for (let i = 0; i < numRows; i++) 
 	{ 
         // If it's an empty row or invalid player, skip this row
-		if (playerTable.records[i].isEmpty || invalidStatuses.includes(playerTable.records[i]['ContractStatus']))
+		if (!FranchiseUtils.isValidPlayer(playerTable.records[i], {includeDraftPlayers: updateDraftClass}))
 		{
 			continue;
         }

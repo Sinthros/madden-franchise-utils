@@ -2,16 +2,29 @@
 const fs = require('fs');
 const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../Utils/FranchiseUtils');
-const { tables } = require('../Utils/FranchiseTableId');
 const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
-const vanityGearLookup = JSON.parse(fs.readFileSync('./lookupFiles/vanityGearLookup.json', 'utf8'));
+const ISON_FUNCTIONS = require(`../isonParser/isonFunctions`);
 
 // Print tool header message
 console.log("This program will update all players with your chosen vanity gear item.\n")
 
 // Set up franchise file
-const gameYear = FranchiseUtils.YEARS.M24;
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear);
+const validGames = [
+	FranchiseUtils.YEARS.M24,
+	FranchiseUtils.YEARS.M25
+];
+const franchise = FranchiseUtils.init(validGames);
+const tables = FranchiseUtils.getTablesObject(franchise);
+const gameYear = parseInt(franchise.schema.meta.gameYear);
+
+const lookupFileName = `./lookupFiles/vanityGearLookup${gameYear}.json`;
+if(!fs.existsSync(lookupFileName))
+{
+	console.log("No lookup file exists for the current game year. Unable to continue.");
+	FranchiseUtils.EXIT_PROGRAM();
+}
+
+const vanityGearLookup = JSON.parse(fs.readFileSync(lookupFileName, 'utf8'));
 
 /**
  * Takes a table reference value and converts it to a row number.
@@ -131,7 +144,7 @@ franchise.on('ready', async function () {
     for (let i = 0; i < numRows; i++) 
 	{ 
         // If it's an empty row or invalid player, skip this row
-		if (playerTable.records[i].isEmpty || invalidStatuses.includes(playerTable.records[i]['ContractStatus']))
+		if (!FranchiseUtils.isValidPlayer(playerTable.records[i]))
 		{
 			continue;
         }
@@ -142,8 +155,11 @@ franchise.on('ready', async function () {
 		// If this player does not have CharacterVisuals assigned for some reason, try to generate it
 		if(playerVisualsRow === -1)
 		{
-			// Attempt to generate the visuals for this player
-			await characterVisualFunctions.regeneratePlayerVisual(franchise, playerTable, characterVisualsTable, i, true);
+			if(gameYear === FranchiseUtils.YEARS.M24)
+			{
+				// Attempt to generate the visuals for this player
+				await characterVisualFunctions.regeneratePlayerVisual(franchise, playerTable, characterVisualsTable, i, true);
+			}
 
 			// Try to get their visuals row number again
 			playerVisualsRow = await getRowFromRef(playerTable.records[i]['CharacterVisuals']);
@@ -158,18 +174,32 @@ franchise.on('ready', async function () {
 
 		// Get the visuals data for this player and attempt to parse it. If it throws an exception, it is likely because this player has been edited in-game, so skip them.
 		const playerVisuals = characterVisualsTable.records[playerVisualsRow];
-		let visualsData;
-		try
-		{
-			visualsData = JSON.parse(playerVisuals['RawData']);
-		}
-		catch(e)
-		{
-			continue;
-		}
 
-		// Update the visuals for this player with the new gear item included
-		characterVisualsTable.records[playerVisualsRow]['RawData'] = JSON.stringify(assignGear(visualsData, gearAssetInfo));
+		let visualsData;
+
+		if(gameYear === FranchiseUtils.YEARS.M24)
+		{
+			try
+			{
+				visualsData = JSON.parse(playerVisuals['RawData']);
+			}
+			catch(e)
+			{
+				continue;
+			}
+		
+
+			// Update the visuals for this player with the new gear item included
+			characterVisualsTable.records[playerVisualsRow]['RawData'] = JSON.stringify(assignGear(visualsData, gearAssetInfo));
+		}
+		else
+		{
+			visualsData = ISON_FUNCTIONS.isonVisualsToJson(characterVisualsTable, playerVisualsRow);
+
+			let updatedVisualsData = assignGear(visualsData, gearAssetInfo);
+
+			ISON_FUNCTIONS.jsonVisualsToIson(characterVisualsTable, playerVisualsRow, updatedVisualsData);
+		}
     }
 	
 	// Program complete, so print success message, save the franchise file, and exit
