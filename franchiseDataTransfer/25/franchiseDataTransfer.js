@@ -22,6 +22,9 @@ const VISUAL_FUNCTIONS = require('../../Utils/characterVisualsLookups/characterV
 const COACH_VISUAL_LOOKUP_M25 = JSON.parse(fs.readFileSync('../../Utils/characterVisualsLookups/25/coachVisualsLookup.json', 'utf-8'));
 const DEFAULT_PLAYER_ROW = 720; // Default player row for Madden 25
 
+// We won't convert the binary for these fields because we have to do additional operations on these fields
+const IGNORE_COLUMNS = ["CharacterVisuals","SeasonStats","Stadium"];
+
 const SOURCE_VALID_YEARS = [FranchiseUtils.YEARS.M24,FranchiseUtils.YEARS.M25]
 const TARGET_VALID_YEARS = [FranchiseUtils.YEARS.M25];
   
@@ -420,25 +423,24 @@ async function handleTable(targetTable,mergedTableMappings) {
 
   const sourceColumns = await FranchiseUtils.getColumnNames(sourceTable); //Get the headers from the table
 
-  sourceColumns.forEach((currentCol, colIndex) => {
-    for (let i = 0; i < sourceTable.header.recordCapacity; i++) {
+  sourceColumns.forEach((currentCol) => {
+    const fieldOffset = record._fields[currentCol].offset;
 
-      const record = sourceTable.records[i];
-
-      // We need to leave CharacterVisuals untouched
-      if (FranchiseUtils.isReferenceColumn(record,currentCol) && currentCol !== 'CharacterVisuals' && currentCol !== 'Stadium') {
+    for (const record of sourceTable.records) {
+  
+      // Check if ref column and not a column to ignore
+      if (FranchiseUtils.isReferenceColumn(record, currentCol) && !IGNORE_COLUMNS.includes(currentCol)) {
         try {
           const updatedValue = replaceBinaryValue(mergedTableMappings, record, currentCol);
           if (updatedValue !== null) {
             record[currentCol] = updatedValue;
           }
         } catch (error) {
-          console.error(`Error processing column: ${currentCol} at row ${i}`, error);
+          console.error(`Error processing column: ${currentCol} at row ${record.index}`, error);
         }
       }
-      
-      const fieldOffset = record._fields[currentCol].offset;
-
+  
+      // Remove/replace non-UTF8 values from any string columns
       if (fieldOffset.type === 'string') {
         record[currentCol] = FranchiseUtils.removeNonUTF8(record[currentCol]);
       }
@@ -463,7 +465,12 @@ async function handleTable(targetTable,mergedTableMappings) {
     // We set our ignoreColumns, zeroColumns, and keepColumns, and specify to use the same index from the source table in the target table to keep the same structure
     const targetRecord = FranchiseUtils.addRecordToTable(sourceRecord, targetTable, { ignoreColumns: deleteColumns, zeroColumns: zeroColumns, keepColumns: keepColumns, useSameIndex: true  })
 
-    if (currentTableName === FranchiseUtils.TABLE_NAMES.PLAYER || currentTableName === FranchiseUtils.TABLE_NAMES.COACH) {
+    if (currentTableName === FranchiseUtils.TABLE_NAMES.PLAYER) {
+      await handleCharacterVisuals(sourceRecord,targetRecord,currentTableName);
+      await handleSeasonStats(sourceRecord,targetRecord);
+    }
+
+    if (currentTableName === FranchiseUtils.TABLE_NAMES.COACH) {
       await handleCharacterVisuals(sourceRecord,targetRecord,currentTableName);
     }
 
@@ -479,6 +486,89 @@ async function handleTable(targetTable,mergedTableMappings) {
   }
 };
 
+async function emptySeasonStatTables() {
+  const seasonStatsArrayTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonStatsTable);
+  const seasonOffKPReturnStatsTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonOffKPReturnStatsTable);
+  const seasonOffStatsTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonOffStatsTable);
+  const seasonOLineStatsTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonOLineStatsTable);
+  const seasonDefStatsTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonDefStatsTable);
+  const seasonKickingStatsTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonKickingStatsTable);
+  const seasonDefKPReturnStatsTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonDefKPReturnStatsTable);
+
+  const goalsTable = targetFranchise.getTableByUniqueId(720737254);
+  await goalsTable.readRecords();
+
+  const goalsRecord = goalsTable.records[0];
+
+  // Empty season stat tables, except for default rows which need to remain unemptied
+  FranchiseUtils.emptyTable(seasonOffKPReturnStatsTable,{},[FranchiseUtils.getRowAndTableIdFromRef(goalsRecord.ZeroOffensiveStat).row]);
+  FranchiseUtils.emptyTable(seasonOffStatsTable);
+  FranchiseUtils.emptyTable(seasonOLineStatsTable,{},[FranchiseUtils.getRowAndTableIdFromRef(goalsRecord.ZeroOLineStat).row]);
+  FranchiseUtils.emptyTable(seasonDefStatsTable);
+  FranchiseUtils.emptyTable(seasonKickingStatsTable,{},[FranchiseUtils.getRowAndTableIdFromRef(goalsRecord.ZeroKickingStat).row]);
+  FranchiseUtils.emptyTable(seasonDefKPReturnStatsTable,{},[FranchiseUtils.getRowAndTableIdFromRef(goalsRecord.ZeroDefensiveStat).row]);
+
+  for (const record of seasonStatsArrayTable.records) {
+    if (record.isEmpty) continue;
+    for (let i = 0; i < seasonStatsArrayTable.header.numMembers; i++) {
+      const column = `SeasonStats${i}`;
+
+      record[column] = FranchiseUtils.ZERO_REF;
+    }
+    record.empty();
+  }
+
+
+}
+async function handleSeasonStats(sourceRecord, targetRecord) {
+  if (targetRecord.isEmpty) return;
+
+  const seasonStatsRef = sourceRecord.SeasonStats;
+
+  const targetStatsArray = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonStatsTable);
+  const nextRecord = targetStatsArray.header.nextRecordToUse;
+
+  if (FranchiseUtils.isReferenceColumn(sourceRecord,'SeasonStats')) {
+    const targetNextRecord = targetStatsArray.records[nextRecord];
+
+    const refData = FranchiseUtils.getRowAndTableIdFromRef(seasonStatsRef);
+    const seasonStatsArray = sourceFranchise.getTableById(refData.tableId);
+    await seasonStatsArray.readRecords();
+
+    const arrayRecord = seasonStatsArray.records[refData.row];
+
+    for (let i = 0; i < seasonStatsArray.header.numMembers; i++) {
+      const column = `SeasonStats${i}`;
+      if (FranchiseUtils.isFtcReference(arrayRecord,column)) {
+        targetNextRecord[column] = arrayRecord[column];
+      }
+      else if (FranchiseUtils.isReferenceColumn(arrayRecord,column,false,false)) {
+        const sourceStatsData = FranchiseUtils.getRowAndTableIdFromRef(arrayRecord[column]);
+
+        const statsTable = sourceFranchise.getTableById(sourceStatsData.tableId);
+        await statsTable.readRecords();
+        const tableName = statsTable.header.name;
+
+        const targetStatsTable = targetFranchise.getTableByName(tableName);
+        await targetStatsTable.readRecords();
+
+        const statsRecord = statsTable.records[sourceStatsData.row];
+
+        const targetStatsRecord = FranchiseUtils.addRecordToTable(statsRecord,targetStatsTable);
+
+        if (is24To25) targetStatsRecord.SEAS_YEAR--;
+
+        targetNextRecord[column] = getBinaryReferenceData(targetStatsTable.header.tableId,targetStatsRecord.index);
+
+
+      }
+      else {
+        targetNextRecord[column] = arrayRecord[column];
+      }
+    }
+    targetRecord.SeasonStats = getBinaryReferenceData(targetStatsArray.header.tableId,nextRecord);
+  }
+}
 async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableName) {
   if (targetRecord.isEmpty) return;
 
@@ -595,16 +685,13 @@ async function transferStadium(sourceRecord, targetRecord) {
 
 async function setOptions() {
 
-  const message = "Would you like to transfer over the Season Year from your source file to your target file?\n" +
+  const message = "Would you like to transfer over the Season Year from your source file to your target file? This will also transfer league history.\n" +
   "Enter yes or no. If you're transferring a file that is at or close to 30 years, you should enter NO.";
   transferSeasonYear = FranchiseUtils.getYesOrNo(message);
-
   const teamMsg = "Would you like to transfer over team names from your source file to your target file (For example: Commanders, Bears, etc)? This will also transfer over Team menu colors. Enter yes or no.";
   transferTeamNames = FranchiseUtils.getYesOrNo(teamMsg);
-
   const stadiumMsg = "Would you like to transfer over stadiums from your source file to your target file? Enter yes or no.";
   transferStadiums = FranchiseUtils.getYesOrNo(stadiumMsg);
-
   const playerMsg = "Would you like to have Player Asset Names updated in your target file? Enter yes or no (If you don't know what this means, enter yes).";
   transferPlayerAssets = FranchiseUtils.getYesOrNo(playerMsg);
 }
@@ -711,6 +798,10 @@ async function validateFiles() {
   }
 }
 function getOptionalTables() {
+
+  if (!transferSeasonYear) return [];
+
+  
   const tableIds = [
     TARGET_TABLES.seasonInfoTable,
     TARGET_TABLES.leagueHistoryAward,
@@ -720,11 +811,8 @@ function getOptionalTables() {
   ];
 
   const tableArray = [];
-
-  if (transferSeasonYear) {
-    const tables = tableIds.map(id => targetFranchise.getTableByUniqueId(id));
-    tableArray.push(...tables);
-  }
+  const tables = tableIds.map(id => targetFranchise.getTableByUniqueId(id));
+  tableArray.push(...tables);
 
   return tableArray;
 }
@@ -779,6 +867,8 @@ async function adjustSeasonGameTable() {
   const seasonGame = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonGameTable);
 
   await FranchiseUtils.readTableRecords([seasonInfo,seasonGame]);
+
+  if (is24To25) seasonInfo.records[0].CurrentYear--;
 
   for (const record of seasonGame.records) {
     if (!record.isEmpty && !record.IsPractice) {
@@ -1000,6 +1090,7 @@ sourceFranchise.on('ready', async function () {
 
     // We need to empty visuals from the target table since we're repopulating them later
     await FranchiseUtils.emptyCharacterVisualsTable(targetFranchise);
+    await emptySeasonStatTables();
     const stadiumTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.stadiumTable);
 
     FranchiseUtils.emptyTable(stadiumTable)
