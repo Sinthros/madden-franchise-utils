@@ -17,12 +17,16 @@ franchise.on('ready', async function () {
     // Iterate through each table in the tables object
     for (const table of franchise.tables) 
     {
-        if(!table)
+        if(!table && typeof table === 'undefined')
         {
             continue;
         }
 
-        await table.readRecords();
+        try {
+            await table.readRecords();
+        } catch (e) {
+            continue
+        }
 
         // Iterate through each record in the table
         for(let i = 0; i < table.header.recordCapacity; i++)
@@ -42,7 +46,7 @@ franchise.on('ready', async function () {
             }
 
             // If we're still here, we have a problem
-            console.log(`Record ${i} in table ${table.header.tableId} is empty but has references.`);
+            console.log(`Record ${i} in table ${table.header.name} is empty but has references.`);
 
             let refData = getBinaryReferenceData(table.header.tableId, i);
 
