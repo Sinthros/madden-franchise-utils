@@ -24,6 +24,14 @@ const DEFAULT_PLAYER_ROW = 720; // Default player row for Madden 25
 
 // We won't convert the binary for these fields because we have to do additional operations on these fields
 const IGNORE_COLUMNS = ["CharacterVisuals","SeasonStats","Stadium"];
+const VISUAL_KEYS_TO_REMOVE = [
+  "genericHeadName",
+  "genericHead",
+  "skinToneScale",
+  "containerId",
+  "assetName",
+  "heightInches"
+];
 
 const SOURCE_VALID_YEARS = [FranchiseUtils.YEARS.M24,FranchiseUtils.YEARS.M25]
 const TARGET_VALID_YEARS = [FranchiseUtils.YEARS.M25];
@@ -331,6 +339,13 @@ function handlePlayerTable(playerTable) {
   // Set all expiring players to signed
   playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === FranchiseUtils.CONTRACT_STATUSES.EXPIRING)
     .forEach(record => record.ContractStatus = FranchiseUtils.CONTRACT_STATUSES.SIGNED);
+
+  playerTable.records
+    .filter(record => !record.isEmpty && record.ContractStatus === FranchiseUtils.CONTRACT_STATUSES.DRAFT)
+    .forEach(record => {
+      record.ContractStatus = FranchiseUtils.CONTRACT_STATUSES.DELETED;
+      record.empty();  // Call empty() after updating the ContractStatus
+    });
 }
 
 
@@ -424,9 +439,9 @@ async function handleTable(targetTable,mergedTableMappings) {
   const sourceColumns = await FranchiseUtils.getColumnNames(sourceTable); //Get the headers from the table
 
   sourceColumns.forEach((currentCol) => {
-    const fieldOffset = record._fields[currentCol].offset;
 
     for (const record of sourceTable.records) {
+      const fieldOffset = record._fields[currentCol].offset;
   
       // Check if ref column and not a column to ignore
       if (FranchiseUtils.isReferenceColumn(record, currentCol) && !IGNORE_COLUMNS.includes(currentCol)) {
@@ -570,7 +585,7 @@ async function handleSeasonStats(sourceRecord, targetRecord) {
 async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableName) {
   if (targetRecord.isEmpty) return;
 
-  let characterVisuals = sourceRecord.CharacterVisuals;
+  const characterVisuals = sourceRecord.CharacterVisuals;
   if (FranchiseUtils.isFtcReference(sourceRecord,'CharacterVisuals')) {
     targetRecord.CharacterVisuals = characterVisuals;
     return;
@@ -580,6 +595,9 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
   const sourceCoachTable = sourceFranchise.getTableByUniqueId(SOURCE_TABLES.coachTable);
   const targetVisualsTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.characterVisualsTable);
   const nextRecord = targetVisualsTable.header.nextRecordToUse;
+  
+  // If no rows are left, return
+  if (nextRecord > targetVisualsTable.header.recordCapacity) return;
 
   let jsonData;
   let genericHead;
@@ -587,12 +605,11 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
   const isPlayer = currentTableName === FranchiseUtils.TABLE_NAMES.PLAYER;
 
   if (characterVisuals !== FranchiseUtils.ZERO_REF) {
-    const characterVisualsRow = FranchiseUtils.bin2Dec(characterVisuals.slice(15));
-    const characterVisualsTableId = FranchiseUtils.bin2Dec(characterVisuals.slice(0,15));
-    const visualsTable = sourceFranchise.getTableById(characterVisualsTableId);
+    const visualsMetadata = FranchiseUtils.getRowAndTableIdFromRef(characterVisuals);
+    const visualsTable = sourceFranchise.getTableById(visualsMetadata.tableId);
     await visualsTable.readRecords();
 
-    const visualsRecord = visualsTable.records[characterVisualsRow];
+    const visualsRecord = visualsTable.records[visualsMetadata.row];
 
     if (is24To25) {
       try { // We should always regenerate coach visuals if from 24 to 25
@@ -604,7 +621,7 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
     }
     else {
       try {
-        jsonData = ISON_FUNCTIONS.isonVisualsToJson(visualsTable,characterVisualsRow);
+        jsonData = ISON_FUNCTIONS.isonVisualsToJson(visualsTable,visualsMetadata.row);
       } catch (error) {
         console.error(error);
         return;
@@ -627,21 +644,12 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
     jsonData = {}; // Should never happen, but just to be safe
   }
 
-  const keysToRemove = [
-    "genericHeadName",
-    "genericHead",
-    "skinToneScale",
-    "containerId",
-    "assetName",
-    "heightInches"
-  ];
   
-  keysToRemove.forEach(key => {
+  VISUAL_KEYS_TO_REMOVE.forEach(key => {
     FranchiseUtils.removeKeyFromJson(jsonData, key);
   });
 
   ISON_FUNCTIONS.jsonVisualsToIson(targetVisualsTable,nextRecord,jsonData); // Set the data in the visuals table
-
 
   targetRecord.CharacterVisuals = getBinaryReferenceData(targetVisualsTable.header.tableId, nextRecord);
 
@@ -660,13 +668,12 @@ async function transferStadium(sourceRecord, targetRecord) {
     const targetStadiumTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.stadiumTable);
 
     const stadiumRef = sourceRecord.Stadium;
-    const stadiumRow = FranchiseUtils.bin2Dec(stadiumRef.slice(15));
-    const tableId = FranchiseUtils.bin2Dec(stadiumRef.slice(0,15));
+    const metadata = FranchiseUtils.getRowAndTableIdFromRef(stadiumRef);
 
-    const stadiumTable = sourceFranchise.getTableById(tableId);
+    const stadiumTable = sourceFranchise.getTableById(metadata.tableId);
     await stadiumTable.readRecords();
 
-    const stadiumRecord = stadiumTable.records[stadiumRow];
+    const stadiumRecord = stadiumTable.records[metadata.row];
     stadiumRecord.Name = FranchiseUtils.removeNonUTF8(stadiumRecord.Name);
 
     const targetStadiumRecord = await FranchiseUtils.addRecordToTable(stadiumRecord,targetStadiumTable);
@@ -686,10 +693,13 @@ async function setOptions() {
   const message = "Would you like to transfer over the Season Year from your source file to your target file? This will also transfer league history.\n" +
   "Enter yes or no. If you're transferring a file that is at or close to 30 years, you should enter NO.";
   transferSeasonYear = FranchiseUtils.getYesOrNo(message);
+
   const teamMsg = "Would you like to transfer over team names from your source file to your target file (For example: Commanders, Bears, etc)? This will also transfer over Team menu colors. Enter yes or no.";
   transferTeamNames = FranchiseUtils.getYesOrNo(teamMsg);
+
   const stadiumMsg = "Would you like to transfer over stadiums from your source file to your target file? Enter yes or no.";
   transferStadiums = FranchiseUtils.getYesOrNo(stadiumMsg);
+
   const playerMsg = "Would you like to have Player Asset Names updated in your target file? Enter yes or no (If you don't know what this means, enter yes).";
   transferPlayerAssets = FranchiseUtils.getYesOrNo(playerMsg);
 }
@@ -737,7 +747,8 @@ function getAwardTables() {
   const tableIds = [
     TARGET_TABLES.playerAwardTable,
     TARGET_TABLES.coachAwardTable,
-    TARGET_TABLES.awardArrayTable
+    TARGET_TABLES.awardArrayTable,
+    TARGET_TABLES.allTimeAwardTable,
   ];
 
   const tableArray = tableIds.map(id => targetFranchise.getTableByUniqueId(id));
@@ -866,7 +877,7 @@ async function adjustSeasonGameTable() {
 
   await FranchiseUtils.readTableRecords([seasonInfo,seasonGame]);
 
-  if (is24To25) seasonInfo.records[0].CurrentYear--;
+  if (is24To25 && transferSeasonYear && seasonInfo.records[0].CurrentYear > 0) seasonInfo.records[0].CurrentYear--;
 
   for (const record of seasonGame.records) {
     if (!record.isEmpty && !record.IsPractice) {
@@ -983,20 +994,22 @@ const allTableMappingsTarget = targetFranchise.tables.map((table) =>
   return mergedTableMappings;
 }
 
-async function clearArrayTables() {
-  const draftedPlayersTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.draftedPlayersArrayTable);
-  const miniGameCompleteTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.miniGameCompletedArrayTable);
-  const drillCompletedTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.drillCompletedTable);
-  const focusTrainingTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.focusTrainingTable);
-  const rookieStatTrackerArray = targetFranchise.getTableByUniqueId(TARGET_TABLES.rookieStatTrackerArray);
-  const storyArrayTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.storyArrayTable);
-  const tweetArrayTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.tweetArrayTable);
+function clearArrayTables() {
+  const tableIds = [
+    TARGET_TABLES.draftedPlayersArrayTable,
+    TARGET_TABLES.miniGameCompletedArrayTable,
+    TARGET_TABLES.drillCompletedTable,
+    TARGET_TABLES.focusTrainingTable,
+    TARGET_TABLES.rookieStatTrackerArray,
+    TARGET_TABLES.storyArrayTable,
+    TARGET_TABLES.tweetArrayTable,
+    TARGET_TABLES.weeklyAwardTable,
+    TARGET_TABLES.lastSeasonWeeklyAwardTable
+  ];
 
-  const allTables = [draftedPlayersTable,miniGameCompleteTable,drillCompletedTable,focusTrainingTable,rookieStatTrackerArray,storyArrayTable,tweetArrayTable];
+  const allTables = tableIds.map(tableId => targetFranchise.getTableByUniqueId(tableId));
 
-  for (const table of allTables) {
-    FranchiseUtils.clearArrayTable(table);
-  }
+  allTables.forEach(table => FranchiseUtils.clearArrayTable(table));
 }
 
 async function transferPlayerAbilities(mergedTableMappings) {
