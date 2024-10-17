@@ -482,7 +482,7 @@ async function handleTable(targetTable,mergedTableMappings) {
 
     if (currentTableName === FranchiseUtils.TABLE_NAMES.PLAYER) {
       await handleCharacterVisuals(sourceRecord,targetRecord,currentTableName);
-      await handleSeasonStats(sourceRecord,targetRecord);
+      if (transferSeasonYear) await handleSeasonStats(sourceRecord,targetRecord);
     }
 
     if (currentTableName === FranchiseUtils.TABLE_NAMES.COACH) {
@@ -690,8 +690,8 @@ async function transferStadium(sourceRecord, targetRecord) {
 
 async function setOptions() {
 
-  const message = "Would you like to transfer over the Season Year from your source file to your target file? This will also transfer league history.\n" +
-  "Enter yes or no. If you're transferring a file that is at or close to 30 years, you should enter NO.";
+  const message = "Would you like to transfer over the Season Year from your source file to your target file? Answering yes will also transfer Player season stats and league history.\n" +
+  "Player Career Stats will be transferred regardless. Enter yes or no. If you're transferring a file that is at or close to 30 years, you should enter NO.";
   transferSeasonYear = FranchiseUtils.getYesOrNo(message);
 
   const teamMsg = "Would you like to transfer over team names from your source file to your target file (For example: Commanders, Bears, etc)? This will also transfer over Team menu colors. Enter yes or no.";
