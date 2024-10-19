@@ -61,7 +61,7 @@ franchise.on('ready', async function () {
 			customMeshFile = true;
 			try
 			{
-				overrideAssetNames = JSON.parse(fs.readFileSync(`lookupFiles/${fingerprint}.json`, 'utf-8'));
+				overrideAssetNames = JSON.parse(fs.readFileSync(`lookupFiles/${fingerprint}_${gameYear}.json`, 'utf-8'));
 			}
 			catch(error)
 			{
