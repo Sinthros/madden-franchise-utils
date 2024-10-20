@@ -70,7 +70,6 @@ const tables = {
     playerAwardTable: 657983086,
     coachAwardTable: 3027881868,
     awardArrayTable: 1586942378,
-    playerTransactionTable: 2590627814,
     draftPickTable: 343624504,
     yearSummaryArray: 2073486305,
     yearSummary: 2136473174,
@@ -152,7 +151,13 @@ const tables = {
     historyEntryArray: 1765841029,
     historyEntry: 3363303785,
     transactionHistoryArray: 766279362,
-    transactionHistoryEntry: 2590627814, 
+    transactionHistoryEntry: 2590627814,
+    playerEditTransactionHistoryTable: 636827023,
+    coachTransactionHistoryEntryTable: 2701814500,
+    draftPickTransactionHistoryTable: 415688378,
+
+
+
 
     //Trade tables
     tradeNegotiationArrayTable: 2760331084,
@@ -260,7 +265,6 @@ const tablesM25 = {
     playerAwardTable: 657983086,
     coachAwardTable: 3027881868,
     awardArrayTable: 1586942378,
-    playerTransactionTable: 2590627814,
     draftPickTable: 2546719563,
     yearSummaryArray: 2073486305,
     yearSummary: 2592669074,
@@ -324,10 +328,15 @@ const tablesM25 = {
 
     drillCompletedTable: 1015040736,
     franchiseDebugModuleTable: 4212179270,
+
     historyEntryArray: 1765841029,
     historyEntry: 3363303785,
     transactionHistoryArray: 766279362,
     transactionHistoryEntry: 2590627814,
+    playerEditTransactionHistoryTable: 636827023,
+    coachTransactionHistoryEntryTable: 2701814500,
+    draftPickTransactionHistoryTable: 415688378,
+
     tradeNegotiationArrayTable: 2760331084,
     tradeNegotiationTable: 696128833,
     teamTradePackageArrayTable: 871913715,
