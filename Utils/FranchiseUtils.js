@@ -1386,6 +1386,17 @@ async function deletePlayer(franchise, playerBinary) {
       tables.proBowlRosterTable // Pro bowl roster
     );
   }
+  else if (gameYear === YEARS.M24) {
+    tableIds.push(
+      tables.afcRosterTable,
+      tables.nfcRosterTable,
+      tables.activeAbilityArrayTable
+    )
+
+    await clearPlayerRefFromTableByUniqueId(franchise,playerBinary, tables.poseTable,false,{});
+
+
+  }
 
   const specialTables = {
     [tables.reSignTable]: tables.reSignArrayTable, // Resign records
@@ -1432,6 +1443,7 @@ async function deletePlayer(franchise, playerBinary) {
   await clearPlayerRefFromTableByUniqueId(franchise,playerBinary, tables.transactionHistoryEntry,true,{"OldTeam": ZERO_REF,"NewTeam": ZERO_REF});
   await clearPlayerRefFromTableByUniqueId(franchise,playerBinary, tables.playerEditTransactionHistoryTable,true,{"OldTeam": ZERO_REF,"NewTeam": ZERO_REF});
   await clearPlayerRefFromTableByUniqueId(franchise,playerBinary, tables.playerPositionChangeHistoryTable,true,{"OldTeam": ZERO_REF,"NewTeam": ZERO_REF});
+
   // Finally, empty the record
   playerRecord.empty();
 
@@ -1453,8 +1465,11 @@ async function clearPlayerRefFromTableByName(franchise, playerBinary, tableName,
     await table.readRecords();
     const tableColumns = getColumnNames(table);
 
-    const playerRefCol = tableColumns.includes("Player") ? "Player" : tableColumns.includes("playerRef") ? "playerRef" : null;
-
+    const playerRefCol = tableColumns.includes("Player") ? "Player" :
+    tableColumns.includes("playerRef") ? "playerRef" :
+    tableColumns.includes("PosedPlayer") ? "PosedPlayer" :
+    null;
+    
     if (!playerRefCol) continue;
 
     const records = table.records.filter(record => record[playerRefCol] === playerBinary && !record.isEmpty);
@@ -1477,7 +1492,10 @@ async function clearPlayerRefFromTableByUniqueId(franchise, playerBinary, tableI
   const tableColumns = getColumnNames(table);
   const entries = Object.entries(defaultColumns);
 
-  const playerRefCol = tableColumns.includes("Player") ? "Player" : tableColumns.includes("playerRef") ? "playerRef" : null;
+  const playerRefCol = tableColumns.includes("Player") ? "Player" :
+   tableColumns.includes("playerRef") ? "playerRef" :
+   tableColumns.includes("PosedPlayer") ? "PosedPlayer" :
+   null;
 
   if (!playerRefCol) return;
 

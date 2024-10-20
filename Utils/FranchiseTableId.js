@@ -186,7 +186,9 @@ const tables = {
     retiredCoachTable: 2334648001,
     
     retirementAppointmentTable: 761908674,
-    retirementAppointmentArrayTable: 1642003985
+    retirementAppointmentArrayTable: 1642003985,
+
+    poseTable: 3761454761
 }
 
 // Madden 25 tables 
