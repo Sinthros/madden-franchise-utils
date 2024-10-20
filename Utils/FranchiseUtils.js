@@ -16,6 +16,7 @@ const prompt = require('prompt-sync')();
 
 
 const ZERO_REF = '00000000000000000000000000000000';
+const EMPTY_STRING = "";
 const BASE_FILE_INIT_KWD = 'CAREER';
 const FTC_FILE_INIT_KWD = 'franchise-';
 const YES_KWD = "YES";
@@ -913,34 +914,30 @@ function addRecordToTable(record, targetTable, options = {}) {
 // table: The table passed through to remove the binary from
 // binaryToRemove: The binary we're removing from the table
 async function removeFromTable(table, binaryToRemove) {
-    const numMembers = table.header.numMembers;
-    const recordCapacity = table.header.recordCapacity;
+  const numMembers = table.header.numMembers;
+  const recordCapacity = table.header.recordCapacity;
 
-    for (let i = 0; i < recordCapacity; i++) { // Iterate through the table
-      let allBinary = []; // This will become all of our binary for the row EXCEPT the binaryToRemove
-
+  for (let i = 0; i < recordCapacity; i++) {
       const currentRecord = table.records[i];
-      if (currentRecord.isEmpty) {
-        continue; // This almost never gets triggered for array tables
-      }
       
-      currentRecord.fieldsArray.forEach(field => {
-        allBinary.push(field.value)
-      })
+      if (currentRecord.isEmpty) continue;
 
-      // Filter out the binaryToRemove from allBinary
-      allBinary = allBinary.filter((bin) => bin !== binaryToRemove);
+      // Filter out binary to remove
+      let filteredBinary = currentRecord.fieldsArray
+          .map(field => field.value)
+          .filter(value => value !== binaryToRemove);
 
-      while (allBinary.length < numMembers) {
-        allBinary.push(ZERO_REF);
+      // Pad with ZERO_REF to maintain numMembers
+      while (filteredBinary.length < numMembers) {
+        filteredBinary.push(ZERO_REF);
       }
 
-      // Set the new binary for the row
-      allBinary.forEach((val, index) => {
-        table.records[i].fieldsArray[index].value = val;
+      // Apply the updated binaries back to the row
+      filteredBinary.forEach((val, index) => {
+          currentRecord.fieldsArray[index].value = val;
       });
-    }
-};
+  }
+}
 
 function addToArrayTable(table, binaryToAdd) {
   const record = table.records[0];
@@ -1339,18 +1336,128 @@ async function removePlayerVisuals(franchise,playerRecord) {
 
     // Then, get the record for the player and empty it
     const visualsRecord = characterVisualsTable.records[characterVisualsRow];
-    visualsRecord.RawData = {};
+    //visualsRecord.RawData = {};
     visualsRecord.empty();
 
     playerRecord.CharacterVisuals = ZERO_REF;
   }
+}
+
+async function deletePlayer(franchise, playerBinary) {
+  const gameYear = franchise.schema.meta.gameYear;
+  
+  const tables = getTablesObject(franchise);
+  const playerData = getRowAndTableIdFromRef(playerBinary);
+
+  const playerTable = franchise.getTableById(playerData.tableId);
+  await playerTable.readRecords();
+
+  const playerRecord = playerTable.records[playerData.row];
+  await removePlayerVisuals(franchise,playerRecord);
+  
+  playerRecord.CareerStats = ZERO_REF;
+  playerRecord.SeasonStats = ZERO_REF;
+  playerRecord.GameStats = ZERO_REF;
+  playerRecord.MorphHead = ZERO_REF;
+  playerRecord.WeeklyGoals = ZERO_REF;
+  playerRecord.College = ZERO_REF;
+  playerRecord.SeasonalGoal = ZERO_REF;
+  playerRecord.PLYR_ASSETNAME = EMPTY_STRING;
+  playerRecord.ContractStatus = CONTRACT_STATUSES.DELETED;
+
+
+  const tableIds = [ // Tables to remove player binary from
+    tables.freeAgentTable, // Free agent array
+    tables.rosterTable, // Roster array
+    tables.depthChartPlayerTable, // Depth chart array
+    tables.practiceSquadTable, // Practice squad array
+    tables.draftedPlayersArrayTable, // Drafted players array
+    tables.marketedPlayersArrayTable, // Marketed players array
+    tables.topMarketedPlayers, // Top marketed players array
+    tables.drillCompletedTable // Drill completed array
+  ];
+
+  if (gameYear >= YEARS.M25) {
+    tableIds.push(
+      tables.offenseActiveAbilityArrayTable, // Active abilities tables
+      tables.defenseActiveAbilityArrayTable,
+      tables.miniGameCompletedArrayTable, // Minicamp tables
+      tables.focusTrainingTable, // Focus training tables
+      tables.proBowlRosterTable // Pro bowl roster
+    );
+  }
+
+  const specialTables = {
+    [tables.reSignTable]: tables.reSignArrayTable, // Resign records
+    [tables.rookieStatTrackerTable]: tables.rookieStatTrackerArray, // Rookie tracking
+    [tables.mainSigAbilityTable]: tables.signatureArrayTable, // Player abilities
+    [tables.secondarySigAbilityTable]: tables.signatureArrayTable,
+    [tables.playerAcquisitionEvaluationTable]: tables.playerAcquisitionEvaluationArrayTable, // Acquisition table
+    [tables.retirementAppointmentTable]: tables.retirementAppointmentArrayTable // Retirement table
+  };
+
+  //playerMerchTable
+
+  // Read all tables
+  const tableArray = tableIds.map(id => franchise.getTableByUniqueId(id));
+  await Promise.all(tableArray.map(table => table.readRecords()));
+
+  // Remove player binary from each table
+  await Promise.all(tableArray.map(table => removeFromTable(table, playerBinary)));
+
+  for (const key in specialTables) {
+    if (specialTables.hasOwnProperty(key)) {
+      const keyTable = franchise.getTableByUniqueId(Number(key));
+      const arrayTable = franchise.getTableByUniqueId(Number(specialTables[key]));
+
+      try { // If we can't read the tables, they may dynamically generate and not exist at this time
+        await readTableRecords([keyTable,arrayTable]);
+      } catch (e) {
+        continue;
+      }
+
+      const recordsToEmpty = keyTable.records.filter(record => record.Player === playerBinary);
+
+      for (const record of recordsToEmpty) {
+        record.Player = ZERO_REF;
+        const binary = getBinaryReferenceData(keyTable.header.tableId,record.index);
+        await removeFromTable(arrayTable,binary);
+        record.empty();
+      }
+
+    }
+  }
+
+  const recordTables = franchise.getAllTablesByName("PlayerStatRecord"); 
+
+  for (const table of recordTables) {
+    await table.readRecords();
+
+    const records = table.records.filter(record => record.playerRef === playerBinary && !record.isEmpty);
+
+    for (const record of records) {
+      record.playerRef = ZERO_REF;
+    }
+  }
+
+  // Finally, empty the record
+  playerRecord.empty();
+
+  // Debugging
+  //console.log(`Index ${playerData.row}`);
+  //referencedRow = franchise.getReferencesToRecord(playerData.tableId,playerData.row)
+  
+  //referencedRow.forEach((table) => {
+  //  console.log(`${table.tableId}: ${table.name}: ${playerData.row}`)
+  //})
 
 }
 
 async function deleteExcessFreeAgents(franchise, options = {}) {
 
   const {
-    numPlayersToDelete = null
+    numPlayersToDelete = null,
+    includeDraftPlayers = true
   } = options;
 
   const tables = getTablesObject(franchise);
@@ -1364,7 +1471,7 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
   const activePlayerRecords = playerTable.records.filter(record => 
     !record.isEmpty && 
     isValidPlayer(record, {
-      includeDraftPlayers: true,
+      includeDraftPlayers: includeDraftPlayers,
       includeFreeAgents: true,
       includePracticeSquad: true,
       includeSignedPlayers: true,
@@ -1409,15 +1516,7 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
     for (const freeAgentRecord of worstFreeAgents) {
       const currentBinary = getBinaryReferenceData(playerTable.header.tableId, freeAgentRecord.index);
       worstFreeAgentsBinary.push(currentBinary);
-      freeAgentRecord.ContractStatus = CONTRACT_STATUSES.DELETED; // Mark as deleted and empty the row
-      freeAgentRecord.CareerStats = ZERO_REF;
-      freeAgentRecord.SeasonStats = ZERO_REF;
-      freeAgentRecord.GameStats = ZERO_REF;
-      freeAgentRecord.College = ZERO_REF;
-      freeAgentRecord.PLYR_ASSETNAME = "";
-      freeAgentRecord.empty();
-      await removeFromTable(drillCompletedTable, currentBinary);
-      await removePlayerVisuals(franchise,freeAgentRecord);
+      await deletePlayer(franchise,currentBinary);
     }
 
     //Filter for where we aren't including the worstFreeAgentBin
@@ -1840,6 +1939,7 @@ module.exports = {
     takeControl,
     removeControl,
     deleteExcessFreeAgents,
+    deletePlayer,
     reorderTeams,
     removePlayerVisuals,
     approximateBodyType,
@@ -1866,6 +1966,7 @@ module.exports = {
     EXIT_PROGRAM,
 
     ZERO_REF, // CONST VARIABLES
+    EMPTY_STRING,
     YEARS,
     BASE_FILE_INIT_KWD,
     FTC_FILE_INIT_KWD,
