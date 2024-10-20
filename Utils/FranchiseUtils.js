@@ -1428,8 +1428,10 @@ async function deletePlayer(franchise, playerBinary) {
     }
   }
 
-  await clearPlayerRefFromRecordTables(franchise, playerBinary);
-
+  await clearPlayerRefFromTableByName(franchise, playerBinary, "PlayerStatRecord", false, {});
+  await clearPlayerRefFromTableByUniqueId(franchise,playerBinary, tables.transactionHistoryEntry,true,{"OldTeam": ZERO_REF,"NewTeam": ZERO_REF});
+  await clearPlayerRefFromTableByUniqueId(franchise,playerBinary, tables.playerEditTransactionHistoryTable,true,{"OldTeam": ZERO_REF,"NewTeam": ZERO_REF});
+  await clearPlayerRefFromTableByUniqueId(franchise,playerBinary, tables.playerPositionChangeHistoryTable,true,{"OldTeam": ZERO_REF,"NewTeam": ZERO_REF});
   // Finally, empty the record
   playerRecord.empty();
 
@@ -1443,17 +1445,52 @@ async function deletePlayer(franchise, playerBinary) {
 
 }
 
-async function clearPlayerRefFromRecordTables(franchise, playerBinary) {
-  const recordTables = franchise.getAllTablesByName("PlayerStatRecord"); 
+async function clearPlayerRefFromTableByName(franchise, playerBinary, tableName, emptyRecord = true, defaultColumns = {}) {
+  const tables = franchise.getAllTablesByName(tableName); 
+  const entries = Object.entries(defaultColumns);
 
-  for (const table of recordTables) {
+  for (const table of tables) {
     await table.readRecords();
+    const tableColumns = getColumnNames(table);
 
-    const records = table.records.filter(record => record.playerRef === playerBinary && !record.isEmpty);
+    const playerRefCol = tableColumns.includes("Player") ? "Player" : tableColumns.includes("playerRef") ? "playerRef" : null;
+
+    if (!playerRefCol) continue;
+
+    const records = table.records.filter(record => record[playerRefCol] === playerBinary && !record.isEmpty);
 
     for (const record of records) {
-      record.playerRef = ZERO_REF;
+      for (const [key, value] of entries) {
+        if (tableColumns.includes(key)) {
+          record[key] = value;
+        }
+      }
+      record[playerRefCol] = ZERO_REF;
+      if (emptyRecord) record.empty();
     }
+  }
+}
+
+async function clearPlayerRefFromTableByUniqueId(franchise, playerBinary, tableId, emptyRecord = true, defaultColumns = {}) {
+  const table = franchise.getTableByUniqueId(tableId);
+  await table.readRecords();
+  const tableColumns = getColumnNames(table);
+  const entries = Object.entries(defaultColumns);
+
+  const playerRefCol = tableColumns.includes("Player") ? "Player" : tableColumns.includes("playerRef") ? "playerRef" : null;
+
+  if (!playerRefCol) return;
+
+  const records = table.records.filter(record => record[playerRefCol] === playerBinary && !record.isEmpty);
+
+  for (const record of records) {
+    for (const [key, value] of entries) {
+      if (tableColumns.includes(key)) {
+        record[key] = value;
+      }
+    }
+    record[playerRefCol] = ZERO_REF;
+    if (emptyRecord) record.empty();
   }
 }
 
@@ -1944,7 +1981,8 @@ module.exports = {
     removeControl,
     deleteExcessFreeAgents,
     deletePlayer,
-    clearPlayerRefFromRecordTables,
+    clearPlayerRefFromTableByName,
+    clearPlayerRefFromTableByUniqueId,
     reorderTeams,
     removePlayerVisuals,
     approximateBodyType,
