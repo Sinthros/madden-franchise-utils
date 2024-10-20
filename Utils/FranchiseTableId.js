@@ -153,6 +153,7 @@ const tables = {
     transactionHistoryArray: 766279362,
     transactionHistoryEntry: 2590627814,
     playerEditTransactionHistoryTable: 636827023,
+    playerPositionChangeHistoryTable: 2645009419,
     coachTransactionHistoryEntryTable: 2701814500,
     draftPickTransactionHistoryTable: 415688378,
 
@@ -334,6 +335,7 @@ const tablesM25 = {
     transactionHistoryArray: 766279362,
     transactionHistoryEntry: 2590627814,
     playerEditTransactionHistoryTable: 636827023,
+    playerPositionChangeHistoryTable: 2645009419,
     coachTransactionHistoryEntryTable: 2701814500,
     draftPickTransactionHistoryTable: 415688378,
 
