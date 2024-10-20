@@ -271,6 +271,8 @@ function getCoachTables() {
 
   const tableArray = tableIds.map(id => targetFranchise.getTableByUniqueId(id));
 
+  handleCoachTable(sourceFranchise.getTableByUniqueId(SOURCE_TABLES.coachTable));
+
   return tableArray;
 }
 
@@ -301,6 +303,7 @@ function handlePlayerTable(playerTable) {
 
     if (isEmpty) {
       record.CareerStats = FranchiseUtils.ZERO_REF;
+      record.SeasonStats = FranchiseUtils.ZERO_REF;
     }
 
     // Dictionary for fields and their replacement values when a number is detected
@@ -344,7 +347,7 @@ function handlePlayerTable(playerTable) {
     .filter(record => !record.isEmpty && record.ContractStatus === FranchiseUtils.CONTRACT_STATUSES.DRAFT)
     .forEach(record => {
       record.ContractStatus = FranchiseUtils.CONTRACT_STATUSES.DELETED;
-      record.empty();  // Call empty() after updating the ContractStatus
+      record.empty();
     });
 }
 
@@ -466,12 +469,10 @@ async function handleTable(targetTable,mergedTableMappings) {
   switch (currentTableName) {
     case FranchiseUtils.TABLE_NAMES.PLAYER:
       FranchiseUtils.emptyTable(targetTable,{"CareerStats": FranchiseUtils.ZERO_REF,"SeasonStats": FranchiseUtils.ZERO_REF, "GameStats": FranchiseUtils.ZERO_REF, "CharacterVisuals": FranchiseUtils.ZERO_REF, "GenericHeadAssetName": ""})
-      handlePlayerTable(sourceTable);
       break;
     case FranchiseUtils.TABLE_NAMES.COACH:
       FranchiseUtils.emptyTable(targetTable,{"CharacterVisuals": FranchiseUtils.ZERO_REF,"TeamPhilosophy": FranchiseUtils.ZERO_REF, "DefaultTeamPhilosophy": FranchiseUtils.ZERO_REF, "DefensivePlaybook": FranchiseUtils.ZERO_REF, 
         "OffensivePlaybook": FranchiseUtils.ZERO_REF, "OffensiveScheme": FranchiseUtils.ZERO_REF, "DefensiveScheme": FranchiseUtils.ZERO_REF, "ActiveTalentTree": FranchiseUtils.ZERO_REF, "GenericHeadAssetName": ""});
-      handleCoachTable(sourceTable);
       break;
   }
 
@@ -724,6 +725,8 @@ function getPlayerTables() {
 
   const tableArray = tableIds.map(id => targetFranchise.getTableByUniqueId(id));
 
+  handlePlayerTable(sourceFranchise.getTableByUniqueId(SOURCE_TABLES.playerTable));
+
   return tableArray;
 }
 
@@ -898,7 +901,7 @@ async function removeUnnecessaryAssetNames() {
     const record = playerTable.records[i];
     if (!record.isEmpty) {
       if (!ALL_ASSET_NAMES.includes(record.PLYR_ASSETNAME)) {
-        record.PLYR_ASSETNAME = "";
+        record.PLYR_ASSETNAME = FranchiseUtils.EMPTY_STRING;
       }
     }
   }
