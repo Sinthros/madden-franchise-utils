@@ -4,15 +4,14 @@ const { getBinaryReferenceData } = require('madden-franchise/services/utilServic
 
 const MIN_EMPTY_PLAYERS = 650;
 
-const gameYear = [FranchiseUtils.YEARS.M24,FranchiseUtils.YEARS.M25];
+const validGameYears = [FranchiseUtils.YEARS.M24,FranchiseUtils.YEARS.M25];
 
 console.log("This program will delete the lowest rated free agent players from your file in order to ensure you have enough empty player table rows.");
 console.log("You only need to use this if you're having an issue importing a custom Draft Class, due to a recent change EA made. Thanks, EA.");
 console.log("If your Franchise File already has enough empty rows, then this program will tell you so and will exit.");
 const autoUnempty = false;
 
-const franchise = FranchiseUtils.selectFranchiseFile(gameYear,autoUnempty);
-
+const franchise = FranchiseUtils.init(validGameYears,{promptForBackup: true})
 
 
 async function removeFromFATable(table, row) {
@@ -113,7 +112,6 @@ async function deleteExcessFreeAgents(franchise, playersToDelete) {
 
 franchise.on('ready', async function () {
 
-  FranchiseUtils.validateGameYears(franchise,gameYear);
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   await playerTable.readRecords();
 
