@@ -5,6 +5,8 @@ const tables = {
     freeAgentTable: 4201237426,
     rosterTable: 4062699918,
     rosterInfoTable: 2907326382,
+    afcRosterTable: 3212932027,
+    nfcRosterTable: 2278477318,
     reSignTable: 846670960,
     reSignArrayTable: 91905499,
     depthChartTable: 423128545,
@@ -175,7 +177,10 @@ const tables = {
     hallOfFameCoachTable: 1455634092,
     hallOfFamePlayerTable: 1170686064,
     retiredPlayerTable: 3407263698,
-    retiredCoachTable: 2334648001
+    retiredCoachTable: 2334648001,
+    
+    retirementAppointmentTable: 761908674,
+    retirementAppointmentArrayTable: 1642003985
 }
 
 // Madden 25 tables 
@@ -348,7 +353,11 @@ const tablesM25 = {
     manageStaffRequestTable: 3362371408,
     manageTeamRequestTable: 3433605863,
     scoutingRequestTable: 3003175917,
-    requestArrayTable: 1476221848
+    requestArrayTable: 1476221848,
+
+    retirementAppointmentTable: 761908674,
+    retirementAppointmentArrayTable: 1642003985
+
   }
 
 module.exports = {
