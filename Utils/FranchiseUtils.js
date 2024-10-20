@@ -1428,17 +1428,7 @@ async function deletePlayer(franchise, playerBinary) {
     }
   }
 
-  const recordTables = franchise.getAllTablesByName("PlayerStatRecord"); 
-
-  for (const table of recordTables) {
-    await table.readRecords();
-
-    const records = table.records.filter(record => record.playerRef === playerBinary && !record.isEmpty);
-
-    for (const record of records) {
-      record.playerRef = ZERO_REF;
-    }
-  }
+  await clearPlayerRefFromRecordTables(franchise, playerBinary);
 
   // Finally, empty the record
   playerRecord.empty();
@@ -1451,6 +1441,20 @@ async function deletePlayer(franchise, playerBinary) {
   //  console.log(`${table.tableId}: ${table.name}: ${playerData.row}`)
   //})
 
+}
+
+async function clearPlayerRefFromRecordTables(franchise, playerBinary) {
+  const recordTables = franchise.getAllTablesByName("PlayerStatRecord"); 
+
+  for (const table of recordTables) {
+    await table.readRecords();
+
+    const records = table.records.filter(record => record.playerRef === playerBinary && !record.isEmpty);
+
+    for (const record of records) {
+      record.playerRef = ZERO_REF;
+    }
+  }
 }
 
 async function deleteExcessFreeAgents(franchise, options = {}) {
@@ -1940,6 +1944,7 @@ module.exports = {
     removeControl,
     deleteExcessFreeAgents,
     deletePlayer,
+    clearPlayerRefFromRecordTables,
     reorderTeams,
     removePlayerVisuals,
     approximateBodyType,
