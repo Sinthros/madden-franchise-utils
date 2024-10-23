@@ -188,7 +188,13 @@ const tables = {
     retirementAppointmentTable: 761908674,
     retirementAppointmentArrayTable: 1642003985,
 
-    poseTable: 3761454761
+    poseTable: 3761454761,
+
+    // Stat record tables
+    seasonStatRecordTable: 509272061,
+    gameStatRecordTable: 446415434,
+    careerStatRecordTable: 3930846105
+
 }
 
 // Madden 25 tables 
@@ -321,7 +327,7 @@ const tablesM25 = {
     //FTC Tables
     talentSubTreeFtcTable: 3439205175,
     talentNodeFtcTable: 2361769831,
-    talentNodeArrayFtcTable: 2838206197,
+    talentNodeArrayFtcTable: 312899008,
     talentFtcTable: 2347346465,
     signatureAbilitesFtcTable: 4012247826,
     signatureByPositionFtcTable: 2601028454,
@@ -369,7 +375,15 @@ const tablesM25 = {
     requestArrayTable: 1476221848,
 
     retirementAppointmentTable: 761908674,
-    retirementAppointmentArrayTable: 1642003985
+    retirementAppointmentArrayTable: 1642003985,
+
+    teamCareerStatRecordTable: 3126035436,
+    teamSeasonStatRecordTable: 3016865922,
+    teamGameStatRecordTable: 3197279835,
+    teamRookieGameStatRecordTable: 1291340498,
+    teamRookieSeasonStatRecordTable: 1211717477
+
+
 
   }
 
