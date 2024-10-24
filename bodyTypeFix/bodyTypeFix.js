@@ -12,100 +12,6 @@ const validGames = [
 const franchise = FranchiseUtils.init(validGames);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
-const bodyTypeMap = {
-	1: 'Thin',
-	2: 'Muscular',
-	3: 'Heavy' 
-};
-
-// Function to approximate the body type based on the visuals JSON
-function approximateBodyType(visualsObject)
-{
-	let morphLoadout;
-	
-	// Find the morph loadout
-	for(let i = 0; i < visualsObject['loadouts'].length; ++i)
-	{
-		if(visualsObject['loadouts'][i].hasOwnProperty('loadoutCategory') && visualsObject['loadouts'][i]['loadoutCategory'] === 'Base')
-		{
-			morphLoadout = visualsObject['loadouts'][i];
-			break;
-		}
-	}
-
-	if(!morphLoadout || !morphLoadout.hasOwnProperty('loadoutElements'))
-	{
-		return 'Thin';
-	}
-
-	// Try to find the gut morph value
-	let gutMorph;
-
-	for(let i = 0; i < morphLoadout['loadoutElements'].length; ++i)
-	{
-		if(morphLoadout['loadoutElements'][i]["slotType"] === "Gut")
-		{
-			gutMorph = morphLoadout['loadoutElements'][i];
-			break;
-		}
-	}
-
-	if(!gutMorph || !gutMorph.hasOwnProperty('blends'))
-	{
-		return 'Thin';
-	}
-
-	// Get the blends array
-	const blends = gutMorph['blends'];
-
-	if(blends.length === 0)
-	{
-		return 'Thin';
-	}
-
-	// Get the two blend values
-	let gutBase;
-	let gutBarycentric;
-
-	if(blends[0].hasOwnProperty('baseBlend'))
-	{
-		gutBase = blends[0]['baseBlend'];
-	}
-
-	if(blends[0].hasOwnProperty('barycentricBlend'))
-	{
-		gutBarycentric = blends[0]['barycentricBlend'];
-	}
-
-
-	if(gutBase <= 0.5)
-	{
-		return 'Standard';
-	}
-
-	if(gutBarycentric < 0.5)
-	{
-		return 'Thin';
-	}
-
-	if(gutBarycentric >= 0.5 && gutBarycentric < 1.35)
-	{
-		return 'Muscular';
-	}
-
-	if(gutBarycentric >= 1.35 && gutBarycentric < 2.70)
-	{
-		return 'Heavy';
-	}
-
-	if(gutBarycentric >= 2.70 && gutBarycentric < 2.90)
-	{
-		return 'Muscular';
-	}
-
-	return 'Thin';
-}
-
 franchise.on('ready', async function () {
     // Get required tables	
 	const characterVisualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable);
@@ -123,7 +29,7 @@ franchise.on('ready', async function () {
 		if(!FranchiseUtils.isValidPlayer(playerTable.records[i]))
 		{
 			continue;
-		}		
+		}
 		
 		const visualsRow = FranchiseUtils.bin2Dec(playerTable.records[i]['CharacterVisuals'].slice(15));
 
@@ -135,11 +41,8 @@ franchise.on('ready', async function () {
 			continue;
 		}
 
-		// Get the body type based on the visuals
-		const bodyType = visualsJson.hasOwnProperty("bodyType") ? bodyTypeMap[visualsJson['bodyType']] : approximateBodyType(visualsJson);
-
 		// Update the player's body type
-		playerTable.records[i]['CharacterBodyType'] = bodyType;
+		playerTable.records[i]['CharacterBodyType'] = FranchiseUtils.approximateBodyType(visualsJson);
 	}
 	
 	// Program complete, so print success message, save the franchise file, and exit
