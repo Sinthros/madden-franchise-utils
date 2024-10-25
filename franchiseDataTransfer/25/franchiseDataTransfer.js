@@ -1,6 +1,6 @@
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const fs = require('fs');
-const zeroPad = (num, places) => String(num).padStart(places, '0')
+const zeroPad = (num, places) => String(num).padStart(places, '0');
 
 let is24To25;
 
@@ -9,11 +9,14 @@ let transferSeasonYear;
 let transferTeamNames;
 let transferStadiums;
 let transferPlayerAssets;
+let transferCoachAssets;
+let useBaseCalendar;
 
 const ALL_ASSET_NAMES = JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8'));
 const COMMENTARY_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/commentary_lookup.json', 'utf-8'));
 const COACH_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/coach_lookup.json', 'utf-8'));
 const PLAYER_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/player_lookup.json', 'utf-8'));
+const STADIUM_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/stadiums_lookup.json', 'utf-8'));
 const TRANSFER_SCHEDULE_FUNCTIONS = require('../../retroSchedules/transferScheduleFromJson');
 const SCHEDULE_FUNCTIONS = require('../../Utils/ScheduleFunctions');
 const FranchiseUtils = require('../../Utils/FranchiseUtils');
@@ -21,6 +24,7 @@ const ISON_FUNCTIONS = require('../../isonParser/isonFunctions');
 const VISUAL_FUNCTIONS = require('../../Utils/characterVisualsLookups/characterVisualFunctions');
 const COACH_VISUAL_LOOKUP_M25 = JSON.parse(fs.readFileSync('../../Utils/characterVisualsLookups/25/coachVisualsLookup.json', 'utf-8'));
 const DEFAULT_PLAYER_ROW = 720; // Default player row for Madden 25
+const DEFAULT_CALENDAR_YEAR = 2024;
 
 // We won't convert the binary for these fields because we have to do additional operations on these fields
 const IGNORE_COLUMNS = ["CharacterVisuals","SeasonStats","Stadium"];
@@ -172,6 +176,9 @@ async function getNeededColumns(currentTableName) {
       keepColumns = ["CurrentSeasonYear","CurrentYear"];
       deleteColumns = [];
       zeroColumns = [];
+
+      if (useBaseCalendar) keepColumns.push("BaseCalendarYear","BaseSuperBowlNumber");
+
       return [keepColumns,deleteColumns,zeroColumns];  
     case FranchiseUtils.TABLE_NAMES.SALARY_INFO:
       keepColumns = ["TeamSalaryCap","InitialSalaryCap"];
@@ -280,13 +287,14 @@ function handleCoachTable(coachTable) {
   for (const record of coachTable.records) {
     const isEmpty = record.isEmpty;
 
-    const fullName = `${record.FirstName} ${record.LastName}`;
+    if (transferCoachAssets) {
+      const fullName = `${record.FirstName} ${record.LastName}`;
+      const coachLookup = COACH_LOOKUP[fullName];
 
-    const coachLookup = COACH_LOOKUP[fullName];
-
-    if (coachLookup && !isEmpty) {
-      for (const [key, value] of Object.entries(coachLookup)) {
-        record[key] = value;
+      if (coachLookup && !isEmpty) {
+        for (const [key, value] of Object.entries(coachLookup)) {
+          record[key] = value;
+        }
       }
     }
   }
@@ -295,7 +303,7 @@ function handlePlayerTable(playerTable) {
   for (const record of playerTable.records) {
     const isEmpty = record.isEmpty;
 
-    if (is24To25) {
+    if (is24To25 && !useBaseCalendar && transferSeasonYear) {
       record.YearDrafted--; // If transferring from 24 to 25, we need to account for the year difference
 
       if (record.YearDrafted === -1) record.YearDrafted--;
@@ -571,7 +579,7 @@ async function handleSeasonStats(sourceRecord, targetRecord) {
       const targetStatsRecord = FranchiseUtils.addRecordToTable(statsRecord, targetStatsTable);
 
       // Adjust season year if applicable
-      if (is24To25) targetStatsRecord.SEAS_YEAR--;
+      if (is24To25 && !useBaseCalendar && transferSeasonYear) targetStatsRecord.SEAS_YEAR--;
 
       targetNextRecord[column] = getBinaryReferenceData(targetStatsTable.header.tableId, targetStatsRecord.index);
     } else {
@@ -687,6 +695,32 @@ async function transferStadium(sourceRecord, targetRecord) {
     targetRecord.Stadium = sourceRecord.Stadium;
   }
 
+  targetRecord.AltStadium = FranchiseUtils.ZERO_REF;
+
+  // Check if AltStadium is an FTC reference
+  if (FranchiseUtils.isFtcReference(sourceRecord, 'AltStadium')) {
+    targetRecord.AltStadium = sourceRecord.AltStadium;
+  } else if (FranchiseUtils.isReferenceColumn(sourceRecord, 'AltStadium')) {
+    const stadiumRef = sourceRecord.Stadium;
+    const metadata = FranchiseUtils.getRowAndTableIdFromRef(stadiumRef);
+
+    const stadiumTable = sourceFranchise.getTableById(metadata.tableId);
+
+    // Only await if readRecords is necessary
+    await stadiumTable.readRecords();
+
+    const stadiumRecord = stadiumTable.records[metadata.row];
+    const asset = stadiumRecord.STADIUM_ASSETNAME;
+
+    // Find the matching stadium object
+    const stadium = STADIUM_LOOKUP.find(item => item.STADIUM_ASSETNAME === asset);
+
+    // If a match is found, assign it
+    if (stadium) {
+      targetRecord.AltStadium = stadium.Binary;
+    }
+  }
+
 }
 
 async function setOptions() {
@@ -701,8 +735,11 @@ async function setOptions() {
   const stadiumMsg = "Would you like to transfer over stadiums from your source file to your target file? Enter yes or no.";
   transferStadiums = FranchiseUtils.getYesOrNo(stadiumMsg);
 
-  const playerMsg = "Would you like to have Player Asset Names updated in your target file? Enter yes or no (If you don't know what this means, enter yes).";
+  const playerMsg = "Would you like to have Player Asset Names/portraits updated in your target file? Enter yes or no (If you don't know what this means, enter yes).";
   transferPlayerAssets = FranchiseUtils.getYesOrNo(playerMsg);
+
+  const coachMsg = "Would you like to have Coach Asset Names/portraits updated in your target file? Enter yes or no (If you don't know what this means, enter yes).";
+  transferCoachAssets = FranchiseUtils.getYesOrNo(coachMsg);
 }
 
 function getPlayerTables() {
@@ -808,6 +845,10 @@ async function validateFiles() {
       sourceSeasonInfoRecord.CurrentYear = updatedCurrentYear;
     }
   }
+
+  useBaseCalendar = sourceSeasonInfoRecord.CurrentSeasonYear < DEFAULT_CALENDAR_YEAR;
+
+  if (!useBaseCalendar) seasonInfoRecord.BaseCalendarYear = DEFAULT_CALENDAR_YEAR;
 }
 function getOptionalTables() {
 
@@ -820,6 +861,25 @@ function getOptionalTables() {
     TARGET_TABLES.leagueHistoryArray,
     TARGET_TABLES.yearSummary,
     TARGET_TABLES.yearSummaryArray
+  ];
+
+  const tableArray = [];
+  const tables = tableIds.map(id => targetFranchise.getTableByUniqueId(id));
+  tableArray.push(...tables);
+
+  return tableArray;
+}
+
+function getRecordTables() {
+  if (is24To25) return [];
+
+  const tableIds = [
+    TARGET_TABLES.careerStatRecordTable,
+    TARGET_TABLES.seasonStatRecordTable,
+    TARGET_TABLES.gameStatRecordTable,
+    TARGET_TABLES.rookieGameStatRecordTable,
+    TARGET_TABLES.rookieSeasonStatRecordTable
+
   ];
 
   const tableArray = [];
@@ -880,7 +940,7 @@ async function adjustSeasonGameTable() {
 
   await FranchiseUtils.readTableRecords([seasonInfo,seasonGame]);
 
-  if (is24To25 && transferSeasonYear && seasonInfo.records[0].CurrentYear > 0) seasonInfo.records[0].CurrentYear--;
+  if (is24To25 && transferSeasonYear && seasonInfo.records[0].CurrentYear > 0 && !useBaseCalendar) seasonInfo.records[0].CurrentYear--;
 
   for (const record of seasonGame.records) {
     if (!record.isEmpty && !record.IsPractice) {
@@ -889,6 +949,7 @@ async function adjustSeasonGameTable() {
       record.AwayPlayerStatCache = FranchiseUtils.ZERO_REF;
       record.ScoringSummaries = FranchiseUtils.ZERO_REF;
       record.SeasonYear = seasonInfo.records[0].CurrentYear;
+      if (transferStadiums) record.Stadium = FranchiseUtils.ZERO_REF;
     }
   }
 }
@@ -930,21 +991,6 @@ async function adjustCommentaryValues() {
           } 
       }
       record.PLYR_COMMENT = commentId;
-    }
-  }
-}
-
-async function adjustPlayerIds(targetFranchise, fieldToCheck, fieldToAdjust, lookupObject) {
-  const player = targetFranchise.getTableByUniqueId(TARGET_TABLES.playerTable);
-  await player.readRecords();
-
-  for (let i = 0; i < player.header.recordCapacity; i++) {
-    if (!player.records[i].isEmpty) {
-      let fieldValue = player.records[i][fieldToCheck];
-      if (lookupObject.hasOwnProperty(fieldValue)) {
-        const id = lookupObject[fieldValue];
-        player.records[i][fieldToAdjust] = id;
-      }
     }
   }
 }
@@ -1058,6 +1104,18 @@ async function transferPlayerAbilities(mergedTableMappings) {
   }
 }
 
+async function clearPlayerRefsFromRecordTables() {
+  const recordTables = targetFranchise.getAllTablesByName('PlayerStatRecord');
+
+  for (const table of recordTables) {
+    await table.readRecords();
+
+    for (const record of table.records) {
+      if (!record.isEmpty) record.playerRef = FranchiseUtils.ZERO_REF;
+    }
+  }
+}
+
 sourceFranchise.on('ready', async function () {
   targetFranchise.on('ready', async function () {
 
@@ -1096,6 +1154,7 @@ sourceFranchise.on('ready', async function () {
 
     const allTablesArray = [
       getOptionalTables(),
+      getRecordTables(),
       getPlayerTables(),
       getCoachTables(),
       getAwardTables(),
@@ -1105,10 +1164,14 @@ sourceFranchise.on('ready', async function () {
     // We need to empty visuals from the target table since we're repopulating them later
     await FranchiseUtils.emptyCharacterVisualsTable(targetFranchise);
     await emptySeasonStatTables();
-    const stadiumTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.stadiumTable);
+    await clearPlayerRefsFromRecordTables()
 
-    FranchiseUtils.emptyTable(stadiumTable)
-    await clearArrayTables(); // Clear out various array tables
+    if (transferStadiums) {
+      const stadiumTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.stadiumTable);
+      FranchiseUtils.emptyTable(stadiumTable);
+    }
+
+    clearArrayTables(); // Clear out various array tables
     
     console.log("Now working on transferring all table data...");
 
@@ -1121,14 +1184,14 @@ sourceFranchise.on('ready', async function () {
 
     await FranchiseUtils.deleteExcessFreeAgents(targetFranchise); // Only keep the top 3500 players
     await fixPlayerTableRow(); // Adjust the default player table row if needed
-    await emptyRookieStatTracker(); // Function to empty Rookie Tracker table (Avoid crashing)
+    await emptyRookieStatTracker(); // Empty Rookie Tracker table
     await FranchiseUtils.generateActiveAbilityPlayers(targetFranchise);
     await FranchiseUtils.emptyResignTable(targetFranchise); // Empty and fill the resign tables
     await fillResignTable();
     await FranchiseUtils.regenerateMarketingTables(targetFranchise);
 
     await emptyMediaGoals(); // Empty media goals table
-    await adjustSeasonGameTable(); // Function to update SeasGame table based on current SeasonYear
+    await adjustSeasonGameTable(); // Function to update SeasonGame table based on current SeasonYear
 
     await assignFranchiseUsers();
     await adjustCommentaryValues();
