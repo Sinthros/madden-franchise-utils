@@ -33,7 +33,7 @@ const franchise = FranchiseUtils.selectFranchiseFile(gameYear,false,true);
 // Function I used to manually get certain data from FTC tables into an array, can be modified to be used however you want
 async function getFtcReferences() {
 
-    const currentTable = franchise.getTableByName('TeamIdentity'); // Whatever table you're working with
+    const currentTable = franchise.getTableById(1846); // Whatever table you're working with
                                                                                 // Change to getTableByUniqueId if using
     await currentTable.readRecords();
     const currentTableId = currentTable.header.tableId //Table ID
@@ -48,20 +48,16 @@ async function getFtcReferences() {
     
       const assetId = allAssets.find(obj => obj.reference === assetReference)?.assetId; //This finds our desired assetId
       const finalBin = FranchiseUtils.dec2bin(assetId, 2); // Convert to binary
+      const columns = FranchiseUtils.getColumnNames(currentTable);
+      const updatedJson = {};
 
-      const updatedJson = {
-        "TeamId": record.index,
-        "AssetId": assetId,
-        "Binary": finalBin,
-        "UniformPrefix": record.UniformPrefix,
-        "UniformAssetName": record.UniformAssetName,
-        "TEAM_PREFIX_NAME": record.TEAM_PREFIX_NAME,
-        "TEAM_DBASSETNAME": record.TEAM_DBASSETNAME,
-        "TEAM_AFL_DISPLAYNAME": record.TEAM_AFL_DISPLAYNAME,
-        "NickName": record.NickName,
-        "DisplayName": record.DisplayName,
-        "AssetName": record.AssetName
-      };
+      updatedJson.Row = record.index;
+      updatedJson.AssetId = assetId;
+      updatedJson.Binary = finalBin;
+
+      for (const column of columns) {
+        updatedJson[column] = record[column];
+      }
       
       
       finalArray.push(updatedJson);
