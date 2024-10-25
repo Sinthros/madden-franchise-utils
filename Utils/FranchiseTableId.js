@@ -377,11 +377,11 @@ const tablesM25 = {
     retirementAppointmentTable: 761908674,
     retirementAppointmentArrayTable: 1642003985,
 
-    teamCareerStatRecordTable: 3126035436,
-    teamSeasonStatRecordTable: 3016865922,
-    teamGameStatRecordTable: 3197279835,
-    teamRookieGameStatRecordTable: 1291340498,
-    teamRookieSeasonStatRecordTable: 1211717477
+    careerStatRecordTable: 3126035436,
+    seasonStatRecordTable: 3016865922,
+    gameStatRecordTable: 3197279835,
+    rookieGameStatRecordTable: 1291340498,
+    rookieSeasonStatRecordTable: 1211717477
 
 
 
