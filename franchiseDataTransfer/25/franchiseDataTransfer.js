@@ -1141,6 +1141,9 @@ sourceFranchise.on('ready', async function () {
 
     is24To25 = sourceGameYear === FranchiseUtils.YEARS.M24 && targetGameYear === FranchiseUtils.YEARS.M25;
 
+    const expressMode = getModeSelection();
+    setOptions(expressMode);
+
     // We're going to read all tables for our source/target franchises so that we don't have to read them again later
     const allSourceTables = [];
     const allTargetTables = [];
@@ -1161,10 +1164,6 @@ sourceFranchise.on('ready', async function () {
     await FranchiseUtils.readTableRecords(allTargetTables,true,targetFranchise);
     
     validateFiles();
-
-    const expressMode = getModeSelection();
-
-    setOptions(expressMode);
 
     const mergedTableMappings = await getTableMappings();
 
