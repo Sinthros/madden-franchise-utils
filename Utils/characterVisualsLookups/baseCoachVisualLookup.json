@@ -29,11 +29,11 @@
         },
         {
           "slotType": "Hat",
-          "itemAssetName": "CoachWardrobe_Hat"
+          "itemAssetName": "Hat_None"
         },
         {
           "slotType": "Headset",
-          "itemAssetName": "UC_Headset_1"
+          "itemAssetName": "Headset_None"
         }
       ]
     },
