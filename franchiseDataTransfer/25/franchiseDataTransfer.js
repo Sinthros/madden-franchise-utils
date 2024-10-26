@@ -50,7 +50,9 @@ const targetFranchise = FranchiseUtils.init(TARGET_VALID_YEARS, {customFranchise
 const SOURCE_TABLES = FranchiseUtils.getTablesObject(sourceFranchise);
 const TARGET_TABLES = FranchiseUtils.getTablesObject(targetFranchise);
 
-
+function isDecrementYear() {
+  return is24To25 && transferSeasonYear && !useBaseCalendar;
+}
 async function handleTeamTable(teamTable) {
   const practiceTeamTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.practiceTeamTable);
   const proBowlRosterTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.proBowlRosterTable);
@@ -303,7 +305,7 @@ function handlePlayerTable(playerTable) {
   for (const record of playerTable.records) {
     const isEmpty = record.isEmpty;
 
-    if (is24To25 && !useBaseCalendar && transferSeasonYear) {
+    if (isDecrementYear()) {
       record.YearDrafted--; // If transferring from 24 to 25, we need to account for the year difference
 
       if (record.YearDrafted === -1) record.YearDrafted--;
@@ -579,7 +581,7 @@ async function handleSeasonStats(sourceRecord, targetRecord) {
       const targetStatsRecord = FranchiseUtils.addRecordToTable(statsRecord, targetStatsTable);
 
       // Adjust season year if applicable
-      if (is24To25 && !useBaseCalendar && transferSeasonYear) targetStatsRecord.SEAS_YEAR--;
+      if (isDecrementYear()) targetStatsRecord.SEAS_YEAR--;
 
       targetNextRecord[column] = getBinaryReferenceData(targetStatsTable.header.tableId, targetStatsRecord.index);
     } else {
@@ -945,7 +947,7 @@ async function adjustSeasonGameTable() {
 
   await FranchiseUtils.readTableRecords([seasonInfo,seasonGame]);
 
-  if (is24To25 && transferSeasonYear && seasonInfo.records[0].CurrentYear > 0 && !useBaseCalendar) seasonInfo.records[0].CurrentYear--;
+  if (isDecrementYear() && seasonInfo.records[0].CurrentYear > 0) seasonInfo.records[0].CurrentYear--;
 
   for (const record of seasonGame.records) {
     if (!record.isEmpty && !record.IsPractice) {
@@ -1121,8 +1123,7 @@ async function clearPlayerRefsFromRecordTables() {
   }
 }
 
-function getModeSelection()
-{
+function getModeSelection() {
   console.log("Would you like to use Express Mode or Customized Mode?\nExpress Mode will choose options based on what is most commonly used for a transfer, and will only ask you for things that are very important.\nCustomized Mode will let you decide for all options, and is recommended for more advanced users.");
 
   return FranchiseUtils.getYesOrNo("\nEnter yes for Express Mode, or no for Customized Mode.");
@@ -1161,7 +1162,7 @@ sourceFranchise.on('ready', async function () {
     
     validateFiles();
 
-    let expressMode = getModeSelection();
+    const expressMode = getModeSelection();
 
     setOptions(expressMode);
 
@@ -1230,10 +1231,9 @@ sourceFranchise.on('ready', async function () {
 
     let transferSchedule = true;
 
-    if(!expressMode) 
-    {
+    if (!expressMode) {
       const scheduleMsg = "Would you like to transfer your schedule from your source file to your target file?\n" +
-      "This will transfer over both PreSeason and RegularSeason games. Enter yes or no."; 
+      "This will transfer over Regular Season games. Enter yes or no."; 
 
       transferSchedule = FranchiseUtils.getYesOrNo(scheduleMsg);
     }
