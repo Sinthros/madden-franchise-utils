@@ -26,6 +26,8 @@ const COACH_VISUAL_LOOKUP_M25 = JSON.parse(fs.readFileSync('../../Utils/characte
 const DEFAULT_PLAYER_ROW = 720; // Default player row for Madden 25
 const DEFAULT_CALENDAR_YEAR = 2024;
 
+const VALID_AWARD_TYPES = ['Season','Career','RookieSeason'];
+
 // We won't convert the binary for these fields because we have to do additional operations on these fields
 const IGNORE_COLUMNS = ["CharacterVisuals","SeasonStats","Stadium"];
 const VISUAL_KEYS_TO_REMOVE = [
@@ -503,6 +505,14 @@ async function handleTable(targetTable,mergedTableMappings) {
     if (currentTableName === FranchiseUtils.TABLE_NAMES.TEAM && transferStadiums) {
       await transferStadium(sourceRecord,targetRecord);
     }
+
+    if (currentTableName === 'PlayerAward' && isDecrementYear()) {
+      handleAward(targetRecord);
+    }
+
+    if (currentTableName === 'YearSummary' && isDecrementYear()) {
+      handleYearSummary(targetRecord);
+    }
   } 
 
   switch (currentTableName) {
@@ -511,6 +521,32 @@ async function handleTable(targetTable,mergedTableMappings) {
       break;
   }
 };
+
+function handleYearSummary(targetRecord) {
+  if (targetRecord.isEmpty || !isDecrementYear()) return;
+
+  targetRecord.PeriodIndex--;
+}
+
+function handleAward(targetRecord) {
+  if (targetRecord.isEmpty || !isDecrementYear()) return;
+
+  const period = targetRecord.Period;
+  const periodIndex = targetRecord.PeriodIndex;
+
+  if (VALID_AWARD_TYPES.includes(period) && periodIndex < 100) {
+    if (periodIndex === 0) { // We can't set it to a negative value
+      const seasonYear = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonInfoTable).records[0].CurrentSeasonYear;
+      const calculatedYear = seasonYear - 1;
+
+      if (calculatedYear > 0 && calculatedYear <= 2047) { // If our value is above 2047, we have to keep it as 0
+        targetRecord.PeriodIndex = calculatedYear;
+      }
+    } else {
+      targetRecord.PeriodIndex--;
+    }
+  }
+}
 
 async function emptySeasonStatTables() {
   const seasonStatsArrayTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonStatsTable);
@@ -728,13 +764,10 @@ async function transferStadium(sourceRecord, targetRecord) {
 async function setOptions(expressMode = false) {
 
   const message = "Would you like to transfer over the Season Year from your source file to your target file? Answering yes will also transfer Player season stats and league history.\n" +
-  "Player Career Stats will be transferred regardless. Enter yes or no. If you're transferring a file that is at or close to 30 years, you should enter NO.";
+  "Player Career Stats will be transferred regardless. Enter yes or no. If you're transferring a file that is at or close to 30 years, you should enter NO. Otherwise, you should enter YES.";
   transferSeasonYear = FranchiseUtils.getYesOrNo(message);
 
-  if (expressMode)
-  {
-    return;
-  }
+  if (expressMode) return;
 
   const teamMsg = "Would you like to transfer over team names from your source file to your target file (For example: Commanders, Bears, etc)? This will also transfer over Team menu colors. Enter yes or no.";
   transferTeamNames = FranchiseUtils.getYesOrNo(teamMsg);
