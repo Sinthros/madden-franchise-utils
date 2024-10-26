@@ -1213,6 +1213,7 @@ sourceFranchise.on('ready', async function () {
     await FranchiseUtils.emptyCharacterVisualsTable(targetFranchise);
     await emptySeasonStatTables();
     await clearPlayerRefsFromRecordTables()
+    await FranchiseUtils.deleteExcessFreeAgents(sourceFranchise); // Only keep the top 3500 players
 
     if (transferStadiums) {
       const stadiumTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.stadiumTable);
@@ -1230,7 +1231,6 @@ sourceFranchise.on('ready', async function () {
     await FranchiseUtils.emptyHistoryTables(targetFranchise); // Empty history/acquisition tables
     await FranchiseUtils.emptyAcquisitionTables(targetFranchise);
 
-    await FranchiseUtils.deleteExcessFreeAgents(targetFranchise); // Only keep the top 3500 players
     await fixPlayerTableRow(); // Adjust the default player table row if needed
     await emptyRookieStatTracker(); // Empty Rookie Tracker table
     await FranchiseUtils.generateActiveAbilityPlayers(targetFranchise);
