@@ -6,10 +6,10 @@ let is24To25;
 
 // Options
 let transferSeasonYear;
-let transferTeamNames;
-let transferStadiums;
-let transferPlayerAssets;
-let transferCoachAssets;
+let transferTeamNames = true;
+let transferStadiums = true;
+let transferPlayerAssets = true;
+let transferCoachAssets = true;
 let useBaseCalendar;
 
 const ALL_ASSET_NAMES = JSON.parse(fs.readFileSync('lookupFiles/all_asset_names.json', 'utf-8'));
@@ -723,11 +723,16 @@ async function transferStadium(sourceRecord, targetRecord) {
 
 }
 
-async function setOptions() {
+async function setOptions(expressMode = false) {
 
   const message = "Would you like to transfer over the Season Year from your source file to your target file? Answering yes will also transfer Player season stats and league history.\n" +
   "Player Career Stats will be transferred regardless. Enter yes or no. If you're transferring a file that is at or close to 30 years, you should enter NO.";
   transferSeasonYear = FranchiseUtils.getYesOrNo(message);
+
+  if (expressMode)
+  {
+    return;
+  }
 
   const teamMsg = "Would you like to transfer over team names from your source file to your target file (For example: Commanders, Bears, etc)? This will also transfer over Team menu colors. Enter yes or no.";
   transferTeamNames = FranchiseUtils.getYesOrNo(teamMsg);
@@ -1116,6 +1121,13 @@ async function clearPlayerRefsFromRecordTables() {
   }
 }
 
+function getModeSelection()
+{
+  console.log("Would you like to use Express Mode or Customized Mode?\nExpress Mode will choose options based on what is most commonly used for a transfer, and will only ask you for things that are very important.\nCustomized Mode will let you decide for all options, and is recommended for more advanced users.");
+
+  return FranchiseUtils.getYesOrNo("\nEnter yes for Express Mode, or no for Customized Mode.");
+}
+
 sourceFranchise.on('ready', async function () {
   targetFranchise.on('ready', async function () {
 
@@ -1148,7 +1160,10 @@ sourceFranchise.on('ready', async function () {
     await FranchiseUtils.readTableRecords(allTargetTables,true,targetFranchise);
     
     validateFiles();
-    setOptions();
+
+    let expressMode = getModeSelection();
+
+    setOptions(expressMode);
 
     const mergedTableMappings = await getTableMappings();
 
@@ -1199,18 +1214,29 @@ sourceFranchise.on('ready', async function () {
     await FranchiseUtils.reorderTeams(targetFranchise);
 
     if (is24To25) {
-      const message = "Would you like to remove asset names from the Player table that aren't in Madden 25's Database?";
-      const removeAssetNames = FranchiseUtils.getYesOrNo(message);
+      const message = "Would you like to remove asset names from the Player table that aren't in Madden 25's Database? Enter yes or no.";
+      let removeAssetNames = true;
+
+      if(!expressMode)
+      {
+        removeAssetNames = FranchiseUtils.getYesOrNo(message);
+      }
 
       if (removeAssetNames) {
         await removeUnnecessaryAssetNames();
       }
     }
 
-    const scheduleMsg = "Would you like to transfer your schedule from your source file to your target file?\n" +
-    "This will transfer over both PreSeason and RegularSeason games."; 
 
-    const transferSchedule = FranchiseUtils.getYesOrNo(scheduleMsg);
+    let transferSchedule = true;
+
+    if(!expressMode) 
+    {
+      const scheduleMsg = "Would you like to transfer your schedule from your source file to your target file?\n" +
+      "This will transfer over both PreSeason and RegularSeason games. Enter yes or no."; 
+
+      transferSchedule = FranchiseUtils.getYesOrNo(scheduleMsg);
+    }
 
     if (transferSchedule) {
       console.log("Attempting to transfer your schedule from your source file...");
