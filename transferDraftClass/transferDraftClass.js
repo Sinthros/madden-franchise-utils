@@ -25,7 +25,9 @@ const ZERO_PLAYER_COLUMNS = [
   "WeeklyGoals",
   "SeasonStats",
   "CareerStats"
-]
+];
+
+const MAX_DRAFT_PLAYERS = 450;
 
 const SOURCE_VALID_YEARS = [FranchiseUtils.YEARS.M24]
 const TARGET_VALID_YEARS = [FranchiseUtils.YEARS.M25];
@@ -183,7 +185,7 @@ sourceFranchise.on('ready', async function () {
     // Get source DC players
     const playersToTransfer = sourcePlayerTable.records.filter(record => !record.isEmpty && record.ContractStatus === FranchiseUtils.CONTRACT_STATUSES.DRAFT)
 
-    if (draftPlayerNumMembers < 450) {
+    if (draftPlayerNumMembers < MAX_DRAFT_PLAYERS) {
       console.log(`Warning: This Franchise File can only handle a maximum of ${draftPlayerNumMembers} Draft Players. This is likely due to someone changing the Draft Class limit.`)
       console.log("Please note that this could result in not retrieving all desired players.");
     }
@@ -199,7 +201,7 @@ sourceFranchise.on('ready', async function () {
     }).slice(0, draftPlayerNumMembers);  
 
     if (sortedPlayers.length === 0) {
-      console.log(`ERROR! No Draft players to transfer.`);
+      console.log(`Error: No Draft players to transfer.`);
       FranchiseUtils.EXIT_PROGRAM();
     }
 
