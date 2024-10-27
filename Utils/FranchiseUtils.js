@@ -1967,6 +1967,167 @@ function removeSuffixes(name) {
   // Remove common suffixes
   return cleanName.replace(/\s+(Jr|Sr|III|II|IV|V)$/g, '');
 }
+
+async function deleteCurrentDraftClass(franchise) {
+  const tables = getTablesObject(franchise);
+
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  const draftPlayerTable = franchise.getTableByUniqueId(tables.draftClassTable);
+  const branchingStoryArray = franchise.getTableByUniqueId(tables.branchingStoryArrayTable);
+  const draftBoardEvalArray = franchise.getTableByUniqueId(tables.draftBoardEvalArrayTable);
+  const scoutFocusArray = franchise.getTableByUniqueId(tables.scoutFocusArrayTable);
+  const scoutPrivateArray = franchise.getTableByUniqueId(tables.scoutPrivateArrayTable);
+
+  await readTableRecords([playerTable,draftPlayerTable,branchingStoryArray,draftBoardEvalArray,scoutFocusArray,scoutPrivateArray]);
+
+  const allDraftPlayers = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === 'Draft'); //Filter for where the rows aren't empty
+
+  let draftTableArrayId = null;
+  const draftFilteredRecords = draftPlayerTable.records.filter(record => !record.isEmpty);
+  
+  for (const record of draftFilteredRecords) {
+    const referencedRow = franchise.getReferencesToRecord(draftPlayerTable.header.tableId, record.index);
+  
+    // Search for a draft player table with a single record capacity
+    const draftTable = referencedRow.find(table => table.name === 'DraftPlayer[]');
+    if (draftTable) {
+      const draftArrayTable = franchise.getTableById(draftTable.tableId);
+      await draftArrayTable.readRecords();
+      
+      if (draftArrayTable.header.recordCapacity === 1) {
+        draftTableArrayId = draftTable.tableId;
+        break;
+      }
+    }
+  }
+
+  for (const player of allDraftPlayers) {
+    await deletePlayer(franchise,getBinaryReferenceData(playerTable.header.tableId,player.index));
+  }
+
+  for (const record of draftFilteredRecords) {
+    record.DisabledPicks = ZERO_REF;
+    record.AudioQueue = 0;
+    record.SurnameAudioID = 0;
+    record.HasBranchingStory = false;
+    record.IsVisible = false;
+    record.ProDayThreeConeDrill = 0;
+    record.ProDayTwentyYardShuttle = 0;
+    record.ProDayVerticalJump = 0;
+    record.CanScoutRegularSeason = false;
+    record.CanScoutSeniorBowl = false;
+    record.CombineTwentyYardShuttle = 0;
+    record.CombineVerticalJump = 0;
+    record.ProDayFortyYardDash = 0;
+    record.CanScoutIndividualWorkouts = false;
+    record.CanScoutProDays = false;
+    record.CombineFortyYardDash = 0;
+    record.CombineOverallGrade = 0;
+    record.CombineThreeConeDrill = 0;
+    record.DraftPosition = 'QB';
+    record.ProDayBroadJump = 0;
+    record.InitialDraftRank = 0;
+    record.TrueOverallRanking = 0;
+    record.CanScoutCombine = false;
+    record.CombineBenchPress = 0;
+    record.ProDayBenchPress = 0;
+    record.ProductionGrade = 0;
+    record.CombineBroadJump = 0;
+    record.empty();
+  }
+
+
+  if (draftTableArrayId !== null) {
+    const draftArrayTable = franchise.getTableById(draftTableArrayId)
+    await draftArrayTable.readRecords();
+
+    const tablesToClear = [draftArrayTable,branchingStoryArray,draftBoardEvalArray,scoutFocusArray,scoutPrivateArray];
+
+    tablesToClear.forEach(table => clearArrayTable(table));
+  }
+  
+
+  return draftTableArrayId;
+
+};
+
+async function addDraftPlayer(draftPlayerTable, playerTable, playerRecord, index) {
+
+  const draftPlayerRow = draftPlayerTable.header.nextRecordToUse;
+
+  if (draftPlayerRow > draftPlayerTable.header.recordCapacity) return null;
+
+  const playerBinary = getBinaryReferenceData(playerTable.header.tableId,playerRecord.index);
+  const playerPosition = playerRecord.Position;
+  const playerCommentId = playerRecord.PLYR_COMMENT;
+
+  let finalPosition = 'QB';
+
+  switch (playerPosition) {
+    case "HB":
+    case "FB":
+      finalPosition = "RB";
+      break;
+    case "LT":
+    case "RT":
+      finalPosition = "OT";
+      break;
+    case "LG":
+    case "C":
+    case "RG":
+      finalPosition = "IOL";
+      break;
+    case "LE":
+    case "RE":
+      finalPosition = "DE";
+      break;
+    case "LOLB":
+    case "ROLB":
+      finalPosition = "OLB";
+      break;
+    case "SS":
+    case "FS":
+      finalPosition = "S"
+      break;
+    default:
+      finalPosition = playerPosition;
+      break;
+  }
+
+  const draftPlayerRecord = draftPlayerTable.records[draftPlayerRow];
+
+  draftPlayerRecord.Player = playerBinary;
+  draftPlayerRecord.DisabledPicks = ZERO_REF;
+  draftPlayerRecord.AudioQueue = 0;
+  draftPlayerRecord.SurnameAudioID = playerCommentId;
+  draftPlayerRecord.HasBranchingStory = false;
+  draftPlayerRecord.IsVisible = true;
+  draftPlayerRecord.ProDayThreeConeDrill = 0;
+  draftPlayerRecord.ProDayTwentyYardShuttle = 0;
+  draftPlayerRecord.ProDayVerticalJump = 0;
+  draftPlayerRecord.CanScoutRegularSeason = true;
+  draftPlayerRecord.CanScoutSeniorBowl = true;
+  draftPlayerRecord.CombineTwentyYardShuttle = 0;
+  draftPlayerRecord.CombineVerticalJump = 0;
+  draftPlayerRecord.ProDayFortyYardDash = 0;
+  draftPlayerRecord.CanScoutIndividualWorkouts = true;
+  draftPlayerRecord.CanScoutProDays = true;
+  draftPlayerRecord.CombineFortyYardDash = 0;
+  draftPlayerRecord.CombineOverallGrade = 0;
+  draftPlayerRecord.CombineThreeConeDrill = 0;
+  draftPlayerRecord.DraftPosition = finalPosition;
+  draftPlayerRecord.ProDayBroadJump = 0;
+  draftPlayerRecord.InitialDraftRank = index;
+  draftPlayerRecord.TrueOverallRanking = index;
+  draftPlayerRecord.CanScoutCombine = false;
+  draftPlayerRecord.CombineBenchPress = 0;
+  draftPlayerRecord.ProDayBenchPress = 0;
+  draftPlayerRecord.ProductionGrade = 0;
+  draftPlayerRecord.CombineBroadJump = 0;
+
+  return draftPlayerRow;
+
+}
   
 
 
@@ -1999,6 +2160,8 @@ module.exports = {
     removeControl,
     deleteExcessFreeAgents,
     deletePlayer,
+    deleteCurrentDraftClass,
+    addDraftPlayer,
     clearPlayerRefFromTableByName,
     clearPlayerRefFromTableByUniqueId,
     reorderTeams,
