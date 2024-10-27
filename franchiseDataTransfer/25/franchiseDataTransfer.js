@@ -37,6 +37,10 @@ const VISUAL_KEYS_TO_REMOVE = [
   "containerId",
   "assetName",
   "heightInches"
+  //"firstName",
+  //"lastName",
+  //"skinTone",
+  //"weightPounds"
 ];
 
 const SOURCE_VALID_YEARS = [FranchiseUtils.YEARS.M24,FranchiseUtils.YEARS.M25]
@@ -298,6 +302,8 @@ function handleCoachTable(coachTable) {
       if (coachLookup && !isEmpty) {
         for (const [key, value] of Object.entries(coachLookup)) {
           record[key] = value;
+
+          if (key === 'GenericHeadAssetName' && value !== FranchiseUtils.EMPTY_STRING) record.FaceShape = value;
         }
       }
     }
