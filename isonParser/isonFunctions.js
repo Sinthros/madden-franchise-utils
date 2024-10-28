@@ -263,5 +263,6 @@ function readObject() {
 
 module.exports = {
 	isonVisualsToJson,
-	jsonVisualsToIson
+	jsonVisualsToIson,
+	getTable3IsonData
 };

@@ -24,16 +24,17 @@
 		console.log("\nPlease select an option:");
 		console.log("1 - Convert ISON to JSON (read CharacterVisuals)");
 		console.log("2 - Convert JSON to ISON (write CharacterVisuals)");
+		console.log("3 - Dump raw ISON entry (advanced)");
 
 		option = parseInt(prompt().trim());
 
-		if(option < 1 || option > 2 || isNaN(option))
+		if(option < 1 || option > 3 || isNaN(option))
 		{
 			console.log("Invalid option.\n");
 		}
 
 	}
-	while(option < 1 || option > 2 || isNaN(option));
+	while(option < 1 || option > 3 || isNaN(option));
 
 	if(option === 1)
 	{
@@ -126,6 +127,43 @@
 		console.log(`\nSuccessfully wrote JSON to row ${rowNumber} in CharacterVisuals.`);
 
 		await FranchiseUtils.saveFranchiseFile(franchise);
+	}
+	else if(option === 3)
+	{
+		let rowNumber;
+		do
+		{
+			// Get the CharacterVisuals row number from the user
+			console.log("\nEnter the CharacterVisuals row number to read: ");
+			rowNumber = parseInt(prompt().trim());
+
+			if(isNaN(rowNumber) || characterVisualsTable.header.recordCapacity <= rowNumber || rowNumber < 0)
+			{
+				console.log("Invalid row number. Please enter a valid row number that exists in the table.\n");
+			}
+
+			if(characterVisualsTable.records[rowNumber].isEmpty)
+			{
+				console.log("The selected row is an empty record. Please select a non-empty row.\n");
+			}
+		}
+		while(isNaN(rowNumber) || characterVisualsTable.header.recordCapacity <= rowNumber || characterVisualsTable.records[rowNumber].isEmpty || rowNumber < 0);
+
+		// Get the ISON data for the selected row
+		const isonData = ISON_FUNCTIONS.getTable3IsonData(characterVisualsTable, rowNumber);
+
+		// Get the target file path from the user
+		console.log("\nEnter the path to write the ISON file: ");
+
+		let newFilePath = prompt().trim().replace(/['"]/g, '');
+
+		if(!newFilePath.endsWith('.ison')) {
+			newFilePath += '.ison';
+		}
+
+		fs.writeFileSync(newFilePath, isonData);
+
+		console.log(`\nSuccessfully wrote raw ISON data to ${newFilePath}.`);
 	}
 
 	FranchiseUtils.EXIT_PROGRAM();
