@@ -107,26 +107,16 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
 }
 
 async function validateFiles() {
-  const seasonInfo = targetFranchise.getTableByUniqueId(TARGET_TABLES.seasonInfoTable);
-  const sourceSeasonInfo = sourceFranchise.getTableByUniqueId(TARGET_TABLES.seasonInfoTable);
+  const franchiseTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.franchiseTable);
 
-  await FranchiseUtils.readTableRecords([seasonInfo,sourceSeasonInfo]);
+  await FranchiseUtils.readTableRecords([franchiseTable]);
 
-  const sourceSeasonInfoRecord = sourceSeasonInfo.records[0];
-  const seasonInfoRecord = seasonInfo.records[0];
-
-  const isDCActiveSource = sourceSeasonInfoRecord.IsDraftScoutingActive;
-  const isDCActiveTarget = seasonInfoRecord.IsDraftScoutingActive;
-
-  if (!isDCActiveSource) {
-    console.error("Error: Source file does not have a Draft Class to transfer.");
-    FranchiseUtils.EXIT_PROGRAM();
-  }
-
-  if (!isDCActiveTarget) {
+  if (!FranchiseUtils.isReferenceColumn(franchiseTable.records[0],'DraftClassPlayers')) {
     console.error("Error: Target file does not have Draft Class Scouting active. This is active during anytime besides the Preseason.");
     FranchiseUtils.EXIT_PROGRAM();
+
   }
+
 }
 
 async function adjustCommentaryValues() {
@@ -201,7 +191,7 @@ sourceFranchise.on('ready', async function () {
     }).slice(0, draftPlayerNumMembers);  
 
     if (sortedPlayers.length === 0) {
-      console.log(`Error: No Draft players to transfer.`);
+      console.log(`Error: No Draft players to transfer from source file.`);
       FranchiseUtils.EXIT_PROGRAM();
     }
 
