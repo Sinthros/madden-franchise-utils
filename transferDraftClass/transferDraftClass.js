@@ -195,6 +195,8 @@ sourceFranchise.on('ready', async function () {
     console.log("Successfully transferred Draft Class to the target file.");
 
     await FranchiseUtils.saveFranchiseFile(targetFranchise);
+
+    console.log("When you load your target file in game, make sure to export the Draft Class file and then reimport it one time to avoid any crashes when simming.");
     FranchiseUtils.EXIT_PROGRAM();
 })});
 
