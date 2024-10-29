@@ -104,6 +104,11 @@ function writeBytes(buffer, offset, data) {
 
 // Helper to write a single byte
 function writeByte(buffer, offset, byte) {
+	if(byte < 0 || byte > 255)
+	{
+		byte = 0;
+	}
+	
 	buffer.writeUInt8(byte, offset);
 	return offset + 1;
 }
