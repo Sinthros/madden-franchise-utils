@@ -1978,7 +1978,16 @@ async function deleteCurrentDraftClass(franchise) {
   const scoutFocusArray = franchise.getTableByUniqueId(tables.scoutFocusArrayTable);
   const scoutPrivateArray = franchise.getTableByUniqueId(tables.scoutPrivateArrayTable);
 
-  await readTableRecords([playerTable,draftPlayerTable,branchingStoryArray,draftBoardEvalArray,scoutFocusArray,scoutPrivateArray]);
+  const draftBoardEvalTable = franchise.getTableByUniqueId(tables.draftBoardEvalTable);
+
+  await readTableRecords([playerTable,
+    draftPlayerTable,
+    branchingStoryArray,
+    draftBoardEvalTable,
+    draftBoardEvalArray,
+    scoutFocusArray,
+    scoutPrivateArray
+  ]);
 
   const allDraftPlayers = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === 'Draft'); //Filter for where the rows aren't empty
 
@@ -2038,12 +2047,14 @@ async function deleteCurrentDraftClass(franchise) {
 
 
   if (draftTableArrayId !== null) {
-    const draftArrayTable = franchise.getTableById(draftTableArrayId)
+    const draftArrayTable = franchise.getTableById(draftTableArrayId);
     await draftArrayTable.readRecords();
 
     const tablesToClear = [draftArrayTable,branchingStoryArray,draftBoardEvalArray,scoutFocusArray,scoutPrivateArray];
 
     tablesToClear.forEach(table => clearArrayTable(table));
+
+    emptyTable(draftBoardEvalTable, {"OverallValue": 0, "OverallRank": 0, "PlayerRank": 0, "OverallRating": 0});
   }
   
 

@@ -26,6 +26,7 @@ const tables = {
     // Draft Info
     draftClassTable: 786598926,
     branchingStoryArrayTable: 4109008792,
+    draftBoardEvalTable: 3448250660,
     draftBoardEvalArrayTable: 2939766573,
     scoutFocusArrayTable: 249904460,
     scoutPrivateArrayTable: 621078202,
@@ -242,6 +243,7 @@ const tablesM25 = {
     divisionTable: 177707037,
 
     branchingStoryArrayTable: 4109008792,
+    draftBoardEvalTable: 3448250660,
     draftBoardEvalArrayTable: 2939766573,
     scoutFocusArrayTable: 1206464093,
     scoutPrivateArrayTable: 1252657284,
