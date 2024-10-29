@@ -106,19 +106,6 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
 
 }
 
-async function validateFiles() {
-  const franchiseTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.franchiseTable);
-
-  await FranchiseUtils.readTableRecords([franchiseTable]);
-
-  if (!FranchiseUtils.isReferenceColumn(franchiseTable.records[0],'DraftClassPlayers')) {
-    console.error("Error: Target file does not have Draft Class Scouting active. This is active during anytime besides the Preseason.");
-    FranchiseUtils.EXIT_PROGRAM();
-
-  }
-
-}
-
 async function adjustCommentaryValues() {
 
   const playerTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.playerTable);
@@ -152,12 +139,10 @@ sourceFranchise.on('ready', async function () {
     if (await FranchiseUtils.hasMultiplePlayerTables(sourceFranchise)) {
       await FranchiseUtils.fixPlayerTables(sourceFranchise);
     }
-    
-    validateFiles();
 
     const draftTableArrayId = await FranchiseUtils.deleteCurrentDraftClass(targetFranchise);
 
-    if (draftTableArrayId === null) {
+    if (draftTableArrayId === null || draftTableArrayId === 0) {
       console.error("Error deleting current draft class from target file. There is no found array table to hold draft player records.");
       FranchiseUtils.EXIT_PROGRAM();
     }

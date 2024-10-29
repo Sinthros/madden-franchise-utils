@@ -1979,6 +1979,7 @@ async function deleteCurrentDraftClass(franchise) {
   const scoutPrivateArray = franchise.getTableByUniqueId(tables.scoutPrivateArrayTable);
 
   const draftBoardEvalTable = franchise.getTableByUniqueId(tables.draftBoardEvalTable);
+  const franchiseTable = franchise.getTableByUniqueId(tables.franchiseTable);
 
   await readTableRecords([playerTable,
     draftPlayerTable,
@@ -1986,29 +1987,23 @@ async function deleteCurrentDraftClass(franchise) {
     draftBoardEvalTable,
     draftBoardEvalArray,
     scoutFocusArray,
-    scoutPrivateArray
+    scoutPrivateArray,
+    franchiseTable
   ]);
 
-  const allDraftPlayers = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === 'Draft'); //Filter for where the rows aren't empty
 
-  let draftTableArrayId = null;
-  const draftFilteredRecords = draftPlayerTable.records.filter(record => !record.isEmpty);
-  
-  for (const record of draftFilteredRecords) {
-    const referencedRow = franchise.getReferencesToRecord(draftPlayerTable.header.tableId, record.index);
-  
-    // Search for a draft player table with a single record capacity
-    const draftTable = referencedRow.find(table => table.name === 'DraftPlayer[]');
-    if (draftTable) {
-      const draftArrayTable = franchise.getTableById(draftTable.tableId);
-      await draftArrayTable.readRecords();
-      
-      if (draftArrayTable.header.recordCapacity === 1) {
-        draftTableArrayId = draftTable.tableId;
-        break;
-      }
-    }
+  const draftPlayersRef = franchiseTable.records[0].DraftClassPlayers;
+
+  if (!isReferenceColumn(franchiseTable.records[0],'DraftClassPlayers')) {
+    console.error("Error deleting current draft class from target file. There is no found array table to hold draft player records.");
+    EXIT_PROGRAM();
   }
+  
+  const draftTableArrayId = getRowAndTableIdFromRef(draftPlayersRef).tableId;
+
+  const allDraftPlayers = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.DRAFT); // Get draft players
+
+  const draftFilteredRecords = draftPlayerTable.records.filter(record => !record.isEmpty);
 
   for (const player of allDraftPlayers) {
     await deletePlayer(franchise,getBinaryReferenceData(playerTable.header.tableId,player.index));
@@ -2046,7 +2041,7 @@ async function deleteCurrentDraftClass(franchise) {
   }
 
 
-  if (draftTableArrayId !== null) {
+  if (draftTableArrayId !== null && draftTableArrayId !== 0) {
     const draftArrayTable = franchise.getTableById(draftTableArrayId);
     await draftArrayTable.readRecords();
 
