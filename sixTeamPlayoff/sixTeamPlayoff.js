@@ -1,14 +1,16 @@
 // Required modules
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 
-// Print tool header message
-console.log("This program will update your Madden 24/25 franchise file to use the 6 team playoff format. This tool must be run during wildcard week.\n")
-
-// Set up franchise file
+// Valid years
 const validGameYears = [
 	FranchiseUtils.YEARS.M24,
 	FranchiseUtils.YEARS.M25
 ];
+
+// Print tool header message
+console.log(`This program will update your franchise file to use the 6 team playoff format. Madden ${FranchiseUtils.formatListString(validGameYears)} are supported. This tool must be run during wildcard week.\n`);
+
+// Set up franchise file
 const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
 

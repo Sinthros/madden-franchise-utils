@@ -11,28 +11,7 @@ const validYears = [
 ];
 
 // Print tool header message
-let validYearsMessage = "";
-for(let i = 0; i < validYears.length; i++)
-{
-	if(validYears.length > 1 && i === validYears.length - 1)
-	{
-		validYearsMessage += `and ${validYears[i]}`;
-	}
-	else if(i === validYears.length - 1)
-	{
-		validYearsMessage = `${validYears[i]}`;
-	}
-	else if(validYears.length === 2 && i === validYears.length - 2)
-	{
-		validYearsMessage += `${validYears[i]} `;
-	}
-	else
-	{
-		validYearsMessage += `${validYears[i]}, `;
-	}
-}
-
-console.log(`This program will update all draft class player equipment based on existing players. Only Madden ${validYearsMessage} franchise files are supported.\n`)
+console.log(`This program will update all draft class player equipment based on existing players. Only Madden ${FranchiseUtils.formatListString(validYears)} franchise files are supported.\n`)
 
 // Set up franchise file
 const franchise = FranchiseUtils.init(validYears, {isAutoUnemptyEnabled: true});
