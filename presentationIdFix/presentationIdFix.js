@@ -2,16 +2,18 @@
 const fs = require('fs');
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 
-// Print tool header message
-console.log("This program will update all presentation IDs based on player asset name to fix commentary lines.\n");
-
-// Set up franchise file
+// Valid years
 const validGames = [
 	FranchiseUtils.YEARS.M22,
 	FranchiseUtils.YEARS.M23,
 	FranchiseUtils.YEARS.M24,
 	FranchiseUtils.YEARS.M25
 ];
+
+// Print tool header message
+console.log(`This program will update all presentation IDs based on player asset name to fix commentary lines. Madden ${FranchiseUtils.formatListString(validGames)} franchise files are supported.\n`);
+
+// Set up franchise file
 const franchise = FranchiseUtils.init(validGames);
 const tables = FranchiseUtils.getTablesObject(franchise);
 const gameYear = parseInt(franchise.schema.meta.gameYear);

@@ -21,7 +21,8 @@ const BASE_FILE_INIT_KWD = 'CAREER';
 const FTC_FILE_INIT_KWD = 'franchise-';
 const YES_KWD = "YES";
 const NO_KWD = "NO";
-const FORCEQUIT_KWD = "FORCEQUIT"
+const FORCEQUIT_KWD = "FORCEQUIT";
+const DEBUG_MODE = !process.__nexe;
 
 // GAME YEARS
 const YEARS = {
@@ -1844,6 +1845,18 @@ function getUserInputNumber(message, floor, ceiling) {
   }
 };
 
+
+/**
+ * Takes in an array and returns a grammatically correct string representation of the list.
+ *
+ * @param {Array} list - The array of items to format.
+ * @returns {string} - The formatted string representation of the list.
+ */
+function formatListString(list)
+{
+  return list.join(', ').replace(/, ([^,]*)$/, ' and $1');
+}
+
 /**
  * Shuffles an array in place using the Fisher-Yates algorithm.
  *
@@ -2177,6 +2190,7 @@ module.exports = {
 
     getYesOrNo, // UTILITY FUNCTIONS
     getYesNoForceQuit,
+    formatListString,
     shuffleArray,
     removeKeyFromJson,
     getUserInput,
@@ -2217,6 +2231,7 @@ module.exports = {
     CONTRACT_STATUSES,
     TABLE_NAMES,
     SEASON_STAGES,
+    DEBUG_MODE,
 
     USER_CONTROL_SETTINGS, // VARIABLES FOR USER/CPU CONTROL
     CPU_CONTROL_SETTINGS,

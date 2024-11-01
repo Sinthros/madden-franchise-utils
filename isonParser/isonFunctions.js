@@ -53,10 +53,10 @@ function isonVisualsToJson(characterVisualsTable, rowNumber)
 
 	const lastByte = readBytes(1).readUInt8(0);
 
-	// Verify the proper ISON_END byte
-	if (lastByte !== ISON_END) {
-		// Something went wrong, so return null
-		return null;
+	// Debug assertion to check if the last byte is 0x11 (ISON_END)
+	if(FranchiseUtils.DEBUG_MODE && lastByte !== ISON_END)
+	{
+		console.log(`FAILED ASSERT: Last byte reading ISON is not ${ISON_END} (ISON_END)`);
 	}
 
 	return obj;
