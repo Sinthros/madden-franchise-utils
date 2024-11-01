@@ -221,6 +221,12 @@ async function convertScheduleToJson(franchise) {
 		});
 	});
 
+	// There should never be more than 18 weeks in a season, and if there is, we can't really support it anyway
+	if(FranchiseUtils.DEBUG_MODE && scheduleObject.weeks.length > 18)
+	{
+		console.log(`FAILED ASSERT: Number of weeks in schedule is greater than 18`);
+	}
+
     return scheduleObject;
 
 	// Convert object to string
