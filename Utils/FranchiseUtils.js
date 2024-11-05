@@ -2147,7 +2147,27 @@ async function addDraftPlayer(draftPlayerTable, playerTable, playerRecord, index
   return draftPlayerRow;
 
 }
-  
+
+function isBlank(str) {
+  return !str || str.trim() === EMPTY_STRING;
+}
+
+async function addAssetNames(franchise,appendIndex = false) {
+  const tables = getTablesObject(franchise);
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  await playerTable.readRecords();
+
+  for (const record of playerTable.records) {
+    if (isValidPlayer(record)) {
+      if (isBlank(record.PLYR_ASSETNAME)) {
+        const formattedName = removeSuffixes(`${record.LastName}${record.FirstName}`).replace(/\s+/g, '');
+        let generatedAsset = `${formattedName}_${record.PresentationId}`;
+        if (appendIndex) generatedAsset += `_${record.index}`;
+        record.PLYR_ASSETNAME = generatedAsset;
+      }
+    }
+  }
+}
 
 
 module.exports = {
@@ -2181,6 +2201,7 @@ module.exports = {
     deletePlayer,
     deleteCurrentDraftClass,
     addDraftPlayer,
+    addAssetNames,
     clearPlayerRefFromTableByName,
     clearPlayerRefFromTableByUniqueId,
     reorderTeams,
