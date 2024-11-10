@@ -1,4 +1,4 @@
-This tool allows you to generate, create, and share scenarios for your Madden 24 franchise.
+This tool allows you to generate, create, and share scenarios for your Madden 24 or 25 franchise.
 
 USAGE:
 Extract the downloaded .zip to a folder of your choice, and then launch the MaddenSynth .exe file. 
