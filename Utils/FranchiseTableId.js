@@ -252,6 +252,7 @@ const tablesM25 = {
     scoutsTable: 4003749334,
     teamScoutTable: 1925975938,
     teamRoadmapTable: 3807550398,
+    teamRoadmapEval: 3256892799,
     ownerTable: 2357578975,
     coachTalentEffects: 2084066789,
     coachTable: 1860529246,
@@ -325,6 +326,7 @@ const tablesM25 = {
     schedulerTable: 2682909370,
     gameEventTable: 987800642,
     schedulerAppointmentTable: 1395135267,
+    schedulerRelativeApptTable: 1629033009,
 
     //FTC Tables
     talentSubTreeFtcTable: 3439205175,
@@ -383,7 +385,24 @@ const tablesM25 = {
     seasonStatRecordTable: 3016865922,
     gameStatRecordTable: 3197279835,
     rookieGameStatRecordTable: 1291340498,
-    rookieSeasonStatRecordTable: 1211717477
+    rookieSeasonStatRecordTable: 1211717477,
+
+    cutDayStartEventTable: 2298477515,
+    cutDayStartReactionTable: 2554780874,
+    playerSigningEvalTable: 70968015,
+    autoSubSliderTable: 1533677710,
+    injuryEvalTable: 4057340189,
+    playerRetirementEvalTable: 3083602460,
+    teamManagerTable: 1671438176,
+    weeksToUpdateContentionPhaseTable: 303023139,
+    tradeEval: 3332445998,
+    positionCountTable: 2592853888,
+    salaryMetricsSplineArray: 4129616452,
+    coachRetirementEvalInfoTable: 2731649965,
+    developmentSpline: 148197609,
+    progressionXPSlider: 3067210636
+
+
 
 
 
