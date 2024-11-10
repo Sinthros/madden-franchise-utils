@@ -1854,7 +1854,7 @@ function getUserInputNumber(message, floor, ceiling) {
  */
 function formatListString(list)
 {
-  return list.join(', ').replace(/, ([^,]*)$/, ' and $1');
+  return list.length > 2 ? list.join(', ').replace(/, ([^,]*)$/, ', and $1') : list.join(', ').replace(/, ([^,]*)$/, ' and $1');
 }
 
 /**
