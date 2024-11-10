@@ -343,6 +343,15 @@ function handlePlayerTable(playerTable) {
       }
     }
 
+    if (record.ContractStatus === FranchiseUtils.CONTRACT_STATUSES.EXPIRING) {
+      record.ContractStatus = FranchiseUtils.CONTRACT_STATUSES.SIGNED;
+    }
+
+    if (record.ContractStatus === FranchiseUtils.CONTRACT_STATUSES.DRAFT) {
+      record.ContractStatus = FranchiseUtils.CONTRACT_STATUSES.DELETED;
+      record.empty();
+    }
+
     if (transferPlayerAssets) {
       // Update player assets
       const playerLookup = PLAYER_LOOKUP[record.PLYR_ASSETNAME];
@@ -355,18 +364,10 @@ function handlePlayerTable(playerTable) {
           }
       }
     }
+
+    if (isEmpty) record.empty();
   }
 
-  // Set all expiring players to signed
-  playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === FranchiseUtils.CONTRACT_STATUSES.EXPIRING)
-    .forEach(record => record.ContractStatus = FranchiseUtils.CONTRACT_STATUSES.SIGNED);
-
-  playerTable.records
-    .filter(record => !record.isEmpty && record.ContractStatus === FranchiseUtils.CONTRACT_STATUSES.DRAFT)
-    .forEach(record => {
-      record.ContractStatus = FranchiseUtils.CONTRACT_STATUSES.DELETED;
-      record.empty();
-    });
 }
 
 
@@ -462,6 +463,7 @@ async function handleTable(targetTable,mergedTableMappings) {
   sourceColumns.forEach((currentCol) => {
 
     for (const record of sourceTable.records) {
+      const isEmpty = record.isEmpty;
       const fieldOffset = record._fields[currentCol].offset;
   
       // Check if ref column and not a column to ignore
@@ -480,6 +482,8 @@ async function handleTable(targetTable,mergedTableMappings) {
       if (fieldOffset.type === 'string') {
         record[currentCol] = FranchiseUtils.removeNonUTF8(record[currentCol]);
       }
+
+      if (isEmpty) record.empty();
     }
   });
 
