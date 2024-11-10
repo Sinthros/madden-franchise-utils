@@ -198,7 +198,7 @@ async function enumeratePlayers(playerTable, draftRows, nflRows, miscRows)
     for (let i = 0; i < numRows; i++) 
 	{ 
         // If it's an empty row or invalid player, skip this row
-		if (FranchiseUtils.isValidPlayer(playerTable.records[i], {includeDraftPlayers: true}))
+		if (!FranchiseUtils.isValidPlayer(playerTable.records[i], {includeDraftPlayers: true}))
 		{
 			continue;
         }
