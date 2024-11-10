@@ -10,19 +10,25 @@ const ratingTypes = (JSON.parse(fs.readFileSync(`lookupFiles/ratingTypes.json`, 
 const positionGroups = (JSON.parse(fs.readFileSync(`lookupFiles/positionGroups.json`, 'utf-8')));
 const allPositions = (JSON.parse(fs.readFileSync(`lookupFiles/allPositions.json`, 'utf-8')));
 
+// Supported game years
+const validGameYears = [
+	FranchiseUtils.YEARS.M24,
+	FranchiseUtils.YEARS.M25
+];
+
 // Version number constant
-const VERSION = 'v2.1';
+const VERSION = 'v3.0';
 
 // Print tool header message
-console.log(`Welcome to MaddenSynth ${VERSION}! This is a customizable franchise scenario generator for Madden 24.\n`);
+console.log(`Welcome to MaddenSynth ${VERSION}! This is a customizable franchise scenario generator for Madden ${FranchiseUtils.formatListString(validGameYears)}.\n`);
 
 // Set up franchise file
-const gameYear = FranchiseUtils.YEARS.M24;
+const gameYear = FranchiseUtils.getGameYear(validGameYears);
 const franchise = await FranchiseUtils.selectFranchiseFileAsync(gameYear);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 // Validate file's game year
-FranchiseUtils.validateGameYears(franchise, [gameYear]);
+FranchiseUtils.validateGameYears(franchise, gameYear);
 
 // Get required tables
 const teamTable = franchise.getTableByUniqueId(tables.teamTable);
