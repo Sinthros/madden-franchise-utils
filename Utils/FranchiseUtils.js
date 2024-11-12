@@ -1545,28 +1545,16 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
   
   const freeAgentRecords = activePlayerRecords.filter(record => record.ContractStatus === CONTRACT_STATUSES.FREE_AGENT) // Filter active players for where they're free agents
 
-  let allFreeAgentsBinary = [];
-  const worstFreeAgentsBinary = [];
-
   const numTotalPlayersDesired = freeAgentsTable.header.numMembers; //Max amount of free agents (this is relevant for a fantasy draft)
   const totalNumCurrentPlayers = activePlayerRecords.length; //Get the current number of players
 
-  freeAgentRecords.forEach((freeAgentRecord) => {
-    const rowIndex = playerTable.records.indexOf(freeAgentRecord);
-    const currentBinary = getBinaryReferenceData(playerTable.header.tableId,rowIndex);
-    allFreeAgentsBinary.push(currentBinary);
-  });
-  
+  const shouldDeletePlayers = numPlayersToDelete != null && Number.isInteger(numPlayersToDelete) && numPlayersToDelete > 0;
 
-  if (totalNumCurrentPlayers > numTotalPlayersDesired) { // If we're above 3500 total players...
+  if ((totalNumCurrentPlayers > numTotalPlayersDesired) || (shouldDeletePlayers)) { // If we're above 3500 total players or need to delete players...
     const numExtraPlayers = totalNumCurrentPlayers - numTotalPlayersDesired; // Calculate excess players
 
     // Determine the number of players to delete
-    const playersToDelete = (numPlayersToDelete != null && 
-                             Number.isInteger(numPlayersToDelete) && 
-                             numPlayersToDelete > 0) 
-                             ? numPlayersToDelete 
-                             : Math.max(numExtraPlayers, 0); // Ensure non-negative value
+    const playersToDelete = shouldDeletePlayers ? numPlayersToDelete : Math.max(numExtraPlayers, 0); // Ensure non-negative value
     
     // Sort the free agents by OverallRating and slice the array safely
     const worstFreeAgents = freeAgentRecords
@@ -1575,19 +1563,8 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
 
     for (const freeAgentRecord of worstFreeAgents) {
       const currentBinary = getBinaryReferenceData(playerTable.header.tableId, freeAgentRecord.index);
-      worstFreeAgentsBinary.push(currentBinary);
       await deletePlayer(franchise,currentBinary);
     }
-
-    //Filter for where we aren't including the worstFreeAgentBin
-    allFreeAgentsBinary = allFreeAgentsBinary.filter((bin) => !worstFreeAgentsBinary.includes(bin));
-  
-    while (allFreeAgentsBinary.length < numTotalPlayersDesired) { //Fill up the remainder with zeroed out binary
-      allFreeAgentsBinary.push(ZERO_REF)
-    }
-
-    //One liner to set the FA table binary = our free agent binary
-    allFreeAgentsBinary.forEach((val, index) => { freeAgentsTable.records[0].fieldsArray[index].value = val; })
   }
 };
 
