@@ -9,7 +9,7 @@ const validYears = [
 ];
 
 // Print tool header message
-console.log(`This program will update wardrobe for all head coaches. Only Madden ${FranchiseUtils.formatListString(validYears)} franchise files are supported.\n`)
+console.log(`This program will update wardrobe for all head coaches. It is recommended to run this tool every week during the season. Only Madden ${FranchiseUtils.formatListString(validYears)} franchise files are supported.\n`);
 
 // Set up franchise file
 const franchise = FranchiseUtils.init(validYears, {isAutoUnemptyEnabled: true});
@@ -94,17 +94,17 @@ async function assignCoachGear(targetRow, item, slotType, coachTable, visualsTab
 };
 
 /**
- * Enumerates all players in the player table and sorts them into draft class players, NFL players, and other active players
+ * Enumerates all coaches in the coach table and sorts them into head coaches only
  * 
- * @param {Object} coachTable The player table object
+ * @param {Object} coachTable The coach table object
  * @param {Array<number>} headCoachRows A list to store row numbers of head coaches
  */
 async function enumerateHeadCoaches(coachTable, headCoachRows)
 {
-	// Number of rows in the player table
+	// Number of rows in the coach table
     const numRows = coachTable.header.recordCapacity; 
 	
-	// Iterate through the player table
+	// Iterate through the coach table
     for (let i = 0; i < numRows; i++) 
 	{ 
         // If it's an empty row or invalid coach, skip this row
@@ -120,23 +120,28 @@ async function enumerateHeadCoaches(coachTable, headCoachRows)
 
 async function isWarmWeatherCoach(teamIndex)
 {
+	// Required tables
 	const teamTable = franchise.getTableByUniqueId(tables.teamTable);
 	const seasonGameTable = franchise.getTableByUniqueId(tables.seasonGameTable);
 	const seasonInfoTable = franchise.getTableByUniqueId(tables.seasonInfoTable);
 
+	// When we can use this check
 	const validWeekTypes = ['PreSeason', 'RegularSeason', 'WildcardPlayoff', 'DivisionalPlayoff', 'ConferencePlayoff', 'SuperBowl'];
 
+	// Read required tables
 	await FranchiseUtils.readTableRecords([teamTable, seasonGameTable, seasonInfoTable]);
 
+	// If we can't check this week, return false
 	if(!validWeekTypes.includes(seasonInfoTable.records[0]['CurrentWeekType']))
 	{
 		return false;
 	}
 
+	// Max rows in each table
 	const teamRows = teamTable.header.recordCapacity;
 	const scheduleRows = seasonGameTable.header.recordCapacity;
 	
-	// Search teamTable records object for row with matching teamIndex
+	// Search teamTable records object for team with matching teamIndex
 	let teamRowNum;
 	for(let i = 0; i < teamRows; i++)
 	{
@@ -147,37 +152,46 @@ async function isWarmWeatherCoach(teamIndex)
 		}
 	}
 
+	// If we can't find the team, return false
 	if(!teamRowNum)
 	{
 		return false;
 	}
 
+	// Iterate through the season schedule
 	for(let i = 0; i < scheduleRows; i++)
 	{
+		// If it's an empty row or not this week, skip this row
 		if(seasonGameTable.records[i].isEmpty || seasonGameTable.records[i]['AwayPlayerStatCache'] === FranchiseUtils.ZERO_REF)
 		{
 			continue;
 		}
 
+		// Home and away team row numbers
 		let homeTeamRow = FranchiseUtils.bin2Dec(seasonGameTable.records[i]['HomeTeam'].slice(15));
 		let awayTeamRow = FranchiseUtils.bin2Dec(seasonGameTable.records[i]['AwayTeam'].slice(15));
 
+		// If the team we want is not playing in this game, skip this row
 		if(homeTeamRow !== teamRowNum && awayTeamRow !== teamRowNum)
 		{
 			continue;
 		}
 
+		// Get game weather and temperature
 		let gameWeather = seasonGameTable.records[i]['Weather'];
 		let gameTemp = seasonGameTable.records[i]['Temperature'];
 
+		// If it's > 80 degrees and not in a dome, return true
 		if(gameTemp > 80 && gameWeather !== 'Invalid_')
 		{
 			return true;
 		}
 		
+		// If we reach this point, we already found the team's game and it doesn't meet the true condition, so we can break
 		break;
 	}
 
+	// Return false if we reach this point
 	return false;
 }
 
@@ -241,6 +255,7 @@ franchise.on('ready', async function () {
 		// Otherwise, we should assign coach gear randomly but with branching logic based on game weather if applicable
 		let isWarmOutdoorCoach = await isWarmWeatherCoach(coachRecord['TeamIndex']);
 
+		// If it's a warm game and outdoors, randomly select a gear option with polo as an option (but rarer than the others)
 		if(isWarmOutdoorCoach)
 		{
 			let keys = Object.keys(topLookup);
@@ -259,7 +274,7 @@ franchise.on('ready', async function () {
 			await assignCoachGear(coachRow, item, 'JerseyStyle', coachTable, visualsTable);
 			continue;
 		}
-		else
+		else // Otherwise, randomly select a gear option without polo as an option
 		{
 			let keys = Object.keys(topLookup);
 			
