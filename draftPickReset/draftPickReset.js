@@ -12,6 +12,8 @@ const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 franchise.on('ready', async function () {
+
+    if (franchise.schema.meta.gameYear >= 25) await FranchiseUtils.fixDraftPicks(franchise); 
     
     // Get the draft pick table    
     const draftPickTable = franchise.getTableByUniqueId(tables.draftPickTable);

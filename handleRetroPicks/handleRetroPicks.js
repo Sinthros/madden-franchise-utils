@@ -77,6 +77,9 @@ franchise.on('ready', async function () {
     FranchiseUtils.EXIT_PROGRAM();
   }
 
+  // Fix draft pick references if necessary
+  if (franchise.schema.meta.gameYear >= 25) await FranchiseUtils.fixDraftPicks(franchise); 
+
   let inactiveTeamBinary = [];
 
   teamTable.records // Get valid teams and check their active years by the row number. This is better to do than by team name as that can change

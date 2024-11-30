@@ -1208,6 +1208,9 @@ sourceFranchise.on('ready', async function () {
     
     validateFiles();
 
+    // Fix draft picks in the target file just to be safe - Shouldn't be necessary, however
+    await FranchiseUtils.fixDraftPicks(targetFranchise);
+
     const mergedTableMappings = await getTableMappings();
 
     const allTablesArray = [

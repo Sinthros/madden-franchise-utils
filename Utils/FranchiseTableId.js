@@ -72,6 +72,7 @@ const tables = {
     coachAwardTable: 3027881868,
     awardArrayTable: 1586942378,
     draftPickTable: 343624504,
+    draftPickArrayTable: 2295354658,
     yearSummaryArray: 2073486305,
     yearSummary: 2136473174,
     leagueHistoryArray: 444189422,
