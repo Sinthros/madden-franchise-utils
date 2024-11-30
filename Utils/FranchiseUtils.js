@@ -2235,6 +2235,7 @@ module.exports = {
     emptyAcquisitionTables,
     emptyResignTable,
     emptySignatureTables,
+    emptyRecord,
     emptyTable,
     clearArrayTable,
     addRecordToTable,
