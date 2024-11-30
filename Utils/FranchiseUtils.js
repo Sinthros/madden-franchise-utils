@@ -1668,10 +1668,25 @@ async function fixDraftPicks(franchise) {
   const tables = getTablesObject(franchise);
   const draftPickArrayTable = franchise.getTableByUniqueId(tables.draftPickArrayTable);
   const mainDraftPickTable = franchise.getTableByUniqueId(tables.draftPickTable);
-  await readTableRecords([draftPickArrayTable, mainDraftPickTable]);
+  const draftInfoTable = franchise.getTableByUniqueId(tables.draftInfoTable);
+  const draftPickEventTable = franchise.getTableByUniqueId(tables.draftPickEventTable);
+  const draftManagerTable = franchise.getTableByUniqueId(tables.draftManagerTable);
+  let pickOrderRecord = null;
+  await readTableRecords([draftPickArrayTable, mainDraftPickTable, draftInfoTable, draftPickEventTable, draftManagerTable]);
 
   const arrayRecord = draftPickArrayTable.records[0];
+  const draftInfoRecord = draftInfoTable.records[0];
+  const draftPickEventRecord = draftPickEventTable.records[0];
+  const draftManagerRecord = draftManagerTable.records[0];
   const mainPickTableId = mainDraftPickTable.header.tableId;
+
+  const draftPickOrderBinary = draftManagerRecord.DraftPickOrder;
+
+  if (draftPickOrderBinary !== ZERO_REF) {
+    const pickOrderTable = franchise.getTableById(bin2Dec(draftPickOrderBinary.slice(0, 15)))
+    await pickOrderTable.readRecords();
+    pickOrderRecord = pickOrderTable.records[0];
+  }
 
   const columns = getColumnNames(draftPickArrayTable);
 
@@ -1702,8 +1717,27 @@ async function fixDraftPicks(franchise) {
 
     // Add the record to the main draft pick table and update the binary reference
     const addedRecord = await addRecordToTable(currentRecord, mainDraftPickTable);
-    arrayRecord[column] = getBinaryReferenceData(mainPickTableId, addedRecord.index);
 
+    const updatedBinary = getBinaryReferenceData(mainPickTableId, addedRecord.index);
+    arrayRecord[column] = updatedBinary;
+
+    // Update the pick binary in draft pick event table and draft info table - Necessary in case they're in the draft currently
+    if (draftPickEventRecord.Pick !== ZERO_REF && draftPickEventRecord.Pick === binary) {
+      draftPickEventRecord.Pick = updatedBinary;
+    }
+
+    if (draftInfoRecord.CurrentPick !== ZERO_REF && draftInfoRecord.CurrentPick === binary) {
+      draftInfoRecord.CurrentPick = updatedBinary;
+    }
+
+    if (pickOrderRecord) { // If the draft pick order table was generated, we have to replace the binary here too
+      columns.forEach(column => {
+        if (pickOrderRecord[column] === binary) {
+          pickOrderRecord[column] = updatedBinary;
+        }
+      });
+    }
+  
     // Empty the record from the other table
     emptyRecord(currentRecord, defaultColumns);
   }

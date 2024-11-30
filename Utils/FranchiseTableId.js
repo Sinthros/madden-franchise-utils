@@ -402,12 +402,9 @@ const tablesM25 = {
     salaryMetricsSplineArray: 4129616452,
     coachRetirementEvalInfoTable: 2731649965,
     developmentSpline: 148197609,
-    progressionXPSlider: 3067210636
-
-
-
-
-
+    progressionXPSlider: 3067210636,
+    draftPickEventTable: 2996999973,
+    draftManagerTable: 4051979813
   }
 
 module.exports = {
