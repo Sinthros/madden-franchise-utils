@@ -50,7 +50,7 @@ const validGameYears = [
 console.log("This program will adjust draft picks for retro franchise files. This program MUST be run in the Offseason.");
 console.log("Depending on the year of your franchise, inactive teams will have their draft picks pushed to the end of the 7th round.");
 
-const franchise = FranchiseUtils.init(validGameYears);
+const franchise = FranchiseUtils.init(validGameYears, {isAutoUnemptyEnabled: true});
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 // If it's the browns and it's between 1996 and 1998, they're inactive
