@@ -278,6 +278,7 @@ const tablesM25 = {
     coachAwardTable: 3027881868,
     awardArrayTable: 1586942378,
     draftPickTable: 2546719563,
+    draftPickArrayTable: 2295354658,
     yearSummaryArray: 2073486305,
     yearSummary: 2592669074,
     leagueHistoryArray: 2466957052,

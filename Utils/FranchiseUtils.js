@@ -142,8 +142,9 @@ const CPU_CONTROL_SETTINGS = [
  * @param {boolean} [options.isAutoUnemptyEnabled=false] - If true, rows will always be unemptied upon editing. If you aren't sure, leave this as false.
  * @param {boolean} [options.isFtcFile=false] - Is the franchise file an FTC file?
  * @param {boolean} [options.promptForBackup=true] - Prompt the user to make a backup of their selected save file?
- * @param {boolean} [options.customYearMessage=null] - Custom message when selecting a valid year.
- * @param {boolean} [options.customFranchiseMessage=null] - Custom message when selecting a franchise file.
+ * @param {boolean} [options.skipYearValidation=false] - Skip the game year validation?
+ * @param {string} [options.customYearMessage=null] - Custom message when selecting a valid year.
+ * @param {string} [options.customFranchiseMessage=null] - Custom message when selecting a franchise file.
  * @returns {Object} - The Franchise object.
  */
 function init(validGameYears, options = {}) {
@@ -153,11 +154,12 @@ function init(validGameYears, options = {}) {
     promptForBackup = true,
     customYearMessage = null,
     customFranchiseMessage = null,
+    skipYearValidation = false,
   } = options;
 
   const gameYear = getGameYear(validGameYears, customYearMessage);
   const franchise = selectFranchiseFile(gameYear, isAutoUnemptyEnabled, isFtcFile, customFranchiseMessage);
-  validateGameYears(franchise, validGameYears);
+  if (!skipYearValidation) validateGameYears(franchise, validGameYears);
 
   if (promptForBackup) {
     const backupMessage = "Would you like to make a backup of your franchise file before running this program? Enter yes or no.";
@@ -827,26 +829,36 @@ async function emptySignatureTables(franchise) {
  * @param {Object} [defaultColumns={}] - An optional object where keys are column names and values are the default values to set.
  */
 function emptyTable(table, defaultColumns = {}, rowsToIgnore = []) {
-  const entries = Object.entries(defaultColumns);
   const tableColumns = getColumnNames(table);
 
-  for (let i = 0; i < table.header.recordCapacity; i++) {
-    const record = table.records[i];
+  for (const record of table.records) {
 
     if (rowsToIgnore.includes(record.index)) continue;
 
-    // Set default values for specified columns
-    for (const [key, value] of entries) {
-      if (tableColumns.includes(key)) {
-        record[key] = value;
-      }
-    }
+    emptyRecord(record, defaultColumns, tableColumns);
+  }
+}
 
-    // Empty the record if it's not already empty
-    if (!record.isEmpty) {
-      record.empty();
+
+/**
+ * Empties a single record and sets default values for specified columns.
+ *
+ * @param {Object} record - The record to empty
+ * @param {Object} [defaultColumns={}] - An optional object where keys are column names and values are the default values to set.
+ * @param {Array<string>|null} [columns=null] - Column names - If not provided, they will be retrieved via getColumnNames
+ */
+function emptyRecord(record, defaultColumns = {}, columns = null) {
+  const columnNames = columns || getColumnNames(record);
+
+  // Set default values for specified columns
+  for (const [key, value] of Object.entries(defaultColumns)) {
+    if (columnNames.includes(key)) {
+      record[key] = value;
     }
   }
+
+  // Empty the record if it's not already empty
+  if (!record.isEmpty) record.empty();
 }
 
 /**
@@ -1447,6 +1459,7 @@ async function deletePlayer(franchise, playerBinary) {
 
   // Finally, empty the record
   playerRecord.empty();
+  console.log(playerRecord.Position)
 
   // Debugging
   //console.log(`Index ${playerData.row}`);
@@ -1640,6 +1653,62 @@ function getRowAndTableIdFromRef(binary) {
   const tableId = bin2Dec(binary.slice(0,15));
 
   return { row, tableId };
+}
+
+/**
+ * Transfers draft pick records from auxiliary tables into the main draft pick table
+ * and updates references in the draft pick array table. Empties the transferred records
+ * in their original tables. Returns true if any picks were moved, false otherwise.
+ *
+ * @param {Object} franchise - The franchise file object.
+ * @returns {Promise<boolean>} - Resolves to `true` if any records were moved to the main draft pick table; otherwise, `false`.
+ */
+async function fixDraftPicks(franchise) {
+  let alteredPicks = false;
+  const tables = getTablesObject(franchise);
+  const draftPickArrayTable = franchise.getTableByUniqueId(tables.draftPickArrayTable);
+  const mainDraftPickTable = franchise.getTableByUniqueId(tables.draftPickTable);
+  await readTableRecords([draftPickArrayTable, mainDraftPickTable]);
+
+  const arrayRecord = draftPickArrayTable.records[0];
+  const mainPickTableId = mainDraftPickTable.header.tableId;
+
+  const columns = getColumnNames(draftPickArrayTable);
+
+  // Define default values for emptying records
+  const defaultColumns = {
+    OriginalTeam: ZERO_REF,
+    CurrentTeam: ZERO_REF,
+    PickNumber: 0,
+    Round: 0,
+    YearOffset: 0,
+  };
+
+  for (const column of columns) {
+    const binary = arrayRecord[column];
+    if (binary === ZERO_REF) continue;
+
+    const currentTableId = bin2Dec(binary.slice(0, 15));
+    const rowNum = bin2Dec(binary.slice(15));
+
+    if (currentTableId === mainPickTableId) continue;
+
+    if (!alteredPicks) alteredPicks = true;
+
+    const currentTable = franchise.getTableById(currentTableId);
+    await currentTable.readRecords();
+
+    const currentRecord = currentTable.records[rowNum];
+
+    // Add the record to the main draft pick table and update the binary reference
+    const addedRecord = await addRecordToTable(currentRecord, mainDraftPickTable);
+    arrayRecord[column] = getBinaryReferenceData(mainPickTableId, addedRecord.index);
+
+    // Empty the record from the other table
+    emptyRecord(currentRecord, defaultColumns);
+  }
+
+  return alteredPicks;
 }
 /**
  * Determines if a player is valid based on various criteria.
@@ -2183,6 +2252,7 @@ module.exports = {
     clearPlayerRefFromTableByUniqueId,
     reorderTeams,
     removePlayerVisuals,
+    fixDraftPicks,
     approximateBodyType,
     getRowAndTableIdFromRef,
 
