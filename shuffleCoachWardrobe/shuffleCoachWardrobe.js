@@ -1,7 +1,6 @@
 // Required modules
 const fs = require('fs');
 const FranchiseUtils = require('../Utils/FranchiseUtils');
-const isonFunctions = require('../isonParser/isonFunctions');
 
 // Valid game years
 const validYears = [
@@ -33,7 +32,7 @@ async function assignCoachGear(targetRow, item, slotType, coachTable, visualsTab
 {
 	const targetVisualsRow = FranchiseUtils.bin2Dec(coachTable.records[targetRow]['CharacterVisuals'].slice(15));
 
-	let targetVisualsData = isonFunctions.isonVisualsToJson(visualsTable, targetVisualsRow);
+	let targetVisualsData = JSON.parse(visualsTable.records[targetVisualsRow]['RawData']);
 
 	const targetVisualsLoadouts = targetVisualsData['loadouts'];
 
@@ -89,7 +88,7 @@ async function assignCoachGear(targetRow, item, slotType, coachTable, visualsTab
 
 	targetVisualsData['loadouts'] = targetVisualsLoadouts;
 
-	isonFunctions.jsonVisualsToIson(visualsTable, targetVisualsRow, targetVisualsData);
+	visualsTable.records[targetVisualsRow]['RawData'] = JSON.stringify(targetVisualsData);
 
 };
 
