@@ -1,6 +1,5 @@
 // Required modules
 const FranchiseUtils = require('../Utils/FranchiseUtils');
-const ISON_FUNCTIONS = require('../isonParser/isonFunctions');
 
 // Print tool header message
 console.log("This program will update player body types in a Madden 25 franchise file based on EA's body type formula.\n");
@@ -34,7 +33,7 @@ franchise.on('ready', async function () {
 		const visualsRow = FranchiseUtils.bin2Dec(playerTable.records[i]['CharacterVisuals'].slice(15));
 
 		// Get the player's JSON value from the visuals ISON
-		const visualsJson = ISON_FUNCTIONS.isonVisualsToJson(characterVisualsTable, visualsRow);
+		const visualsJson = JSON.parse(characterVisualsTable.records[visualsRow]['RawData']);
 
 		if(!visualsJson.hasOwnProperty("loadouts"))
 		{

@@ -3,7 +3,6 @@ const fs = require('fs');
 const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
-const ISON_FUNCTIONS = require(`../isonParser/isonFunctions`);
 
 // Print tool header message
 console.log("This program will update all players with your chosen vanity gear item.\n")
@@ -150,7 +149,7 @@ franchise.on('ready', async function () {
         }
 		
 		// Figure out which row in the character visuals table corresponds to this player
-		let playerVisualsRow = await getRowFromRef(playerTable.records[i]['CharacterVisuals']);
+		let playerVisualsRow = getRowFromRef(playerTable.records[i]['CharacterVisuals']);
 
 		// If this player does not have CharacterVisuals assigned for some reason, try to generate it
 		if(playerVisualsRow === -1)
@@ -160,9 +159,14 @@ franchise.on('ready', async function () {
 				// Attempt to generate the visuals for this player
 				await characterVisualFunctions.regeneratePlayerVisual(franchise, playerTable, characterVisualsTable, i, true);
 			}
+			else
+			{
+				// Regenerating visuals is not supported for M25 and up, so we have to skip this player
+				continue;
+			}
 
 			// Try to get their visuals row number again
-			playerVisualsRow = await getRowFromRef(playerTable.records[i]['CharacterVisuals']);
+			playerVisualsRow = getRowFromRef(playerTable.records[i]['CharacterVisuals']);
 			
 			// If it's still a zero ref for some reason, we have to skip this player
 			if(playerVisualsRow === -1)
@@ -177,29 +181,18 @@ franchise.on('ready', async function () {
 
 		let visualsData;
 
-		if(gameYear === FranchiseUtils.YEARS.M24)
+		try
 		{
-			try
-			{
-				visualsData = JSON.parse(playerVisuals['RawData']);
-			}
-			catch(e)
-			{
-				continue;
-			}
-		
-
-			// Update the visuals for this player with the new gear item included
-			characterVisualsTable.records[playerVisualsRow]['RawData'] = JSON.stringify(assignGear(visualsData, gearAssetInfo));
+			visualsData = JSON.parse(playerVisuals['RawData']);
 		}
-		else
+		catch(e)
 		{
-			visualsData = ISON_FUNCTIONS.isonVisualsToJson(characterVisualsTable, playerVisualsRow);
-
-			let updatedVisualsData = assignGear(visualsData, gearAssetInfo);
-
-			ISON_FUNCTIONS.jsonVisualsToIson(characterVisualsTable, playerVisualsRow, updatedVisualsData);
+			continue;
 		}
+	
+
+		// Update the visuals for this player with the new gear item included
+		characterVisualsTable.records[playerVisualsRow]['RawData'] = JSON.stringify(assignGear(visualsData, gearAssetInfo));
     }
 	
 	// Program complete, so print success message, save the franchise file, and exit

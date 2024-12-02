@@ -2,7 +2,6 @@
 const fs = require('fs');
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
-const isonFunctions = require('../isonParser/isonFunctions');
 
 // Valid game years
 const validYears = [
@@ -77,8 +76,8 @@ async function copyEquipmentJson(targetRow, sourceRow, playerTable, visualsTable
 	// Attempt to parse the JSON data for both players, if either fails, then chances are the player was edited in-game and is no longer JSON, so we skip
 	try
 	{
-		sourceVisualsData = isonFunctions.isonVisualsToJson(visualsTable, sourceVisualsRow);
-		targetVisualsData = isonFunctions.isonVisualsToJson(visualsTable, targetVisualsRow);
+		sourceVisualsData = JSON.parse(visualsTable.records[sourceVisualsRow]['RawData']);
+		targetVisualsData = JSON.parse(visualsTable.records[targetVisualsRow]['RawData']);
 	}
 	catch (e)
 	{
@@ -122,7 +121,7 @@ async function copyEquipmentJson(targetRow, sourceRow, playerTable, visualsTable
 	// Attempt to update the target player's JSON data
 	try
 	{
-		isonFunctions.jsonVisualsToIson(visualsTable, targetVisualsRow, targetVisualsData);
+		visualsTable.records[targetVisualsRow]['RawData'] = JSON.stringify(targetVisualsData);
 	}
 	catch (e)
 	{
@@ -271,7 +270,7 @@ franchise.on('ready', async function () {
 			if(numNflAtPosition < 5)
 			{
 				// Filter the list of active players by position
-				const playersAtPosition = await filterByPosition(miscRows, position, playerTable);
+				const playersAtPosition = filterByPosition(miscRows, position, playerTable);
 
 				// Randomly select a player from the filtered list to copy from
 				const randomAtPosition = playersAtPosition[FranchiseUtils.getRandomNumber(0, playersAtPosition.length - 1)];
@@ -317,7 +316,7 @@ franchise.on('ready', async function () {
 			const position = playerTable.records[draftRows[i]]['Position'];
 
 			// Filter the list of active players by position
-			const playersAtPosition = await filterByPosition(miscRows, position, playerTable);
+			const playersAtPosition = filterByPosition(miscRows, position, playerTable);
 
 			// Randomly select a player from the filtered list to copy from
 			const randomAtPosition = playersAtPosition[FranchiseUtils.getRandomNumber(0, playersAtPosition.length - 1)];
