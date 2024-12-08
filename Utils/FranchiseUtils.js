@@ -1880,6 +1880,18 @@ function getYesNoForceQuit(message) {
   }
 };
 
+function getSearchValue(message) {
+  while (true) {
+    console.log(message);
+    const input = prompt().trim().toUpperCase();
+    if (input) {
+      return input;
+    } else {
+      console.log("Input cannot be empty. Please try again.");
+    }
+  }
+}
+
 /**
  * Prompts the user to choose between two valid values and returns the chosen value.
  *
@@ -2293,6 +2305,7 @@ module.exports = {
 
     getYesOrNo, // UTILITY FUNCTIONS
     getYesNoForceQuit,
+    getSearchValue,
     formatListString,
     shuffleArray,
     removeKeyFromJson,
