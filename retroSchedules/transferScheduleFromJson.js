@@ -77,6 +77,40 @@ function getDayOfWeek(day) {
   }
 }
 
+function getGameType(game)
+{
+  const gameTime = convertTimeToMinutes(game.time);
+  
+  if(game.day === 'Sun')
+  {
+    if(gameTime > 1080)
+    {
+      return 'Sunday';
+    }
+  }
+  else if(game.day === 'Mon')
+  {
+    if(gameTime > 1080)
+    {
+      return 'Monday';
+    }
+  }
+  else if(game.day === 'Thu')
+  {
+    if(gameTime > 1080)
+    {
+      return 'Thursday';
+    }
+  }
+  else
+  {
+    return 'Regular';
+  }
+
+  return 'Regular';
+
+}
+
 function getTeamRow(teamName) {
   for (const key in teamLookup) {
     if (teamLookup[key].includes(teamName)) {
@@ -209,6 +243,7 @@ async function processGame(game, seasonGameTable, weekStartOccurrences,numGamesH
   const time = convertTimeToMinutes(game.time);
   const homeTeamRow = getTeamRow(game.homeTeam);
   const awayTeamRow = getTeamRow(game.awayTeam);
+  const gameType = getGameType(game)
 
   const homeTeam = getBinaryReferenceData(teamTable.header.tableId, homeTeamRow);
   const awayTeam = getBinaryReferenceData(teamTable.header.tableId, awayTeamRow);
@@ -236,6 +271,7 @@ async function processGame(game, seasonGameTable, weekStartOccurrences,numGamesH
       record.TimeOfDay = time;
       record.SeasonWeekType = 'RegularSeason';
       record.IsPractice = false;
+      record.LiveSeasonGameType = gameType;
 
       const seasonRowBinary = getBinaryReferenceData(seasonGameTable.header.tableId, j);
       const gameEventBinary = findGameEventBinary(seasonRowBinary, gameEventTable);
