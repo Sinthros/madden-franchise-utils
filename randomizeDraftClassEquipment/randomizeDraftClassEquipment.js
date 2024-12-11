@@ -28,7 +28,12 @@ if(!fs.existsSync(`lookupFiles/${lookupFileName}`))
 	FranchiseUtils.EXIT_PROGRAM();
 }
 
-const allAssetNames = Object.keys(JSON.parse(fs.readFileSync(`lookupFiles/${lookupFileName}`, 'utf-8')));
+let allAssetNames = JSON.parse(fs.readFileSync(`lookupFiles/${lookupFileName}`, 'utf-8'));
+
+if(gameYear === FranchiseUtils.YEARS.M24)
+{
+	allAssetNames = Object.keys(allAssetNames);
+}
 
 // List of relevant equipment/other columns in the player table
 const equipmentCols = ['PLYR_EYEPAINT', 'PlayerVisMoveType', 'PLYR_RIGHTARMSLEEVE', 'PLYR_QBSTYLE', 'PLYR_GRASSLEFTELBOW', 'PLYR_RIGHTTHIGH', 'PLYR_RIGHTSPAT', 'PLYR_RIGHTSHOE', 'PLYR_GRASSLEFTHAND', 'PLYR_GRASSRIGHTHAND', 'PLYR_GRASSRIGHTELBOW', 'PLYR_GRASSLEFTWRIST', 'PLYR_GRASSRIGHTWRIST', 'PLYR_VISOR', 'PLYR_HELMET', 'PLYR_FACEMASK', 'PLYR_JERSEYSLEEVE', 'PLYR_JERSEY_STATE', 'PLYR_LEFTSPAT', 'PLYR_LEFTSHOE', 'PLYR_LEFTARMSLEEVE', 'PLYR_MOUTHPIECE', 'PLYR_TOWEL', 'PLYR_STANCE', 'PLYR_SOCK_HEIGHT', 'RunningStyleRating', 'PLYR_FLAKJACKET', 'PLYR_BACKPLATE'];
