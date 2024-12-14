@@ -44,7 +44,7 @@ franchise.on("ready", async function () {
             const cellValue = String(record[column]).toLowerCase();
             if (cellValue.includes(searchValue)) {
               console.log(
-                `Table ID: ${table.header.tableId}, Table Name: ${table.header.tableId}, Row: ${record.index},  Column Name: ${column}, Value: ${record[column]}`
+                `Table ID: ${table.header.tableId}, Table Name: ${table.header.name}, Row: ${record.index},  Column Name: ${column}, Value: ${record[column]}`
               );
             }
           }
