@@ -22,14 +22,14 @@
 		return bytes;
 	}
 
-	// Unknown ushort at the start (number of strings perhaps?)
+	// The first ushort is the string count in the file
 	const stringCount = readBytes(2).readUInt16LE(0);
 	console.log(`\nString count: ${stringCount}`);
 
 	const obj = {};
 
-	// Read until the end of the file
-	while(offset < fileData.length)
+	// Read for each string in the file
+	for(let i = 0; i < stringCount; i++)
 	{
 		// Read string length
 		const stringLength = readBytes(4).readUInt32LE(0);

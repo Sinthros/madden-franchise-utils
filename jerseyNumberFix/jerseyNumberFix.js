@@ -305,7 +305,7 @@ franchise.on('ready', async function () {
 			let playerIndex = teamPlayers[j];
 			let playerRecord = playerTable.records[playerIndex];
 
-			playerRecord['JerseyNum'] = await getValidJerseyNum(playerRecord, teamAvailableAndUnavailableNums[teamIndex], currRules);
+			playerRecord['JerseyNum'] = getValidJerseyNum(playerRecord, teamAvailableAndUnavailableNums[teamIndex], currRules);
 
 			teamAvailableAndUnavailableNums[teamIndex][1].push(playerRecord['JerseyNum']);
 
