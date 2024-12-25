@@ -144,7 +144,7 @@ async function copyEquipmentJson(targetRow, sourceRow, playerTable, visualsTable
  * @param {Object} playerTable The player table object
  * @returns 
  */
-async function countAtPosition(playerList, position, playerTable)
+function countAtPosition(playerList, position, playerTable)
 {
 	let numAtPosition = 0;
 	
@@ -167,7 +167,7 @@ async function countAtPosition(playerList, position, playerTable)
  * @param {Object} playerTable The player table object
  * @returns {Array<number>} A list of player row numbers that are the given position
  */
-async function filterByPosition(playerList, position, playerTable)
+function filterByPosition(playerList, position, playerTable)
 {
 	let playersAtPosition = [];
 	
@@ -269,7 +269,7 @@ franchise.on('ready', async function () {
 			const position = playerTable.records[draftRows[i]]['Position'];
 
 			// Check how many NFL players are at the player's position
-			const numNflAtPosition = await countAtPosition(nflRows, position, playerTable);
+			const numNflAtPosition = countAtPosition(nflRows, position, playerTable);
 
 			// If we have less than 5 NFL players at the position, we will use all active players at the position to copy from
 			if(numNflAtPosition < 5)
@@ -294,7 +294,7 @@ franchise.on('ready', async function () {
 			else // Otherwise, we can use exclusively NFL players at the position
 			{
 				// Filter the list of NFL players by position
-				const nflPlayersAtPosition = await filterByPosition(nflRows, position, playerTable);
+				const nflPlayersAtPosition = filterByPosition(nflRows, position, playerTable);
 
 				// Randomly select an NFL player from the filtered list to copy from
 				const randomNflAtPosition = nflPlayersAtPosition[FranchiseUtils.getRandomNumber(0, nflPlayersAtPosition.length - 1)];
