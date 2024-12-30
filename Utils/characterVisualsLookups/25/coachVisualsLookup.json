@@ -20,7 +20,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "KingsburyKliff_C_PRO": {
     "containerId": "378",
@@ -596,7 +598,9 @@
     "GutBaseBlend": "1",
     "GutBarycentricBlend": "2",
     "ThighsBaseBlend": "1",
-    "ThighsBarycentricBlend": "2"
+    "ThighsBarycentricBlend": "2",
+    "GenericHeadAssetName": "mcCarthyMike",
+    "CharacterBodyType": "Heavy"
   },
   "StefanskiKevin_C_PRO": {
     "containerId": "7",
@@ -619,7 +623,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "ReidAndy": {
     "containerId": "12",
@@ -642,7 +648,9 @@
     "GutBaseBlend": "1",
     "GutBarycentricBlend": "2",
     "ThighsBaseBlend": "1",
-    "ThighsBarycentricBlend": "2"
+    "ThighsBarycentricBlend": "2",
+    "GenericHeadAssetName": "ReidAndy",
+    "CharacterBodyType": "Heavy"
   },
   "HarbaughJim_C_PRO": {
     "containerId": "20",
@@ -665,7 +673,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "WrightJonathan_C_PRO": {
     "containerId": "21",
@@ -688,7 +698,9 @@
     "GutBaseBlend": "1",
     "GutBarycentricBlend": "2",
     "ThighsBaseBlend": "1",
-    "ThighsBarycentricBlend": "2"
+    "ThighsBarycentricBlend": "2",
+    "GenericHeadAssetName": "patriotsGeneric",
+    "CharacterBodyType": "Heavy"
   },
   "College3_C_NCAA": {
     "containerId": "48",
@@ -941,7 +953,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "BowlesTodd_C_PRO": {
     "containerId": "86",
@@ -964,7 +978,9 @@
     "GutBaseBlend": "1",
     "GutBarycentricBlend": "2",
     "ThighsBaseBlend": "1",
-    "ThighsBarycentricBlend": "2"
+    "ThighsBarycentricBlend": "2",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Heavy"
   },
   "EberflusMatt_C_PRO": {
     "containerId": "87",
@@ -987,7 +1003,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "HarbaughJohn_C_PRO": {
     "containerId": "92",
@@ -1010,7 +1028,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "harbaughJohn",
+    "CharacterBodyType": "Standard"
   },
   "DabollBrian_C_PRO": {
     "containerId": "94",
@@ -1033,7 +1053,9 @@
     "GutBaseBlend": "1",
     "GutBarycentricBlend": "2",
     "ThighsBaseBlend": "1",
-    "ThighsBarycentricBlend": "2"
+    "ThighsBarycentricBlend": "2",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Heavy"
   },
   "OConnellKevin_C_PRO": {
     "containerId": "95",
@@ -1056,7 +1078,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "AllenDennis_C_PRO": {
     "containerId": "96",
@@ -1079,7 +1103,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "PedersonDoug_C_PRO": {
     "containerId": "98",
@@ -1102,7 +1128,9 @@
     "GutBaseBlend": "1",
     "GutBarycentricBlend": "1",
     "ThighsBaseBlend": "1",
-    "ThighsBarycentricBlend": "1"
+    "ThighsBarycentricBlend": "1",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Muscular"
   },
   "LeFleurMatt_C_PRO": {
     "containerId": "132",
@@ -1125,7 +1153,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "MaddenJohn_C_PRO": {
     "containerId": "451",
@@ -1148,7 +1178,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "",
+    "CharacterBodyType": "Standard"
   },
   "McDermottSean_C_PRO": {
     "containerId": "1000",
@@ -1171,7 +1203,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "McDermottSean",
+    "CharacterBodyType": "Standard"
   },
   "TomlinMike_C_PRO": {
     "containerId": "273",
@@ -1194,7 +1228,9 @@
     "GutBaseBlend": "1",
     "GutBarycentricBlend": "1",
     "ThighsBaseBlend": "1",
-    "ThighsBarycentricBlend": "1"
+    "ThighsBarycentricBlend": "1",
+    "GenericHeadAssetName": "TomlinMike",
+    "CharacterBodyType": "Muscular"
   },
   "QuinnDan_C_PRO": {
     "containerId": "304",
@@ -1217,7 +1253,9 @@
     "GutBaseBlend": "1",
     "GutBarycentricBlend": "1",
     "ThighsBaseBlend": "1",
-    "ThighsBarycentricBlend": "1"
+    "ThighsBarycentricBlend": "1",
+    "GenericHeadAssetName": "QuinnDan",
+    "CharacterBodyType": "Muscular"
   },
   "College1_C_NCAA": {
     "containerId": "310",
@@ -1286,7 +1324,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "SalehRobert_C_PRO": {
     "containerId": "368",
@@ -1309,7 +1349,9 @@
     "GutBaseBlend": "1",
     "GutBarycentricBlend": "1",
     "ThighsBaseBlend": "1",
-    "ThighsBarycentricBlend": "1"
+    "ThighsBarycentricBlend": "1",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Muscular"
   },
   "CampbellDan_C_PRO": {
     "containerId": "374",
@@ -1332,7 +1374,9 @@
     "GutBaseBlend": "1",
     "GutBarycentricBlend": "1",
     "ThighsBaseBlend": "1",
-    "ThighsBarycentricBlend": "1"
+    "ThighsBarycentricBlend": "1",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Muscular"
   },
   "McVaySean_C_PRO": {
     "containerId": "378",
@@ -1355,7 +1399,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "McVaySean",
+    "CharacterBodyType": "Standard"
   },
   "SteichenShane_C_PRO": {
     "containerId": "393",
@@ -1378,7 +1424,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "RyansDeMeco_C_PRO": {
     "containerId": "394",
@@ -1401,7 +1449,9 @@
     "GutBaseBlend": "1",
     "GutBarycentricBlend": "1",
     "ThighsBaseBlend": "1",
-    "ThighsBarycentricBlend": "1"
+    "ThighsBarycentricBlend": "1",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Muscular"
   },
   "GannonJonathan_C_PRO": {
     "containerId": "395",
@@ -1424,7 +1474,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "PierceAntonio_C_PRO": {
     "containerId": "396",
@@ -1447,7 +1499,9 @@
     "GutBaseBlend": "1",
     "GutBarycentricBlend": "1",
     "ThighsBaseBlend": "1",
-    "ThighsBarycentricBlend": "1"
+    "ThighsBarycentricBlend": "1",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Muscular"
   },
   "CanalesDave_C_PRO": {
     "containerId": "397",
@@ -1470,7 +1524,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "ShanahanKyle_C_PRO": {
     "containerId": "558",
@@ -1493,7 +1549,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "ShanahanKyle",
+    "CharacterBodyType": "Standard"
   },
   "MacdonaldMike_C_PRO": {
     "containerId": "743",
@@ -1516,7 +1574,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "MorrisRaheem_C_PRO": {
     "containerId": "744",
@@ -1539,7 +1599,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "CallahanBrian_C_PRO": {
     "containerId": "745",
@@ -1562,7 +1624,9 @@
     "GutBaseBlend": "0",
     "GutBarycentricBlend": "0",
     "ThighsBaseBlend": "0",
-    "ThighsBarycentricBlend": "0"
+    "ThighsBarycentricBlend": "0",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Standard"
   },
   "MayoJerod_C_PRO": {
     "containerId": "746",
@@ -1585,7 +1649,9 @@
     "GutBaseBlend": "1",
     "GutBarycentricBlend": "1",
     "ThighsBaseBlend": "1",
-    "ThighsBarycentricBlend": "1"
+    "ThighsBarycentricBlend": "1",
+    "GenericHeadAssetName": "MustBeUnique",
+    "CharacterBodyType": "Muscular"
   },
   "DefaultValue": {
     "containerId": "0",
@@ -1593,8 +1659,8 @@
     "RightShoe": "CoachWardrobe_Shoe",
     "JerseyStyle": "CoachWardrobe_Polo",
     "PantsGear": "CoachWardrobe_Pants",
-    "Hat": "Hat_None",
-    "Headset": "Headset_None",
+    "Hat": "CoachWardrobe_Hat",
+    "Headset": "UC_Headset_1",
     "ArmSizeBaseBlend": "0",
     "ArmSizeBarycentricBlend": "0",
     "CalfBlendBaseBlend": "0",
