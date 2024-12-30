@@ -482,7 +482,7 @@ async function getGeneratedPlayerVisual(playerTable,row) {
 }
 async function regeneratePlayerVisual(franchise,playerTable,mainCharacterVisualsTable,row,regenerateUpdatedPlayers = false) {
 
-  const playerJson = getGeneratedPlayerVisual(playerTable,row);
+  const playerJson = await getGeneratedPlayerVisual(playerTable,row);
   const mainCharacterVisualsId = mainCharacterVisualsTable.header.tableId;
 
   const { currentCharacterVisualsTable, characterVisualsRow, characterVisualsTableId } = await getCharacterVisualsTable(franchise,playerTable,mainCharacterVisualsTable,row)
