@@ -5,10 +5,9 @@
 const prompt = require('prompt-sync')();
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const fs = require('fs');
-const CHARACTER_VISUALS_FUNCTIONS = require('../../Utils/characterVisualsLookups/characterVisualFunctions');
+const CHARACTER_VISUALS_FUNCTIONS = require('../../Utils/characterVisualsLookups/characterVisualFunctions25');
 const COACH_BASE_JSON = CHARACTER_VISUALS_FUNCTIONS.baseCoachVisualJson;
 const FranchiseUtils = require('../../Utils/FranchiseUtils');
-const { tables } = require('../../Utils/FranchiseTableId');
 const AUTOMATIC_KWD = 'a';
 const MANUAL_KWD = 'm';
 
@@ -47,6 +46,7 @@ if (!fs.existsSync(dir)){
 
 
 const franchise = FranchiseUtils.init(gameYear,{isAutoUnemptyEnabled: true, promptForBackup: true});
+const tables = FranchiseUtils.getTablesObject(franchise);
 
 function adjustPresentationId(presentationTable) {
 
@@ -113,7 +113,7 @@ function setDefaultCoachValues(coachRecord,presentationId) {
     coachRecord.SeasWins = 0;
     coachRecord.RegularWinStreak = 0;
     coachRecord.YearsCoaching = 0;
-    coachRecord.Level = 1;
+    coachRecord.Level = 0;
     coachRecord.PresentationId = presentationId;
     coachRecord.TeamBuilding = 'ThroughFreeAgency';
     coachRecord.LegacyScore = 0;
@@ -126,6 +126,8 @@ function setDefaultCoachValues(coachRecord,presentationId) {
     coachRecord.YearlyAwardCount = 0;
     coachRecord.SpeechId = 31;
     coachRecord.AssetName = '';
+    coachRecord.Height = 70;
+    coachRecord.Weight = 10;
   } catch (e) {
     console.warn('ERROR! Exiting program due to; ', e);
     FranchiseUtils.EXIT_PROGRAM();
@@ -182,6 +184,29 @@ function setCoachPosition(coachRecord) {
         console.log("Invalid value. Please enter one of the valid options.");
       }
     }
+  } catch (e) {
+    console.warn('ERROR! Exiting program due to:', e);
+    FranchiseUtils.EXIT_PROGRAM();
+  }
+}
+
+// Used for Start Today
+async function setDefaultScheme(coachRecord) {
+  try {
+    const offSchemeKeys = Object.keys(offSchemeLookup);
+    const defSchemeKeys = Object.keys(defSchemeLookup);
+
+    const selectFirstScheme = (validKeys, schemeLookup, coachField) => {
+      if (validKeys.length > 0) {
+        const selectedScheme = validKeys[0]; // Select the first scheme
+        coachRecord[coachField] = schemeLookup[selectedScheme];
+      } else {
+        console.warn(`No valid schemes found for ${coachField}`);
+      }
+    };
+
+    selectFirstScheme(offSchemeKeys, offSchemeLookup, "OffensiveScheme");
+    selectFirstScheme(defSchemeKeys, defSchemeLookup, "DefensiveScheme");
   } catch (e) {
     console.warn('ERROR! Exiting program due to:', e);
     FranchiseUtils.EXIT_PROGRAM();
@@ -248,92 +273,94 @@ async function setPlaybooks(coachRecord) {
 
 async function setCoachAppearance(coachRecord) {
   try {
+    const allCoachPortraits = Object.values(allCoachHeads); // Get all portrait values from the dictionary
+    const allCoachFaces = Object.keys(allCoachHeads); // Get all face keys from the dictionary
+    const portraitToHeadMap = Object.fromEntries(
+      allCoachFaces.map((face, i) => [allCoachPortraits[i], face])
+    ); // Map portraits to their corresponding face keys
 
-    const allCoachFaces = Object.keys(allCoachHeads); //Get all face values from dictionary
-    const coachHeadArrayLength = allCoachFaces.length; // Get length of coach faces
-    let filteredCoachHeads = [] //Array of coach heads based on skin tone shade
+    const filteredCoachPortraits = [...allCoachPortraits]; // Filtered list of portraits
 
-
-    for (let i = 0; i < coachHeadArrayLength; i++) { //Logic to get coach heads for current skin tone
-        filteredCoachHeads.push(allCoachFaces[i])
-    }
-    for (let i = 0; i < filteredCoachHeads.length;i++) {
-      currentHead = filteredCoachHeads[i]
-      try { // Get all available coach head pngs - If we can't find one, don't crash the program
-        fs.copyFileSync(`${headsDirName}/${currentHead}.png`,`coachPreviews/${currentHead}.png`);
-
-      } catch {
-        //
+    for (let i = 0; i < filteredCoachPortraits.length; i++) {
+      const currentPortrait = filteredCoachPortraits[i];
+      const currentHead = portraitToHeadMap[currentPortrait];
+      try {
+        // Get all available coach portrait pngs
+        fs.copyFileSync(`${headsDirName}/${currentPortrait}.png`, `coachPreviews/${currentPortrait}.png`);
+      } catch (e) {
+        // Handle missing files gracefully
       }
     }
 
-    let coachHead;
+    let selectedPortrait;
     while (true) {
-      console.log('Please pick one of the following valid coach heads for this coach (Note: Case insensitive).');
-      console.log("Note: You can view previews for these coach heads in the coachPreviews folder, which has been generated in the folder of this exe.");
-      console.log(filteredCoachHeads.join(", "));
-    
-      coachHead = prompt().toLowerCase(); // Convert user input to lowercase
-    
-      if (filteredCoachHeads.some((head) => head.toLowerCase() === coachHead)) {
-        const selectedHead = filteredCoachHeads.find((head) => head.toLowerCase() === coachHead);
-        coachRecord.FaceShape = selectedHead;
-        coachRecord.Portrait = allCoachHeads[selectedHead]; // Set portrait based on coach head
-    
+      console.log('Please pick one of the following valid coach heads for this coach.');
+      console.log("Note: You can view previews for these coach portraits in the coachPreviews folder, which has been generated in the folder of this exe.");
+      console.log(filteredCoachPortraits.join(", "));
+
+      selectedPortrait = prompt(); // Get user input as a string
+      console.log(selectedPortrait)
+
+      if (filteredCoachPortraits.some((portrait) => String(portrait) === selectedPortrait.toLowerCase())) {
+        const exactPortrait = filteredCoachPortraits.find((portrait) => String(portrait) === selectedPortrait.toLowerCase());
+        const correspondingHead = portraitToHeadMap[exactPortrait];
+
+        //coachRecord.FaceShape = correspondingHead;
+        coachRecord.GenericHeadAssetName = correspondingHead;
+        coachRecord.Portrait = exactPortrait; // Set portrait based on selected value
+
         try {
-          const skinToneNum = selectedHead.charAt(10);
-          const skinTone = "SkinTone".concat(skinToneNum);
-          coachRecord.SkinTone = skinTone;
+          //const skinToneNum = correspondingHead.charAt(10);
+          //const skinTone = "SkinTone".concat(skinToneNum);
+          //coachRecord.SkinTone = skinTone;
         } catch (e) {
-          coachRecord.SkinTone = "SkinTone1";
+          //coachRecord.SkinTone = "SkinTone1";
         }
-    
+
         break;
       } else {
         console.log("Invalid option, please try again.");
       }
     }
 
-    try {
-      const validCoachPositions = ['Thin', 'Base', 'Heavy'];
-      let coachSize;
-      var matchingPosition;
-  
-      while (true) { // Infinite loop, until a valid size is entered
-        console.log("Enter the desired size of the coach. Valid inputs are Thin, Base, or Heavy. Thin is what the game defaults to for generated coaches.");
-        coachSize = prompt();
-  
-        const lowercaseInput = coachSize.toLowerCase(); // Convert input to lowercase
-  
-        matchingPosition = validCoachPositions.find(position => position.toLowerCase() === lowercaseInput);
-  
-        if (matchingPosition) {
-          // If valid, set the position in its original case
-          coachRecord.BodySize = matchingPosition;
-          break
-        } else {
-          console.log("Invalid value. Please enter one of the valid options.");
-        }
-      }
-    } catch (e) {
-      console.warn('ERROR! Exiting program due to:', e);
-      prompt();
-      FranchiseUtils.EXIT_PROGRAM();
-    }
+    const genHeadAssetName = coachRecord.GenericHeadAssetName;
+    const prefix = genHeadAssetName.includes("_") 
+        ? FranchiseUtils.startsWithNumber(genHeadAssetName)
+            ? FranchiseUtils.getCharacterAfterNthUnderscore(genHeadAssetName, 3)
+            : FranchiseUtils.getCharacterAfterNthUnderscore(genHeadAssetName, 2)
+        : null;
+
+    const bodyType = isFemaleHead(coachRecord) 
+        ? "Standard_Alternate"
+        : {
+            "D": "Standard",
+            "B": "Standard",
+            "M": "Muscular",
+            "T": "Thin",
+            "H": "Heavy"
+        }[prefix] || "Standard";
+
+    coachRecord.CharacterBodyType = bodyType;
 
 
-    if (coachRecord.FaceShape.includes("coachhead")) {
+    if (genHeadAssetName.includes("coachhead")) {
       coachRecord.Type = 'Generic';
     }
     else {
       coachRecord.Type = 'Existing';
     }
 
-    return matchingPosition;
+    return "N/A";
   } catch (e) {
   console.warn('ERROR! Exiting program due to; ', e);
   FranchiseUtils.EXIT_PROGRAM();
 }
+}
+
+function isFemaleHead(coachRecord) {
+  const head = coachRecord.GenericHeadAssetName;
+  return FranchiseUtils.startsWithNumber(head) &&
+    FranchiseUtils.getCharacterAfterNthUnderscore(head, 1) === 'F';
 }
 
 async function automaticallyFillTalents(activeTalentTree, activeTalentTreeNextRecord, coachPosition) {
@@ -346,7 +373,7 @@ async function automaticallyFillTalents(activeTalentTree, activeTalentTreeNextRe
       if (validChoices.length === 1) {
           let talentChoice = validChoices[0];
           console.log(`Setting ${talentChoice} as the ${talentNum} talent for this coach.`);
-          let coachTalentBinary = coachTalentsLookup.find(obj => obj.coachTalent === talentChoice)?.binaryReference;
+          let coachTalentBinary = coachTalentsLookup.find(obj => obj.talentTreeName === talentChoice)?.binaryReference;
 
           if (i === 0) {
               activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeFirst = coachTalentBinary;
@@ -366,7 +393,7 @@ async function automaticallyFillTalents(activeTalentTree, activeTalentTreeNextRe
       const talentChoice = validChoices[randomIndex];
       console.log(`Setting ${talentChoice} as the ${talentNum} talent for this coach.`);
 
-      let coachTalentBinary = coachTalentsLookup.find(obj => obj.coachTalent === talentChoice)?.binaryReference;
+      let coachTalentBinary = coachTalentsLookup.find(obj => obj.talentTreeName === talentChoice)?.binaryReference;
 
       if (i === 0) {
           activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeFirst = coachTalentBinary;
@@ -394,7 +421,7 @@ async function manuallySelectTalents(activeTalentTree, activeTalentTreeNextRecor
     if (validChoices.length === 1) {
       let talentChoice = validChoices[0];
       console.log(`Setting ${talentChoice} as the ${talentNum} talent for this coach.`);
-      let coachTalentBinary = coachTalentsLookup.find(obj => obj.coachTalent === talentChoice)?.binaryReference;
+      let coachTalentBinary = coachTalentsLookup.find(obj => obj.talentTreeName === talentChoice)?.binaryReference;
 
       if (i === 0) {
         activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeFirst = coachTalentBinary;
@@ -418,7 +445,7 @@ async function manuallySelectTalents(activeTalentTree, activeTalentTreeNextRecor
       if (!caseInsensitiveChoices.includes(talentChoice)) {
         console.log("Invalid choice. As a reminder, choices are CASE INSENSITIVE.");
       } else {
-        let coachTalentBinary = coachTalentsLookup.find(obj => obj.coachTalent.toLowerCase() === talentChoice)?.binaryReference;
+        let coachTalentBinary = coachTalentsLookup.find(obj => obj.talentTreeName.toLowerCase() === talentChoice)?.binaryReference;
 
         if (i === 0) {
           activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeFirst = coachTalentBinary;
@@ -613,7 +640,7 @@ async function addCoachToFATable(freeAgentCoachTable,currentCoachBinary) {
     console.warn("ERROR! Exiting program due to; ",e)
     FranchiseUtils.EXIT_PROGRAM();
   }
-  if (coachArrayNotFull == false) {
+  if (!coachArrayNotFull) {
     console.log("ERROR! Cannot add new coach. You've reached the limit of 64 free agent coaches. Exiting program.");
     FranchiseUtils.EXIT_PROGRAM();
   }
@@ -628,7 +655,8 @@ async function updateCoachVisual(coachTable,characterVisuals,nextCoachRecord, co
 
   jsonToUpdate = await CHARACTER_VISUALS_FUNCTIONS.updateCoachVisuals(coachValues,jsonToUpdate,VISUAL_MORPH_KEYS, coachSize)
 
-  jsonToUpdate = await CHARACTER_VISUALS_FUNCTIONS.removeEmptyCoachBlends(jsonToUpdate)
+  jsonToUpdate = await CHARACTER_VISUALS_FUNCTIONS.removeEmptyCoachBlends(jsonToUpdate);
+  jsonToUpdate = FranchiseUtils.cleanJson(jsonToUpdate);
 
   
   let characterVisualsRef = coachTable.records[nextCoachRecord]['CharacterVisuals'];
@@ -649,7 +677,6 @@ async function updateCoachVisual(coachTable,characterVisuals,nextCoachRecord, co
     characterVisualsRow = await FranchiseUtils.bin2Dec(characterVisualsRef.slice(15));
   }
 
-  //console.log(JSON.stringify(jsonToUpdate))
   characterVisuals.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
 }
 
@@ -707,8 +734,7 @@ franchise.on('ready', async function () {
   do { // Do while loop to keep creating coaches
     await createNewCoach(franchise); // Call the function here to ensure it runs at least once
   
-    const message = `Would you like to create another coach? Enter ${FranchiseUtils.YES_KWD} to create another coach or ${FranchiseUtils.NO_KWD} to quit the program.\n
-                     Alternatively, enter ${FranchiseUtils.FORCEQUIT_KWD} to exit the program WITHOUT saving your most recent added coach.`;
+    const message = `Would you like to create another coach? Enter ${FranchiseUtils.YES_KWD} to create another coach or ${FranchiseUtils.NO_KWD} to quit the program. Alternatively, enter ${FranchiseUtils.FORCEQUIT_KWD} to exit the program WITHOUT saving your most recent added coach.`;
     
     const prompt = FranchiseUtils.getYesNoForceQuit(message);
     
