@@ -2261,6 +2261,62 @@ async function addAssetNames(franchise,appendIndex = false) {
   }
 }
 
+function startsWithNumber(str) {
+    return /^\d/.test(str);
+}
+
+function getCharacterAfterNthUnderscore(str, n) {
+    let currentIndex = -1;
+    for (let i = 0; i < n; i++) {
+        currentIndex = str.indexOf('_', currentIndex + 1); // Find the next underscore
+        if (currentIndex === -1) {
+            return null; // Return null if there aren't enough underscores
+        }
+    }
+    // Ensure there is a character after the nth underscore
+    if (currentIndex < str.length - 1) {
+        return str.charAt(currentIndex + 1);
+    }
+    return null; // Return null if no valid character is found
+}
+
+// Removes morph slot types which have values of 0
+function cleanJson(json) {
+  let data = typeof json === "string" ? JSON.parse(json) : json;
+
+  // Process loadouts
+  data.loadouts.forEach(loadout => {
+    loadout.loadoutElements = loadout.loadoutElements.filter(element => {
+      // Check and clean blends for both Base and non-Base loadouts
+      if (element.blends) {
+        element.blends = element.blends.filter(blend => {
+          // Remove blends with both barycentricBlend and baseBlend as 0
+          if (blend.barycentricBlend === 0) delete blend.barycentricBlend;
+          if (blend.baseBlend === 0) delete blend.baseBlend;
+          return Object.keys(blend).length > 0; // Keep blends with at least one valid property
+        });
+
+        // If no valid blends remain, remove the blends section
+        if (element.blends.length === 0) delete element.blends;
+      }
+
+      // Handle Base loadout elements: Check if itemAssetName exists or if blends exist
+      if (loadout.loadoutCategory === "Base") {
+        return element.itemAssetName?.trim() || element.blends;
+      } else {
+        // For non-Base loadouts, only check if itemAssetName exists
+        return element.itemAssetName?.trim();
+      }
+    });
+  });
+
+  // Remove the Base loadout if it has no valid elements
+  data.loadouts = data.loadouts.filter(loadout => {
+    return loadout.loadoutCategory !== "Base" || loadout.loadoutElements.length > 0;
+  });
+
+  return data;
+}
 
 module.exports = {
     init,
@@ -2302,6 +2358,7 @@ module.exports = {
     fixDraftPicks,
     approximateBodyType,
     getRowAndTableIdFromRef,
+    cleanJson,
 
     getYesOrNo, // UTILITY FUNCTIONS
     getYesNoForceQuit,
@@ -2323,6 +2380,8 @@ module.exports = {
     isReferenceColumn,
     isFtcReference,
     validateGameYears,
+    startsWithNumber,
+    getCharacterAfterNthUnderscore,
     EXIT_PROGRAM,
 
     ZERO_REF, // CONST VARIABLES
