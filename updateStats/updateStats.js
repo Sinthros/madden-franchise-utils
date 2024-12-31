@@ -8,10 +8,20 @@ const SEASON_STATS = xlsx.readFile("./players.xlsx");
 const CAREER_STATS = xlsx.readFile("./players-career.xlsx");
 const OUTPUT_FILE = "asset_lookup.json";
 const LOOKUP_FILE = JSON.parse(fs.readFileSync(OUTPUT_FILE, 'utf8'));
-const DEFAULT_COLUMNS = ["PUNTYARDS", "PUNTNETYARDS", "PUNTLONGEST", "BLITZ_YARDS", "DEEPPASS_YARDS", "INSIDEPOCKETTHROW_YARDS", "MEDIUMPASS_YARDS","OUTSIDEPOCKETTHROW_YARDS", "SHORTPASS_YARDS", "PASSYARDS",
-    "PRETYARDS", "KRETYARDS", "INSIDERUN_YARDS", "QBSCRAMBLE_YARDS", "OUTSIDERUN_YARDS", "RECEIVEYARDSAFTER", "RECEIVEYARDS", "RUSHYARDSAFTER1STHIT", "RUSHYARDS", "KRETLONGEST", "RUSHLONGEST", "PASSLONGEST", "RECEIVELONGEST",
-    "PRETLONGEST", "DEFDEEPPASS_YARDS", "DEFMEDIUMPASS_YARDS", "DEFSHORTPASS_YARDS", "DEFINSIDERUN_YARDS", "DEFOUTSIDERUN_YARDS", "DSECINTRETURNYARDS", "DLINEFUMBLERECOVERYYARDS", "DSECINTLONGESTRETURN"
-]
+
+const DEFAULT_COLUMNS = [
+    "BLITZ_YARDS", "DEEPPASS_YARDS", "DEFDEEPPASS_YARDS", 
+    "DEFINSIDERUN_YARDS", "DEFMEDIUMPASS_YARDS", "DEFOUTSIDERUN_YARDS", 
+    "DEFSHORTPASS_YARDS", "DLINEFUMBLERECOVERYYARDS", "DSECINTLONGESTRETURN", 
+    "DSECINTRETURNYARDS", "INSIDERUN_YARDS", "INSIDEPOCKETTHROW_YARDS", 
+    "KRETLONGEST", "KRETYARDS", "MEDIUMPASS_YARDS", "OUTSIDEPOCKETTHROW_YARDS", 
+    "OUTSIDERUN_YARDS", "PASSLONGEST", "PASSYARDS", "PRETLONGEST", 
+    "PRETYARDS", "PUNTLONGEST", "PUNTNETYARDS", "PUNTYARDS", 
+    "QBSCRAMBLE_YARDS", "RECEIVELONGEST", "RECEIVEYARDS", 
+    "RECEIVEYARDSAFTER", "RUSHLONGEST", "RUSHYARDS", 
+    "RUSHYARDSAFTER1STHIT", "SHORTPASS_YARDS"
+];
+
 
 const TEAM_MAPPING = {
     "SFO": 14, "CHI": 0, "CIN": 1, "BUF": 2, "DEN": 3, "CLE": 4, "TAM": 5, "ARI": 6,
@@ -20,6 +30,17 @@ const TEAM_MAPPING = {
     "NWE": 21, "LVR": 22, "LAR": 23, "BAL": 24, "NOR": 26, "SEA": 27, "PIT": 28,
     "HOU": 31, "TEN": 29, "MIN": 30, "Free Agent": 32
 }
+
+
+const validGameYears = [
+  FranchiseUtils.YEARS.M25,
+];
+
+
+console.log("This program will recalculate all player season/career stats based on an input file you provide.");
+
+const franchise = FranchiseUtils.init(validGameYears, {promptForBackup: true, isAutoUnemptyEnabled: true});
+const tables = FranchiseUtils.getTablesObject(franchise);
 
 function getPlayers(lookupFile) {
     // Get all sheet names
@@ -64,17 +85,7 @@ function getPlayers(lookupFile) {
 }
 
 
-const validGameYears = [
-  FranchiseUtils.YEARS.M25,
-];
-
-
-console.log("This program will recalculate all player season/career stats based on an input file you provide.");
-
-const franchise = FranchiseUtils.init(validGameYears, {promptForBackup: true, isAutoUnemptyEnabled: true});
-const tables = FranchiseUtils.getTablesObject(franchise);
-
-async function getTeamIndices(teamTable, csvTeams) {
+async function getTeamIndices(csvTeams) {
     const teamIndices = [];
     const teamNames = csvTeams.split(',');
 
@@ -104,25 +115,22 @@ function getStatsTableName(position, playerStats, isCareer) {
     return `${prefix}${suffix}`;
 }
 
-function getRecordColumns(record) {
-    return record._offsetTable.map((offset) => {
-        return offset.name;
-      });
-}
 async function updateStats(franchise, isCareer) {
     const playerTable = franchise.getTableByUniqueId(tables.playerTable);
     const teamTable = franchise.getTableByUniqueId(tables.teamTable);
-    await FranchiseUtils.readTableRecords([playerTable,teamTable]);
+    const seasonInfoTable = franchise.getTableByUniqueId(tables.seasonInfoTable);
+    await FranchiseUtils.readTableRecords([playerTable,teamTable, seasonInfoTable]);
     const lookup = isCareer ? CAREER_STATS : SEASON_STATS;
     const players = getPlayers(lookup);
     const statColumn = isCareer ? "CareerStats" : "SeasonStats";
+    const currentYear = seasonInfoTable.records[0].CurrentYear;
     //fs.writeFileSync("output_career.json", JSON.stringify(players, null, 2), "utf-8");
 
     for (const player of players) {
         const link = player.PLAYERLINK;
 
         if (!(link in LOOKUP_FILE)) {
-            const teamIndices = await getTeamIndices(teamTable, player.TEAM);
+            const teamIndices = await getTeamIndices(player.TEAM);
             if (teamIndices.length === 0) {
                 console.log(player.PLAYERNAME)
             }
@@ -141,7 +149,6 @@ async function updateStats(franchise, isCareer) {
         );
 
         if (playerRecord) {
-            let newStatRecord = false;
             if (FranchiseUtils.OLINE_POSITIONS.includes(playerRecord.Position)) continue;
 
             if (playerRecord[statColumn] === FranchiseUtils.ZERO_REF) {
@@ -152,7 +159,6 @@ async function updateStats(franchise, isCareer) {
     
                     const binary = getBinaryReferenceData(table.header.tableId, table.header.nextRecordToUse);
                     playerRecord[statColumn] = binary;
-                    newStatRecord = true;
                 }
                 else {
                     const seasonStatsArray = franchise.getTableByUniqueId(tables.seasonStatsTable);
@@ -164,7 +170,6 @@ async function updateStats(franchise, isCareer) {
                     }
                     const binary = getBinaryReferenceData(seasonStatsArray.header.tableId, record.index);
                     playerRecord[statColumn] = binary;
-                    newStatRecord = true;
                 }
             }
 
@@ -184,7 +189,7 @@ async function updateStats(franchise, isCareer) {
                         await tempTable.readRecords();
                         const tempRecord = tempTable.records[row];
                         
-                        if (tempRecord.SEAS_YEAR === 0) {
+                        if (tempRecord.SEAS_YEAR === currentYear) {
                             seasonStatsRecord = tempRecord;
                             break;
                         }
@@ -203,7 +208,6 @@ async function updateStats(franchise, isCareer) {
                             const binary = getBinaryReferenceData(table.header.tableId, record.index);
                             statsRecord[column] = binary;
                             seasonStatsRecord = record;
-                            newStatRecord = true;
                             break;
                         }
                     }
@@ -219,19 +223,17 @@ async function updateStats(franchise, isCareer) {
                 continue;
             }
             //if (!isCareer) console.log(finalRecord.offsetTable)
-            const finalColumnNames = getRecordColumns(finalRecord)
+            const finalColumnNames = FranchiseUtils.getColumnNames(finalRecord)
 
 
             // Set default values for columns that can be negative
-            if (newStatRecord) {
-                if (!isCareer) {
-                    finalRecord.SEAS_YEAR = 0;
-                    finalRecord.YearByYearTeamIndex = playerRecord.TeamIndex;
-                }
-                for (const column of DEFAULT_COLUMNS) {
-                    if (columnNames.includes(column)) {
-                        finalRecord[column] = 0;
-                    }
+            if (!isCareer) {
+                finalRecord.SEAS_YEAR = currentYear;
+                finalRecord.YearByYearTeamIndex = playerRecord.TeamIndex;
+            }
+            for (const column of DEFAULT_COLUMNS) {
+                if (columnNames.includes(column)) {
+                    finalRecord[column] = 0;
                 }
             }
 
@@ -255,31 +257,6 @@ async function updateStats(franchise, isCareer) {
         }
         
 
-    }
-}
-
-async function updateSeasonStats(franchise) {
-    const playerTable = franchise.getTableByUniqueId(tables.playerTable);
-    const teamTable = franchise.getTableByUniqueId(tables.teamTable);
-    await FranchiseUtils.readTableRecords([playerTable,teamTable]);
-    const players = getPlayers(SEASON_STATS);
-    //fs.writeFileSync("output.json", JSON.stringify(players, null, 2), "utf-8");
-
-    for (const player of players) {
-        const link = player.PLAYERLINK;
-
-        if (!(link in LOOKUP_FILE)) {
-            const teamIndices = await getTeamIndices(teamTable, player.TEAM);
-            if (teamIndices.length === 0) {
-                console.log(player.PLAYERNAME)
-            }
-
-            const assetName = await checkPlayerTable(player, teamIndices, false);
-            LOOKUP_FILE[link] = assetName === -1 ? '' : assetName;
-            fs.writeFileSync(OUTPUT_FILE, JSON.stringify(LOOKUP_FILE, null, 2));
-
-            if (LOOKUP_FILE[link] === '') continue;
-        }
     }
 }
 
@@ -381,14 +358,21 @@ async function checkValidPlayers(allValidPlayers, skippedPlayers, matchValue, te
 
   return -1;
 };
+
+async function updateCareerStats() {
+    await updateStats(franchise, true);
+}
+
+async function updateSeasonStats() {
+    await updateStats(franchise, false);
+}
+
 franchise.on('ready', async function () {
 
   // First, add assets for any players who don't have one
   await FranchiseUtils.addAssetNames(franchise);
-  await updateStats(franchise,false);
-  await updateStats(franchise,true);
-
-
+  await updateSeasonStats();
+  await updateCareerStats();
 
   await FranchiseUtils.saveFranchiseFile(franchise);
   FranchiseUtils.EXIT_PROGRAM();
