@@ -74,6 +74,7 @@ const NFL_CONFERENCES = [EXTRA_TEAM_NAMES.AFC, EXTRA_TEAM_NAMES.NFC];
 
 const OFFENSIVE_SKILL_POSITIONS = ['QB', 'HB', 'FB', 'WR', 'TE'];
 const OLINE_POSITIONS = ['LT','LG','C','RG','RT'];
+const ALL_OFFENSIVE_POSITIONS = [...OFFENSIVE_SKILL_POSITIONS, ...OLINE_POSITIONS];
 const DEFENSIVE_LINE_POSITIONS = ['DT','LE','RE'];
 const LINEBACKER_POSITIONS = ['MLB','LOLB','ROLB'];
 const DEFENSIVE_BACK_POSITIONS = ['CB','FS','SS'];
@@ -2318,6 +2319,19 @@ function cleanJson(json) {
   return data;
 }
 
+function splitDecimal(value) {
+  // Check if the value has a decimal part
+  const isDecimal = value % 1 !== 0;
+
+  // Split into integer and decimal parts
+  const integerPart = Math.floor(value);
+
+  return {
+      integer: integerPart,
+      hasDecimal: isDecimal
+  };
+}
+
 module.exports = {
     init,
     selectFranchiseFile, // FUNCTIONS
@@ -2359,6 +2373,7 @@ module.exports = {
     approximateBodyType,
     getRowAndTableIdFromRef,
     cleanJson,
+    splitDecimal,
 
     getYesOrNo, // UTILITY FUNCTIONS
     getYesNoForceQuit,
@@ -2400,6 +2415,7 @@ module.exports = {
     LINEBACKER_POSITIONS,
     DEFENSIVE_BACK_POSITIONS,
     ALL_DEFENSIVE_POSITIONS,
+    ALL_OFFENSIVE_POSITIONS,
     SPECIAL_TEAM_POSITIONS,
     COACH_SKIN_TONES,
     COACH_APPAREL,
