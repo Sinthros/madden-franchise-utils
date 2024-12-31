@@ -521,18 +521,26 @@ async function emptyHistoryTables(franchise) {
 
 
 function getColumnNames(table) {
-  if (table.offsetTable) {
-    return table.offsetTable.map((offset) => {
-      return offset.name;
-    });
-  } else if (table._offsetTable) {
-    return table._offsetTable.map((offset) => {
-      return offset.name;
-    });
-  } else {
-    return [];
+  try { // Table object
+    if (table.offsetTable) {
+      return table.offsetTable.map((offset) => offset.name);
+    }
+  } catch (error) {
+    //console.error("Error accessing offsetTable:", error);
   }
+
+  try { // Record object
+    if (table._offsetTable) {
+      return table._offsetTable.map((offset) => offset.name);
+    }
+  } catch (error) {
+    //console.error("Error accessing _offsetTable:", error);
+  }
+
+  console.error("No valid offset table found. Returning empty array.");
+  return [];
 }
+
 
 /**
  * Empties the Character Visuals table entirely.
