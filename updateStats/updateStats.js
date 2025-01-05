@@ -124,140 +124,148 @@ async function updateStats(franchise, isCareer) {
     const players = getPlayers(lookup);
     const statColumn = isCareer ? "CareerStats" : "SeasonStats";
     const currentYear = seasonInfoTable.records[0].CurrentYear;
-    //fs.writeFileSync("output_career.json", JSON.stringify(players, null, 2), "utf-8");
 
     for (const player of players) {
         const link = player.PLAYERLINK;
 
-        if (!(link in LOOKUP_FILE)) {
-            const teamIndices = await getTeamIndices(player.TEAM);
-            if (teamIndices.length === 0) {
-                console.log(player.PLAYERNAME)
-            }
+        // Get the asset name for the current URL
+        const assetName = await getOrCreateAssetName(link, player, isCareer);
 
-            const assetName = await checkPlayerTable(player, teamIndices, isCareer);
-            LOOKUP_FILE[link] = assetName === -1 ? '' : assetName;
-            fs.writeFileSync(OUTPUT_FILE, JSON.stringify(LOOKUP_FILE, null, 2));
+        // If it's an empty string, no player is associated with it
+        if (!assetName) continue;
+
+        const playerRecord = getPlayerRecord(playerTable, assetName);
+
+        // We don't update stats for O-Line
+        if (!playerRecord || FranchiseUtils.OLINE_POSITIONS.includes(playerRecord.Position)) continue;
+
+        let newRecord = await ensureStatColumn(playerRecord, statColumn, franchise, player, isCareer);
+
+        const statsRef = playerRecord[statColumn];
+        const { row, tableId } = FranchiseUtils.getRowAndTableIdFromRef(statsRef);
+        const statsTable = franchise.getTableById(tableId);
+        await statsTable.readRecords();
+        const statsRecord = statsTable.records[row];
+
+        const { record: finalRecord, newStatRecord } = isCareer
+            ? { record: statsRecord, newStatRecord: newRecord } // For career stats, use statsRecord directly
+            : await getOrCreateSeasonRecord(statsRecord, player, playerRecord, currentYear, franchise);
+
+        if (!finalRecord) {
+            console.log(playerRecord.PLYR_ASSETNAME);
+            continue;
         }
 
-        const assetName = LOOKUP_FILE[link];
-        if (assetName === '') continue;
+        const finalColumns = FranchiseUtils.getColumnNames(finalRecord);
 
-        // Get the associated player record
-        const playerRecord = playerTable.records.find(
-            record => FranchiseUtils.isValidPlayer(record) && record.PLYR_ASSETNAME === assetName
-        );
-
-        if (playerRecord) {
-            if (FranchiseUtils.OLINE_POSITIONS.includes(playerRecord.Position)) continue;
-
-            if (playerRecord[statColumn] === FranchiseUtils.ZERO_REF) {
-                if (isCareer) {
-                    const statsTableName = getStatsTableName(playerRecord.Position, player, isCareer);
-                    const table = franchise.getTableByName(statsTableName);
-                    await table.readRecords();
-    
-                    const binary = getBinaryReferenceData(table.header.tableId, table.header.nextRecordToUse);
-                    playerRecord[statColumn] = binary;
-                }
-                else {
-                    const seasonStatsArray = franchise.getTableByUniqueId(tables.seasonStatsTable);
-                    await seasonStatsArray.readRecords();
-
-                    const record = seasonStatsArray.records[seasonStatsArray.header.nextRecordToUse];
-                    for (const column of FranchiseUtils.getColumnNames(record)) {
-                        record[column] = FranchiseUtils.ZERO_REF;
-                    }
-                    const binary = getBinaryReferenceData(seasonStatsArray.header.tableId, record.index);
-                    playerRecord[statColumn] = binary;
-                }
-            }
-
-            const statsRef = playerRecord[statColumn];
-            const {row, tableId} = FranchiseUtils.getRowAndTableIdFromRef(statsRef);
-            const statsTable = franchise.getTableById(tableId);
-            await statsTable.readRecords();
-            const statsRecord = statsTable.records[row];
-            const columnNames = FranchiseUtils.getColumnNames(statsTable);
-            let seasonStatsRecord = null;
-
-            if (!isCareer) {
-                for (const column of columnNames) {
-                    if (FranchiseUtils.isReferenceColumn(statsRecord, column)) {
-                        const {row, tableId} = FranchiseUtils.getRowAndTableIdFromRef(statsRecord[column]);
-                        const tempTable = franchise.getTableById(tableId);
-                        await tempTable.readRecords();
-                        const tempRecord = tempTable.records[row];
-                        
-                        if (tempRecord.SEAS_YEAR === currentYear) {
-                            seasonStatsRecord = tempRecord;
-                            break;
-                        }
-                    }
-                }
-
-                if (seasonStatsRecord === null) {
-                    for (const column of columnNames) {
-                        if (statsRecord[column] === FranchiseUtils.ZERO_REF) {
-                            const statsTableName = getStatsTableName(playerRecord.Position, player, isCareer);
-                            const table = franchise.getTableByName(statsTableName);
-                            await table.readRecords();
-
-                            const record = table.records[table.header.nextRecordToUse];
-            
-                            const binary = getBinaryReferenceData(table.header.tableId, record.index);
-                            statsRecord[column] = binary;
-                            seasonStatsRecord = record;
-                            break;
-                        }
-                    }
-
-                }
-            }
-
-            
-            const finalRecord = isCareer ? statsRecord : seasonStatsRecord;
-
-            if (!seasonStatsRecord && !isCareer)  {
-                console.log(playerRecord.PLYR_ASSETNAME) 
-                continue;
-            }
-            //if (!isCareer) console.log(finalRecord.offsetTable)
-            const finalColumnNames = FranchiseUtils.getColumnNames(finalRecord)
-
-
-            // Set default values for columns that can be negative
-            if (!isCareer) {
-                finalRecord.SEAS_YEAR = currentYear;
-                finalRecord.YearByYearTeamIndex = playerRecord.TeamIndex;
-            }
+        if (newStatRecord) {
             for (const column of DEFAULT_COLUMNS) {
-                if (columnNames.includes(column)) {
+                if (finalColumns.includes(column)) {
                     finalRecord[column] = 0;
                 }
             }
-
-            for (const column of finalColumnNames) {
-                if (column in player) {
-                    if (column === 'DLINESACKS') {
-                        const value = player.DLINESACKS;
-                        const { integer, hasDecimal } = FranchiseUtils.splitDecimal(value);
-                        
-                        finalRecord.DLINESACKS = integer; // Store the integer part
-                        finalRecord.DLINEHALFSACK = hasDecimal ? 1 : 0; // Store 1 if decimal exists, else 0
-                    } else {
-                        finalRecord[column] = player[column];
-                    }
-                }
-            }
-
-
-        } else {
-            console.log(`No matching record found for assetName: ${assetName}`);
         }
         
+        if (!isCareer) {
+            finalRecord.SEAS_YEAR = currentYear;
+            finalRecord.YearByYearTeamIndex = playerRecord.TeamIndex;
+        }
 
+
+
+        for (const column in player) {
+            if (!finalColumns.includes(column)) continue;
+            if (column === "DLINESACKS") {
+                const { integer, hasDecimal } = FranchiseUtils.splitDecimal(player[column]);
+                finalRecord.DLINESACKS = integer;
+                finalRecord.DLINEHALFSACK = hasDecimal ? 1 : 0;
+            } else {
+                finalRecord[column] = player[column];
+            }
+        }
     }
+}
+
+function getPlayerRecord(playerTable, assetName) {
+    return playerTable.records.find(record =>
+        FranchiseUtils.isValidPlayer(record) && record.PLYR_ASSETNAME === assetName
+    );
+}
+
+async function getOrCreateAssetName(link, player, isCareer) {
+    if (!(link in LOOKUP_FILE)) {
+        const teamIndices = await getTeamIndices(player.TEAM);
+        //if (teamIndices.length === 0) console.log(player.PLAYERNAME);
+
+        const assetName = await checkPlayerTable(player, teamIndices, isCareer);
+        LOOKUP_FILE[link] = assetName === -1 ? '' : assetName;
+        fs.writeFileSync(OUTPUT_FILE, JSON.stringify(LOOKUP_FILE, null, 2));
+    }
+    return LOOKUP_FILE[link];
+}
+
+async function ensureStatColumn(playerRecord, statColumn, franchise, player, isCareer) {
+    // Check if the stat column is already present
+    if (playerRecord[statColumn] !== FranchiseUtils.ZERO_REF) {
+        return false; // No new stat record created
+    }
+
+    if (isCareer) {
+        const tableName = getStatsTableName(playerRecord.Position, player, isCareer);
+        const table = franchise.getTableByName(tableName);
+        await table.readRecords();
+
+        const binary = getBinaryReferenceData(table.header.tableId, table.header.nextRecordToUse);
+        playerRecord[statColumn] = binary;
+    } else {
+        const seasonStatsArray = franchise.getTableByUniqueId(tables.seasonStatsTable);
+        await seasonStatsArray.readRecords();
+
+        const record = seasonStatsArray.records[seasonStatsArray.header.nextRecordToUse];
+        for (const column of FranchiseUtils.getColumnNames(record)) {
+            record[column] = FranchiseUtils.ZERO_REF;
+        }
+
+        const binary = getBinaryReferenceData(seasonStatsArray.header.tableId, record.index);
+        playerRecord[statColumn] = binary;
+    }
+
+    return true; // A new stat record was created
+}
+
+async function getOrCreateSeasonRecord(statsRecord, player, playerRecord, currentYear, franchise, isCareer) {
+    const columnNames = FranchiseUtils.getColumnNames(statsRecord);
+
+    // Try to find an existing record
+    for (const column of columnNames) {
+        if (FranchiseUtils.isReferenceColumn(statsRecord, column)) {
+            const { row, tableId } = FranchiseUtils.getRowAndTableIdFromRef(statsRecord[column]);
+            const tempTable = franchise.getTableById(tableId);
+            await tempTable.readRecords();
+
+            const tempRecord = tempTable.records[row];
+            if (tempRecord.SEAS_YEAR === currentYear) {
+                return { record: tempRecord, newStatRecord: false };
+            }
+        }
+    }
+
+    // Create a new record if none exists
+    for (const column of columnNames) {
+        if (statsRecord[column] === FranchiseUtils.ZERO_REF) {
+            const tableName = getStatsTableName(playerRecord.Position, player, false);
+            const table = franchise.getTableByName(tableName);
+            await table.readRecords();
+
+            const record = table.records[table.header.nextRecordToUse];
+            const binary = getBinaryReferenceData(table.header.tableId, record.index);
+            statsRecord[column] = binary;
+            return { record, newStatRecord: true };
+        }
+    }
+
+    // No record found or created
+    return { record: null, newStatRecord: false };
 }
 
 async function checkPlayerTable(pfrPlayer, teamIndices, isCareer) {
