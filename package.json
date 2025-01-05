@@ -13,6 +13,7 @@
     "madden-franchise": "^3.5.0",
     "papaparse": "^5.4.1",
     "prompt-sync": "^4.2.0",
+    "puppeteer": "^15.5.0",
     "request": "^2.88.2",
     "string-similarity": "^4.0.4",
     "xlsx": "^0.18.5"
