@@ -1,1 +1,0 @@
-nexe --build -i stringInternReader.js -t x64-14.15.3 -r "../Utils/FranchiseUtils.js" -o "stringInternReader.exe" --verbose 
