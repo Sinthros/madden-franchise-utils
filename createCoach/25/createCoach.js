@@ -597,26 +597,6 @@ async function handleTalentTree(coachRecord,talentNodeStatus,talentNodeStatusArr
   
 }
 
-async function getAllTables(franchise) {
-  const coachTable = franchise.getTableByUniqueId(tables.coachTable); // Get all the tables we'll need
-  const freeAgentCoachTable = franchise.getTableByUniqueId(tables.freeAgentCoachTable);
-  const activeTalentTree = franchise.getTableByUniqueId(tables.activeTalentTree);
-  const talentNodeStatus = franchise.getTableByUniqueId(tables.talentNodeStatus);
-  const talentNodeStatusArray = franchise.getTableByUniqueId(tables.talentNodeStatusArray);
-  const talentSubTreeStatus = franchise.getTableByUniqueId(tables.talentSubTreeStatus);
-  const presentationTable = franchise.getTableByUniqueId(tables.presentationTable);
-  const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
-
-  //Put all of our tables into an array
-  const allTables = [coachTable,freeAgentCoachTable,activeTalentTree,talentNodeStatus,talentNodeStatusArray,talentSubTreeStatus,presentationTable,characterVisuals];
-
-  // Read all of our tables
-  await FranchiseUtils.readTableRecords(allTables)
-
-  return allTables;
-
-}
-
 async function addCoachToFATable(freeAgentCoachTable,currentCoachBinary) {
   try {
     let i = 0;
@@ -691,11 +671,7 @@ async function createNewCoach(franchise) {
   const presentationTable = franchise.getTableByUniqueId(tables.presentationTable);
   const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
 
-  //Put all of our tables into an array
-  const allTables = [coachTable,freeAgentCoachTable,activeTalentTree,talentNodeStatus,talentNodeStatusArray,talentSubTreeStatus,presentationTable,characterVisuals];
-
-  // Read all of our tables
-  await FranchiseUtils.readTableRecords(allTables);
+  await FranchiseUtils.readTableRecords([coachTable,freeAgentCoachTable,activeTalentTree,talentNodeStatus,talentNodeStatusArray,talentSubTreeStatus,presentationTable,characterVisuals]);
   
   const nextCoachRecord = coachTable.header.nextRecordToUse; // Get next record to use for the coach table and activeTalentTree table
   const activeTalentTreeNextRecord = activeTalentTree.header.nextRecordToUse;
