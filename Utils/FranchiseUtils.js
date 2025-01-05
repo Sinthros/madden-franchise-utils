@@ -771,6 +771,7 @@ async function emptyResignTable(franchise) {
     const resignTable = franchise.getTableByUniqueId(tables.reSignTable);
     const resignArrayTable = franchise.getTableByUniqueId(tables.reSignArrayTable);
     await readTableRecords([resignTable,resignArrayTable]);
+    const allResignTables = franchise.getAllTablesByName("PlayerReSignNegotiation[]");
     
     const defaultColumns = {
       "Team": ZERO_REF,
@@ -802,7 +803,11 @@ async function emptyResignTable(franchise) {
     };
 
     emptyTable(resignTable, defaultColumns);
-    clearArrayTable(resignArrayTable);
+    
+    for (const table of allResignTables) {
+      await table.readRecords();
+      clearArrayTable(table);
+    }
 };
 
 async function emptySignatureTables(franchise) {
