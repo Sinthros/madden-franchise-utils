@@ -3,8 +3,8 @@ const { importTableData } = require('./externalDataService');
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 
   
-console.log("This program will update your Madden 25 Franchise File to work with Sabo's new Franchise Mod");
-console.log("If your franchise file was already started using Sabo's Franchise Mod, this is not necessary unless he's updated the Franchise Mod.");
+console.log("This program will update your Madden 25 Franchise File to work with Sabo's new Franchise Mod or Sinthros's new Start Today mod");
+console.log("If your franchise file was already started using one of these mods, this program is not necessary unless directed otherwise.");
 
 const gameYear = FranchiseUtils.YEARS.M25;
 
@@ -143,6 +143,20 @@ franchise.on('ready', async function () {
     await importTables(progressionXPSlider,'ProgressionXPSlider.xlsx');
     await importTables(positionCountTable,"PositionCountTable.xlsx");
 
+    const staffHiringOffersRecord = schedulerAppointmentTable.records.find(record => !record.isEmpty && record.Name === 'Staff Hiring Offers');
+
+    const staffWeekRecord = schedulerAppointmentTable.records.find(record => !record.isEmpty && record.Name === 'Staff Week');
+
+    if (staffHiringOffersRecord && staffWeekRecord) {
+        staffHiringOffersRecord.Start = staffWeekRecord.Start;
+        staffHiringOffersRecord.StartOccurrenceTime = staffWeekRecord.StartOccurrenceTime;
+
+        staffWeekRecord.End = staffWeekRecord.Start;
+    }
+    else {
+        console.log("Unable to update Staff Hiring Offer period. This should not happen. Send your file to Sinthros.");
+    }
+
     const endOfSeasonRecord = schedulerAppointmentTable.records.find(record => !record.isEmpty && record.Name === 'End of Season ReSigning');
 
     if (endOfSeasonRecord) {
@@ -153,7 +167,7 @@ franchise.on('ready', async function () {
         }
     }
 
-    const transferSalCapIncrease = FranchiseUtils.getYesOrNo("Would you like to add Sabo's year-by-year Salary Cap increases? Enter yes or no. This is optional but is recommended unless using a retro franchise file where you've been instructed not to.");
+    const transferSalCapIncrease = FranchiseUtils.getYesOrNo("Would you like to add Sabo's year-by-year Salary Cap increases? Enter yes or no. You should enter yes unless specifically instructed otherwise.");
     if (transferSalCapIncrease) {
         await importTables(salCapIncreasePerYearTable,`SalaryCapIncreases.xlsx`);
     }
