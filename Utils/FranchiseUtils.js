@@ -160,7 +160,7 @@ function init(validGameYears, options = {}) {
 
   const gameYear = getGameYear(validGameYears, customYearMessage);
   const franchise = selectFranchiseFile(gameYear, isAutoUnemptyEnabled, isFtcFile, customFranchiseMessage);
-  if (!skipYearValidation) validateGameYears(franchise, validGameYears);
+  if (!skipYearValidation && !isFtcFile) validateGameYears(franchise, validGameYears);
 
   if (promptForBackup) {
     const backupMessage = "Would you like to make a backup of your franchise file before running this program? Enter yes or no.";
