@@ -62,7 +62,6 @@ const TABLE_NAMES = {
 const SEASON_STAGES = {
   PRESEASON: 'PreSeason',
   NFL_SEASON: 'NFLSeason',
-  REGULAR_SEASON: 'RegularSeason',
   OFFSEASON: 'OffSeason'
 }
 
