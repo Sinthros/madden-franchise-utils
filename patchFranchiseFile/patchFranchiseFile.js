@@ -55,7 +55,10 @@ franchise.on('ready', async function () {
         salCapIncreasePerYearTable: 'salCapIncreaseTable',
         autoSubSliderTable: 'autoSubSliderTable',
         schedulerAppointmentTable: 'schedulerAppointmentTable',
-        schedulerRelativeApptTable: 'schedulerRelativeApptTable'
+        schedulerRelativeApptTable: 'schedulerRelativeApptTable',
+        cutDayStartEventTable: 'cutDayStartEventTable',
+        cutDayStartReactionTable: 'cutDayStartReactionTable',
+        seasonInfoTable: 'seasonInfoTable'
       };
       
       // Use destructuring to assign each table variable
@@ -82,11 +85,22 @@ franchise.on('ready', async function () {
     salCapIncreasePerYearTable,
     autoSubSliderTable,
     schedulerAppointmentTable,
-    schedulerRelativeApptTable
+    schedulerRelativeApptTable,
+    cutDayStartEventTable,
+    cutDayStartReactionTable,
+    seasonInfoTable
     } = tablestoRead;
     
     // Pass the tables to `readTableRecords`
     await FranchiseUtils.readTableRecords(Object.values(tablestoRead));
+
+    // Current stage of the file (preseason, nfl season, or offseason)
+    const currentStage = seasonInfoTable.records[0].CurrentStage;
+
+    // Always set these to 0 to be safe. This makes sure that in the next
+    // preseason, it goes back to 53 man rosters at the end
+    cutDayStartEventTable.records[0].MaxRosterSize = 0;
+    cutDayStartReactionTable.records[0].MaxRosterSize = 0;
 
     const injuryEvalRecord = injuryEval.records[0];
     injuryEvalRecord.EnableReturnNotifications = true;
@@ -137,6 +151,12 @@ franchise.on('ready', async function () {
     const rosterInfoRecord = rosterInfoTable.records[0];
     rosterInfoRecord.MaxFreeAgentsSize = 850;
     rosterInfoRecord.PlayerMaxPracticeSquadYears = 3;
+
+    // Fix an issue with some ST files
+    if (currentStage === FranchiseUtils.SEASON_STAGES.NFL_SEASON) {
+        rosterInfoRecord.EndOfWeekMaxRosterSize = 0;
+        rosterInfoRecord.MaxRosterSize = 0;
+    }
 
     await importTables(salaryMetricsSplineArray,`SalaryMetricsSplineArray.xlsx`);
     await importTables(autoSubSliderTable,`AutoSubSlider.xlsx`);
