@@ -1473,7 +1473,6 @@ async function deletePlayer(franchise, playerBinary) {
 
   // Finally, empty the record
   playerRecord.empty();
-  console.log(playerRecord.Position)
 
   // Debugging
   //console.log(`Index ${playerData.row}`);
@@ -1541,10 +1540,9 @@ async function clearPlayerRefFromTableByUniqueId(franchise, playerBinary, tableI
 }
 
 async function deleteExcessFreeAgents(franchise, options = {}) {
-
   const {
     numPlayersToDelete = null,
-    includeDraftPlayers = true
+    includeDraftPlayers = true,
   } = options;
 
   const tables = getTablesObject(franchise);
@@ -1554,8 +1552,8 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
 
   await readTableRecords([playerTable,freeAgentsTable]);
 
-  const activePlayerRecords = playerTable.records.filter(record => 
-    !record.isEmpty && 
+  const activePlayerRecords = playerTable.records.filter((record) =>
+    !record.isEmpty &&
     isValidPlayer(record, {
       includeDraftPlayers: includeDraftPlayers,
       includeFreeAgents: true,
@@ -1565,34 +1563,74 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
       includeDeletedPlayers: false,
       includeCreatedPlayers: false,
       includeLegends: false,
-      includeNoneTypePlayers: false
+      includeNoneTypePlayers: false,
     })
   );
-  
-  const freeAgentRecords = activePlayerRecords.filter(record => record.ContractStatus === CONTRACT_STATUSES.FREE_AGENT) // Filter active players for where they're free agents
 
+  // Filter only free agents
+  const freeAgentRecords = activePlayerRecords.filter(
+    (record) => record.ContractStatus === CONTRACT_STATUSES.FREE_AGENT
+  );
+
+  // Calculate the number of excess players
   const numTotalPlayersDesired = freeAgentsTable.header.numMembers; //Max amount of free agents (this is relevant for a fantasy draft)
   const totalNumCurrentPlayers = activePlayerRecords.length; //Get the current number of players
-
   const shouldDeletePlayers = numPlayersToDelete != null && Number.isInteger(numPlayersToDelete) && numPlayersToDelete > 0;
 
-  if ((totalNumCurrentPlayers > numTotalPlayersDesired) || (shouldDeletePlayers)) { // If we're above 3500 total players or need to delete players...
-    const numExtraPlayers = totalNumCurrentPlayers - numTotalPlayersDesired; // Calculate excess players
 
-    // Determine the number of players to delete
-    const playersToDelete = shouldDeletePlayers ? numPlayersToDelete : Math.max(numExtraPlayers, 0); // Ensure non-negative value
-    
-    // Sort the free agents by OverallRating and slice the array safely
-    const worstFreeAgents = freeAgentRecords
-      .sort((a, b) => a.OverallRating - b.OverallRating)
-      .slice(0, Math.min(playersToDelete, freeAgentRecords.length)); // Ensure we don't exceed the array length
+  const numExtraPlayers = Math.max(
+    totalNumCurrentPlayers - numTotalPlayersDesired,
+    0
+  );
+  const playersToDelete = shouldDeletePlayers
+    ? numPlayersToDelete
+    : numExtraPlayers;
 
-    for (const freeAgentRecord of worstFreeAgents) {
-      const currentBinary = getBinaryReferenceData(playerTable.header.tableId, freeAgentRecord.index);
-      await deletePlayer(franchise,currentBinary);
+  // Group free agents by position
+  const freeAgentsByPosition = freeAgentRecords.reduce((acc, record) => {
+    const position = record.Position || "Unknown";
+    acc[position] = acc[position] || [];
+    acc[position].push(record);
+    return acc;
+  }, {});
+
+  // Create the finalRecords array by filtering free agents by position
+  const finalRecords = [];
+  for (const position in freeAgentsByPosition) {
+    const positionGroup = freeAgentsByPosition[position];
+    const sortedByRating = positionGroup.sort(
+      (a, b) => a.OverallRating - b.OverallRating
+    );
+
+    // Determine minimum threshold (25 for QB, 10 for others)
+    const minPlayersThreshold = position === "QB" ? 25 : 10;
+
+    // Only add players if more than the threshold exist in the position group
+    if (sortedByRating.length > minPlayersThreshold) {
+      const excessPlayers = sortedByRating.length - minPlayersThreshold;
+      finalRecords.push(...sortedByRating.slice(0, excessPlayers));
     }
   }
-};
+
+  // Sort finalRecords by OverallRating to determine the worst free agents
+  const worstFreeAgents = finalRecords
+    .sort((a, b) => a.OverallRating - b.OverallRating)
+    .slice(0, Math.min(playersToDelete, finalRecords.length));
+
+  // Delete players
+  await Promise.all(
+    worstFreeAgents.map((freeAgentRecord) => {
+      const currentBinary = getBinaryReferenceData(
+        playerTable.header.tableId,
+        freeAgentRecord.index
+      );
+      return deletePlayer(franchise, currentBinary);
+    })
+  );
+}
+
+
+
 
 async function reorderTeams(franchise) {
 
