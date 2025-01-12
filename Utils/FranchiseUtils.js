@@ -1551,9 +1551,8 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
 
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   const freeAgentsTable = franchise.getTableByUniqueId(tables.freeAgentTable);
-  const drillCompletedTable = franchise.getTableByUniqueId(tables.drillCompletedTable);
 
-  await readTableRecords([playerTable,freeAgentsTable,drillCompletedTable]);
+  await readTableRecords([playerTable,freeAgentsTable]);
 
   const activePlayerRecords = playerTable.records.filter(record => 
     !record.isEmpty && 
