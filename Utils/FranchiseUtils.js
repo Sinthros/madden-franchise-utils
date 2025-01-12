@@ -167,8 +167,8 @@ function init(validGameYears, options = {}) {
     const saveBackupFile = getYesOrNo(backupMessage);
   
     if (saveBackupFile) {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-'); // Replace characters that aren't allowed in filenames
-      const backupFilePath = `${franchise._filePath}_${timestamp}`;
+      const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, ''); // Remove '-', '_', 'T', 'Z', and ':' characters
+      const backupFilePath = `${franchise._filePath}${timestamp}`;
   
       try {
         fs.copyFileSync(franchise._filePath, backupFilePath);
