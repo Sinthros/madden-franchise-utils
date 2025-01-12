@@ -167,8 +167,10 @@ function init(validGameYears, options = {}) {
     const saveBackupFile = getYesOrNo(backupMessage);
   
     if (saveBackupFile) {
-      const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, ''); // Remove '-', '_', 'T', 'Z', and ':' characters
-      const backupFilePath = `${franchise._filePath}${timestamp}`;
+      const isoString = new Date().toISOString(); // Full ISO timestamp: YYYY-MM-DDTHH:mm:ss.sssZ
+      const timeOnly = isoString.slice(11, 23).replace(/[:.]/g, ''); // Extract HH:mm:ss.sss and remove ':' and '.'
+      const backupFilePath = `${franchise._filePath}${timeOnly}`;
+      
   
       try {
         fs.copyFileSync(franchise._filePath, backupFilePath);
