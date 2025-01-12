@@ -1,18 +1,15 @@
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const { tables } = require('../Utils/FranchiseTableId');
-const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 
 const MIN_EMPTY_PLAYERS = 650;
 
 const validGameYears = [FranchiseUtils.YEARS.M24,FranchiseUtils.YEARS.M25];
 
 console.log("This program will delete the lowest rated free agent players from your file in order to ensure you have enough empty player table rows.");
-console.log("You only need to use this if you're having an issue importing a custom Draft Class, due to a recent change EA made. Thanks, EA.");
+console.log("You only need to use this if you're having an issue importing a custom Draft Class.");
 console.log("If your Franchise File already has enough empty rows, then this program will tell you so and will exit.");
 
 const franchise = FranchiseUtils.init(validGameYears,{promptForBackup: true})
-
-
 
 franchise.on('ready', async function () {
 
