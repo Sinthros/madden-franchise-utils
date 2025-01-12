@@ -115,6 +115,19 @@ function getStatsTableName(position, playerStats, isCareer) {
     return `${prefix}${suffix}`;
 }
 
+function getTeamShortName(teamTable, teamIndex) {
+
+    if (teamIndex === 32) return FranchiseUtils.EMPTY_STRING;
+
+    const record = teamTable.records.find(record =>
+        !record.isEmpty && !FranchiseUtils.NFL_CONFERENCES.includes(record.DisplayName)
+        && record.TeamIndex === teamIndex)
+    if (record) return record.ShortName;
+
+    return FranchiseUtils.EMPTY_STRING;
+        
+}
+
 async function updateStats(franchise, isCareer) {
     const playerTable = franchise.getTableByUniqueId(tables.playerTable);
     const teamTable = franchise.getTableByUniqueId(tables.teamTable);
@@ -168,7 +181,8 @@ async function updateStats(franchise, isCareer) {
         
         if (!isCareer) {
             finalRecord.SEAS_YEAR = currentYear;
-            finalRecord.YearByYearTeamIndex = playerRecord.TeamIndex;
+            finalRecord.YEARBYYEARTEAMINDEX = playerRecord.TeamIndex;
+            finalRecord.TeamPrefixName = getTeamShortName(teamTable, playerRecord.TeamIndex);
         }
 
 
