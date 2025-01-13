@@ -1462,7 +1462,6 @@ async function deletePlayer(franchise, playerBinary) {
       for (const record of recordsToEmpty) {
         record.Player = ZERO_REF;
         if (Number(key) === tables.contractOfferTable) {
-          console.log("Yep")
           record.Team = ZERO_REF;
           record.Contract = ZERO_REF;
         }
