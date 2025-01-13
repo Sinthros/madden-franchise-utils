@@ -1433,7 +1433,8 @@ async function deletePlayer(franchise, playerBinary) {
     [tables.mainSigAbilityTable]: tables.signatureArrayTable, // Player abilities
     [tables.secondarySigAbilityTable]: tables.signatureArrayTable,
     [tables.playerAcquisitionEvaluationTable]: tables.playerAcquisitionEvaluationArrayTable, // Acquisition table
-    [tables.retirementAppointmentTable]: tables.retirementAppointmentArrayTable // Retirement table
+    [tables.retirementAppointmentTable]: tables.retirementAppointmentArrayTable, // Retirement table
+    [tables.contractOfferTable]: tables.contractOfferArrayTable, // Player contract offer table
   };
 
   //playerMerchTable
@@ -1460,6 +1461,11 @@ async function deletePlayer(franchise, playerBinary) {
 
       for (const record of recordsToEmpty) {
         record.Player = ZERO_REF;
+        if (Number(key) === tables.contractOfferTable) {
+          console.log("Yep")
+          record.Team = ZERO_REF;
+          record.Contract = ZERO_REF;
+        }
         const binary = getBinaryReferenceData(keyTable.header.tableId,record.index);
         await removeFromTable(arrayTable,binary);
         record.empty();
@@ -1619,16 +1625,29 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
     .sort((a, b) => a.OverallRating - b.OverallRating)
     .slice(0, Math.min(playersToDelete, finalRecords.length));
 
-  // Delete players
-  await Promise.all(
-    worstFreeAgents.map((freeAgentRecord) => {
+    for (const freeAgentRecord of worstFreeAgents) {
       const currentBinary = getBinaryReferenceData(
         playerTable.header.tableId,
         freeAgentRecord.index
       );
-      return deletePlayer(franchise, currentBinary);
-    })
-  );
+    
+      // Delete the player
+      await deletePlayer(franchise, currentBinary);
+    
+      // Call the next function on currentBinary
+      const references = getPlayerReferences(franchise, playerTable.header.tableId, freeAgentRecord);
+
+      if (references.length !== 0) {
+        if (references.length === 1 && references[0].name === 'PlayerMerchandiseImageInfo') continue;
+        console.log(`References remaining for ${freeAgentRecord.FirstName} ${freeAgentRecord.LastName} (Row ${freeAgentRecord.index}).`);
+        references.forEach((table) => {
+          console.log(`${table.tableId}: ${table.name}`);
+        })
+      }
+    }
+
+    await regenerateMarketingTables(franchise);
+    
 }
 
 
@@ -2126,6 +2145,11 @@ function removeSuffixes(name) {
   return cleanName.replace(/\s+(Jr|Sr|III|II|IV|V)$/g, '');
 }
 
+function getPlayerReferences(franchise, tableId, playerRecord) {
+  return franchise.getReferencesToRecord(tableId, playerRecord.index);
+
+}
+
 async function deleteCurrentDraftClass(franchise) {
   const tables = getTablesObject(franchise);
 
@@ -2426,6 +2450,7 @@ module.exports = {
     getRowAndTableIdFromRef,
     cleanJson,
     splitDecimal,
+    getPlayerReferences,
 
     getYesOrNo, // UTILITY FUNCTIONS
     getYesNoForceQuit,
