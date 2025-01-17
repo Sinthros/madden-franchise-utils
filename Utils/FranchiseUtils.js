@@ -2327,7 +2327,7 @@ async function addAssetNames(franchise,appendIndex = false) {
 
   for (const record of playerTable.records) {
     if (isValidPlayer(record)) {
-      if (isBlank(record.PLYR_ASSETNAME)) {
+      if (isBlank(record.PLYR_ASSETNAME) || (record.PLYR_ASSETNAME === '0')) {
         const formattedName = removeSuffixes(`${record.LastName}${record.FirstName}`).replace(/\s+/g, '');
         let generatedAsset = `${formattedName}_${record.PresentationId}`;
         if (appendIndex) generatedAsset += `_${record.index}`;
