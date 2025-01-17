@@ -2,7 +2,6 @@ const { getBinaryReferenceData } = require('madden-franchise/services/utilServic
 
 
 const FranchiseUtils = require('../Utils/FranchiseUtils');
-const ISON_FUNCTIONS = require('../isonParser/isonFunctions');
 const VISUAL_FUNCTIONS = require('../Utils/characterVisualsLookups/characterVisualFunctions');
 
 const VISUAL_KEYS_TO_REMOVE = [
@@ -57,7 +56,7 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
   const nextRecord = targetVisualsTable.header.nextRecordToUse;
   
   // If no rows are left, return
-  if (nextRecord > targetVisualsTable.header.recordCapacity) return;
+  if (nextRecord >= targetVisualsTable.header.recordCapacity) return;
 
   let jsonData;
   let genericHead;
@@ -96,7 +95,7 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
     FranchiseUtils.removeKeyFromJson(jsonData, key);
   });
 
-  ISON_FUNCTIONS.jsonVisualsToIson(targetVisualsTable,nextRecord,jsonData); // Set the data in the visuals table
+  targetVisualsTable.records[nextRecord].RawData = jsonData;
 
   targetRecord.CharacterVisuals = getBinaryReferenceData(targetVisualsTable.header.tableId, nextRecord);
 
@@ -182,6 +181,9 @@ sourceFranchise.on('ready', async function () {
 
     for (let i = 0; i < sortedPlayers.length; i++) {
       const player = sortedPlayers[i];
+      player.FirstName = FranchiseUtils.removeNonUTF8(player.FirstName);
+      player.LastName = FranchiseUtils.removeNonUTF8(player.LastName);
+      player.PLYR_ASSETNAME = FranchiseUtils.removeNonUTF8(player.PLYR_ASSETNAME);
       const targetRecord = FranchiseUtils.addRecordToTable(player, targetPlayerTable, { zeroColumns: ZERO_PLAYER_COLUMNS });
       await handleCharacterVisuals(player,targetRecord,FranchiseUtils.TABLE_NAMES.PLAYER); // Transfer visuals
 
