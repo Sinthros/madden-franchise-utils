@@ -15,6 +15,7 @@ const SOURCE_TABLES = FranchiseUtils.getTablesObject(sourceFranchise);
 const TARGET_TABLES = FranchiseUtils.getTablesObject(targetFranchise);
 
 let visualsLookup = {};
+let includeDraftPlayers = FranchiseUtils.getYesOrNo("\nDo you want to include the Draft Class - requires players in both classes to have the same asset name? (yes/no)");
 
 sourceFranchise.on('ready', async function () {
 	targetFranchise.on('ready', async function () {
@@ -33,7 +34,7 @@ sourceFranchise.on('ready', async function () {
 		
 		for(let i = 0; i < sourceNumRows; i++)
 		{
-			if (!FranchiseUtils.isValidPlayer(sourcePlayerTable.records[i]))
+			if (!FranchiseUtils.isValidPlayer(sourcePlayerTable.records[i], {includeDraftPlayers: includeDraftPlayers}))
 			{
 				continue;
 			}
@@ -53,7 +54,7 @@ sourceFranchise.on('ready', async function () {
 		for (let i = 0; i < targetNumRows; i++) 
 		{ 
 			// If it's an empty row or invalid player, skip this row
-			if (!FranchiseUtils.isValidPlayer(targetPlayerTable.records[i]))
+			if (!FranchiseUtils.isValidPlayer(targetPlayerTable.records[i], {includeDraftPlayers: includeDraftPlayers}))
 			{
 				continue;
 			}
