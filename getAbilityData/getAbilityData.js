@@ -33,7 +33,7 @@ const franchise = FranchiseUtils.selectFranchiseFile(gameYear,false,true);
 // Function I used to manually get certain data from FTC tables into an array, can be modified to be used however you want
 async function getFtcReferences() {
 
-    const currentTable = franchise.getTableById(1846); // Whatever table you're working with
+    const currentTable = franchise.getTableById(603); // Whatever table you're working with
                                                                                 // Change to getTableByUniqueId if using
     await currentTable.readRecords();
     const currentTableId = currentTable.header.tableId //Table ID
@@ -79,13 +79,13 @@ async function getFtcReferences() {
   };
 
 franchise.on('ready', async function () {
-    const json = await getFtcReferences();
+    //const json = await getFtcReferences();
     // Convert array to JSON string
-const teamIdentityStr = JSON.stringify(json, null, 2); // `null, 2` formats the JSON nicely
+//const teamIdentityStr = JSON.stringify(json, null, 2); // `null, 2` formats the JSON nicely
 
 // Write the JSON string to a file
-fs.writeFileSync('output.json', teamIdentityStr, 'utf8');
-process.exit(0)
+//fs.writeFileSync('output.json', teamIdentityStr, 'utf8');
+//process.exit(0)
 
     const SignatureAbilitesTable = franchise.getTableByUniqueId(tables.signatureAbilitesFtcTable);
     const SignatureByPosition = franchise.getTableByUniqueId(tables.signatureByPositionFtcTable);
