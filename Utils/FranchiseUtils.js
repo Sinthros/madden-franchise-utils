@@ -1793,8 +1793,6 @@ function generateBodyType(playerRecord)
     
     return 'Thin';
   }
-
-  console.log("Nothing matched for player " + playerRecord['FirstName'] + " " + playerRecord['LastName'] + " with position " + position);
   return 'Standard';
 }
 
