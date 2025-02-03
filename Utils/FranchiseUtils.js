@@ -1719,6 +1719,83 @@ function approximateBodyType(visualsObject) {
     return 'Thin';
 }
 
+// Function to generate a body type based on player info
+function generateBodyType(playerRecord)
+{
+  const position = playerRecord['Position'];
+  const height = playerRecord['Height'];
+  const weight = playerRecord['Weight'] + 160;
+
+  if(SPECIAL_TEAM_POSITIONS.includes(position))
+  {
+    return 'Standard';
+  }
+
+  if(position === 'QB' || position === 'WR')
+  {
+    if(weight >= 210 && height <= 71)
+    {
+      return 'Muscular';
+    }
+    else if(height >= 76)
+    {
+      return 'Thin';
+    }
+
+    return 'Standard';
+  }
+
+  if(OLINE_POSITIONS.includes(position))
+  {
+    if(weight >= 300)
+    {
+      return 'Heavy';
+    }
+
+    return 'Muscular';
+  }
+
+  if(LINEBACKER_POSITIONS.includes(position) || position === 'TE' || position === 'FB')
+  {
+    return 'Muscular';
+  }
+
+  if(DEFENSIVE_LINE_POSITIONS.includes(position))
+  {
+    if(weight >= 275)
+    {
+      return 'Heavy';
+    }
+
+    return 'Muscular';
+  }
+
+  if(position === 'HB')
+  {
+    if(weight >= 220)
+    {
+      return 'Muscular';
+    }
+    else if(weight >= 180)
+    {
+      return 'Standard';
+    }
+
+    return 'Thin';
+  }
+
+  if(DEFENSIVE_BACK_POSITIONS.includes(position))
+  {
+    if(weight >= 180)
+    {
+      return 'Standard';
+    }
+    
+    return 'Thin';
+  }
+  return 'Standard';
+}
+
 function getRowAndTableIdFromRef(binary) {
   const row = bin2Dec(binary.slice(15));
   const tableId = bin2Dec(binary.slice(0,15));
@@ -2446,6 +2523,7 @@ module.exports = {
     removePlayerVisuals,
     fixDraftPicks,
     approximateBodyType,
+    generateBodyType,
     getRowAndTableIdFromRef,
     cleanJson,
     splitDecimal,
