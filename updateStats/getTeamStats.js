@@ -1,20 +1,21 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs'); 
 
-
+const YEAR = 2023;
+const SUFFIX = `/season/${YEAR}/seasontype/2`
 async function fetchAllTeamStats() {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
     const urls = {
-        offense: 'https://www.espn.com/nfl/stats/team',
-        offensePassing: 'https://www.espn.com/nfl/stats/team/_/stat/passing',
-        offenseRushing: 'https://www.espn.com/nfl/stats/team/_/stat/rushing',
-        offenseDowns: 'https://www.espn.com/nfl/stats/team/_/stat/downs',
-        defense: 'https://www.espn.com/nfl/stats/team/_/view/defense',
-        defensePassing: 'https://www.espn.com/nfl/stats/team/_/view/defense/stat/passing',
-        special: 'https://www.espn.com/nfl/stats/team/_/view/special',
-        turnovers: 'https://www.espn.com/nfl/stats/team/_/view/turnovers'
+        offense: 'https://www.espn.com/nfl/stats/team/_' + SUFFIX,
+        offensePassing: 'https://www.espn.com/nfl/stats/team/_/stat/passing' + SUFFIX,
+        offenseRushing: 'https://www.espn.com/nfl/stats/team/_/stat/rushing' + SUFFIX,
+        offenseDowns: 'https://www.espn.com/nfl/stats/team/_/stat/downs' + SUFFIX,
+        defense: 'https://www.espn.com/nfl/stats/team/_/view/defense' + SUFFIX,
+        defensePassing: 'https://www.espn.com/nfl/stats/team/_/view/defense/stat/passing' + SUFFIX,
+        special: 'https://www.espn.com/nfl/stats/team/_/view/special' + SUFFIX,
+        turnovers: 'https://www.espn.com/nfl/stats/team/_/view/turnovers' + SUFFIX
     };
 
     const stats = {};
