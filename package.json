@@ -10,7 +10,7 @@
     "cheerio": "^1.0.0-rc.12",
     "lodash": "^4.17.21",
     "lz4": "^0.6.5",
-    "madden-franchise": "^3.5.0",
+    "madden-franchise": "^3.5.1",
     "papaparse": "^5.4.1",
     "prompt-sync": "^4.2.0",
     "puppeteer": "^15.5.0",

@@ -712,7 +712,7 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
 
   targetRecord.GenericHeadAssetName = typeof genericHead !== 'undefined' ? genericHead : "";
 
-  if (is24To25) targetRecord.CharacterBodyType = FranchiseUtils.approximateBodyType(jsonData);
+  if (is24To25) targetRecord.CharacterBodyType = FranchiseUtils.generateBodyType(targetRecord);
 
 }
 
