@@ -2034,6 +2034,15 @@ function isValidPlayer(playerRecord, options = {}) {
          (includeLegends || !playerRecord.IsLegend);
 };
 
+function isValidDraftPlayer(playerRecord) {
+  return isValidPlayer(playerRecord, {includeDraftPlayers: true,
+     includeSignedPlayers: false,
+     includeFreeAgents: false,
+     includePracticeSquad: false, 
+     includeExpiringPlayers: false});
+     
+};
+
 function isReferenceColumn(record, column, includeZeroRef = false, includeFtcRefs = false) {
   const field = record.fields[column];
   const currentValue = record[column];
@@ -2645,6 +2654,7 @@ module.exports = {
     findKeyByValue,
     removeSuffixes,
     isValidPlayer,
+    isValidDraftPlayer,
     isReferenceColumn,
     isFtcReference,
     validateGameYears,
