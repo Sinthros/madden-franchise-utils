@@ -20,14 +20,28 @@ franchise.on('ready', async function () {
 
 	await FranchiseUtils.readTableRecords(tablesList);
 
-	const includeDraftClass = FranchiseUtils.getYesOrNo("\nWould you like to also update body types for draft class players? Enter yes or no.");
+	const includeDraftClass = FranchiseUtils.getYesOrNo("\nWould you like to update body types for draft class players? Enter yes or no.");
+	let draftClassOnly = false;
+
+
+	if(includeDraftClass)
+	{
+		draftClassOnly = FranchiseUtils.getYesOrNo("\nWould you like to only update draft class players and not active players? Enter yes or no.");
+	}
 
 	// Number of records
 	const playerCount = playerTable.header.recordCapacity;
 
 	for (let i = 0; i < playerCount; i++) 
 	{
-		if(!FranchiseUtils.isValidPlayer(playerTable.records[i], {includeDraftPlayers: includeDraftClass}))
+		if(draftClassOnly)
+		{
+			if(!FranchiseUtils.isValidDraftPlayer(playerTable.records[i]))
+			{
+				continue;
+			}
+		}
+		else if(!FranchiseUtils.isValidPlayer(playerTable.records[i], {includeDraftPlayers: includeDraftClass}))
 		{
 			continue;
 		}
