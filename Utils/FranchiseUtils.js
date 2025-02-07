@@ -968,17 +968,29 @@ async function removeFromTable(table, binaryToRemove) {
   }
 }
 
-function addToArrayTable(table, binaryToAdd) {
-  const record = table.records[0];
+function addToArrayTable(table, binaryToAdd, row = 0, checkDuplicate = false) {
+  const record = table.records[row];
   const columns = getColumnNames(table);
 
+  if (checkDuplicate) {
+    // Extract only the relevant column values for comparison
+    const existingValues = columns.map(column => record[column]);
+
+    // Check if the value already exists in the table
+    if (existingValues.includes(binaryToAdd)) {
+      return;
+    }
+
+  }
+
+  // Add value to the first available slot
   for (const column of columns) {
     if (record[column] === ZERO_REF) {
       record[column] = binaryToAdd;
       break;
     }
   }
-};
+}
 
 async function recalculateRosterSizes(playerTable, teamTable) {
 
@@ -1352,6 +1364,82 @@ async function removeControl(teamRow, franchise) {
 
 }
 
+async function removeFreeAgentFromTables(franchise, playerBinary) {  
+  const tables = getTablesObject(franchise);
+  const playerData = getRowAndTableIdFromRef(playerBinary);
+
+  const playerTable = franchise.getTableById(playerData.tableId);
+  await playerTable.readRecords();
+
+  const playerRecord = playerTable.records[playerData.row];
+
+  const tableIds = [ // Tables to remove player binary from
+    tables.depthChartPlayerTable, // Depth chart array
+    tables.draftedPlayersArrayTable, // Drafted players array
+    tables.marketedPlayersArrayTable, // Marketed players array
+    tables.topMarketedPlayers, // Top marketed players array
+    tables.drillCompletedTable, // Drill completed array
+    tables.offenseActiveAbilityArrayTable, // Active abilities tables
+    tables.defenseActiveAbilityArrayTable,
+    tables.miniGameCompletedArrayTable, // Minicamp tables
+    tables.focusTrainingTable, // Focus training tables
+    tables.proBowlRosterTable // Pro bowl roster
+  ];
+
+
+  // Read all tables
+  const tableArray = tableIds.map(id => franchise.getTableByUniqueId(id));
+  await Promise.all(tableArray.map(table => table.readRecords()));
+
+  // Remove player binary from each table
+  await Promise.all(tableArray.map(table => removeFromTable(table, playerBinary)));
+}
+
+// Removes a players binary from a table and the associated arrayTable (ie PlayerResignNegotiation and PlayerResignNegotiation[])
+// If table is null, arrayTable will clear the player binary. Else, it would clear the binary of the table row reference.
+async function removePlayerFromTableAndArray(playerBinary, table, arrayTable, column = 'Player') {
+
+  if (arrayTable) {
+    try { // If we can't read the tables, they may dynamically generate and not exist at this time
+      await arrayTable.readRecords();
+    } catch (e) {
+      //
+    }
+  }
+
+  if (table) {
+    try { // If we can't read the tables, they may dynamically generate and not exist at this time
+      await table.readRecords();
+    } catch (e) {
+      //
+    }
+
+    const recordsToEmpty = table.records.filter(record => record[column] === playerBinary);
+    const tableName = table.header.name;
+
+    for (const record of recordsToEmpty) {
+      record[column] = Constants.ZERO_REF;
+      if (tableName === 'ContractOffer') {
+        record.Team = Constants.ZERO_REF;
+        record.Contract = Constants.ZERO_REF;
+        record.Declined = false;
+        record.IsNegotiated = false;
+        record.IsSigned = false;
+        record.Depth = 0;
+        record.PlayerInterest = 0;
+        record.TeamDecision = 0;
+      }
+      const binary = getBinaryReferenceData(table.header.tableId,record.index);
+      if (arrayTable) await removeFromTable(arrayTable,binary);
+      record.empty();
+    }
+  }
+  // Else, remove the player binary directly from the array table
+  else if (arrayTable) {
+    await removeFromTable(arrayTable,playerBinary);
+  }
+}
+
 async function removePlayerVisuals(franchise,playerRecord) {
   const visualsBinary = playerRecord.CharacterVisuals;
   if (visualsBinary !== ZERO_REF && !visualsBinary.startsWith('1')) {
@@ -1720,10 +1808,18 @@ function approximateBodyType(visualsObject) {
 }
 
 function getRowAndTableIdFromRef(binary) {
-  const row = bin2Dec(binary.slice(15));
-  const tableId = bin2Dec(binary.slice(0,15));
+  const row = getRowFromRef(binary)
+  const tableId = getTableIdFromRef(binary)
 
   return { row, tableId };
+}
+
+function getRowFromRef(binary) {
+  return bin2Dec(binary.slice(15));
+}
+
+function getTableIdFromRef(binary) {
+  return bin2Dec(binary.slice(0,15));
 }
 
 /**
@@ -2447,9 +2543,12 @@ module.exports = {
     fixDraftPicks,
     approximateBodyType,
     getRowAndTableIdFromRef,
+    getRowFromRef,
+    getTableIdFromRef,
     cleanJson,
     splitDecimal,
     getPlayerReferences,
+    removeFreeAgentFromTables,
 
     getYesOrNo, // UTILITY FUNCTIONS
     getYesNoForceQuit,
