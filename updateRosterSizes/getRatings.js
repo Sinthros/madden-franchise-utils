@@ -5,7 +5,7 @@ const validGameYears = [
   FranchiseUtils.YEARS.M25,
 ];
 
-console.log("This program will update player ratings from one franchise file into another.");
+console.log("This program will export player ratings into a json");
 
 const franchise = FranchiseUtils.init(validGameYears, {customYearMessage: "Select the Madden version of your SOURCE Franchise file. Valid inputs are 24 and 25.", promptForBackup: false, isAutoUnemptyEnabled: false});
 
@@ -22,8 +22,13 @@ franchise.on('ready', async function () {
   
   // Filter for columns with "Rating" in the name but not "Original", or includes "Grade"
   const filteredColumns = columns.filter(
-    (column) => (column.includes("Rating") && !column.includes("Original") && column !== 'RunningStyleRating' && column !== 'IsAGradePlayer') || column.includes("Grade")
-  );
+    (column) => 
+      ((column.includes("Rating") && 
+        !column.includes("Original") && 
+        column !== "RunningStyleRating" && 
+        column !== "IsAGradePlayer") 
+      || (column.includes("Grade") && column !== "IsAGradePlayer"))
+  );  
   
   for (const record of playerTable.records) {
     if (!FranchiseUtils.isValidPlayer(record)) continue;
