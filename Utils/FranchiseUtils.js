@@ -2660,6 +2660,7 @@ module.exports = {
     validateGameYears,
     startsWithNumber,
     getCharacterAfterNthUnderscore,
+    isBlank,
     EXIT_PROGRAM,
 
     ZERO_REF, // CONST VARIABLES
