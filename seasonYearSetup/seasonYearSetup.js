@@ -6,7 +6,7 @@ const validGameYears = [
     FranchiseUtils.YEARS.M25
 ];
 
-console.log("This program will set the current season year.");
+console.log(`This program will set the current season year. Madden ${FranchiseUtils.formatListString(validGameYears)} franchise files are supported.`);
 
 // Super Bowl dictionary: maps each year to the Super Bowl number
 const superBowlMap = {};
