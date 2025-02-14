@@ -48,7 +48,7 @@ const equipmentCols = ['PLYR_EYEPAINT', 'PlayerVisMoveType', 'PLYR_RIGHTARMSLEEV
 async function copyEquipment(targetRow, sourceRow, playerTable)
 {
 	// Get all columns in the table
-	const keys = Object.keys(playerTable.records[sourceRow]);
+	const keys = Object.keys(playerTable.records[sourceRow].fields);
 	
 	// Not all columns are present in all games, so we must check if the column exists before copying
 	for (let i = 0; i < equipmentCols.length; i++)
@@ -342,7 +342,7 @@ franchise.on('ready', async function () {
 	// Regenerate visuals if we are using the player table strategy and not the JSON strategy
 	if(!useJsonStrategy)
 	{
-		console.log("\nRegenerating Character Visuals for draft class players...");
+		console.log("\nRegenerating CharacterVisuals for draft class players...");
 
 		// Iterate through the draft rows array and regenerate visuals for each player
 		for (let i = 0; i < draftRows.length; i++)
