@@ -316,30 +316,8 @@ function getPlayoffDraftOrder(teamTable, seasonGameTable, divisionTeamTable)
             const firstSos = TiebreakerCalc.getTeamSos(a, seasonGameTable, teamTable);
             const secondSos = TiebreakerCalc.getTeamSos(b, seasonGameTable, teamTable);
 
-            if(teamTable.records[a]['DisplayName'] === 'Buccaneers')
-            {
-                console.log('Buccaneers SOS: ' + firstSos);
-                console.log(`${teamTable.records[b]['DisplayName']} SOS: ` + secondSos);
-            }
-            else if(teamTable.records[b]['DisplayName'] === 'Buccaneers')
-            {
-                console.log('Buccaneers SOS: ' + secondSos);
-                console.log(`${teamTable.records[a]['DisplayName']} SOS: ` + firstSos);
-            }
-
             if(firstSos === secondSos)
-            {
-                if(teamTable.records[a]['DisplayName'] === 'Buccaneers')
-                {
-                    console.log('Buccaneers SOS: ' + firstSos);
-                    console.log(`${teamTable.records[b]['DisplayName']} SOS: ` + secondSos);
-                }
-                else if(teamTable.records[b]['DisplayName'] === 'Buccaneers')
-                {
-                    console.log('Buccaneers SOS: ' + secondSos);
-                    console.log(`${teamTable.records[a]['DisplayName']} SOS: ` + firstSos);
-                }
-                
+            {                
                 return getRemainingTiebreaker(a, b, seasonGameTable, teamTable, divisionTeamTable);
             }
 
@@ -499,7 +477,7 @@ franchise.on('ready', async function () {
     if(!(seasonInfoTable.records[0]['CurrentWeekType'] === 'OffSeason' && seasonInfoTable.records[0]['CurrentOffseasonStage'] === 1))
     {
         console.log("\nThis file is not in Staff Week. This tool can only be run during Staff Week.");
-        //FranchiseUtils.EXIT_PROGRAM();
+        FranchiseUtils.EXIT_PROGRAM();
     }
 
     // Array of all draft picks for this year
