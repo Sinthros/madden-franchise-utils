@@ -13,8 +13,264 @@ console.log("This program will recalculate the draft order, fixing issues relate
 const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
+// Function to check if two teams are division rivals
+function checkDivisionRivals(a, b, seasonGameTable)
+{
+    const numGameRows = seasonGameTable.header.recordCapacity;
+
+    const aVsBGames = [];
+
+    for(let i = 0; i < numGameRows; i++)
+    {
+        if(seasonGameTable.records[i].isEmpty || seasonGameTable.records[i]['IsPractice'] || seasonGameTable.records[i]['SeasonWeekType'] !== 'RegularSeason')
+        {
+            continue;
+        }
+
+        const awayTeamRow = FranchiseUtils.bin2Dec(seasonGameTable.records[i]['AwayTeam'].slice(15));
+        const homeTeamRow = FranchiseUtils.bin2Dec(seasonGameTable.records[i]['HomeTeam'].slice(15));
+
+        if((awayTeamRow === a && homeTeamRow === b) || (awayTeamRow === b && homeTeamRow === a))
+        {
+            aVsBGames.push(i);
+        }
+    }
+
+    if(aVsBGames.length >= 2)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+function checkSameConference(a, b, divisionTeamTable)
+{
+    const arraySizes = divisionTeamTable.arraySizes;
+    const arraySize = divisionTeamTable.header.recordCapacity;
+
+    let aConf;
+    let bConf;
+
+    for(let i = 0; i < arraySize; i++)
+    {
+        if(divisionTeamTable.records[i].isEmpty)
+        {
+            continue;
+        }
+        for(let j = 0; j < arraySizes[i]; j++)
+        {
+            const teamRow = FranchiseUtils.bin2Dec(divisionTeamTable.records[i][`Team${j}`].slice(15));
+            if(teamRow === a)
+            {
+                if(i < 4)
+                {
+                    aConf = 0;
+                }
+                else
+                {
+                    aConf = 1;
+                }
+            }
+            else if(teamRow === b)
+            {
+                if(i < 4)
+                {
+                    bConf = 0;
+                }
+                else
+                {
+                    bConf = 1;
+                }
+            }
+        }
+    }
+
+    return aConf === bConf;
+}
+
+function checkHeadToHead(a, b, seasonGameTable)
+{
+    const numGameRows = seasonGameTable.header.recordCapacity;
+
+    let aWins = 0;
+    let bWins = 0;
+
+    for(let i = 0; i < numGameRows; i++)
+    {
+        if(seasonGameTable.records[i].isEmpty || seasonGameTable.records[i]['IsPractice'] || seasonGameTable.records[i]['SeasonWeekType'] !== 'RegularSeason')
+        {
+            continue;
+        }
+
+        const awayTeamRow = FranchiseUtils.bin2Dec(seasonGameTable.records[i]['AwayTeam'].slice(15));
+        const homeTeamRow = FranchiseUtils.bin2Dec(seasonGameTable.records[i]['HomeTeam'].slice(15));
+
+        if((awayTeamRow === a && homeTeamRow === b))
+        {
+            if(seasonGameTable.records[i]['AwayScore'] > seasonGameTable.records[i]['HomeScore'])
+            {
+                aWins++;
+            }
+            else if(seasonGameTable.records[i]['AwayScore'] < seasonGameTable.records[i]['HomeScore'])
+            {
+                bWins++;
+            }
+            else
+            {
+                aWins += 0.5;
+                bWins += 0.5;
+            }
+        }
+        else if((awayTeamRow === b && homeTeamRow === a))
+        {
+            if(seasonGameTable.records[i]['AwayScore'] > seasonGameTable.records[i]['HomeScore'])
+            {
+                bWins++;
+            }
+            else if(seasonGameTable.records[i]['AwayScore'] < seasonGameTable.records[i]['HomeScore'])
+            {
+                aWins++;
+            }
+            else
+            {
+                aWins += 0.5;
+                bWins += 0.5;
+            }
+        }
+    }
+
+    const aHeadToHead = aWins / (aWins + bWins);
+    const bHeadToHead = bWins / (aWins + bWins);
+
+    return aHeadToHead - bHeadToHead;
+}
+
+function checkCommonGames(a, b, seasonGameTable, teamTable, divisionRivals = false)
+{
+    let games = TiebreakerCalc.enumerateGames(a, seasonGameTable);
+    let secondGames = TiebreakerCalc.enumerateGames(b, seasonGameTable);
+    
+    let commonOpps = TiebreakerCalc.getCommonOpponents(a, b, games, secondGames);
+    
+
+    let team1CommonWinPercentage = TiebreakerCalc.getCommonWinPercentage(a, games, commonOpps);
+    let team2CommonWinPercentage = TiebreakerCalc.getCommonWinPercentage(b, secondGames, commonOpps);
+
+    let team1CommonGameCount = TiebreakerCalc.getCommonGameCount(a, games, commonOpps);
+    let team2CommonGameCount = TiebreakerCalc.getCommonGameCount(b, secondGames, commonOpps);
+
+    if(!divisionRivals && (team1CommonGameCount < 4 || team2CommonGameCount < 4))
+    {
+        return 0;
+    }
+
+    return team1CommonWinPercentage - team2CommonWinPercentage;
+}
+
+// Function to calculate tiebreakers after SOS
+function getRemainingTiebreaker(a, b, seasonGameTable, teamTable, divisionTeamTable)
+{
+    const divisionRivals = checkDivisionRivals(a, b, seasonGameTable);
+    const sameConference = checkSameConference(a, b, divisionTeamTable);
+
+    if(divisionRivals)
+    {
+        return doDivisionTiebreaker(a, b, seasonGameTable, teamTable);
+    }
+
+    if(sameConference)
+    {
+        return doConferenceTiebreaker(a, b, seasonGameTable, teamTable);
+    }
+
+    const headToHead = checkHeadToHead(a, b, seasonGameTable);
+
+    if(headToHead !== 0)
+    {
+        return headToHead;
+    }
+
+    const commonGames = checkCommonGames(a, b, seasonGameTable, teamTable);
+
+    if(commonGames !== 0)
+    {
+        return commonGames;
+    }
+
+    return TiebreakerCalc.getTeamSov(a, seasonGameTable, teamTable) - TiebreakerCalc.getTeamSov(b, seasonGameTable, teamTable);
+}
+
+function doDivisionTiebreaker(a, b, seasonGameTable, teamTable)
+{
+    const headToHead = checkHeadToHead(a, b, seasonGameTable);
+
+    if(headToHead !== 0)
+    {
+        return headToHead;
+    }
+
+    const commonGames = checkCommonGames(a, b, seasonGameTable, teamTable, true);
+
+    if(commonGames !== 0)
+    {
+        return commonGames;
+    }
+
+    const confA = teamTable.records[a]['ConfWin'] + 0.5 * (teamTable.records[a]['ConfTie']) / (teamTable.records[a]['ConfLoss'] + teamTable.records[a]['ConfTie'] + teamTable.records[a]['ConfWin']);
+    const confB = teamTable.records[b]['ConfWin'] + 0.5 * (teamTable.records[b]['ConfTie']) / (teamTable.records[b]['ConfLoss'] + teamTable.records[b]['ConfTie'] + teamTable.records[b]['ConfWin']);
+
+    if(confA !== confB)
+    {
+        return confA - confB;
+    }
+
+    const sovDiff = TiebreakerCalc.getTeamSov(a, seasonGameTable, teamTable) - TiebreakerCalc.getTeamSov(b, seasonGameTable, teamTable);
+
+    if(sovDiff !== 0)
+    {
+        return sovDiff;
+    }
+
+    return TiebreakerCalc.getTeamSos(a, seasonGameTable, teamTable) - TiebreakerCalc.getTeamSos(b, seasonGameTable, teamTable);
+}
+
+function doConferenceTiebreaker(a, b, seasonGameTable, teamTable)
+{
+    const headToHead = checkHeadToHead(a, b, seasonGameTable);
+
+    if(headToHead !== 0)
+    {
+        return headToHead;
+    }
+
+    const confA = teamTable.records[a]['ConfWin'] + 0.5 * (teamTable.records[a]['ConfTie']) / (teamTable.records[a]['ConfLoss'] + teamTable.records[a]['ConfTie'] + teamTable.records[a]['ConfWin']);
+    const confB = teamTable.records[b]['ConfWin'] + 0.5 * (teamTable.records[b]['ConfTie']) / (teamTable.records[b]['ConfLoss'] + teamTable.records[b]['ConfTie'] + teamTable.records[b]['ConfWin']);
+
+    if(confA !== confB)
+    {
+        return confA - confB;
+    }
+
+    const commonGames = checkCommonGames(a, b, seasonGameTable, teamTable);
+
+    if(commonGames !== 0)
+    {
+        return commonGames;
+    }
+
+    const sovDiff = TiebreakerCalc.getTeamSov(a, seasonGameTable, teamTable) - TiebreakerCalc.getTeamSov(b, seasonGameTable, teamTable);
+
+    if(sovDiff !== 0)
+    {
+        return sovDiff;
+    }
+
+    return TiebreakerCalc.getTeamSos(a, seasonGameTable, teamTable) - TiebreakerCalc.getTeamSos(b, seasonGameTable, teamTable);
+}
+
 // Function to get the playoff draft order
-function getPlayoffDraftOrder(teamTable, seasonGameTable)
+function getPlayoffDraftOrder(teamTable, seasonGameTable, divisionTeamTable)
 {
     let playoffTeams = [];
     let wildCardLosers = [];
@@ -60,6 +316,33 @@ function getPlayoffDraftOrder(teamTable, seasonGameTable)
             const firstSos = TiebreakerCalc.getTeamSos(a, seasonGameTable, teamTable);
             const secondSos = TiebreakerCalc.getTeamSos(b, seasonGameTable, teamTable);
 
+            if(teamTable.records[a]['DisplayName'] === 'Buccaneers')
+            {
+                console.log('Buccaneers SOS: ' + firstSos);
+                console.log(`${teamTable.records[b]['DisplayName']} SOS: ` + secondSos);
+            }
+            else if(teamTable.records[b]['DisplayName'] === 'Buccaneers')
+            {
+                console.log('Buccaneers SOS: ' + secondSos);
+                console.log(`${teamTable.records[a]['DisplayName']} SOS: ` + firstSos);
+            }
+
+            if(firstSos === secondSos)
+            {
+                if(teamTable.records[a]['DisplayName'] === 'Buccaneers')
+                {
+                    console.log('Buccaneers SOS: ' + firstSos);
+                    console.log(`${teamTable.records[b]['DisplayName']} SOS: ` + secondSos);
+                }
+                else if(teamTable.records[b]['DisplayName'] === 'Buccaneers')
+                {
+                    console.log('Buccaneers SOS: ' + secondSos);
+                    console.log(`${teamTable.records[a]['DisplayName']} SOS: ` + firstSos);
+                }
+                
+                return getRemainingTiebreaker(a, b, seasonGameTable, teamTable, divisionTeamTable);
+            }
+
             return firstSos - secondSos;
         }
         
@@ -72,6 +355,11 @@ function getPlayoffDraftOrder(teamTable, seasonGameTable)
             const firstSos = TiebreakerCalc.getTeamSos(a, seasonGameTable, teamTable);
             const secondSos = TiebreakerCalc.getTeamSos(b, seasonGameTable, teamTable);
 
+            if(firstSos === secondSos)
+            {
+                return getRemainingTiebreaker(a, b, seasonGameTable, teamTable, divisionTeamTable);
+            }
+
             return firstSos - secondSos;
         }
         
@@ -83,6 +371,11 @@ function getPlayoffDraftOrder(teamTable, seasonGameTable)
         {
             const firstSos = TiebreakerCalc.getTeamSos(a, seasonGameTable, teamTable);
             const secondSos = TiebreakerCalc.getTeamSos(b, seasonGameTable, teamTable);
+
+            if(firstSos === secondSos)
+            {
+                return getRemainingTiebreaker(a, b, seasonGameTable, teamTable, divisionTeamTable);
+            }
 
             return firstSos - secondSos;
         }
@@ -100,7 +393,8 @@ async function calculateTeamDraftPositions(franchise, teamPositions)
 {
     const teamTable = franchise.getTableByUniqueId(tables.teamTable);
     const seasonGameTable = franchise.getTableByUniqueId(tables.seasonGameTable);
-    await FranchiseUtils.readTableRecords([teamTable, seasonGameTable]);
+    const divisionTeamTable = franchise.getTableByUniqueId(tables.divisionTeamTable);
+    await FranchiseUtils.readTableRecords([teamTable, seasonGameTable, divisionTeamTable]);
 
     const numTeamRows = teamTable.header.recordCapacity;
 
@@ -123,6 +417,11 @@ async function calculateTeamDraftPositions(franchise, teamPositions)
             const firstSos = TiebreakerCalc.getTeamSos(a, seasonGameTable, teamTable);
             const secondSos = TiebreakerCalc.getTeamSos(b, seasonGameTable, teamTable);
 
+            if(firstSos === secondSos)
+            {
+                return getRemainingTiebreaker(a, b, seasonGameTable, teamTable, divisionTeamTable);
+            }
+
             return firstSos - secondSos;
         }
         
@@ -130,7 +429,7 @@ async function calculateTeamDraftPositions(franchise, teamPositions)
     });
 
     // Concatenat the playoff team order
-    const playoffTeams = getPlayoffDraftOrder(teamTable, seasonGameTable);
+    const playoffTeams = getPlayoffDraftOrder(teamTable, seasonGameTable, divisionTeamTable);
     teams = teams.concat(playoffTeams);
 
     // Assign draft positions 0-31 to the teams
@@ -200,7 +499,7 @@ franchise.on('ready', async function () {
     if(!(seasonInfoTable.records[0]['CurrentWeekType'] === 'OffSeason' && seasonInfoTable.records[0]['CurrentOffseasonStage'] === 1))
     {
         console.log("\nThis file is not in Staff Week. This tool can only be run during Staff Week.");
-        FranchiseUtils.EXIT_PROGRAM();
+        //FranchiseUtils.EXIT_PROGRAM();
     }
 
     // Array of all draft picks for this year
