@@ -31,7 +31,6 @@ async function importTables(tableToEdit, filePath) {
 }
 
 
-
 franchise.on('ready', async function () {
  
     console.log("Now working on patching your file...");
@@ -90,6 +89,8 @@ franchise.on('ready', async function () {
     cutDayStartReactionTable,
     seasonInfoTable
     } = tablestoRead;
+    const cutDayTable = franchise.getTableByName("CutDay_CutListRequest");
+    await cutDayTable.readRecords();
     
     // Pass the tables to `readTableRecords`
     await FranchiseUtils.readTableRecords(Object.values(tablestoRead));
@@ -190,6 +191,26 @@ franchise.on('ready', async function () {
     const transferSalCapIncrease = FranchiseUtils.getYesOrNo("Would you like to add Sabo's year-by-year Salary Cap increases? Enter yes or no. You should enter yes unless specifically instructed otherwise.");
     if (transferSalCapIncrease) {
         await importTables(salCapIncreasePerYearTable,`SalaryCapIncreases.xlsx`);
+    }
+
+    for (const record of cutDayTable.records) {
+        if (!record.isEmpty) continue;
+        record.DefaultResponse = FranchiseUtils.ZERO_REF;
+        record.TeamRoster = FranchiseUtils.ZERO_REF;
+        record.TeamRef = FranchiseUtils.ZERO_REF;
+        record.DelegateResponse = FranchiseUtils.ZERO_REF;
+        record.CutPlayerResponse = FranchiseUtils.ZERO_REF;
+        record.CutDayEvalRef = FranchiseUtils.ZERO_REF;
+        record.TargetUser = FranchiseUtils.ZERO_REF;
+        record.Commands = FranchiseUtils.ZERO_REF;
+        record.Priority = 0;
+        record.ResolveTime = 0;
+        record.DesiredRosterSize = 0;
+        record.SeenByUser = false;
+        record.IsSubmittable = false;
+        record.CanSubmitResponse = false;
+
+
     }
 
     console.log("Successfully updated your file.");
