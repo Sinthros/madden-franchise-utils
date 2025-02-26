@@ -130,6 +130,9 @@ function getTeamSov(teamRow, seasonGameTable, teamTable)
 
     let teamSov = sovGames.length === 0 ? 0 : calculateSov(sovGames, teamTable);
 
+    // Round to 3 decimal places
+    teamSov = Math.round(teamSov * 1000) / 1000;
+
     return teamSov;
 }
 
@@ -138,10 +141,153 @@ function getTeamSos(teamRow, seasonGameTable, teamTable)
     let games = enumerateGames(teamRow, seasonGameTable, true);
     let teamSos = calculateSos(games, teamRow, teamTable);
 
+    // Round to 3 decimal places
+    teamSos = Math.round(teamSos * 1000) / 1000;
+
     return teamSos;
+}
+
+function getCommonOpponents(teamRow, secondTeamRow, games, secondGames)
+{
+    let commonOpponents = [];
+
+    for(let i = 0; i < games.length; i++)
+    {
+        let game = games[i];
+        let homeTeamRow = FranchiseUtils.bin2Dec(game['HomeTeam'].slice(15));
+        let awayTeamRow = FranchiseUtils.bin2Dec(game['AwayTeam'].slice(15));
+
+        let opponentRow = homeTeamRow === teamRow ? awayTeamRow : homeTeamRow;
+
+        if(secondGames.some(g => FranchiseUtils.bin2Dec(g['HomeTeam'].slice(15)) === opponentRow || FranchiseUtils.bin2Dec(g['AwayTeam'].slice(15)) === opponentRow))
+        {
+            if(!commonOpponents.includes(opponentRow) && opponentRow !== teamRow && opponentRow !== secondTeamRow)
+            {
+                commonOpponents.push(opponentRow);
+            }
+        }
+    }
+
+    return commonOpponents;
+}
+
+function getCommonWinPercentage(teamRow, games, commonOpponents)
+{
+    let commonWins = 0;
+    let commonLosses = 0;
+
+    for(let i = 0; i < games.length; i++)
+    {
+        let game = games[i];
+        let homeTeamRow = FranchiseUtils.bin2Dec(game['HomeTeam'].slice(15));
+        let awayTeamRow = FranchiseUtils.bin2Dec(game['AwayTeam'].slice(15));
+
+        let opponentRow = homeTeamRow === teamRow ? awayTeamRow : homeTeamRow;
+
+        if(!commonOpponents.includes(opponentRow))
+        {
+            continue;
+        }
+
+        if(opponentRow === homeTeamRow)
+        {
+            if(game['HomeScore'] > game['AwayScore'])
+            {
+                commonLosses++;
+            }
+            else if(game['HomeScore'] < game['AwayScore'])
+            {
+                commonWins++;
+            }
+            else
+            {
+                commonWins += 0.5;
+                commonLosses += 0.5;
+            }
+        }
+        else
+        {
+            if(game['AwayScore'] > game['HomeScore'])
+            {
+                commonLosses++;
+            }
+            else if(game['AwayScore'] < game['HomeScore'])
+            {
+                commonWins++;
+            }
+            else
+            {
+                commonWins += 0.5;
+                commonLosses += 0.5;
+            }
+        }
+    }
+
+    let commonWinPercentage = commonWins / (commonWins + commonLosses);
+
+    return commonWinPercentage;
+}
+
+function getCommonGameCount(teamRow, games, commonOpponents)
+{
+    let commonWins = 0;
+    let commonLosses = 0;
+
+    for(let i = 0; i < games.length; i++)
+    {
+        let game = games[i];
+        let homeTeamRow = FranchiseUtils.bin2Dec(game['HomeTeam'].slice(15));
+        let awayTeamRow = FranchiseUtils.bin2Dec(game['AwayTeam'].slice(15));
+
+        let opponentRow = homeTeamRow === teamRow ? awayTeamRow : homeTeamRow;
+
+        if(!commonOpponents.includes(opponentRow))
+        {
+            continue;
+        }
+
+        if(opponentRow === homeTeamRow)
+        {
+            if(game['HomeScore'] > game['AwayScore'])
+            {
+                commonLosses++;
+            }
+            else if(game['HomeScore'] < game['AwayScore'])
+            {
+                commonWins++;
+            }
+            else
+            {
+                commonWins += 0.5;
+                commonLosses += 0.5;
+            }
+        }
+        else
+        {
+            if(game['AwayScore'] > game['HomeScore'])
+            {
+                commonLosses++;
+            }
+            else if(game['AwayScore'] < game['HomeScore'])
+            {
+                commonWins++;
+            }
+            else
+            {
+                commonWins += 0.5;
+                commonLosses += 0.5;
+            }
+        }
+    }
+
+    return commonWins + commonLosses;
 }
 
 module.exports = {
     getTeamSov,
-    getTeamSos
+    getTeamSos,
+    getCommonOpponents,
+    getCommonWinPercentage,
+    getCommonGameCount,
+    enumerateGames
 }
