@@ -1,0 +1,1 @@
+nexe --build -i commentaryIdFix.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "../node_modules/madden-franchise/services/lookupFiles/*.json" -r "../Utils/JsonLookups/commentary_lookup.json" -r "../Utils/FranchiseUtils.js" -r "../Utils/FranchiseTableId.js" -o "commentaryIdFix.exe" --verbose
