@@ -13,6 +13,13 @@ console.log("This program will recalculate the draft order, fixing issues relate
 const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
+let tiedGroups = {
+    "reg": {},
+    "wc": {},
+    "div": {},
+    "conf": {}
+};
+
 // Function to check if two teams are division rivals
 function checkDivisionRivals(a, b, seasonGameTable)
 {
@@ -391,7 +398,7 @@ async function calculateTeamDraftPositions(franchise, teamPositions)
     // Sort the teams by win percentage, using SOS as a tiebreaker
     teams.sort((a, b) => {
         if(teamTable.records[a]['SeasonWinPct'] === teamTable.records[b]['SeasonWinPct'])
-        {
+        {            
             const firstSos = TiebreakerCalc.getTeamSos(a, seasonGameTable, teamTable);
             const secondSos = TiebreakerCalc.getTeamSos(b, seasonGameTable, teamTable);
 
@@ -408,7 +415,10 @@ async function calculateTeamDraftPositions(franchise, teamPositions)
 
     // Concatenat the playoff team order
     const playoffTeams = getPlayoffDraftOrder(teamTable, seasonGameTable, divisionTeamTable);
+
     teams = teams.concat(playoffTeams);
+
+    getTiedGroups(teamTable, teams);
 
     // Assign draft positions 0-31 to the teams
     for(let i = 0; i < 32; i++)
@@ -419,12 +429,112 @@ async function calculateTeamDraftPositions(franchise, teamPositions)
     return teamPositions;
 }
 
+function getTiedGroups(teamTable, teams)
+{
+    // Iterate through first 18 picks and check for win percentage ties, adding to tiedGroups object with key as win percentage
+    for(let i = 0; i < 18; i++)
+    {
+        let winPct = teamTable.records[teams[i]]['SeasonWinPct'];
+        if(!tiedGroups['reg'][winPct])
+        {
+            tiedGroups['reg'][winPct] = [];
+        }
+        tiedGroups['reg'][winPct].push(teams[i]);
+    }
+
+    // Remove any groups with only one team
+    for(const key in tiedGroups['reg'])
+    {
+        if(tiedGroups['reg'][key].length === 1)
+        {
+            delete tiedGroups['reg'][key];
+        }
+    }
+
+    // Iterate through the next 6 picks and check for win percentage ties, adding to wild card tiedGroups object with key as win percentage
+    for(let i = 18; i < 24; i++)
+    {
+        let winPct = teamTable.records[teams[i]]['SeasonWinPct'];
+        if(!tiedGroups['wc'][winPct])
+        {
+            tiedGroups['wc'][winPct] = [];
+        }
+        tiedGroups['wc'][winPct].push(teams[i]);
+    }
+
+    // Remove any groups with only one team
+    for(const key in tiedGroups['wc'])
+    {
+        if(tiedGroups['wc'][key].length === 1)
+        {
+            delete tiedGroups['wc'][key];
+        }
+    }
+
+    // Iterate through the next 4 picks and check for win percentage ties, adding to divisional tiedGroups object with key as win percentage
+    for(let i = 24; i < 28; i++)
+    {
+        let winPct = teamTable.records[teams[i]]['SeasonWinPct'];
+        if(!tiedGroups['div'][winPct])
+        {
+            tiedGroups['div'][winPct] = [];
+        }
+        tiedGroups['div'][winPct].push(teams[i]);
+    }
+
+    // Remove any groups with only one team
+    for(const key in tiedGroups['div'])
+    {
+        if(tiedGroups['div'][key].length === 1)
+        {
+            delete tiedGroups['div'][key];
+        }
+    }
+
+    // Iterate through the next 2 picks and check for win percentage ties, adding to conference tiedGroups object with key as win percentage
+    for(let i = 28; i < 30; i++)
+    {
+        let winPct = teamTable.records[teams[i]]['SeasonWinPct'];
+        if(!tiedGroups['conf'][winPct])
+        {
+            tiedGroups['conf'][winPct] = [];
+        }
+        tiedGroups['conf'][winPct].push(teams[i]);
+    }
+
+    // Sort each tied group by their order in teams
+    for(const key in tiedGroups)
+    {
+        for(const winPct in tiedGroups[key])
+        {
+            tiedGroups[key][winPct].sort((a, b) => teams.indexOf(a) - teams.indexOf(b));
+        }
+    }
+
+    // Remove any groups with only one team
+    for(const key in tiedGroups['conf'])
+    {
+        if(tiedGroups['conf'][key].length === 1)
+        {
+            delete tiedGroups['conf'][key];
+        }
+    }
+}
+
+function getSnakingOrder(tiedGroup, round) {
+    const groupSize = tiedGroup.length;
+    const offset = round % groupSize;
+    const snakingOrder = tiedGroup.slice(offset).concat(tiedGroup.slice(0, offset));
+    return snakingOrder;
+}
+
 // Function to set the draft pick order
 function setDraftPickOrder(draftPickTable, draftPicks, teamPositions, teamTableId)
 {    
     const tradedPicks = [];
     
-    for(let i = 0; i < draftPicks.length; i++)
+    // im keeping the old code here because the code for the tied group snaking was written by chatgpt and i dont entirely trust it yet even though it seems to work fine
+    /*for(let i = 0; i < draftPicks.length; i++)
     {
         const newTeamBinary = getBinaryReferenceData(teamTableId, teamPositions[i % 32]);
         
@@ -454,6 +564,59 @@ function setDraftPickOrder(draftPickTable, draftPicks, teamPositions, teamTableI
         {
             if(draftPickTable.records[draftPicks[j]]['Round'] === searchRound && draftPickTable.records[draftPicks[j]]['OriginalTeam'] === searchOriginalTeam)
             {
+                draftPickTable.records[draftPicks[j]]['CurrentTeam'] = newCurrentTeam;
+            }
+        }
+    }*/
+
+    for (let i = 0; i < draftPicks.length; i++) {
+        const round = draftPickTable.records[draftPicks[i]]['Round'];
+        const pickInRound = i % 32;
+
+        // Check if the current pick is part of a tied group
+        let newTeamBinary;
+        let foundTiedGroup = false;
+        for (const groupType in tiedGroups) {
+            for (const winPct in tiedGroups[groupType]) {
+                const tiedGroup = tiedGroups[groupType][winPct];
+                if (tiedGroup.includes(teamPositions[pickInRound])) {
+                    const snakingOrder = getSnakingOrder(tiedGroup, round);
+                    const baseIndex = pickInRound - (teamPositions.indexOf(tiedGroup[0]));
+                    newTeamBinary = getBinaryReferenceData(teamTableId, snakingOrder[baseIndex]);
+                    foundTiedGroup = true;
+                    break;
+                }
+            }
+            if (foundTiedGroup) break;
+        }
+
+        // If not part of a tied group, use the regular team position
+        if (!foundTiedGroup) {
+            newTeamBinary = getBinaryReferenceData(teamTableId, teamPositions[pickInRound]);
+        }
+
+        if (!(draftPickTable.records[draftPicks[i]]['CurrentTeam'] === draftPickTable.records[draftPicks[i]]['OriginalTeam'])) {
+            const tradedPick = {
+                'OriginalTeam': draftPickTable.records[draftPicks[i]]['OriginalTeam'],
+                'CurrentTeam': draftPickTable.records[draftPicks[i]]['CurrentTeam'],
+                'Round': draftPickTable.records[draftPicks[i]]['Round']
+            }
+
+            tradedPicks.push(tradedPick);
+        }
+        
+        draftPickTable.records[draftPicks[i]]['CurrentTeam'] = newTeamBinary;
+        draftPickTable.records[draftPicks[i]]['OriginalTeam'] = newTeamBinary;
+        draftPickTable.records[draftPicks[i]]['PickNumber'] = i;
+    }
+
+    for (let i = 0; i < tradedPicks.length; i++) {
+        const searchRound = tradedPicks[i]['Round'];
+        const searchOriginalTeam = tradedPicks[i]['OriginalTeam'];
+        const newCurrentTeam = tradedPicks[i]['CurrentTeam'];
+
+        for (let j = 0; j < draftPicks.length; j++) {
+            if (draftPickTable.records[draftPicks[j]]['Round'] === searchRound && draftPickTable.records[draftPicks[j]]['OriginalTeam'] === searchOriginalTeam) {
                 draftPickTable.records[draftPicks[j]]['CurrentTeam'] = newCurrentTeam;
             }
         }
@@ -497,7 +660,7 @@ franchise.on('ready', async function () {
     draftPicks.sort((a, b) => draftPickTable.records[a]['PickNumber'] - draftPickTable.records[b]['PickNumber']);
 
     // Calculate each team's draft position
-    let teamPositions = {};
+    let teamPositions = Array(32);
 
     await calculateTeamDraftPositions(franchise, teamPositions);
 
