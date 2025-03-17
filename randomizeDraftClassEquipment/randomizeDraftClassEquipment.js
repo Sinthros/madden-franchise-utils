@@ -18,7 +18,7 @@ const gameYear = franchise.schema.meta.gameYear;
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 // No equipment columns in M25+, so we must use the JSON strategy
-let useJsonStrategy = gameYear >= FranchiseUtils.YEARS.M25;
+let useJsonStrategy = gameYear >= FranchiseUtils.YEARS.M24; // Latest version of madden-franchise fully supports JSON for M24, so we can now use the JSON strategy for M24 as well
 
 const lookupFileName = `all_asset_names_m${gameYear}.json`;
 
@@ -191,10 +191,7 @@ function filterByPosition(playerList, position, playerTable)
  * @param {Array<number>} miscRows A list to store row numbers of all other active players
  */
 async function enumeratePlayers(playerTable, draftRows, nflRows, miscRows)
-{
-	// Types of players that are not relevant for our purposes and can be skipped
-	const invalidStatuses = ['Retired','Deleted','None','Created'];
-	
+{	
 	// Number of rows in the player table
     const numRows = playerTable.header.recordCapacity; 
 	
@@ -339,8 +336,8 @@ franchise.on('ready', async function () {
 		}
 	}
 
-	// Regenerate visuals if we are using the player table strategy and not the JSON strategy
-	if(!useJsonStrategy)
+	// Regenerate visuals if we are using the player table strategy in M24+ and not the JSON strategy
+	if(!useJsonStrategy && gameYear >= FranchiseUtils.YEARS.M24)
 	{
 		console.log("\nRegenerating CharacterVisuals for draft class players...");
 
