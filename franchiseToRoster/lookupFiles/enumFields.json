@@ -1,0 +1,20 @@
+{
+    "PlayerVisMoveType": "EPAV",
+    "RunningStyleRating": "PRSE",
+    "GenericHeadAssetName": "PGHE",
+    "Position": "PPOS",
+    "PLYR_HOME_STATE_notconverted": "PHSN",
+    "PLYR_STANCE": "PSTN",
+    "PLYR_STYLE": "PSTY",
+    "PLYR_HANDEDNESS": "PHAN",
+    "CaptainsPatch": "PLCP",
+    "PlayerType": "PLTY",
+    "PLYR_QBSTYLE": "PQBS",
+    "TraitDevelopment": "PROL",
+    "TRAIT_PENALTY": "TRIC",
+    "TRAIT_PLAY_BALL": "TRPB",
+    "TRAIT_LBSTYLE": "TRSC",
+    "TRAIT_SENSE_PRESSURE": "TRSP",
+    "TRAIT_QBSTYLE": "TRTR",
+    "TRAIT_COVER_BALL": "TRCB"
+}
