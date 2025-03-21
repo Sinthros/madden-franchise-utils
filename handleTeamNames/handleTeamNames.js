@@ -1,6 +1,6 @@
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 const FranchiseUtils = require('../Utils/FranchiseUtils');
-const readline = require('readline');
+const prompt = require('prompt-sync')({ sigint: true });
 
 const validGameYears = [FranchiseUtils.YEARS.M25];
 console.log("This program will adjust team names based on historical changes.");
@@ -9,42 +9,31 @@ console.log("This program will adjust team names based on historical changes.");
 const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
-// Create readline interface for user input
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
 // Function to prompt user for season year
 function promptForSeasonYear() {
-  return new Promise((resolve) => {
-    rl.question('Please enter the season year (e.g., 2024): ', (answer) => {
-      const year = parseInt(answer);
-      if (isNaN(year) || year < 1969 || year > 2024) {
-        console.log('Invalid year. Please enter a year between 1969 and 2100.');
-        promptForSeasonYear().then(resolve);
-      } else {
-        resolve(year);
-      }
-    });
-  });
+  while (true) {
+    const answer = prompt('Please enter the season year (e.g., 2024): ');
+    const year = parseInt(answer);
+    if (isNaN(year) || year < 1969 || year > 2024) {
+      console.log('Invalid year. Please enter a year between 1969 and 2024.');
+      continue;
+    }
+    return year;
+  }
 }
 
 // Function to prompt user about Washington team name
 function promptForWashingtonName() {
-  return new Promise((resolve) => {
-    rl.question('Would you like to update the Washington team name from "Redskins" to "Commanders" for seasons prior to 2019? (yes/no): ', (answer) => {
-      const response = answer.toLowerCase().trim();
-      if (response === 'yes' || response === 'y') {
-        resolve(true);
-      } else if (response === 'no' || response === 'n') {
-        resolve(false);
-      } else {
-        console.log('Please answer with "yes" or "no".');
-        promptForWashingtonName().then(resolve);
-      }
-    });
-  });
+  while (true) {
+    const answer = prompt('Would you like to update the Washington team name from "Redskins" to "Commanders" for seasons prior to 2019? (yes/no): ');
+    const response = answer.toLowerCase().trim();
+    if (response === 'yes' || response === 'y') {
+      return true;
+    } else if (response === 'no' || response === 'n') {
+      return false;
+    }
+    console.log('Please answer with "yes" or "no".');
+  }
 }
 
 const teamNameChanges = {
@@ -166,13 +155,13 @@ franchise.on('ready', async function () {
   await FranchiseUtils.readTableRecords([teamTable]);
   
   // Get season year from user input
-  const seasonYear = await promptForSeasonYear();
+  const seasonYear = promptForSeasonYear();
   console.log(`Using season year: ${seasonYear}`);
   
   // Special handling for Washington team name
   let updateWashingtonName = false;
   if (seasonYear < 2019) {
-    updateWashingtonName = await promptForWashingtonName();
+    updateWashingtonName = promptForWashingtonName();
   }
   
   // Iterate over team records to update based on year
@@ -212,6 +201,5 @@ franchise.on('ready', async function () {
 
   await FranchiseUtils.saveFranchiseFile(franchise);
   console.log("Team names updated successfully.");
-  rl.close();
   FranchiseUtils.EXIT_PROGRAM();
 });
