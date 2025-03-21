@@ -1,8 +1,6 @@
 // Required modules
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const MaddenRosterHelper = require('madden-file-tools/helpers/MaddenRosterHelper');
-const TDBHelper = require('madden-file-tools/helpers/TDBHelper');
-const prompt = require('prompt-sync')();
 const fs = require('fs');
 
 // Valid game years
@@ -23,15 +21,15 @@ const bodyTypeLookup = JSON.parse(fs.readFileSync('lookupFiles/visualsLookups/bo
 const loadoutLookup = JSON.parse(fs.readFileSync('lookupFiles/visualsLookups/loadoutLookup.json', 'utf8'));
 const slotLookup = JSON.parse(fs.readFileSync('lookupFiles/visualsLookups/slotTypeLookup.json', 'utf8'));
 
-console.log("This program will allow you to convert a franchise file into a roster file. Please ensure that you have read the README.txt file before using this tool.\n");
+console.log("This program will allow you to convert a franchise file into a roster file. Madden 25 franchise files are supported.\n");
 
 // Set up franchise file
 const franchise = FranchiseUtils.init(validGameYears, {promptForBackup: false});
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 
-let rosterPath = "resources/league.db";
-const roster = new TDBHelper();
+let rosterPath = FranchiseUtils.getSaveFilePath(franchise.schema.meta.gameYear, FranchiseUtils.SAVE_TYPES.ROSTER);
+const roster = new MaddenRosterHelper();
 
 // Function to handle transferring direct transfer fields
 async function handleDirectTransferPlayerFields(player, rosterPlayer)
@@ -163,6 +161,9 @@ async function handleCharacterVisuals(player, rosterPlayer, visualsTable, roster
     const rosterVisuals = rosterVisualsTable.records.find(visuals => visuals.index === rosterVisualsIndex);
     const playerVisuals = JSON.parse(visualsTable.records[playerVisualsRow].RawData);
 
+    // Set player body type (this is for franchise to work properly, thanks a bunch EA!)
+    rosterPlayer.PCBT = bodyTypeLookup[player.CharacterBodyType];
+
     // Handle top level record fields
     rosterVisuals.ASNM = rosterPlayer.PEPS;
     rosterVisuals.BTYP = bodyTypeLookup[player.CharacterBodyType];
@@ -184,18 +185,49 @@ async function handleLoadouts(playerVisuals, rosterVisuals)
     const loadouts = playerVisuals.loadouts;
     const rosterLoadouts = rosterVisuals.LOUT;
 
+    if(!loadouts.find(loadout => loadout.hasOwnProperty("loadoutCategory") && loadout.loadoutCategory === "Base"))
+    {
+        for(let j = 0; j < rosterLoadouts.numEntries; j++)
+        {
+            const currRosterLoadout = rosterLoadouts.records[j];
+            if(currRosterLoadout.fields.hasOwnProperty("LDCT") && currRosterLoadout.LDCT === 5)
+            {
+                rosterLoadouts.removeRecord(j);
+            }
+        }
+    }
+
     for(let i = 0; i < loadouts.length; i++)
     {
         const currLoadout = loadouts[i];
         let rosterLoadout;
+
+        
+
         if(currLoadout.hasOwnProperty("loadoutCategory"))
         {
             const loadoutCategory = loadoutLookup["loadoutCategory"][currLoadout.loadoutCategory];
             rosterLoadout = rosterLoadouts.records.find(loadout => loadout.LDCT === loadoutCategory);
 
-            if(!rosterLoadout)
+            if(!rosterLoadout || !rosterLoadout.PINS)
             {
                 continue;
+            }
+
+            // For each loadout element, set the IBLD blends to 0
+            for(let j = 0; j < rosterLoadout.PINS.numEntries; j++)
+            {
+                const currElement = rosterLoadout.PINS.records[j];
+                const currBlend = currElement.IBLD.records[0];
+                if(currBlend.BASE)
+                {
+                    currBlend.BASE = 0;
+                }
+
+                if(currBlend.BARY)
+                {
+                    currBlend.BARY = 0;
+                }
             }
         }
         else if(currLoadout.hasOwnProperty("loadoutType"))
@@ -218,7 +250,6 @@ async function handleLoadouts(playerVisuals, rosterVisuals)
 
         if(!rosterElements)
         {
-            console.log("made it to skipping this loadout");
             continue;
         }
 
@@ -229,33 +260,54 @@ async function handleLoadouts(playerVisuals, rosterVisuals)
             continue;
         }
 
+        // If there are two of a slot type in the loadout elements, remove one if any that has "_None" in the itemassetname
+        Object.keys(slotLookup).forEach(slotType => {
+            const slotElements = loadoutElements.filter(element => element.slotType === slotType);
+            if(slotElements.length > 1)
+            {
+                const noneElement = slotElements.find(element => element.itemAssetName.includes("_None"));
+                if(noneElement)
+                {
+                    const index = loadoutElements.indexOf(noneElement);
+                    loadoutElements.splice(index, 1);
+                }
+            }
+        });
+
         if(loadoutElements.length > rosterElements.numEntries)
         {
             // Trim the loadout elements to match the roster elements
-            loadoutElements.splice(rosterElements.numEntries);
+            //loadoutElements.splice(rosterElements.numEntries);
+            //console.log("Trimming loadout elements");
             
-            /*const numToAdd = loadoutElements.length - rosterElements.numEntries;
-            console.log(`Adding ${numToAdd} elements to the roster elements`);
+            const numToAdd = loadoutElements.length - rosterElements.numEntries;
+            //console.log(`Adding ${numToAdd} elements to the roster elements`);
             
-            for(let j = 0; j < numToAdd; j++)
+            /*for(let j = 0; j < numToAdd; j++)
             {
-                console.log("adding record");
+                //console.log("adding record");
                 rosterElements.addRecord(rosterElements.records[0].deepCopyRecord());
-                console.log("added record");
+                //console.log("added record");
             }*/
         }
 
         //console.log("made it here");
 
+        const usedSlots = [];
+
         for(let j = 0; j < loadoutElements.length; j++)
         {
             const currElement = loadoutElements[j];
             const currSlot = slotLookup[currElement.slotType];
-            const rosterElement = rosterElements.records.find(element => element.SLOT === currSlot);
+            let rosterElement = rosterElements.records.find(element => element.SLOT === currSlot);
 
             if(!rosterElement)
             {
-                continue; // Placeholder, deal with this later
+                //continue; // Placeholder, deal with this later
+                const newItem = rosterElements.records[0].deepCopyRecord();
+                newItem.SLOT = currSlot;
+                rosterElements.addRecord(newItem);
+                rosterElement = newItem;
             }
 
             if(currElement.hasOwnProperty("itemAssetName"))
@@ -270,15 +322,29 @@ async function handleLoadouts(playerVisuals, rosterVisuals)
                     continue; // Placeholder, deal with this later
                 }
 
-                if(rosterElement.IBLD.records[0].BASE && currElement.blends.hasOwnProperty("baseBlend"))
+                if(rosterElement.IBLD.records[0].fields.hasOwnProperty("BASE") && currElement.blends[0].hasOwnProperty("baseBlend"))
                 {
-                    rosterElement.IBLD.records[0].BASE = currElement.blends.baseBlend;
+                    rosterElement.IBLD.records[0].BASE = currElement.blends[0].baseBlend;
                 }
 
-                if(rosterElement.IBLD.records[0].BARY && currElement.blends.hasOwnProperty("barycentricBlend"))
+                if(rosterElement.IBLD.records[0].fields.hasOwnProperty("BARY") && currElement.blends[0].hasOwnProperty("barycentricBlend"))
                 {
-                    rosterElement.IBLD.records[0].BARY = currElement.blends.barycentricBlend;
+                    rosterElement.IBLD.records[0].BARY = currElement.blends[0].barycentricBlend;
                 }
+            }
+
+            usedSlots.push(currSlot);
+        }
+
+        // Remove any unused slot records
+        for(let j = 0; j < rosterElements.numEntries; j++)
+        {
+            const currElement = rosterElements.records[j];
+            const currSlot = currElement.SLOT;
+
+            if(!usedSlots.includes(currSlot))
+            {
+                rosterElements.removeRecord(j);
             }
         }
     }
@@ -309,18 +375,19 @@ function handleCharacterVisualsToJson(player, rosterPlayer, visualsTable, /*rost
 }
 
 // Function to handle transferring player records
-async function handlePlayerRecords(recordsToTransfer, playerTable, visualsTable, rosterPlayerTable/*, rosterVisualsTable*/) 
+async function handlePlayerRecords(recordsToTransfer, playerTable, visualsTable, rosterPlayerTable, rosterVisualsTable) 
 {
     const numPlayers = recordsToTransfer.length;
-
-    const visualsMap = {
-        characterVisualsPlayerMap: {}
-    };
     
     for(let i = 0; i < numPlayers && i < rosterPlayerTable.records.length; i++)
     {
         const rosterPlayer = rosterPlayerTable.records[i];
         const player = recordsToTransfer[i];
+
+        if(player.GenericHeadAssetName.trim() === "")
+        {
+            player.GenericHeadAssetName = "gen_" + player.PLYR_GENERICHEAD;
+        }
 
         // Handle direct transfer fields
         await handleDirectTransferPlayerFields(player, rosterPlayer);
@@ -338,7 +405,7 @@ async function handlePlayerRecords(recordsToTransfer, playerTable, visualsTable,
         await handleMiscFields(player, rosterPlayer);
 
         // Handle CharacterVisuals
-        handleCharacterVisualsToJson(player, rosterPlayer, visualsTable, /*rosterVisualsTable,*/ visualsMap.characterVisualsPlayerMap);
+        await handleCharacterVisuals(player, rosterPlayer, visualsTable, rosterVisualsTable);
         
     }
 
@@ -352,6 +419,7 @@ async function handlePlayerRecords(recordsToTransfer, playerTable, visualsTable,
         rosterPlayer.PSXP = 0;
         rosterPlayer.PAGE = 50;
         rosterPlayer.POID = 0;
+        rosterPlayer.PEPS = "";
         
         // Set all rating columns to 0 and overall column to 12
         for(const field in directTransferFields)
@@ -369,8 +437,67 @@ async function handlePlayerRecords(recordsToTransfer, playerTable, visualsTable,
             }
         }
     }
+}
 
-    fs.writeFileSync("convertedRoster_visuals.json", JSON.stringify(visualsMap, null, 4));
+function clearInjuries(rosterInjuryTable)
+{
+    for(let i = 0; i < rosterInjuryTable.records.length; i++)
+    {
+        const currInjury = rosterInjuryTable.records[i];
+        currInjury.PGID = 0;
+    }
+}
+
+function inspectRecord(record, depth = 0) {
+    console.log(`${' '.repeat(depth)}Record: ${Object.keys(record.fields).length} fields`);
+    for (const key in record.fields) {
+        const field = record.fields[key];
+        if (field.type === 4) {
+            console.log(`${' '.repeat(depth)}Subtable ${key} with ${field.value.records.length} records`);
+            field.value.records.forEach(r => inspectRecord(r, depth + 2));
+        }
+    }
+}
+
+async function addRosterPlayers(rosterPlayerTable, rosterVisualsTable, numToAdd)
+{
+    //console.log("Inspecting PLEX[0]:");
+    //inspectRecord(rosterVisualsTable.records[0]);
+    const newPGID = getHighestPGID(rosterPlayerTable) + 1;
+
+    for(let i = 0; i < numToAdd; i++)
+    {
+        const newPlayer = rosterPlayerTable.records[0].deepCopyRecord(null, new WeakMap(), true);
+        console.log(`Duped player table record ${i}`);
+        const newVisuals = rosterVisualsTable.records[0].deepCopyRecord(null, new WeakMap(), true);
+        console.log(`Duped visuals table record ${i}`);
+        newPlayer.PGID = newPGID + i;
+        newPlayer.POID = newPGID + i;
+        newVisuals.index = newPGID + i;
+
+        rosterPlayerTable.addRecord(newPlayer);
+        rosterVisualsTable.addRecord(newVisuals);
+        /*if (i % 2 === 0) {
+            await new Promise(resolve => setTimeout(resolve, 0));
+            console.log(`GC break at ${i}, Heap after: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)} MB`);
+        }*/
+    }
+}
+
+function getHighestPGID(rosterPlayerTable)
+{
+    let highestPGID = 0;
+
+    for(let i = 0; i < rosterPlayerTable.records.length; i++)
+    {
+        const currPlayer = rosterPlayerTable.records[i];
+        if(currPlayer.PGID > highestPGID)
+        {
+            highestPGID = currPlayer.PGID;
+        }
+    }
+
+    return highestPGID;
 }
 
 franchise.on('ready', async function () {
@@ -382,9 +509,8 @@ franchise.on('ready', async function () {
 
         // Set up tables from the roster
         const rosterPlayerTable = roster.file.PLAY;
-        //const rosterVisualsTable = roster.file.PLEX;
-
-        await rosterPlayerTable.readRecords();
+        const rosterVisualsTable = roster.file.PLEX;
+        const rosterInjuryTable = roster.file.INJY;
 
         // Number of rows in the player table
         const numRows = playerTable.header.recordCapacity;
@@ -406,14 +532,34 @@ franchise.on('ready', async function () {
         const numRosterPlayers = rosterPlayerTable.records.length;
 
         if(numRosterPlayers < recordsToTransfer.length)
-        {
-            console.log("The roster does not have enough space to transfer all the players. This program cannot continue.");
+        {            
+            /*console.log("The roster does not have enough space to transfer all the players. This program cannot continue.");
             console.log(`The roster file has ${numRosterPlayers} players, but ${recordsToTransfer.length} players would be transferred.`);
-            FranchiseUtils.EXIT_PROGRAM();
+            FranchiseUtils.EXIT_PROGRAM();*/
+
+            const playersToAdd = recordsToTransfer.length - numRosterPlayers;
+            console.log(`Adding ${playersToAdd} players to the roster...`);
+
+            await addRosterPlayers(rosterPlayerTable, rosterVisualsTable, playersToAdd);
         }
 
+        // Clear out excess players in the roster
+        /*for(let i = recordsToTransfer.length; i < rosterPlayerTable.records.length; i++)
+        {
+            const rosterPlayer = rosterPlayerTable.records[i];
+            const visualsId = rosterPlayer.POID;
+    
+            // Delete player record and associated visuals record
+            rosterPlayerTable.removeRecord(i);
+    
+            // Find visuals record index of record matching the player's POID
+            const visualsIndex = rosterVisualsTable.records.findIndex(visuals => visuals.index === visualsId);
+            rosterVisualsTable.removeRecord(visualsIndex);
+        }*/
+
         console.log("Working on conversion...");
-        await handlePlayerRecords(recordsToTransfer, playerTable, visualsTable, rosterPlayerTable /*rosterVisualsTable*/);
+        clearInjuries(rosterInjuryTable);
+        await handlePlayerRecords(recordsToTransfer, playerTable, visualsTable, rosterPlayerTable, rosterVisualsTable);
 
         // Program complete, so print success message, save the franchise file, and exit
         console.log("\nFranchise converted successfully.\n");
@@ -426,14 +572,11 @@ async function saveRosterFile(roster) {
     const save = FranchiseUtils.getYesOrNo("Would you like to save the converted roster? Enter yes or no.");
 
     if(save) {
-        await roster.save("convertedRoster_league.db");
+        await roster.save();
         console.log("Roster saved successfully.");
     }
     else {
         console.log("Roster not saved.");
-        if(fs.existsSync("convertedRoster_visuals.json")) {
-            fs.unlinkSync("convertedRoster_visuals.json");
-        }
     }
 }
 
