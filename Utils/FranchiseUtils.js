@@ -35,6 +35,15 @@ const YEARS = {
   M25: 25
 };
 
+// TYPES OF SAVE FILES
+const SAVE_TYPES = {
+  ROSTER: "ROSTER-",
+  DRAFTCLASS: "CAREERDRAFT-",
+  CPUSLIDER: "CPUSKILL-",
+  PLAYERSLIDER: "PLYRSKILL-",
+  TEAMBUILDER: "TEAMBUILDER-"
+};
+
 const CONTRACT_STATUSES = {
   SIGNED: 'Signed',
   FREE_AGENT: 'FreeAgent',
@@ -279,6 +288,60 @@ async function selectFranchiseFileAsync(gameYear, isAutoUnemptyEnabled = false, 
         }
     }
 };
+
+/**
+ * Selects a file from saves based on the provided game year and options.
+ *
+ * @param {number|string} gameYear - The Madden game year of the save file.
+ * @param {string} saveType - The type of save file to select (roster, draft class, etc.)
+ * @returns {string} - The path to the save file.
+ */
+function getSaveFilePath(gameYear, saveType = SAVE_TYPES.ROSTER, customMessage = null) {
+  const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
+  const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
+  const defaultPath = fs.existsSync(documentsDir) ? documentsDir : fs.existsSync(oneDriveDir) ? oneDriveDir : null;
+  
+  if (!defaultPath) {
+    console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`);
+  }
+
+  const filePrefix = saveType;
+  let defaultMessage = `Please enter the name of your Madden ${gameYear} ${saveType.replace("-", "").toLowerCase()} file. Either give the full path of the file OR just give the file name (such as ${saveType}BEARS) if it's in your Documents folder. Or, enter 0 to exit.`;
+  if(!defaultPath)
+  {
+    defaultMessage = `Please enter the full path to your Madden ${gameYear} ${saveType.replace("-", "").toLowerCase()} file. Or, enter 0 to exit.`;
+  }
+  const message = customMessage || defaultMessage;
+
+  while (true) {
+      console.log(message);
+      
+      let fileName = prompt().trim().replace(/['"]/g, '');
+      
+      if (fileName === "0") {
+        EXIT_PROGRAM();
+      }
+
+      // Check the uppercase path first
+      const upperCaseFileName = fileName.toUpperCase();
+      const savePathUpper = upperCaseFileName.startsWith(filePrefix) ? path.join(defaultPath, upperCaseFileName) : upperCaseFileName.replace(new RegExp('/', 'g'), '\\');
+      const savePath = fileName.startsWith(filePrefix) ? path.join(defaultPath, fileName) : fileName.replace(new RegExp('/', 'g'), '\\');
+
+      if(fs.existsSync(savePathUpper))
+      {
+        return savePathUpper;
+      }
+      else if(fs.existsSync(savePath))
+      {
+        return savePath;
+      }
+      else
+      {
+        console.log("Invalid file name/path given. Please provide a valid name or path and try again.");
+      }
+  }
+}
+
 
 /**
  * Prompts the user to save the franchise file, optionally using a custom message.
@@ -2594,6 +2657,7 @@ module.exports = {
     selectFranchiseFile, // FUNCTIONS
     selectFranchiseFileAsync,
     saveFranchiseFile,
+    getSaveFilePath,
     getGameYear,
     readTableRecords,
     getTablesObject,
@@ -2687,6 +2751,7 @@ module.exports = {
     TABLE_NAMES,
     SEASON_STAGES,
     DEBUG_MODE,
+    SAVE_TYPES,
 
     USER_CONTROL_SETTINGS, // VARIABLES FOR USER/CPU CONTROL
     CPU_CONTROL_SETTINGS,

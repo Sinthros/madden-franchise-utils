@@ -1,0 +1,18 @@
+{
+    "None": "0",
+    "Default": "1",
+    "DefaultStrideHighandTight": "2",
+    "DefaultStrideLoose": "3",
+    "DefaultStrideBreadLoaf": "4",
+    "DefaultStrideAwkward": "5",
+    "ShortStrideDefault": "6",
+    "ShortStrideHighandTight": "7",
+    "ShortStrideLoose": "8",
+    "ShortStrideBreadLoaf": "9",
+    "ShortStrideAwkward": "10",
+    "LongStrideDefault": "11",
+    "LongStrideHighandTight": "12",
+    "LongStrideLoose": "13",
+    "LongStrideBreadLoaf": "14",
+    "LongStrideAwkward": "15"
+}

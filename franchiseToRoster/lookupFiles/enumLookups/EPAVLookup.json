@@ -1,0 +1,11 @@
+{
+    "Default": 0,
+    "Agile": 1,
+    "Agile_Small": 2,
+    "Agile_Tall": 3,
+    "Bruiser": 4,
+    "Bruiser_Quick": 5,
+    "Bruiser_Heavy": 6,
+    "Max": 7,
+    "Invalid": 511
+}

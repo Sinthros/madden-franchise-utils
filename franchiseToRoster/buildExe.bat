@@ -1,0 +1,1 @@
+nexe --build -i franchiseToRoster.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "../node_modules/madden-franchise/services/lookupFiles/*.json" -r "lookupFiles/**/*" -r "../Utils/JsonLookups/25/colleges.json" -r "../Utils/FranchiseUtils.js" -r "../Utils/FranchiseTableId.js" -o "franchiseToRoster.exe" --verbose

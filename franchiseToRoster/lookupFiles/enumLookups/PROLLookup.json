@@ -1,0 +1,8 @@
+{
+    "Normal": "0",
+    "Star": "1",
+    "Superstar": "2",
+    "XFactor": "3",
+    "Hidden": "4",
+    "Invalid_": "5"
+}
