@@ -7,6 +7,8 @@ const validGameYears = [
 
 console.log("This program will update player ratings from one franchise file into another.");
 
+const TRANSFER_DEV_TRAITS = FranchiseUtils.getYesOrNo("Should dev traits be transferred along with ratings? Enter yes or no.");
+
 const sourceFranchise = FranchiseUtils.init(validGameYears, {customYearMessage: "Select the Madden version of your SOURCE Franchise file. Valid inputs are 24 and 25.", promptForBackup: false, isAutoUnemptyEnabled: false});
 const targetFranchise = FranchiseUtils.init(validGameYears, {customYearMessage: "Select the Madden version of your TARGET Franchise file. Valid inputs are 24 and 25.", customFranchiseMessage: "Please enter the name of your target franchise file (such as CAREER-BEARS).", promptForBackup: true, isAutoUnemptyEnabled: false});
 
@@ -24,9 +26,11 @@ sourceFranchise.on('ready', async function () {
     const sourceColumns = FranchiseUtils.getColumnNames(sourcePlayer);
     const columns = FranchiseUtils.getColumnNames(targetPlayer);
 
-    // Filter for columns with "Rating" in the name but not "Original"
     const filteredColumns = columns.filter(
-      (column) => (column.includes("Rating") && !column.includes("Original")) || column.includes("Grade") 
+      (column) => 
+        (column.includes("Rating") && !column.includes("Original")) || 
+        column.includes("Grade") || 
+        (TRANSFER_DEV_TRAITS && column.includes("TraitDevelopment"))
     );
 
     for (const record of targetPlayer.records) {
@@ -36,7 +40,7 @@ sourceFranchise.on('ready', async function () {
     
       // Find the matching source record by PLYR_ASSETNAME
       const sourceRecord = sourcePlayer.records.find(
-        (srcRecord) => srcRecord.PLYR_ASSETNAME === assetName
+        (srcRecord) => srcRecord.PLYR_ASSETNAME === assetName && FranchiseUtils.isValidPlayer(srcRecord)
       );
     
       if (sourceRecord) {
@@ -48,6 +52,7 @@ sourceFranchise.on('ready', async function () {
         const {newOverall, newArchetype} = FranchiseUtils.calculateBestOverall(record);
         record.PlayerType = newArchetype;
         record.OverallRating = newOverall;
+        //console.log(`${record.PLYR_ASSETNAME} ${record.FirstName} ${record.LastName}`);
       } else {
         console.log(`Couldn't find matching player for ${assetName}`);
       }
