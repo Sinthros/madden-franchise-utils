@@ -36,7 +36,12 @@ async function handleDirectTransferPlayerFields(player, rosterPlayer)
 {
     for(const field in directTransferFields)
     {
-        const rosterField = directTransferFields[field];
+        let rosterField = directTransferFields[field];
+
+        if(rosterField === "PLPM" && !rosterPlayer.fields.hasOwnProperty(rosterField))
+        {
+            rosterField = "PLPm";
+        }
 
         rosterPlayer[rosterField] = player[field];
 
@@ -116,6 +121,11 @@ async function handleArithmeticFields(player, rosterPlayer)
         {
             rosterPlayer[rosterField] = player[field] + 1;
             continue;
+        }
+
+        if(field === "ContractYear")
+        {
+            rosterPlayer[rosterField] = player['ContractLength'] - player[field];
         }
     }
 }
@@ -374,6 +384,18 @@ function handleCharacterVisualsToJson(player, rosterPlayer, visualsTable, /*rost
     visualsMap[rosterVisualsIndex] = rosterVisuals;
 }
 
+async function handleContractAmounts(rosterPlayer)
+{
+    const totalSalary = rosterPlayer.PSA0 + rosterPlayer.PSA1 + rosterPlayer.PSA2 + rosterPlayer.PSA3 + rosterPlayer.PSA4 + rosterPlayer.PSA5 + rosterPlayer.PSA6;
+    const totalBonus = rosterPlayer.PSB0 + rosterPlayer.PSB1 + rosterPlayer.PSB2 + rosterPlayer.PSB3 + rosterPlayer.PSB4 + rosterPlayer.PSB5 + rosterPlayer.PSB6;
+
+    rosterPlayer.PTSA = totalSalary;
+    rosterPlayer.PSBO = totalBonus;
+    rosterPlayer.PVCO = 0;
+    rosterPlayer.PVBO = 0;
+    rosterPlayer.PVTS = 0;
+}
+
 // Function to handle transferring player records
 async function handlePlayerRecords(recordsToTransfer, playerTable, visualsTable, rosterPlayerTable, rosterVisualsTable) 
 {
@@ -391,6 +413,9 @@ async function handlePlayerRecords(recordsToTransfer, playerTable, visualsTable,
 
         // Handle direct transfer fields
         await handleDirectTransferPlayerFields(player, rosterPlayer);
+
+        // Handle contract amounts
+        await handleContractAmounts(rosterPlayer);
 
         // Handle boolean fields
         await handleBooleanFields(player, rosterPlayer);
