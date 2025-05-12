@@ -1700,7 +1700,7 @@ async function clearPlayerRefFromTableByUniqueId(franchise, playerBinary, tableI
 async function deleteExcessFreeAgents(franchise, options = {}) {
   const {
     numPlayersToDelete = null,
-    includeDraftPlayers = true,
+    includeDraftPlayers = false,
   } = options;
 
   const tables = getTablesObject(franchise);
