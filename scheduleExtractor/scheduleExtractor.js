@@ -14,9 +14,6 @@ const validGames = [
 const franchise = FranchiseUtils.init(validGames);
 
 franchise.on('ready', async function () {
-	// Make sure this franchise file is for a valid game year
-	FranchiseUtils.validateGameYears(franchise,gameYear);
-
 	// Convert schedule to object
 	const scheduleObject = await ScheduleFunctions.convertScheduleToJson(franchise);
 	

@@ -24,7 +24,7 @@ franchise.on('ready', async function () {
       referencedRow = franchise.getReferencesToRecord(playerTable.header.tableId,currentRow)
   
       referencedRow.forEach((table) => {
-        //console.log(`${table.tableId}: ${table.name}: ${currentRow}`)
+        console.log(`${table.tableId}: ${table.name}: ${currentRow}`)
       })
     }
   }*/

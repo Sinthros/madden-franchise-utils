@@ -1,4 +1,5 @@
 {
     "TeamIndex": "TGID",
-    "PLYR_DRAFTTEAM": "PLDT"
+    "PLYR_DRAFTTEAM": "PLDT",
+    "ContractYear": "PCYL"
 }
