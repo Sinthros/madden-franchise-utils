@@ -2652,6 +2652,11 @@ function splitDecimal(value) {
   };
 }
 
+function getActiveRecords(table) {
+  if (!table || !Array.isArray(table.records)) return [];
+  return table.records.filter(record => !record.isEmpty);
+}
+
 module.exports = {
     init,
     selectFranchiseFile, // FUNCTIONS
@@ -2700,6 +2705,7 @@ module.exports = {
     splitDecimal,
     getPlayerReferences,
     removeFreeAgentFromTables,
+    getActiveRecords,
 
     getYesOrNo, // UTILITY FUNCTIONS
     getYesNoForceQuit,
