@@ -4,6 +4,7 @@ const { tables, tablesM25 } = require('./FranchiseTableId');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
+const { upperCase } = require('lodash');
 const prompt = require('prompt-sync')();
 
 
@@ -2389,6 +2390,10 @@ function removeSuffixes(name) {
   return cleanName.replace(/\s+(Jr|Sr|III|II|IV|V)$/g, '');
 }
 
+function getNormalizedName(name) {
+  return upperCase(removeSuffixes(name));
+}
+
 function getPlayerReferences(franchise, tableId, playerRecord) {
   return franchise.getReferencesToRecord(tableId, playerRecord.index);
 
@@ -2723,6 +2728,7 @@ module.exports = {
     containsNonUTF8,
     findKeyByValue,
     removeSuffixes,
+    getNormalizedName,
     isValidPlayer,
     isValidDraftPlayer,
     isReferenceColumn,
