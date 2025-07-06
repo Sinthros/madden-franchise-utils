@@ -24,7 +24,7 @@ const franchise = FranchiseUtils.init(validGames, {isAutoUnemptyEnabled: autoUne
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 let minYear = 1970;
-let maxYear = 2023;
+let maxYear = 2025;
 // Dynamically determine min and max year from folder
 const files = fs.readdirSync(directoryPath);
 const years = files.map(file => {

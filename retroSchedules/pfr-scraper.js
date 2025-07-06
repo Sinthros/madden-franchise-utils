@@ -2,7 +2,7 @@ const request = require('request');
 const cheerio = require('cheerio');
 const fs = require('fs');
 
-getSchedules(2023, 2023);
+getSchedules(2025, 2025);
 
 function getSchedules(startingYear, endingYear) {
   for (let i = startingYear; i <= endingYear; i++) {
@@ -24,7 +24,7 @@ function handleResponse(err, res, body) {
   var pageData = parsePage(body);
   // TODO: FIX THE YEAR HAVING TO BE PUT IN MANUALLY
   // We SHOULD be able to do pageData.year, but it's returning an empty string right now
-  fs.writeFile(`schedules/${2023}.json`, JSON.stringify(pageData), (err) => {
+  fs.writeFile(`schedules/${2025}.json`, JSON.stringify(pageData), (err) => {
     if (err) throw err;
   });
 };
