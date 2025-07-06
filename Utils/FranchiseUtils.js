@@ -2377,21 +2377,54 @@ function findKeyByValue(obj, value) {
 }
 
 /**
- * Removes common suffixes (e.g., Jr., Sr., II, III, IV, V) from a name string.
+ * Removes common name suffixes from the end of a name string.
  *
- * @param {string} name - The name string from which to remove suffixes.
- * @returns {string} - The name string without the suffix.
+ * @param {string|null|undefined} name - The name to clean.
+ * @returns {string} The cleaned name or empty string if input is null/undefined.
  */
 function removeSuffixes(name) {
-  // Remove periods from any part of the name
+  if (typeof name !== 'string') return '';
   let cleanName = name.replace(/\./g, '');
-
-  // Remove common suffixes
-  return cleanName.replace(/\s+(Jr|Sr|III|II|IV|V)$/g, '');
+  return cleanName.replace(/\s+(Jr|Sr|II|III|IV|V)$/i, '');
 }
 
+/**
+ * Normalizes whitespace in a string.
+ *
+ * @param {string|null|undefined} str - The input string.
+ * @returns {string} The normalized string or empty string if input is null/undefined.
+ */
+function normalizeWhitespace(str) {
+  if (typeof str !== 'string') return '';
+  return str.replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Normalizes a name by removing suffixes, cleaning whitespace, and converting to uppercase.
+ * Accepts either a string or an object with FirstName/LastName properties.
+ *
+ * @param {string|object|null|undefined} name - The name to normalize. Can be a string or an object with FirstName and LastName.
+ * @returns {string} The normalized name, or an empty string if input is invalid.
+ */
 function getNormalizedName(name) {
-  return upperCase(removeSuffixes(name));
+  let fullName = '';
+
+  if (typeof name === 'string') {
+    fullName = name;
+  } else if (
+    name &&
+    typeof name === 'object' &&
+    typeof name.FirstName === 'string' &&
+    typeof name.LastName === 'string'
+  ) {
+    fullName = `${name.FirstName} ${name.LastName}`;
+  } else {
+    return ''; // invalid input
+  }
+
+  const noSuffix = removeSuffixes(fullName);
+  const normalizedWhitespace = normalizeWhitespace(noSuffix);
+  return normalizedWhitespace.toUpperCase();
 }
 
 function getPlayerReferences(franchise, tableId, playerRecord) {
@@ -2728,6 +2761,7 @@ module.exports = {
     containsNonUTF8,
     findKeyByValue,
     removeSuffixes,
+    normalizeWhitespace,
     getNormalizedName,
     isValidPlayer,
     isValidDraftPlayer,
