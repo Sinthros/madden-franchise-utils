@@ -112,6 +112,7 @@ async function getEspnPlayerInfo(url) {
  * @param {string|null} [options.url=null] - URL for logging/debugging context.
  * @param {number|null} [options.age=null] - Optional player age to help with confirmation.
  * @param {string|null} [options.college=null] - Optional player college for confirmation.
+ * @param {string|null} [options.position=null] - Optional player position for confirmation.
  * @returns {Promise<number>} The index of the matched player in the player table, or -1.
  */
 async function searchForPlayer(
@@ -183,7 +184,7 @@ async function searchForPlayer(
         `Name: ${normalizedPlayerName}.` +
         (age ? ` Age: ${age}.` : '')  + (position ? ` Position: ${position}.` : '') + (teamName ? ` Team: ${teamName}.` : '') + (college ? ` College: ${college}.` : '') + (url ? ` URL: ${url}.` : '') + '\n' +
         `Madden: ${finalMaddenName}, ${player.Age}, ${player.Position} for the ${playerTeamName}. ` +
-        (maddenCollege ? ` College: ${maddenCollege}. ` : '') +
+        (maddenCollege ? `College: ${maddenCollege}. ` : '') +
         `${player.YearsPro} years of experience.` +
         `\nIs this the correct player? Enter yes or no.`;
 
