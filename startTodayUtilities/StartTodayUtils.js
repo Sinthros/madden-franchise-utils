@@ -127,7 +127,8 @@ async function searchForPlayer(
     rookiesOnly = false,
     url = null,
     age = null,
-    college = null
+    college = null,
+    position = null
   } = options;
 
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
@@ -163,6 +164,7 @@ async function searchForPlayer(
       ? `${playerTeamRecord.LongName} ${playerTeamRecord.DisplayName}`
       : null;
 
+    const maddenCollege = await FranchiseUtils.getCollege(franchise, player.College);
     const finalMaddenName = FranchiseUtils.getNormalizedName(player);
 
     const isExactNameAndTeamMatch =
@@ -170,19 +172,19 @@ async function searchForPlayer(
 
     // Only do FA match if the age and college is provided
     const isFAMatch =
-      normalizedPlayerName === finalMaddenName &&
-      (age !== null && player.Age === age) &&
-      (college !== null && (player.College || '').toLowerCase() === college.toLowerCase());
+        normalizedPlayerName === finalMaddenName &&
+        age !== null && Number(player.Age) === Number(age) &&
+        college !== null && (maddenCollege || '').toLowerCase() === college.toLowerCase();
 
     if (isExactNameAndTeamMatch || isFAMatch) {
       return index;
     } else {
     const message =
-        `Name: ${normalizedPlayerName}. Team: ${teamName}.` +
-        (age ? ` Age: ${age}.` : '') + (url ? ` URL: ${url}.` : '') + '\n' +
+        `Name: ${normalizedPlayerName}.` +
+        (age ? ` Age: ${age}.` : '')  + (position ? ` Position: ${position}.` : '') + (teamName ? ` Team: ${teamName}.` : '') + (college ? ` College: ${college}.` : '') + (url ? ` URL: ${url}.` : '') + '\n' +
         `Madden: ${finalMaddenName}, ${player.Age}, ${player.Position} for the ${playerTeamName}. ` +
+        (maddenCollege ? ` College: ${maddenCollege}. ` : '') +
         `${player.YearsPro} years of experience.` +
-        (player.College ? ` College: ${player.College}` : '') +
         `\nIs this the correct player? Enter yes or no.`;
 
 
