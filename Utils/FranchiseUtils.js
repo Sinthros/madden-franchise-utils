@@ -2726,7 +2726,7 @@ function getActiveRecords(table) {
 
 async function getCollege(franchise, college) {
   const assetId = bin2Dec(college);
-  const filePath = path.join(__dirname, `${String(franchise.schema.meta.gameYear)}/colleges.json`);
+  const filePath = path.join(__dirname, `JsonLookups/${String(franchise.schema.meta.gameYear)}/colleges.json`);
 
   // If the file doesn't exist, create it with an empty array
   if (!fs.existsSync(filePath)) {
