@@ -5,7 +5,7 @@ function getTeamRecordByFullName(teamName, teamTable) {
   if (FranchiseUtils.isBlank(teamName)) return null;
   const teamRecord = teamTable.records.find(
     record => !record.isEmpty &&
-    `${record.LongName} ${record.DisplayName}` === teamName && record.TEAM_VISIBLE && !FranchiseUtils.NFL_CONFERENCES.includes(record.DisplayName)
+    `${record.LongName} ${record.DisplayName}` === teamName && !FranchiseUtils.NFL_CONFERENCES.includes(record.DisplayName)
   );
 
   if (!teamRecord) {
@@ -19,10 +19,10 @@ function getTeamRecordByFullName(teamName, teamTable) {
 function getTeamRecordByIndex(teamIndex, teamTable) {
   const teamRecord = teamTable.records.find(
     record => !record.isEmpty &&
-    record.TeamIndex === teamIndex && record.TEAM_VISIBLE && !FranchiseUtils.NFL_CONFERENCES.includes(record.DisplayName)
+    record.TeamIndex === teamIndex && !FranchiseUtils.NFL_CONFERENCES.includes(record.DisplayName)
   );
 
-  if (!teamRecord) {
+  if (!teamRecord && teamIndex !== 32) {
     console.log(`Couldn't find team record based on index ${teamIndex}.`);
     return null;
   }
@@ -51,7 +51,7 @@ async function searchForPlayer(franchise, tables, playerName, matchValue = 0.5, 
   await FranchiseUtils.readTableRecords([playerTable, teamTable]);
 
   const normalizedPlayerName = FranchiseUtils.getNormalizedName(playerName);
-  const teamRecord = getTeamRecordByIndex(teamIndex);
+  const teamRecord = getTeamRecordByIndex(teamIndex, teamTable);
   const teamName = teamRecord === null ? null : `${teamRecord.LongName} ${teamRecord.DisplayName}`;
 
   // Get list of player table records which are valid, haven't been processed yet, and are rookies (if applicable)
@@ -91,7 +91,8 @@ async function searchForPlayer(franchise, tables, playerName, matchValue = 0.5, 
       const message =
         `Name: ${normalizedPlayerName}. Team: ${teamName}. URL: ${url}.\n` +
         `Madden: ${finalMaddenName}, ${player.Age}, ${player.Position} for the ${playerTeamName}. ` +
-        `${player.YearsPro} years of experience.`;
+        `${player.YearsPro} years of experience.\n` +
+        "Is this the right player? Enter yes or no.";
 
       const isMatch = FranchiseUtils.getYesOrNo(message);
       if (isMatch) return index;
