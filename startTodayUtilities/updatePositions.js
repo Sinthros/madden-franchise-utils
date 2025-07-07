@@ -335,7 +335,7 @@ async function handlePlayer(playerName, url, position, teamIndex) {
       franchise,
       tables,
       playerName,
-      0.7,
+      0.64,
       skippedPlayers,
       teamIndex,
       options
