@@ -1,5 +1,7 @@
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const stringSimilarity = require('string-similarity');
+const axios = require('axios');
+const cheerio = require('cheerio');
 
 function getTeamRecordByFullName(teamName, teamTable) {
   if (FranchiseUtils.isBlank(teamName)) return null;
@@ -30,6 +32,70 @@ function getTeamRecordByIndex(teamIndex, teamTable) {
   return teamRecord;
 }
 
+/**
+ * Scrapes player info (age, position, college) from an ESPN NFL player profile page.
+ * Handles 503s and encoding issues.
+ *
+ * @param {string} url - ESPN player profile URL.
+ * @returns {Promise<{ age: string|null, position: string|null, college: string|null }>}
+ */
+async function getEspnPlayerInfo(url) {
+  const axiosConfig = { maxRedirects: 10 };
+  const retryDelay = 5000; // 5 seconds
+  let response;
+
+  try {
+    try {
+      response = await axios.get(url, axiosConfig);
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 503) {
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          response = await axios.get(url, axiosConfig);
+        } else if (error.response.status === 400) {
+          const finalUrl = error.response.request.res.responseUrl;
+          response = await axios.get(encodeURI(finalUrl), axiosConfig);
+        } else {
+          throw error;
+        }
+      } else {
+        throw error;
+      }
+    }
+
+    const $ = cheerio.load(response.data);
+
+    const bioItems = $('.PlayerHeader__Bio_List li');
+
+    let age = null;
+    let college = null;
+
+    bioItems.each((_, el) => {
+        const label = $(el).find('div').first().text().trim();
+        const valueEl = $(el).find('.fw-medium');
+
+        if (label === 'Birthdate') {
+            const rawText = valueEl.text().trim();
+            const match = rawText.match(/\((\d+)\)/);
+            if (match) age = match[1];
+        }
+
+        if (label === 'College') {
+            const linkText = valueEl.find('a').text().trim();
+            const fallbackText = valueEl.text().trim();
+            college = linkText || fallbackText || null;
+        }
+    });
+
+    const position = $('.PlayerHeader__Team_Info li').eq(2).text().trim() || null;
+
+    return { age, position, college };
+
+  } catch (err) {
+    console.error('Failed to fetch ESPN player info:', err.message);
+    return { age: null, position: null, college: null };
+  }
+}
 
 /**
  * Searches for a player in the franchise player table using fuzzy name matching.
@@ -131,5 +197,6 @@ async function searchForPlayer(
 module.exports = {
     getTeamRecordByFullName,
     getTeamRecordByIndex,
+    getEspnPlayerInfo,
     searchForPlayer
 };
