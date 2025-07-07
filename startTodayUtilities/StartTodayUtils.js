@@ -39,22 +39,39 @@ function getTeamRecordByIndex(teamIndex, teamTable) {
  * @param {object} tables - Object containing table identifiers (e.g. playerTable, teamTable).
  * @param {string} playerName - The name of the player to search for.
  * @param {number} [matchValue=0.5] - Minimum similarity score (0–1) to consider a match.
- * @param {Array} [skippedPlayers=[]] - Array of record indices to skip (already rejected).
- * @param {string|null} [teamName=null] - Team name to confirm against for extra validation.
- * @param {boolean} [rookiesOnly=false] - If true, restrict search to players with 0 years pro.
- * @param {string|null} [url=null] - Optional URL context for logging or debugging (e.g. ESPN/Ourlads).
+ * @param {Array<number>} [skippedPlayers=[]] - Array of record indices to skip (already rejected).
+ * @param {number} [teamIndex=-1] - Optional team index used for matching against a team record.
+ * @param {object} [options={}] - Optional extra matching parameters.
+ * @param {boolean} [options.rookiesOnly=false] - Restrict search to rookies only.
+ * @param {string|null} [options.url=null] - URL for logging/debugging context.
+ * @param {number|null} [options.age=null] - Optional player age to help with confirmation.
+ * @param {string|null} [options.college=null] - Optional player college for confirmation.
  * @returns {Promise<number>} The index of the matched player in the player table, or -1.
  */
-async function searchForPlayer(franchise, tables, playerName, matchValue = 0.5, skippedPlayers = [], teamIndex = -1, url = null, rookiesOnly = false) {
+async function searchForPlayer(
+  franchise,
+  tables,
+  playerName,
+  matchValue = 0.5,
+  skippedPlayers = [],
+  teamIndex = -1,
+  options = {}
+) {
+  const {
+    rookiesOnly = false,
+    url = null,
+    age = null,
+    college = null
+  } = options;
+
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
   await FranchiseUtils.readTableRecords([playerTable, teamTable]);
 
   const normalizedPlayerName = FranchiseUtils.getNormalizedName(playerName);
   const teamRecord = getTeamRecordByIndex(teamIndex, teamTable);
-  const teamName = teamRecord === null ? null : `${teamRecord.LongName} ${teamRecord.DisplayName}`;
+  const teamName = teamRecord ? `${teamRecord.LongName} ${teamRecord.DisplayName}` : null;
 
-  // Get list of player table records which are valid, haven't been processed yet, and are rookies (if applicable)
   const playersWithMatchValues = playerTable.records
     .filter(record => FranchiseUtils.isValidPlayer(record))
     .filter(record => {
@@ -82,17 +99,26 @@ async function searchForPlayer(franchise, tables, playerName, matchValue = 0.5, 
 
     const finalMaddenName = FranchiseUtils.getNormalizedName(player);
 
-    const match = normalizedPlayerName === finalMaddenName && teamName === playerTeamName;
-    const faMatch = false; // Placeholder for additional criteria like college, age, etc.
+    const isExactNameAndTeamMatch =
+      normalizedPlayerName === finalMaddenName && teamName === playerTeamName;
 
-    if (match || faMatch) {
+    // Only do FA match if the age and college is provided
+    const isFAMatch =
+      normalizedPlayerName === finalMaddenName &&
+      (age !== null && player.Age === age) &&
+      (college !== null && (player.College || '').toLowerCase() === college.toLowerCase());
+
+    if (isExactNameAndTeamMatch || isFAMatch) {
       return index;
     } else {
-      const message =
-        `Name: ${normalizedPlayerName}. Team: ${teamName}. URL: ${url}.\n` +
+    const message =
+        `Name: ${normalizedPlayerName}. Team: ${teamName}.` +
+        (age ? ` Age: ${age}.` : '') + (url ? ` URL: ${url}.` : '') + '\n' +
         `Madden: ${finalMaddenName}, ${player.Age}, ${player.Position} for the ${playerTeamName}. ` +
-        `${player.YearsPro} years of experience.\n` +
-        "Is this the right player? Enter yes or no.";
+        `${player.YearsPro} years of experience.` +
+        (player.College ? ` College: ${player.College}` : '') +
+        `\nIs this the correct player? Enter yes or no.`;
+
 
       const isMatch = FranchiseUtils.getYesOrNo(message);
       if (isMatch) return index;
