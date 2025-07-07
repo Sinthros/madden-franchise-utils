@@ -1,7 +1,5 @@
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const stringSimilarity = require('string-similarity');
-const prompt = require('prompt-sync')();
-
 
 function getTeamRecordByFullName(teamName, teamTable) {
   if (FranchiseUtils.isBlank(teamName)) return null;
@@ -47,12 +45,14 @@ function getTeamRecordByIndex(teamIndex, teamTable) {
  * @param {string|null} [url=null] - Optional URL context for logging or debugging (e.g. ESPN/Ourlads).
  * @returns {Promise<number>} The index of the matched player in the player table, or -1.
  */
-async function searchForPlayer(franchise, tables, playerName, matchValue = 0.5, skippedPlayers = [], teamName = null, rookiesOnly = false, url = null) {
+async function searchForPlayer(franchise, tables, playerName, matchValue = 0.5, skippedPlayers = [], teamIndex = -1, url = null, rookiesOnly = false) {
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
   await FranchiseUtils.readTableRecords([playerTable, teamTable]);
 
   const normalizedPlayerName = FranchiseUtils.getNormalizedName(playerName);
+  const teamRecord = getTeamRecordByIndex(teamIndex);
+  const teamName = teamRecord === null ? null : `${teamRecord.LongName} ${teamRecord.DisplayName}`;
 
   // Get list of player table records which are valid, haven't been processed yet, and are rookies (if applicable)
   const playersWithMatchValues = playerTable.records
@@ -93,10 +93,16 @@ async function searchForPlayer(franchise, tables, playerName, matchValue = 0.5, 
         `Madden: ${finalMaddenName}, ${player.Age}, ${player.Position} for the ${playerTeamName}. ` +
         `${player.YearsPro} years of experience.`;
 
-      const isMatch = await getYesOrNo(message);
+      const isMatch = FranchiseUtils.getYesOrNo(message);
       if (isMatch) return index;
       skippedPlayers.push(index);
     }
   }
   return -1;
 }
+
+module.exports = {
+    getTeamRecordByFullName,
+    getTeamRecordByIndex,
+    searchForPlayer
+};
