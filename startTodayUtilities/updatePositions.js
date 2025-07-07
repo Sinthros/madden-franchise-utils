@@ -18,7 +18,7 @@ const validGameYears = [
 ];
 
 console.log("This program will update player positions for all players, based on ESPN Depth Charts.");
-const franchise = FranchiseUtils.init(validGameYears, {promptForBackup: false});
+const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 const FILE_PATH = path.join(__dirname, `${String(franchise.schema.meta.gameYear)}/positions_assetlookup.json`);
