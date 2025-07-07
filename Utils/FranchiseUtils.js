@@ -2724,6 +2724,27 @@ function getActiveRecords(table) {
   return table.records.filter(record => !record.isEmpty);
 }
 
+async function getCollege(franchise, college) {
+  const assetId = bin2Dec(college);
+  const filePath = path.join(__dirname, `${String(franchise.schema.meta.gameYear)}/colleges.json`);
+
+  // If the file doesn't exist, create it with an empty array
+  if (!fs.existsSync(filePath)) {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, '[]', 'utf8'); // <- use array not object
+  }
+
+  const allColleges = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+
+  try {
+    const match = allColleges.find(c => c.AssetId === assetId);
+    return match ? match.Name : null;
+  } catch (err) {
+    console.error('Error finding college:', err);
+    return null;
+  }
+}
+
 module.exports = {
     init,
     selectFranchiseFile, // FUNCTIONS
@@ -2773,6 +2794,7 @@ module.exports = {
     getPlayerReferences,
     removeFreeAgentFromTables,
     getActiveRecords,
+    getCollege,
 
     getYesOrNo, // UTILITY FUNCTIONS
     getYesNoForceQuit,
