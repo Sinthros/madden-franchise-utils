@@ -1097,7 +1097,7 @@ function addToArrayTable(table, binaryToAdd, row = 0, checkDuplicate = false) {
  * @returns {Array} Filtered list of valid players on the team.
  */
 function getPlayersOnTeam(playerTable, teamIndex, options = {}) {
-  if (!playerTable || !Array.isArray(playerTable.records)) return [];
+  if (!playerTable || !Array.isArray(playerTable.records) || teamIndex === 32) return [];
 
   const {
     includePracticeSquad = false,
