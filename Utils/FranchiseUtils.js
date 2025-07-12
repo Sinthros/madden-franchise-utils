@@ -1087,6 +1087,36 @@ function addToArrayTable(table, binaryToAdd, row = 0, checkDuplicate = false) {
   }
 }
 
+/**
+ * Returns a list of players from a specific team.
+ *
+ * @param {object} playerTable - The player table to filter the records from.
+ * @param {number} teamIndex - The team index to match players against.
+ * @param {object} [options={}] - Filter options.
+ * @param {boolean} [options.includePracticeSquad=false] - Whether to include practice squad players.
+ * @param {boolean} [options.includeExpiringPlayers=true] - Whether to include players with expiring contracts.
+ * @returns {Array} Filtered list of valid players on the team.
+ */
+function getPlayersOnTeam(playerTable, teamIndex, options = {}) {
+  if (!playerTable || !Array.isArray(playerTable.records)) return [];
+
+  const {
+    includePracticeSquad = false,
+    includeExpiringPlayers = true,
+  } = options;
+
+  return playerTable.records.filter(playerRecord =>
+    playerRecord &&
+    playerRecord.TeamIndex === teamIndex &&
+    isValidPlayer(playerRecord, {
+      includePracticeSquad,
+      includeExpiringPlayers,
+      includeFreeAgents: false
+    })
+  );
+}
+
+
 async function recalculateRosterSizes(playerTable, teamTable) {
 
   for (let i = 0; i < teamTable.header.recordCapacity; i++) {
@@ -2810,6 +2840,7 @@ module.exports = {
     emptyTable,
     clearArrayTable,
     addRecordToTable,
+    getPlayersOnTeam,
     recalculateRosterSizes,
     hasMultiplePlayerTables,
     fixPlayerTables,
