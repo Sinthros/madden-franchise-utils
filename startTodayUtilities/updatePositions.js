@@ -11,7 +11,7 @@ const ALL_POSITION_KEYS = ['QB','HB','WR','TE','LT','LG','C','RG','RT','LE','DT'
 const REMOVE_POSITIONS = ['FB','PK','P','H','PR','KR','LS'];
 const ALL_DEPTH_CHART_URL = 'https://www.espn.com/nfl/story/_/id/29098001/nfl-depth-charts-all-32-teams';
 const DEPTH_CHART_PREFIX_URL = "https://www.espn.com/nfl/team/depth/";
-const ASSET_FILE_NAME = "positions_assetlookup.json";
+const ASSET_FILE_NAME = "espn_assetlookup.json";
 
 const validGameYears = [
   FranchiseUtils.YEARS.M24,

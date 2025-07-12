@@ -7,7 +7,7 @@ const path = require('path');
 const prompt = require('prompt-sync')();
 
 const BASE_DEPTH_CHART_URL = 'https://www.ourlads.com/nfldepthcharts/';
-const ASSET_FILE_NAME = "jerseynum_assetlookup.json";
+const ASSET_FILE_NAME = "ourlads_assetlookup.json";
 const COL_JERSEYNUM = "#";
 const COL_PLAYERNAME = "Player";
 const COL_AGE = "Age";
