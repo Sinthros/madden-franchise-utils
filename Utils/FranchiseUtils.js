@@ -4,7 +4,6 @@ const { tables, tablesM25 } = require('./FranchiseTableId');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
-const { upperCase } = require('lodash');
 const prompt = require('prompt-sync')();
 
 
@@ -2330,6 +2329,29 @@ function getUserInput(message, firstValue, secondValue) {
 };
 
 /**
+ * Prompts the user to choose a value from a list of valid options and returns the chosen value.
+ *
+ * @param {string} message - The message to display to the user.
+ * @param {Array<string|number>} validValues - An array of valid input options.
+ * @returns {string} - The value chosen by the user (as a string).
+ */
+function getUserSelection(message, validValues) {
+  const valueMap = new Map(validValues.map(v => [String(v).toUpperCase(), String(v)]));
+
+  while (true) {
+    console.log(`${message}\nOptions: ${validValues.join(', ')}`);
+    const input = prompt().trim().toUpperCase();
+
+    if (valueMap.has(input)) {
+      return input;
+    } else {
+      console.log(`Invalid input. Please enter one of the following: ${validValues.join(', ')}`);
+    }
+  }
+}
+
+
+/**
  * Prompts the user to choose a number within a specified range and returns the chosen number.
  *
  * @param {string} message - The message to display to the user.
@@ -2905,6 +2927,7 @@ module.exports = {
     shuffleArray,
     removeKeyFromJson,
     getUserInput,
+    getUserSelection,
     getUserInputNumber,
     getRandomNumber,
     bin2Dec,
