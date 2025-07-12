@@ -1124,6 +1124,10 @@ function getPlayersOnTeam(playerTable, teamIndex, options = {}) {
  * @returns {number[]} List of jersey numbers from 0 to 99 that are not currently taken.
  */
 function getAvailableJerseyNumbers(playerTable, teamIndex) {
+  // If free agent, return all
+  if (teamIndex === 32) {
+    return Array.from({ length: 100 }, (_, i) => i);
+  }
   const players = getPlayersOnTeam(playerTable, teamIndex);
   const takenNumbers = new Set();
 
