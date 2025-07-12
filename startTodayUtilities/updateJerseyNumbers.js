@@ -125,17 +125,106 @@ async function parseTeamRoster(teamUrl) {
     return {
       team: fullTeamName,
       url: teamUrl,
-      players: players.map(player =>
-        Object.fromEntries(
-        Object.entries(player).filter(([key]) => COLS_TO_KEEP.includes(key))
+      players: players
+        .map(player =>
+          Object.fromEntries(
+            Object.entries(player).filter(([key]) => COLS_TO_KEEP.includes(key))
+          )
         )
-      )
+        .sort((a, b) => {
+          const aHasNum = !FranchiseUtils.isBlank(a[COL_JERSEYNUM]);
+          const bHasNum = !FranchiseUtils.isBlank(b[COL_JERSEYNUM]);
+          return (aHasNum === bHasNum) ? 0 : aHasNum ? -1 : 1;
+        })
     };
   } catch (err) {
     console.error(`Error parsing ${teamUrl}:`, err.message);
     return null;
   }
 }
+
+function setJerseyNum(playerRecord, teamIndex, jerseyNum = null) {
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  let availableJerseyNums = FranchiseUtils.getAvailableJerseyNumbers(playerTable, teamIndex);
+  const currentJerseyNum = playerRecord.JerseyNum;
+
+  if (!availableJerseyNums.includes(currentJerseyNum) && teamIndex === playerRecord.TeamIndex) {
+    const teamPlayers = FranchiseUtils.getPlayersOnTeam(playerTable, teamIndex);
+    const isDuplicate = teamPlayers.some(
+      p => p !== playerRecord && p.JerseyNum == currentJerseyNum
+    );
+
+    if (!isDuplicate && !availableJerseyNums.includes(currentJerseyNum)) {
+      availableJerseyNums.push(currentJerseyNum);
+      availableJerseyNums.sort((a, b) => a - b);
+    }
+  }
+
+  if (jerseyNum !== null && !availableJerseyNums.includes(jerseyNum)) {
+    availableJerseyNums.push(jerseyNum);
+    availableJerseyNums.sort((a, b) => a - b); // Resort
+  }
+
+  const message = `Select a jersey number for ${playerRecord.FirstName} ${playerRecord.LastName}. Current number is ${currentJerseyNum}`;
+  const selectedJerseyNumber = FranchiseUtils.getUserSelection(message, availableJerseyNums);
+  playerRecord.JerseyNum = selectedJerseyNumber;
+}
+
+/**
+ * Assigns a jersey number to a player, allowing resolution of conflicts by reassigning other players if needed.
+ *
+ * @param {object} playerRecord - The player to assign a jersey number to.
+ * @param {number} teamIndex - The team index of the player.
+ * @param {object} playerTable - The full player table object.
+ */
+function assignJerseyWithConflictResolution(playerRecord, teamIndex) {
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  const availableJerseyNums = FranchiseUtils.getAvailableJerseyNumbers(playerTable, teamIndex);
+  const currentJerseyNum = playerRecord.JerseyNum;
+  const teamPlayers = FranchiseUtils.getPlayersOnTeam(playerTable, teamIndex);
+
+  const message = `Enter a jersey number (0–99) for ${playerRecord.FirstName} ${playerRecord.LastName}. Current number is ${currentJerseyNum}`;
+  
+  while (true) {
+    console.log(`${message}\nAvailable: ${availableJerseyNums.join(', ')}`);
+    const input = prompt().trim();
+
+    const selectedNum = Number(input);
+    if (Number.isNaN(selectedNum) || selectedNum < 0 || selectedNum > 99) {
+      console.log("Invalid input. Please enter a number between 0 and 99.");
+      continue;
+    }
+
+    // Find ALL players with this jersey number (excluding current player)
+    const conflicts = teamPlayers.filter(p =>
+      p !== playerRecord && Number(p.JerseyNum) === selectedNum
+    );
+
+    if (conflicts.length === 0) {
+      // No conflicts — safe to assign
+      playerRecord.JerseyNum = selectedNum;
+      return;
+    }
+
+    console.log(`Number ${selectedNum} is currently assigned to:`);
+    for (const conflict of conflicts) {
+      console.log(`- ${conflict.FirstName} ${conflict.LastName}`);
+    }
+
+    const resolve = FranchiseUtils.getYesOrNo(`Do you want to reassign all of them and assign ${selectedNum} to ${playerRecord.FirstName} ${playerRecord.LastName}?`, true);
+    if (!resolve) {
+      continue;
+    }
+
+    playerRecord.JerseyNum = selectedNum;
+    // Reassign each conflicting player
+    for (const conflict of conflicts) {
+      assignJerseyWithConflictResolution(conflict, teamIndex, playerTable);
+    }
+    return;
+  }
+}
+
 
 /**
  * Handles assigning a player to a position by checking cache or running a fuzzy search.
@@ -156,8 +245,14 @@ async function handlePlayer(player, teamIndex) {
       const assetRowIndex = playerTable.records.findIndex(
         record => record.PLYR_ASSETNAME === asset
       );
-      if (assetRowIndex !== -1 && !FranchiseUtils.isBlank(jerseyNum)) {
-        playerTable.records[assetRowIndex].JerseyNum = jerseyNum;
+      if (assetRowIndex !== -1) {
+        const playerRecord = playerTable.records[assetRowIndex];
+        if (!FranchiseUtils.isBlank(jerseyNum)) {
+          playerRecord.JerseyNum = jerseyNum;
+        }
+        else {
+          assignJerseyWithConflictResolution(playerRecord, teamIndex);
+        }
       }
     }
     return;
@@ -198,15 +293,62 @@ async function handlePlayer(player, teamIndex) {
   }
 
   if (result !== -1) {
-    const playerAssetName = playerTable.records[result].PLYR_ASSETNAME;
-    ALL_ASSETS[url] = playerAssetName;
+    const playerRecord = playerTable.records[result];
+    ALL_ASSETS[url] = playerRecord.PLYR_ASSETNAME;
     if (!FranchiseUtils.isBlank(jerseyNum)) {
-        playerTable.records[result].JerseyNum = jerseyNum;
+        playerRecord.JerseyNum = jerseyNum;
+    }
+    else {
+      assignJerseyWithConflictResolution(playerRecord, jerseyNum);
     }
   } else {
     ALL_ASSETS[url] = FranchiseUtils.EMPTY_STRING;
   }
 }
+
+function resolveDuplicateJerseyNumbers(playerTable, teamIndex, teamName = '') {
+  let duplicatesExist = true;
+
+  while (duplicatesExist) {
+    duplicatesExist = false;
+
+    const teamPlayers = FranchiseUtils.getPlayersOnTeam(playerTable, teamIndex);
+
+    // Build fresh jersey map each iteration
+    const jerseyMap = new Map();
+
+    for (const player of teamPlayers) {
+      const num = Number(player.JerseyNum);
+      if (!Number.isNaN(num)) {
+        if (!jerseyMap.has(num)) {
+          jerseyMap.set(num, []);
+        }
+        jerseyMap.get(num).push(player);
+      }
+    }
+
+    for (const [jerseyNum, playersWithSameNum] of jerseyMap.entries()) {
+      if (playersWithSameNum.length > 1) {
+        duplicatesExist = true;
+        console.log(`Duplicate jersey number ${jerseyNum} detected on ${teamName || 'team index ' + teamIndex}.`);
+        
+        console.log('Players with this number:');
+        playersWithSameNum.forEach(player => {
+          console.log(`- ${player.FirstName} ${player.LastName}`);
+        });
+
+        // Prompt just one player at a time and then break to rebuild map
+        const player = playersWithSameNum[0];
+        console.log(`Resolving for ${player.FirstName} ${player.LastName} (was #${player.JerseyNum})`);
+        assignJerseyWithConflictResolution(player, teamIndex);
+
+        break; // break the for..of loop to rebuild jersey map after this change
+      }
+    }
+  }
+}
+
+
 
 
 
@@ -219,7 +361,6 @@ franchise.on('ready', async function () {
     const obj = await parseTeamRoster(link);
     const teamName = obj.team;
     const players = obj.players;
-    console.log(teamName)
     const teamRecord = StartTodayUtils.getTeamRecordByFullName(teamName, teamTable);
     const teamIndex = teamRecord === null ? -1 : teamRecord.TeamIndex;
     for (const player of players) {
@@ -227,11 +368,11 @@ franchise.on('ready', async function () {
     }
     // After each team save the asset file to be safe
     fs.writeFileSync(FILE_PATH, JSON.stringify(ALL_ASSETS, null, 2), 'utf8');
+    resolveDuplicateJerseyNumbers(playerTable, teamIndex, teamName);
   }
 
   fs.writeFileSync(FILE_PATH, JSON.stringify(ALL_ASSETS, null, 2), 'utf8');
   console.log("Jersey numbers have been updated.");
   await FranchiseUtils.saveFranchiseFile(franchise);
   FranchiseUtils.EXIT_PROGRAM();
-
 });
