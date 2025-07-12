@@ -113,6 +113,7 @@ async function getEspnPlayerInfo(url) {
  * @param {number|null} [options.age=null] - Optional player age to help with confirmation.
  * @param {string|null} [options.college=null] - Optional player college for confirmation.
  * @param {string|null} [options.position=null] - Optional player position for confirmation.
+ * @param {string|null} [options.yearsPro=null] - Optional years pro for confirmation.
  * @returns {Promise<number>} The index of the matched player in the player table, or -1.
  */
 async function searchForPlayer(
@@ -129,7 +130,8 @@ async function searchForPlayer(
     url = null,
     age = null,
     college = null,
-    position = null
+    position = null,
+    yearsPro = null
   } = options;
 
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
@@ -182,7 +184,7 @@ async function searchForPlayer(
     } else {
     const message =
         `Name: ${normalizedPlayerName}.` +
-        (age ? ` Age: ${age}.` : '')  + (position ? ` Position: ${position}.` : '') + (teamName ? ` Team: ${teamName}.` : '') + (college ? ` College: ${college}.` : '') + (url ? ` URL: ${url}.` : '') + '\n' +
+        (age ? ` Age: ${age}.` : '')  + (position ? ` Position: ${position}.` : '') + (teamName ? ` Team: ${teamName}.` : '') + (college ? ` College: ${college}.` : '') + (yearsPro ? ` Years Pro: ${yearsPro}.` : '') + (url ? ` URL: ${url}.` : '') + '\n' +
         `Madden: ${finalMaddenName}, ${player.Age}, ${player.Position} for the ${playerTeamName}. ` +
         (maddenCollege ? `College: ${maddenCollege}. ` : '') +
         `${player.YearsPro} years of experience.` +
