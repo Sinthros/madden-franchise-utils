@@ -2451,9 +2451,39 @@ function getNormalizedName(name) {
     return ''; // invalid input
   }
 
+  // Handle any cases where comma is in the name
+  fullName = getNormalizedCommaName(fullName);
   const noSuffix = removeSuffixes(fullName);
   const normalizedWhitespace = normalizeWhitespace(noSuffix);
   return normalizedWhitespace.toUpperCase();
+}
+
+/**
+ * Normalizes a name from "Last, First" format to "First Last".
+ *
+ * - If the input is null, undefined, or not a string, it returns the original value.
+ * - If the name contains a comma, it assumes "Last, First" format and swaps them.
+ * - Otherwise, returns the name trimmed.
+ *
+ * @param {string | null | undefined} name - The name to normalize.
+ * @returns {string | null | undefined} The normalized name, or the original value if input is invalid.
+ *
+ * @example
+ * normalizeName("Maitre, Jason"); // "Jason Maitre"
+ * normalizeName("Smith, John ");  // "John Smith"
+ * normalizeName("John Smith");    // "John Smith"
+ * normalizeName(null);            // null
+ * normalizeName("");              // ""
+ */
+function getNormalizedCommaName(name) {
+  if (!name || typeof name !== 'string') return name;
+
+  const parts = name.split(',').map(part => part.trim());
+  if (parts.length === 2) {
+    return `${parts[1]} ${parts[0]}`;
+  }
+
+  return name.trim(); // fallback: return as-is
 }
 
 function getPlayerReferences(franchise, tableId, playerRecord) {
@@ -2814,6 +2844,7 @@ module.exports = {
     removeSuffixes,
     normalizeWhitespace,
     getNormalizedName,
+    getNormalizedCommaName,
     isValidPlayer,
     isValidDraftPlayer,
     isReferenceColumn,
