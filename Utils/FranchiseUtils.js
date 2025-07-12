@@ -1116,6 +1116,35 @@ function getPlayersOnTeam(playerTable, teamIndex, options = {}) {
   );
 }
 
+/**
+ * Returns a list of available jersey numbers (0–99) for a given team.
+ *
+ * @param {object} playerTable - The full player table with a `records` array.
+ * @param {number} teamIndex - The team index to search.
+ * @param {object} [options={}] - Optional filters for `getPlayersOnTeam`.
+ * @returns {number[]} List of jersey numbers from 0 to 99 that are not currently taken.
+ */
+function getAvailableJerseyNumbers(playerTable, teamIndex) {
+  const players = getPlayersOnTeam(playerTable, teamIndex);
+  const takenNumbers = new Set();
+
+  for (const player of players) {
+    const jersey = player.JerseyNum;
+    if (jersey !== null && jersey !== undefined && !isNaN(jersey)) {
+      takenNumbers.add(Number(jersey));
+    }
+  }
+
+  const availableNumbers = [];
+  for (let i = 0; i <= 99; i++) {
+    if (!takenNumbers.has(i)) {
+      availableNumbers.push(i);
+    }
+  }
+
+  return availableNumbers;
+}
+
 
 async function recalculateRosterSizes(playerTable, teamTable) {
 
@@ -2841,6 +2870,7 @@ module.exports = {
     clearArrayTable,
     addRecordToTable,
     getPlayersOnTeam,
+    getAvailableJerseyNumbers,
     recalculateRosterSizes,
     hasMultiplePlayerTables,
     fixPlayerTables,
