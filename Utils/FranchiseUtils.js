@@ -20,6 +20,8 @@ const ZERO_REF = '00000000000000000000000000000000';
 const EMPTY_STRING = "";
 const BASE_FILE_INIT_KWD = 'CAREER';
 const FTC_FILE_INIT_KWD = 'franchise-';
+const Y_KWD = "Y";
+const N_KWD = "N";
 const YES_KWD = "YES";
 const NO_KWD = "NO";
 const FORCEQUIT_KWD = "FORCEQUIT";
@@ -2192,22 +2194,31 @@ function EXIT_PROGRAM() {
  * Prompts the user with a message and returns a boolean based on their response.
  *
  * @param {string} message - The message to display to the user.
- * @returns {boolean} - Returns true if the user responds with YES_KWD, false if the user responds with NO_KWD.
+ * @param {boolean} [allowShortForm=false] - If true, accepts "Y" or "N" as valid responses in addition to YES_KWD and NO_KWD (hidden from the user).
+ * @returns {boolean} - Returns true if the user responds with YES_KWD (or "Y" if allowed),
+ *                      false if the user responds with NO_KWD (or "N" if allowed).
  */
-function getYesOrNo(message) {
+function getYesOrNo(message, allowShortForm = false) {
   while (true) {
-      console.log(message);
-      const input = prompt().trim().toUpperCase();
+    console.log(message);
+    const input = prompt().trim().toUpperCase();
 
-      if (input === YES_KWD) {
-          return true;
-      } else if (input === NO_KWD) {
-          return false;
-      } else {
-          console.log(`Invalid input. Please enter ${YES_KWD} or ${NO_KWD}.`);
-      }
+    if (
+      input === YES_KWD ||
+      (allowShortForm && input === Y_KWD)
+    ) {
+      return true;
+    } else if (
+      input === NO_KWD ||
+      (allowShortForm && input === N_KWD)
+    ) {
+      return false;
+    } else {
+      console.log(`Invalid input. Please enter ${YES_KWD} or ${NO_KWD}.`);
+    }
   }
-};
+}
+
 
 function getYesNoForceQuit(message) {
   while (true) {
