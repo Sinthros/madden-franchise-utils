@@ -179,12 +179,37 @@ function setJerseyNum(playerRecord, teamIndex, jerseyNum = null) {
  */
 function assignJerseyWithConflictResolution(playerRecord, teamIndex) {
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
-  const availableJerseyNums = FranchiseUtils.getAvailableJerseyNumbers(playerTable, teamIndex);
-  const currentJerseyNum = playerRecord.JerseyNum;
   const teamPlayers = FranchiseUtils.getPlayersOnTeam(playerTable, teamIndex);
 
-  const message = `Enter a jersey number (0–99) for ${playerRecord.FirstName} ${playerRecord.LastName}. Current number is ${currentJerseyNum}`;
-  
+  // Get taken numbers from other players (exclude current player)
+  const takenNumbers = new Set(
+    teamPlayers
+      .filter(p => p.index !== playerRecord.index)
+      .map(p => Number(p.JerseyNum))
+      .filter(num => !Number.isNaN(num))
+  );
+
+  // Build available numbers 0-99 excluding takenNumbers
+  let availableJerseyNums = [];
+  for (let i = 0; i <= 99; i++) {
+    if (!takenNumbers.has(i)) {
+      availableJerseyNums.push(i);
+    }
+  }
+
+  // Include current jersey number if it is not taken by anyone else
+  const currentJerseyNum = Number(playerRecord.JerseyNum);
+  if (
+    !Number.isNaN(currentJerseyNum) &&
+    !takenNumbers.has(currentJerseyNum) &&
+    !availableJerseyNums.includes(currentJerseyNum)
+  ) {
+    availableJerseyNums.push(currentJerseyNum);
+    availableJerseyNums.sort((a, b) => a - b);
+  }
+
+  const message = `Enter a jersey number (0–99) for ${playerRecord.FirstName} ${playerRecord.LastName}. Current number is ${playerRecord.JerseyNum}`;
+
   while (true) {
     console.log(`${message}\nAvailable: ${availableJerseyNums.join(', ')}`);
     const input = prompt().trim();
@@ -211,12 +236,13 @@ function assignJerseyWithConflictResolution(playerRecord, teamIndex) {
       console.log(`- ${conflict.FirstName} ${conflict.LastName}`);
     }
 
-    const resolve = FranchiseUtils.getYesOrNo(`Do you want to reassign all of them and assign ${selectedNum} to ${playerRecord.FirstName} ${playerRecord.LastName}?`, true);
+    const resolve = FranchiseUtils.getYesOrNo(`Do you want to reassign and assign ${selectedNum} to ${playerRecord.FirstName} ${playerRecord.LastName}?`, true);
     if (!resolve) {
       continue;
     }
 
     playerRecord.JerseyNum = selectedNum;
+
     // Reassign each conflicting player
     for (const conflict of conflicts) {
       assignJerseyWithConflictResolution(conflict, teamIndex, playerTable);
@@ -361,6 +387,7 @@ franchise.on('ready', async function () {
     const obj = await parseTeamRoster(link);
     const teamName = obj.team;
     const players = obj.players;
+    console.log(`Getting numbers for the ${teamName}`);
     const teamRecord = StartTodayUtils.getTeamRecordByFullName(teamName, teamTable);
     const teamIndex = teamRecord === null ? -1 : teamRecord.TeamIndex;
     for (const player of players) {
