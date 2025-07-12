@@ -137,30 +137,93 @@ async function parseTeamRoster(teamUrl) {
   }
 }
 
+/**
+ * Handles assigning a player to a position by checking cache or running a fuzzy search.
+ *
+ * @param {object} player - The player object.
+ * @param {number} teamIndex - The team index to help disambiguate player records.
+ */
+async function handlePlayer(player, teamIndex) {
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  const jerseyNum = player[COL_JERSEYNUM];
+  const playerName = player[COL_PLAYERNAME];
+  const url = player[COL_URL];
+
+  // Use cached asset if available
+  if (ALL_ASSETS.hasOwnProperty(url)) {
+    const asset = ALL_ASSETS[url];
+    if (!FranchiseUtils.isBlank(asset)) {
+      const assetRowIndex = playerTable.records.findIndex(
+        record => record.PLYR_ASSETNAME === asset
+      );
+      if (assetRowIndex !== -1 && !FranchiseUtils.isBlank(jerseyNum)) {
+        playerTable.records[assetRowIndex].JerseyNum = jerseyNum;
+      }
+    }
+    return;
+  }
+
+  const skippedPlayers = [];
+  let result = -1;
+  const options = {
+    url: url,
+    age: player[COL_AGE],
+    college: player[COL_COLLEGE],
+    position: player[COL_POSITION],
+    yearsPro: player[COL_YEARSPRO]
+  }
+
+  // Try high similarity first
+  result = await StartTodayUtils.searchForPlayer(
+    franchise,
+    tables,
+    playerName,
+    0.95,
+    skippedPlayers,
+    teamIndex,
+    options
+  );
+
+  // Retry with lower threshold if no match
+  if (result === -1) {
+    result = await StartTodayUtils.searchForPlayer(
+      franchise,
+      tables,
+      playerName,
+      0.64,
+      skippedPlayers,
+      teamIndex,
+      options
+    );
+  }
+
+  if (result !== -1) {
+    const playerAssetName = playerTable.records[result].PLYR_ASSETNAME;
+    ALL_ASSETS[url] = playerAssetName;
+    if (!FranchiseUtils.isBlank(jerseyNum)) {
+        playerTable.records[result].JerseyNum = jerseyNum;
+    }
+  } else {
+    ALL_ASSETS[url] = FranchiseUtils.EMPTY_STRING;
+  }
+}
+
 
 
 franchise.on('ready', async function () {
-  const allTeamLinks = await getTeamLinks(); // Get all Ourlads team links
-  const obj = await parseTeamRoster("https://www.ourlads.com/nfldepthcharts/roster/MIA");
-  console.log(obj.players)
-  process.exit(0)
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
   await FranchiseUtils.readTableRecords([playerTable, teamTable]);
 
-  for (const currentURL of allTeamLinks) { // Iterate through each team
-    // Return players and team name
-    // playerData contains a dictionary of the position: {playerName: url}
-    const [playerData, teamName] = await scrapePlayerData(currentURL);
-    const finalPlayerData = await getDuplicatePlayers(playerData); // Filter out duplicate players per position
-
+  for (const link of await getTeamLinks()) {
+    const obj = await parseTeamRoster(link);
+    const teamName = obj.team;
+    const players = obj.players;
+    console.log(teamName)
     const teamRecord = StartTodayUtils.getTeamRecordByFullName(teamName, teamTable);
     const teamIndex = teamRecord === null ? -1 : teamRecord.TeamIndex;
-
-    for (const [position, players] of Object.entries(finalPlayerData)) { //Iterate through each player and their position
-      for (const [playerName, url] of Object.entries(players)) {
-        await handlePlayer(playerName, url, position, teamIndex);
-      }
+    for (const player of players) {
+        await handlePlayer(player, teamIndex);
     }
     // After each team save the asset file to be safe
     fs.writeFileSync(FILE_PATH, JSON.stringify(ALL_ASSETS, null, 2), 'utf8');
