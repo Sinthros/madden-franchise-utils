@@ -11,6 +11,7 @@ const ALL_POSITION_KEYS = ['QB','HB','WR','TE','LT','LG','C','RG','RT','LE','DT'
 const REMOVE_POSITIONS = ['FB','PK','P','H','PR','KR','LS'];
 const ALL_DEPTH_CHART_URL = 'https://www.espn.com/nfl/story/_/id/29098001/nfl-depth-charts-all-32-teams';
 const DEPTH_CHART_PREFIX_URL = "https://www.espn.com/nfl/team/depth/";
+const ASSET_FILE_NAME = "positions_assetlookup.json";
 
 const validGameYears = [
   FranchiseUtils.YEARS.M24,
@@ -21,7 +22,7 @@ console.log("This program will update player positions for all players, based on
 const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
-const FILE_PATH = path.join(__dirname, `${String(franchise.schema.meta.gameYear)}/positions_assetlookup.json`);
+const FILE_PATH = path.join(__dirname, `${String(franchise.schema.meta.gameYear)}/${ASSET_FILE_NAME}`);
 
 // If the file doesn't exist, create it with an empty object
 if (!fs.existsSync(FILE_PATH)) {
@@ -29,7 +30,7 @@ if (!fs.existsSync(FILE_PATH)) {
   fs.writeFileSync(FILE_PATH, '{}', 'utf8');
 }
 
-const allAssets = JSON.parse(fs.readFileSync(FILE_PATH, 'utf8'));
+const ALL_ASSETS = JSON.parse(fs.readFileSync(FILE_PATH, 'utf8'));
 
 async function scrapePlayerData(currentURL) {
   try {
@@ -295,8 +296,8 @@ async function handlePlayer(playerName, url, position, teamIndex) {
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
 
   // Use cached asset if available
-  if (allAssets.hasOwnProperty(url)) {
-    const asset = allAssets[url];
+  if (ALL_ASSETS.hasOwnProperty(url)) {
+    const asset = ALL_ASSETS[url];
     if (!FranchiseUtils.isBlank(asset)) {
       const assetRowIndex = playerTable.records.findIndex(
         record => record.PLYR_ASSETNAME === asset
@@ -344,10 +345,10 @@ async function handlePlayer(playerName, url, position, teamIndex) {
 
   if (result !== -1) {
     const playerAssetName = playerTable.records[result].PLYR_ASSETNAME;
-    allAssets[url] = playerAssetName;
+    ALL_ASSETS[url] = playerAssetName;
     playerTable.records[result].Position = position;
   } else {
-    allAssets[url] = FranchiseUtils.EMPTY_STRING;
+    ALL_ASSETS[url] = FranchiseUtils.EMPTY_STRING;
   }
 }
 
@@ -373,10 +374,10 @@ franchise.on('ready', async function () {
       }
     }
     // After each team save the asset file to be safe
-    fs.writeFileSync(FILE_PATH, JSON.stringify(allAssets, null, 2), 'utf8');
+    fs.writeFileSync(FILE_PATH, JSON.stringify(ALL_ASSETS, null, 2), 'utf8');
   }
 
-  fs.writeFileSync(FILE_PATH, JSON.stringify(allAssets, null, 2), 'utf8');
+  fs.writeFileSync(FILE_PATH, JSON.stringify(ALL_ASSETS, null, 2), 'utf8');
   console.log("Positions have been updated.");
   await FranchiseUtils.saveFranchiseFile(franchise);
   FranchiseUtils.EXIT_PROGRAM();
