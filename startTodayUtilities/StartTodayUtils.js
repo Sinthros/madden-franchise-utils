@@ -191,7 +191,7 @@ async function searchForPlayer(
         `\nIs this the correct player? Enter yes or no.`;
 
 
-      const isMatch = FranchiseUtils.getYesOrNo(message);
+      const isMatch = FranchiseUtils.getYesOrNo(message, true);
       if (isMatch) return index;
       skippedPlayers.push(index);
     }
