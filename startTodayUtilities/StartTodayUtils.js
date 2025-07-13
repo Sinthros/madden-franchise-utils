@@ -18,6 +18,21 @@ function getTeamRecordByFullName(teamName, teamTable) {
   return teamRecord;
 }
 
+function getTeamRecordByShortName(shortName, teamTable) {
+  if (FranchiseUtils.isBlank(shortName)) return null;
+  const teamRecord = teamTable.records.find(
+    record => !record.isEmpty &&
+    record.ShortName === shortName && !FranchiseUtils.NFL_CONFERENCES.includes(record.DisplayName)
+  );
+
+  if (!teamRecord) {
+    console.log(`Couldn't find team record based on input ${shortName}.`);
+    return null;
+  }
+
+  return teamRecord;
+}
+
 function getTeamRecordByIndex(teamIndex, teamTable) {
   const teamRecord = teamTable.records.find(
     record => !record.isEmpty &&
@@ -202,6 +217,7 @@ async function searchForPlayer(
 module.exports = {
     getTeamRecordByFullName,
     getTeamRecordByIndex,
+    getTeamRecordByShortName,
     getEspnPlayerInfo,
     searchForPlayer
 };
