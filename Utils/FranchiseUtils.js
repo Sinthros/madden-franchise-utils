@@ -2871,6 +2871,40 @@ async function getCollege(franchise, college) {
   }
 }
 
+/**
+ * Retrieves the list of enum values for a given field name from either a record or table object.
+ *
+ * @param {object} source - A record or table object.
+ * @param {string} fieldName - The field name to retrieve enum values for.
+ * @returns {string[]} List of enum value names, or empty array if not found.
+ */
+function getEnumValuesForField(source, fieldName) {
+  try {
+    // If source is a record object with _fields
+    const fieldMeta = source?._fields?.[fieldName];
+    if (fieldMeta?.offset?.enum) {
+      return fieldMeta.offset.enum._members.map(member => member._name);
+    }
+  } catch (err) {
+    // ignore and fall through to table check
+  }
+
+  try {
+    // If source is a table object with offsetTable
+    const offset = source?.offsetTable?.find(f => f.name === fieldName);
+    if (offset?.enum) {
+      return offset.enum._members.map(member => member._name);
+    }
+  } catch (err) {
+    // ignore and fall through
+  }
+
+  console.error(`Enum not found for field '${fieldName}' in provided source.`);
+  return [];
+}
+
+
+
 module.exports = {
     init,
     selectFranchiseFile, // FUNCTIONS
@@ -2922,6 +2956,7 @@ module.exports = {
     getPlayerReferences,
     removeFreeAgentFromTables,
     getActiveRecords,
+    getEnumValuesForField,
     getCollege,
 
     getYesOrNo, // UTILITY FUNCTIONS
