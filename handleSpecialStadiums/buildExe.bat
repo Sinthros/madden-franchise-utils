@@ -1,0 +1,1 @@
+nexe --build -i handleSpecialStadiums.js -t x64-20.18.0 -r "../node_modules/madden-franchise/data/schemas" -r "transferScheduleFromJson.js" -r "*.json" -r "./schedules/*.json" -r "../Utils/FranchiseUtils.js" -r "../Utils/FranchiseTableId.js" -o "handleSpecialStadiums.exe" --verbose
