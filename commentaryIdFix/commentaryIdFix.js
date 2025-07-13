@@ -68,8 +68,8 @@ franchise.on('ready', async function () {
 			continue;
 		}
 
-		// New commentary ID should be either the last name or the sanitized last name. If neither are found, set to 8191
-		const newCommentaryId = commentaryIdLookup[lastName] || commentaryIdLookup[sanitizedLastName] || 8191;
+		// New commentary ID should be either the last name or the sanitized last name. If neither are found, set to 0
+		const newCommentaryId = commentaryIdLookup[lastName] || commentaryIdLookup[sanitizedLastName] || 0;
 
 		playerTable.records[i].PLYR_COMMENT = newCommentaryId;
 
