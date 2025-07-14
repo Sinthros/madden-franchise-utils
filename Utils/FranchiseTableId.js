@@ -340,6 +340,7 @@ const tablesM25 = {
     positionSignatureAbilityArrayFtcTable: 3517346360,
     positionSignatureAbilityFtcTable: 3636158354,
     signatureAbilityFtcTable: 1291148681,
+    stadiumFtcTable: 2401887796,
 
     drillCompletedTable: 1015040736,
     franchiseDebugModuleTable: 4212179270,
