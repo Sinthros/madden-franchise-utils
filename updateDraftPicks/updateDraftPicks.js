@@ -1,8 +1,5 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const URL = 'https://www.tankathon.com/nfl/past_drafts/2025';
-const FORFEITED_KWD = 'forfeited';
-const COMP_KWD = 'compensatory';
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 
 
@@ -16,67 +13,43 @@ const validGameYears = [
 const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
+/**
+ * Scrapes NFL draft pick data from Tankathon.
+ * Skips compensatory picks and returns a mapping of pick number to pick details.
+ *
+ * @returns {Promise<Object<number, { round: number, team: string, tradeTeam: string }>>}
+ */
 async function getDraftPicks() {
-  const { data } = await axios.get(URL);
-  const $ = cheerio.load(data);
+  const { data: html } = await axios.get('https://www.tankathon.com/nfl/full_draft');
+  const $ = cheerio.load(html);
 
-  let currentRoundLabel = '';
-  let inCompRound = false;
-  let pick = 0;
-  const results = {};
-  const forfeitedTeams = [];
+  const draftPicks = {};
+  let pickIndex = 0;
 
-  $('#mock-draft-board-container')
-    .find('.mock-round-label.nfl, .mock-row.nfl')
-    .each((_, el) => {
-      const elem = $(el);
+  const formatTeamName = href =>
+    href ? href.replace('/nfl/', '').replace(/^\w/, c => c.toUpperCase()) : '';
 
-      if (elem.hasClass('mock-round-label')) {
-        currentRoundLabel = elem.text().trim();
-        inCompRound = currentRoundLabel.toLowerCase().includes(COMP_KWD);
-        return;
-      }
+  $('.full-draft-round-nfl').each((roundIndex, roundEl) => {
+    $(roundEl).find('.full-draft td.pick-number').each((_, cell) => {
+      const $cell = $(cell);
 
-      if (elem.hasClass('mock-row')) {
-        if (inCompRound) return;
+      // Skip compensatory picks
+      if ($cell.find('span.primary[data-balloon="Compensatory pick"]').length > 0) return;
 
-        const logoDiv = elem.find('.mock-row-logo');
-        const teamImg = logoDiv.find('img.nba-30'); // current team
-        const tradeImg = logoDiv.find('img.mock-trade'); // traded from team
+      const teamHref = $cell.next().find('.team-link a').attr('href');
+      const tradeTeamHref = $cell.next().find('.trade a.disabled').attr('href');
 
-        const team = teamImg.attr('alt')?.trim();
-        const tradeSrc = tradeImg.attr('src') || '';
-        const tradedFromMatch = tradeSrc.match(/\/nfl\/(\w+)\.svg$/);
-        const tradedFromRaw = tradedFromMatch?.[1]?.toUpperCase();
-        const tradedFrom = tradedFromRaw === 'WSH' ? 'WAS' : tradedFromRaw;
+      draftPicks[pickIndex] = {
+        round: roundIndex,
+        team: formatTeamName(teamHref),
+        tradeTeam: formatTeamName(tradeTeamHref)
+      };
 
-        const schoolPositions = elem.find('.mock-row-school-position');
-        const schoolPosText = schoolPositions[0]?.children?.[0]?.data?.trim().toLowerCase() || '';
-        const finalTeam = team === 'WSH' ? 'WAS' : team;
-
-        if (!finalTeam) return;
-
-        if (schoolPosText === FORFEITED_KWD) {
-          forfeitedTeams.push(finalTeam);
-          return;
-        }
-
-        results[pick++] = {
-          team: finalTeam,
-          tradedFrom: tradedFrom || finalTeam,
-        };
-      }
+      pickIndex++;
     });
-
-  // Append forfeited picks at end
-  forfeitedTeams.forEach((team) => {
-    results[pick++] = {
-      team,
-      tradedFrom: team,
-    };
   });
 
-  return results;
+  return draftPicks;
 }
 
 franchise.on('ready', async function () {
@@ -88,7 +61,7 @@ franchise.on('ready', async function () {
   const teamTableId = teamTable.header.tableId;
 
   for (const record of FranchiseUtils.getActiveRecords(teamTable)) {
-    teamBinaryDict[record.ShortName] = getBinaryReferenceData(teamTableId, record.index);
+    teamBinaryDict[record.DisplayName] = getBinaryReferenceData(teamTableId, record.index);
   }
 
   const allDraftPicks = await getDraftPicks();
@@ -104,9 +77,9 @@ franchise.on('ready', async function () {
       continue;
     }
 
-    const { team, tradedFrom } = draftPick;
+    const { team, tradeTeam } = draftPick;
     const currentRef = teamBinaryDict[team];
-    const tradedRef = teamBinaryDict[tradedFrom];
+    const tradedRef = teamBinaryDict[tradeTeam];
 
     if (currentRef) {
       record.CurrentTeam = currentRef;
@@ -117,7 +90,10 @@ franchise.on('ready', async function () {
     if (tradedRef) {
       record.OriginalTeam = tradedRef;
     } else {
-      console.warn(`Warning: No binary reference for traded-from team ${tradedFrom} at pick ${currentPick}`);
+      if (tradeTeam !== '') {
+        console.warn(`Warning: No binary reference for traded-from team ${tradeTeam} at pick ${currentPick}`);
+      }
+      record.OriginalTeam = currentRef;
     }
   }
 
