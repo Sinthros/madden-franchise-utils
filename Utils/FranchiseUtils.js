@@ -34,7 +34,8 @@ const YEARS = {
   M22: 22,
   M23: 23,
   M24: 24,
-  M25: 25
+  M25: 25,
+  M26: 26
 };
 
 // TYPES OF SAVE FILES
@@ -491,7 +492,7 @@ function getTablesObject(franchise) {
   switch (true) {
     case fileGameYear <= 24:
       return tables;
-    case fileGameYear === 25:
+    case fileGameYear >= 25:
       return tablesM25;
     default:
       return tables;
