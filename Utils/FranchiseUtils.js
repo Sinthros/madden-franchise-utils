@@ -2209,14 +2209,44 @@ function isValidPlayer(playerRecord, options = {}) {
          meetsMaxYears;
 }
 
+/**
+ * Determines if a player is a valid draft player.
+ *
+ * @param {Object} playerRecord - The player record to validate.
+ * @returns {boolean} - True if the player is a valid draft player.
+ * 
+ * @see {@link isValidPlayer} For detailed option descriptions.
+ */
 function isValidDraftPlayer(playerRecord) {
-  return isValidPlayer(playerRecord, {includeDraftPlayers: true,
-     includeSignedPlayers: false,
-     includeFreeAgents: false,
-     includePracticeSquad: false, 
-     includeExpiringPlayers: false});
-     
-};
+  return isValidPlayer(playerRecord, {
+    includeDraftPlayers: true,
+    includeSignedPlayers: false,
+    includeFreeAgents: false,
+    includePracticeSquad: false,
+    includeExpiringPlayers: false
+  });
+}
+
+/**
+ * Determines if a player is a valid rookie (excluding draft players).
+ *
+ * Rookies are defined as players with exactly 0 years of professional experience,
+ * excluding those with a draft contract status.
+ *
+ * @param {Object} playerRecord - The player record to validate.
+ * @param {Object} [options={}] - Additional filtering options to pass through.
+ *                                See {@link isValidPlayer} for detailed option descriptions.
+ * @returns {boolean} - True if the player is a valid rookie
+ */
+function isValidRookie(playerRecord, options = {}) {
+  return isValidPlayer(playerRecord, {
+    ...options,
+    includeDraftPlayers: false,
+    minYearsPro: 0,
+    maxYearsPro: 0
+  });
+}
+
 
 function isReferenceColumn(record, column, includeZeroRef = false, includeFtcRefs = false) {
   const field = record.fields[column];
@@ -2999,6 +3029,7 @@ module.exports = {
     getNormalizedCommaName,
     isValidPlayer,
     isValidDraftPlayer,
+    isValidRookie,
     isReferenceColumn,
     isFtcReference,
     validateGameYears,
