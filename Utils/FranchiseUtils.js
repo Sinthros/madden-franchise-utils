@@ -2146,20 +2146,25 @@ async function fixDraftPicks(franchise) {
 
   return alteredPicks;
 }
+
 /**
  * Determines if a player is valid based on various criteria.
  *
  * @param {Object} playerRecord - The record to check. Can be passed through as playerTable.records[rowNum].
  * @param {Object} [options={}] - Options to include or exclude certain player statuses.
- * @param {boolean} [options.includeDraftPlayers=true] - Include draft players?
+ * @param {boolean} [options.includeDraftPlayers=false] - Include draft players?
  * @param {boolean} [options.includeFreeAgents=true] - Include free agent players?
  * @param {boolean} [options.includePracticeSquad=true] - Include practice squad players?
+ * @param {boolean} [options.includeSignedPlayers=true] - Include signed players?
+ * @param {boolean} [options.includeExpiringPlayers=true] - Include expiring players?
  * @param {boolean} [options.includeRetiredPlayers=false] - Include retired players?
  * @param {boolean} [options.includeDeletedPlayers=false] - Include deleted players?
  * @param {boolean} [options.includeCreatedPlayers=false] - Include Created players? (Should likely always leave as false)
  * @param {boolean} [options.includeNoneTypePlayers=false] - Include None players? (Should likely always leave as false)
  * @param {boolean} [options.includeLegends=false] - Include legends? (We believe this is only used for Superstar mode - Keep as false if not sure)
- * @returns {boolean} - Returns `true` if the player is valid, `false` otherwise.
+ * @param {number|null} [options.minYearsPro=-1] - Minimum years of experience (inclusive). Ignored if -1 or null.
+ * @param {number|null} [options.maxYearsPro=-1] - Maximum years of experience (inclusive). Ignored if -1 or null.
+ * @returns {boolean} - Returns `true` if the player meets all the specified criteria.
  */
 function isValidPlayer(playerRecord, options = {}) {
   const {
@@ -2172,7 +2177,9 @@ function isValidPlayer(playerRecord, options = {}) {
     includeDeletedPlayers = false,
     includeCreatedPlayers = false,
     includeNoneTypePlayers = false,
-    includeLegends = false
+    includeLegends = false,
+    minYearsPro = -1,
+    maxYearsPro = -1,
   } = options;
 
   const invalidStatuses = new Set([
@@ -2187,10 +2194,20 @@ function isValidPlayer(playerRecord, options = {}) {
     ...(!includeNoneTypePlayers ? [CONTRACT_STATUSES.NONE] : []),
   ]);
 
-  return !playerRecord.isEmpty && 
-         !invalidStatuses.has(playerRecord.ContractStatus) && 
-         (includeLegends || !playerRecord.IsLegend);
-};
+  const yearsPro = playerRecord.YearsPro;
+
+  const meetsMinYears =
+    minYearsPro === null || minYearsPro === -1 || yearsPro >= minYearsPro;
+
+  const meetsMaxYears =
+    maxYearsPro === null || maxYearsPro === -1 || yearsPro <= maxYearsPro;
+
+  return !playerRecord.isEmpty &&
+         !invalidStatuses.has(playerRecord.ContractStatus) &&
+         (includeLegends || !playerRecord.IsLegend) &&
+         meetsMinYears &&
+         meetsMaxYears;
+}
 
 function isValidDraftPlayer(playerRecord) {
   return isValidPlayer(playerRecord, {includeDraftPlayers: true,
