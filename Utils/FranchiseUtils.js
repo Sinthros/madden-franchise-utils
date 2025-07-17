@@ -943,7 +943,7 @@ async function fillResignTable(franchise) {
   }
 
   for (const record of playerTable.records) {
-    const isEligible = FranchiseUtils.isValidPlayer(record, {
+    const isEligible = isValidPlayer(record, {
       includeSignedPlayers: true,
       includeExpiringPlayers: true,
       includeDraftPlayers: false,
