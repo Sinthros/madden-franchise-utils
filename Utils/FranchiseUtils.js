@@ -975,6 +975,11 @@ async function fillResignTable(franchise) {
   }
 }
 
+async function regenerateResignTables(franchise) {
+  await emptyResignTable(franchise);
+  await fillResignTable(franchise);
+}
+
 async function emptySignatureTables(franchise) {
 
   const tables = getTablesObject(franchise);
@@ -3041,6 +3046,7 @@ module.exports = {
     emptyAcquisitionTables,
     emptyResignTable,
     fillResignTable,
+    regenerateResignTables,
     emptySignatureTables,
     emptyRecord,
     emptyTable,
