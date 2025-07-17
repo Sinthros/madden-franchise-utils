@@ -907,6 +907,74 @@ async function emptyResignTable(franchise) {
     }
 };
 
+/**
+ * Populates the resign table with players who are signed and in the final year of their contract.
+ *
+ * For each valid player in the player table, this function checks if they are:
+ *   - Signed (non-free agents)
+ *   - In the final year of their contract (ContractLength - ContractYear === 1)
+ *
+ * If so, the player is added to the resign table with appropriate binary references,
+ * and the resign array table is updated accordingly.
+ *
+ * Optimization:
+ *   - Builds a map of `TeamIndex → team binary` for faster team lookups.
+ *
+ * @async
+ * @function fillResignTable
+ * @param {Object} franchise - The franchise object containing all relevant table references.
+ * @returns {Promise<void>} A Promise that resolves once the resign data is populated.
+ */
+async function fillResignTable(franchise) {
+  const tables = getTablesObject(franchise);
+
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  const teamTable = franchise.getTableByUniqueId(tables.teamTable);
+  const resignArrayTable = franchise.getTableByUniqueId(tables.reSignArrayTable);
+  const resignTable = franchise.getTableByUniqueId(tables.reSignTable);
+
+  await readTableRecords([playerTable, teamTable, resignArrayTable, resignTable]);
+
+  // Build a quick lookup: TeamIndex → BinaryReference
+  const teamBinaryMap = new Map();
+  for (const teamRecord of teamTable.records) {
+    const binary = getBinaryReferenceData(teamTable.header.tableId, teamRecord.index);
+    teamBinaryMap.set(teamRecord.TeamIndex, binary);
+  }
+
+  for (const record of playerTable.records) {
+    const isEligible = FranchiseUtils.isValidPlayer(record, {
+      includeSignedPlayers: true,
+      includeExpiringPlayers: true,
+      includeDraftPlayers: false,
+      includeFreeAgents: false,
+      includePracticeSquad: false,
+    });
+
+    if (!isEligible) continue;
+
+    const contractYearsLeft = record.ContractLength - record.ContractYear;
+    if (contractYearsLeft !== 1) continue;
+
+    const currentPlayerBinary = getBinaryReferenceData(playerTable.header.tableId, record.index);
+    const currentTeamBinary = teamBinaryMap.get(record.TeamIndex);
+
+    if (!currentTeamBinary) {
+      console.warn(`No team found for TeamIndex ${record.TeamIndex}`);
+      continue;
+    }
+
+    const resignRecord = resignTable.records[resignTable.header.nextRecordToUse];
+    resignRecord.Team = currentTeamBinary;
+    resignRecord.Player = currentPlayerBinary;
+    resignRecord.ActiveRequestID = -1;
+    resignRecord.NegotiationWeek = 2;
+
+    const resignBinary = getBinaryReferenceData(resignTable.header.tableId, resignRecord.index);
+    addToArrayTable(resignArrayTable, resignBinary);
+  }
+}
+
 async function emptySignatureTables(franchise) {
 
   const tables = getTablesObject(franchise);
@@ -2972,6 +3040,7 @@ module.exports = {
     generateActiveAbilityPlayers,
     emptyAcquisitionTables,
     emptyResignTable,
+    fillResignTable,
     emptySignatureTables,
     emptyRecord,
     emptyTable,
