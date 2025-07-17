@@ -41,7 +41,30 @@ const stadiumAssignmentsByYear = {
     3:  [ null, null, null, null, null, null, null, null,  { stadium: "Wembley" } ], // Week 4 Game 9 (London) Steelers vs Vikings
     7:  [ null, null, null, null, null, { stadium: "Wembley" } ] // Week 8 Game 6 (London) 49ers vs Jags
   },
-  2025: {
+  2014: {
+    3:  [ null, null, null, null, null, null, null, { stadium: "Wembley" } ], // Week 4 Game 8 (London) Dolphins vs Raiders
+    7:  [ null, { stadium: "Wembley" } ], // Week 8 Game 2 (London) Lions vs Falcons
+    9:  [ null, null, null, null, null, null, null, { stadium: "Wembley" } ] // Week108 Game 8 (London) Cowboys vs Jags
+  },
+  2015: {
+    3:  [ null, { stadium: "Wembley" } ], // Week 4 Game 2 (London) Jets vs Dolphins
+    6:  [ null, { stadium: "Wembley" } ], // Week 7 Game 2 (London) Bills vs Jags
+    7:  [ null, { stadium: "Wembley" } ] // Week 8 Game 2 (London) Lions vs Chiefs
+  },
+  2016: {
+    3:  [ null, { stadium: "Wembley" } ], // Week 4 Game 2 (London) Colts vs Jags
+    6:  [ null, { stadium: "Tottenham Hotspur" } ], // Week 7 Game 2 (London) Giants vs Rams
+    7:  [ null, { stadium: "Wembley" } ], // Week 8 Game 2 (London) Redskins vs Bengals
+    10: [ null, null, null, null, null, null, null, null, null, null, null, null, null, { stadium: "Estadio Azteca" } ], // Week 11 Game 14 (Mexico City) Raiders vs Texans
+  },
+  2017: {
+    2:  [ null, { stadium: "Wembley" } ], // Week 3 Game 2 (London) Ravens vs Jags
+    3:  [ null, { stadium: "Wembley" } ], // Week 4 Game 2 (London) Saints vs Dolphins
+    6:  [ null, null, null, null, null, null, { stadium: "Tottenham Hotspur" } ], // Week 7 Game 7 (London) Rams vs Cardinals
+    7:  [ null, { stadium: "Tottenham Hotspur" } ], // Week 8 Game 2 (London) Vikings vs Browns
+    10:  [ null, null, null, null, null, null, null, null, null, null, null, { stadium: "Estadio Azteca" } ], // Week 11 Game 12 (Mexico City) Raiders vs Patriots
+  },
+  2025: { //Not 100% complete / Accurate
     0:  [ null, { stadium: "São Paulo" } ],
     4:  [ null, { stadium: "Tottenham Hotspur" } ],
     5:  [ null, { stadium: "Tottenham Hotspur" } ],
