@@ -64,12 +64,54 @@ const stadiumAssignmentsByYear = {
     7:  [ null, { stadium: "Tottenham Hotspur" } ], // Week 8 Game 2 (London) Vikings vs Browns
     10:  [ null, null, null, null, null, null, null, null, null, null, null, { stadium: "Estadio Azteca" } ], // Week 11 Game 12 (Mexico City) Raiders vs Patriots
   },
-  2025: { //Not 100% complete / Accurate
-    0:  [ null, { stadium: "São Paulo" } ],
-    4:  [ null, { stadium: "Tottenham Hotspur" } ],
-    5:  [ null, { stadium: "Tottenham Hotspur" } ],
-    6:  [ null, { stadium: "Wembley" } ],
-    9:  [ null, { stadium: "Frankfurt" } ]
+  2018: {
+    5:  [ null, null, null, null, null, null, null, null,null, { stadium: "Wembley" } ], // Week 6 Game 10 (London) Seahawks vs Raiders
+    6:  [ null, { stadium: "Wembley" } ], // Week 7 Game 2 (London) Chargers vs Titans
+    7:  [ null, { stadium: "Wembley" } ], // Week 8 Game 2 (London) Eagles vs Jaguars
+    //10:  [ null, null, null, null, null, null, null, null, null, null, null, { stadium: "Estadio Azteca" } ], // Week 11 Game 12 (Mexico City) Raiders vs Patriots
+  },
+  2019: {
+    4:  [ null, null, null, null, null, { stadium: "Tottenham Hotspur" } ], // Week 5 Game 6 (London) Bears vs Raiders
+    5:  [ null, { stadium: "Tottenham Hotspur" } ], // Week 6 Game 2 (London) Panthers vs Bucs
+    7:  [ null, null, null, null, null, null, { stadium: "Wembley" } ], // Week 8 Game 7 (London) Bengals vs Rams
+    8:  [ null, { stadium: "Wembley" } ], // Week 9 Game 2 (London) Texans vs Jaguars
+    10: [ null, null, null, null, null, null, null, null, null, null, null, null, null, { stadium: "Estadio Azteca" } ], // Week 11 Game 12 (Mexico City) Chiefs vs Chargers
+  },
+  //**2020** (Covid season)
+ 2021: {
+    4:  [ null, { stadium: "Tottenham Hotspur" } ], // Week 5 Game 2 (London) Jets vs Falcons
+    5:  [ null, { stadium: "Tottenham Hotspur" } ] // Week 6 Game 2 (London) Dolphins vs Jags
+  },
+ 2022: {
+    3:  [ null, { stadium: "Tottenham Hotspur" } ], // Week 4 Game 2 (London) Vikings vs Saints
+    4:  [ null, { stadium: "Tottenham Hotspur" } ], // Week 5 Game 2 (London) Giants vs Packers
+    7:  [ null, { stadium: "Wembley" } ], // Week 8 Game 2 (London) Broncos vs Jaguars
+    9:  [ null, { stadium: "Allianz Arena" } ], // Week 10 Game 2 (Germany) Bucs vs Seahawks
+    10: [ null, null, null, null, null, null, null, null, null, null, null, null, null, { stadium: "Estadio Azteca" } ], // Week 11 Game 14 (Mexico) 49ers vs Cardinals
+  },
+  2023: {
+    3:  [ null, { stadium: "Wembley" } ], // Week 4 Game 2 (London) Falcons vs Jaguars
+    4:  [ null, { stadium: "Tottenham Hotspur" } ], // Week 5 Game 2 (London) Jaguars vs Bills
+    5:  [ null, { stadium: "Tottenham Hotspur" } ], // Week 6 Game 2 (London) Ravens vs Titans
+    8:  [ null, { stadium: "Frankfurt" } ], // Week 9 Game 2 (Germany) Chiefs vs Dolphins
+    9:  [ null, { stadium: "Frankfurt" } ], // Week 10 Game 2 (Germany) Colts vs Patriots
+  },
+  2024: {
+    0:  [ null, { stadium: "São Paulo" } ], // Week 1 Game 2 (Germany) Eagles vs Packers
+    4:  [ null, { stadium: "Tottenham Hotspur" } ], // Week 5 Game 2 (London) Jets vs Vikings
+    5:  [ null, { stadium: "Tottenham Hotspur" } ], // Week 6 Game 2 (London) Jaguars vs Bears
+    6:  [ null, { stadium: "Wembley" } ], // Week 7 Game 2 (London) Jaguars vs Patriots
+    9:  [ null, { stadium: "Allianz Arena" } ], // Week 10 Game 2 (Germany) Chiefs vs Dolphins
+    
+  },
+  2025: { 
+    0:  [ null, { stadium: "São Paulo" } ], // Week 1 Game 2 (Brazil) Chiefs vs Chargers
+    //**** Missing Dublin Game ****** (Vikings vs Steelers)
+    4:  [ null, { stadium: "Tottenham Hotspur" } ], // Week 5 Game 2 (London) Vikings vs Browns
+    5:  [ null, { stadium: "Tottenham Hotspur" } ], // Week 6 Game 2(London) Broncos vs Jets
+    6:  [ null, { stadium: "Wembley" } ], // Week 7 Game 2 (London) Rams vs. Jags
+    9:  [ null, { stadium: "Frankfurt" } ] // Week 10 Game 2 (Germany) Falcons vs Colts **Wrong Stadium**
+    // ***** Missing Madrid Game **** (Commanders vs Dolphins)
   }
 };
 
