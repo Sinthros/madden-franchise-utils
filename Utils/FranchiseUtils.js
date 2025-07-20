@@ -3024,6 +3024,29 @@ function getEnumValuesForField(source, fieldName) {
   return [];
 }
 
+/**
+ * Extracts structured data from a franchise table, including optional asset metadata.
+ *
+ * @param {Franchise} franchise - The loaded franchise object.
+ * @param {Object} table - The table object to extract records from (must already be loaded).
+ * @param {Object} [options={}] - Optional configuration for data extraction.
+ * @param {Array<string>} [options.columnsToReturn=null] - Specific column names to include. If null, includes all.
+ * @param {boolean} [options.includeRow=true] - Whether to include the row index in the result.
+ * @param {boolean} [options.includeAssetId=true] - Whether to include the asset ID in the result.
+ * @param {boolean} [options.includeBinary=true] - Whether to include the binary reference in the result.
+ *
+ * @returns {Promise<Array<Object>>} - A promise that resolves to an array of record objects containing table and asset data.
+ *
+ * @example
+ * const table = franchise.getTableByUniqueId(tables.playerTable);
+ * await table.readRecords();
+ * const data = await getTableDataAsArray(franchise, table, {
+ *   columnsToReturn: ['PLYR_NAME', 'AGE'],
+ *   includeRow: false,
+ *   includeAssetId: true,
+ *   includeBinary: false
+ * });
+ */
 async function getTableDataAsArray(franchise, table, options = {}) {
   const {
     columnsToReturn = null,
