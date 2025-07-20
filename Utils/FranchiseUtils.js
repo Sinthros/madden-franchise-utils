@@ -3130,6 +3130,43 @@ async function getTableDataAsArrayFromId(franchise, tableId, options = {}) {
   });
 }
 
+/**
+ * Converts an array of data into a JSON file at the specified path.
+ *
+ * @param {Array} dataArray - The array of data to write to the JSON file.
+ * @param {string} filePath - Full file path where JSON will be saved.
+ */
+function convertArrayToJSONFile(dataArray, filePath) {
+  if (!Array.isArray(dataArray)) {
+    throw new TypeError('Input must be an array.');
+  }
+
+  if (typeof filePath !== 'string') {
+    throw new TypeError('File path must be a string.');
+  }
+
+  const dir = path.dirname(filePath);
+
+  // Ensure directory exists
+  fs.mkdir(dir, { recursive: true }, (mkdirErr) => {
+    if (mkdirErr) {
+      console.error('Failed to create directory:', mkdirErr);
+      return;
+    }
+
+    const jsonData = JSON.stringify(dataArray, null, 2);
+
+    fs.writeFile(filePath, jsonData, 'utf8', (writeErr) => {
+      if (writeErr) {
+        console.error('Failed to write JSON file:', writeErr);
+      } else {
+        console.log(`JSON file successfully written to: ${filePath}`);
+      }
+    });
+  });
+}
+
+
 module.exports = {
     init,
     selectFranchiseFile, // FUNCTIONS
@@ -3187,6 +3224,7 @@ module.exports = {
     getCollege,
     getTableDataAsArrayFromId,
     getTableDataAsArray,
+    convertArrayToJSONFile,
 
     getYesOrNo, // UTILITY FUNCTIONS
     getYesNoForceQuit,
