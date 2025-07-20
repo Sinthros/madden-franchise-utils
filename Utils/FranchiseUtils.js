@@ -3024,47 +3024,39 @@ function getEnumValuesForField(source, fieldName) {
   return [];
 }
 
-/**
- *  Builds a structured array from a given franchise table.
- *
- * @param {Franchise} franchise - The loaded franchise object.
- * @param {number} tableId - ID of the table to process.
- * @param {boolean} [useUniqueId=true] - Whether to use `getTableByUniqueId` (default: true).
- * @returns {Promise<Array<Object>>} - Structured record data including asset info and record columns.
- */
-async function getTableDataAsArray(franchise, tableId, useUniqueId = true) {
-  const table = useUniqueId
-    ? franchise.getTableByUniqueId(tableId)
-    : franchise.getTableById(tableId);
-
-  if (!table) {
-    throw new Error(`Table with ID ${tableId} could not be found using ${useUniqueId ? 'getTableByUniqueId' : 'getTableById'}.`);
-  }
-
-  await table.readRecords();
+async function getTableDataAsArray(franchise, table, options = {}) {
+  const {
+    columnsToReturn = null,
+    includeRow = true,
+    includeAssetId = true,
+    includeBinary = true
+  } = options;
 
   const assetMap = new Map();
   for (const asset of franchise.assetTable) {
     assetMap.set(asset.reference, asset.assetId);
   }
 
-  const columns = getColumnNames(table);
+  const allColumns = getColumnNames(table);
+  const columns = columnsToReturn
+    ? allColumns.filter(col => columnsToReturn.includes(col))
+    : allColumns;
+
   const results = [];
 
   for (const record of getActiveRecords(table)) {
     const binRef = getBinaryReferenceData(table.header.tableId, record.index);
     const assetRef = bin2Dec(binRef);
     const assetId = assetMap.get(assetRef);
-
     if (assetId === undefined) continue;
 
     const binary = dec2bin(assetId, 2);
 
-    const rowData = {
-      Row: record.index,
-      AssetId: assetId,
-      Binary: binary,
-    };
+    const rowData = {};
+
+    if (includeRow) rowData.Row = record.index;
+    if (includeAssetId) rowData.AssetId = assetId;
+    if (includeBinary) rowData.Binary = binary;
 
     for (const col of columns) {
       rowData[col] = record[col];
@@ -3074,6 +3066,45 @@ async function getTableDataAsArray(franchise, tableId, useUniqueId = true) {
   }
 
   return results;
+}
+
+/**
+ *  Builds a structured array from a given franchise table.
+ *
+ * @param {Franchise} franchise - The loaded franchise object.
+ * @param {number} tableId - ID of the table to process.
+ * @param {Object} [options={}] - Optional settings.
+ * @param {boolean} [options.useUniqueId=true] - Whether to use `getTableByUniqueId`.
+ * @param {Array<string>} [options.columnsToReturn=null] - Optional list of column names to include.
+ * @param {boolean} [options.includeRow=true] - Include the 'Row' field.
+ * @param {boolean} [options.includeAssetId=true] - Include the 'AssetId' field.
+ * @param {boolean} [options.includeBinary=true] - Include the 'Binary' field.
+ * @returns {Promise<Array<Object>>} - Structured record data including asset info and record columns.
+ */
+async function getTableDataAsArrayFromId(franchise, tableId, options = {}) {
+  const {
+    useUniqueId = true,
+    columnsToReturn = null,
+    includeRow = true,
+    includeAssetId = true,
+    includeBinary = true
+  } = options;
+
+  const table = useUniqueId
+    ? franchise.getTableByUniqueId(tableId)
+    : franchise.getTableById(tableId);
+
+  if (!table) {
+    throw new Error(`Table with ID ${tableId} could not be found using ${useUniqueId ? 'getTableByUniqueId' : 'getTableById'}.`);
+  }
+
+  await table.readRecords();
+  return await getTableDataAsArray(franchise, table, {
+    columnsToReturn,
+    includeRow,
+    includeAssetId,
+    includeBinary
+  });
 }
 
 module.exports = {
@@ -3131,6 +3162,7 @@ module.exports = {
     getActiveRecords,
     getEnumValuesForField,
     getCollege,
+    getTableDataAsArrayFromId,
     getTableDataAsArray,
 
     getYesOrNo, // UTILITY FUNCTIONS
