@@ -6,6 +6,7 @@
   "author": "Sinthros",
   "license": "ISC",
   "dependencies": {
+    "@toondepauw/node-zstd": "^1.2.0",
     "axios": "^1.7.3",
     "cheerio": "^1.0.0-rc.12",
     "lodash": "^4.17.21",
