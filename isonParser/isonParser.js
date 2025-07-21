@@ -9,9 +9,11 @@
 	console.log("This program will read raw ISON entries (typically used for CharacterVisuals data) and allow you to convert between ISON and JSON.\n");
 	// Set up franchise file
 	const validGames = [
-		FranchiseUtils.YEARS.M25
+		FranchiseUtils.YEARS.M25,
+		FranchiseUtils.YEARS.M26
 	];
-	const franchise = await FranchiseUtils.selectFranchiseFileAsync(FranchiseUtils.YEARS.M25);
+	const gameYear = FranchiseUtils.getGameYear(validGames);
+	const franchise = await FranchiseUtils.selectFranchiseFileAsync(gameYear);
 	FranchiseUtils.validateGameYears(franchise, validGames);
 	const tables = FranchiseUtils.getTablesObject(franchise);
 	const characterVisualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable);
@@ -57,7 +59,7 @@
 			while(isNaN(rowNumber) || characterVisualsTable.header.recordCapacity <= rowNumber || characterVisualsTable.records[rowNumber].isEmpty || rowNumber < 0);
 	
 			// Convert the ISON for the selected row to JSON
-			const json = ISON_FUNCTIONS.isonVisualsToJson(characterVisualsTable, rowNumber);
+			const json = ISON_FUNCTIONS.isonVisualsToJson(characterVisualsTable, rowNumber, gameYear);
 	
 			// Write the object to a JSON file
 			const jsonString = JSON.stringify(json, null, 4);
@@ -141,7 +143,7 @@
 			while(isNaN(rowNumber) || characterVisualsTable.header.recordCapacity <= rowNumber || characterVisualsTable.records[rowNumber].isEmpty || rowNumber < 0);
 	
 			// Convert the JSON to ISON
-			ISON_FUNCTIONS.jsonVisualsToIson(characterVisualsTable, rowNumber, json);
+			ISON_FUNCTIONS.jsonVisualsToIson(characterVisualsTable, rowNumber, json, gameYear);
 	
 			console.log(`\nSuccessfully wrote JSON to row ${rowNumber} in CharacterVisuals.`);
 	
@@ -167,9 +169,11 @@
 				}
 			}
 			while(isNaN(rowNumber) || characterVisualsTable.header.recordCapacity <= rowNumber || characterVisualsTable.records[rowNumber].isEmpty || rowNumber < 0);
-	
+			
+			ISON_FUNCTIONS.initGameSpecific(gameYear);
+
 			// Get the ISON data for the selected row
-			const isonData = ISON_FUNCTIONS.getTable3IsonData(characterVisualsTable, rowNumber);
+			const isonData = gameYear >= FranchiseUtils.YEARS.M26 ? ISON_FUNCTIONS.getZstdTable3IsonData(characterVisualsTable, rowNumber) : ISON_FUNCTIONS.getTable3IsonData(characterVisualsTable, rowNumber);
 	
 			// Get the target file path from the user
 			console.log("\nEnter the path to write the ISON file: ");

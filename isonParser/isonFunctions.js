@@ -3,16 +3,34 @@ const FranchiseUtils = require('../Utils/FranchiseUtils');
 const path = require('path');
 const fs = require('fs');
 const zlib = require('zlib');
+const { Encoder, Decoder } = require('@toondepauw/node-zstd');
 
 // Required lookup files
 const filePath = path.resolve(__dirname, 'lookupFiles', 'internedStringLookup.json');
 
 // Read and parse the JSON file
-const stringLookup = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-const reverseStringLookup = {}; // Create a reverse lookup for JSON -> ISON
-for (let key in stringLookup) {
-	reverseStringLookup[stringLookup[key].toLowerCase()] = parseInt(key); // Create reverse lookup
+let internedLookups = {};
+let zstdDicts = {};
+const gameYears = Object.values(FranchiseUtils.YEARS);
+for (let year of gameYears) 
+{
+	const lookupFilePath = path.join(__dirname, 'lookupFiles', `internedStringLookup_${year}.json`);
+	if (fs.existsSync(lookupFilePath)) 
+	{
+		internedLookups[year] = JSON.parse(fs.readFileSync(lookupFilePath, 'utf8'));
+	}
+
+	const zstdDictPath = path.join(__dirname, 'lookupFiles', `zstdDict_${year}.bin`);
+	if (fs.existsSync(zstdDictPath)) 
+	{
+		zstdDicts[year] = fs.readFileSync(zstdDictPath);
+	}
 }
+
+let stringLookup = internedLookups[FranchiseUtils.YEARS.M25];
+let dictBuf = zstdDicts[FranchiseUtils.YEARS.M26];
+let reverseStringLookup = {};
+populateReverseStringLookup();
 
 // ISON constants
 const ISON_HEADER = 0x0D;
@@ -31,11 +49,34 @@ const ISON_END = 0x11;
 let fileData;
 let isonOffset = 0;
 
-function isonVisualsToJson(characterVisualsTable, rowNumber)
+function populateReverseStringLookup()
+{
+	reverseStringLookup = {};
+	for (let key in stringLookup) {
+		reverseStringLookup[stringLookup[key].toLowerCase()] = parseInt(key); // Create reverse lookup
+	}
+}
+
+function initGameSpecific(gameYear)
+{
+	if(internedLookups.hasOwnProperty(gameYear))
+	{
+		stringLookup = internedLookups[gameYear];
+		populateReverseStringLookup();
+	}
+	if(zstdDicts.hasOwnProperty(gameYear))
+	{
+		dictBuf = zstdDicts[gameYear];
+	}
+}
+
+function isonVisualsToJson(characterVisualsTable, rowNumber, gameYear = FranchiseUtils.YEARS.M25)
 {
 	isonOffset = 0;
-	
-	fileData = getTable3IsonData(characterVisualsTable, rowNumber);
+
+	initGameSpecific(gameYear);
+
+	fileData = gameYear >= FranchiseUtils.YEARS.M26 ? getZstdTable3IsonData(characterVisualsTable, rowNumber) : getTable3IsonData(characterVisualsTable, rowNumber);
 
 	let obj = {};
 
@@ -62,11 +103,13 @@ function isonVisualsToJson(characterVisualsTable, rowNumber)
 	return obj;
 }
 
-function jsonVisualsToIson(characterVisualsTable, rowNumber, jsonObj)
+function jsonVisualsToIson(characterVisualsTable, rowNumber, jsonObj, gameYear = FranchiseUtils.YEARS.M25)
 {
+	initGameSpecific(gameYear);
+	
 	const isonBuffer = writeIsonFromJson(jsonObj);
 
-	writeTable3IsonData(isonBuffer, characterVisualsTable, rowNumber);
+	gameYear >= FranchiseUtils.YEARS.M26 ? writeZstdTable3IsonData(isonBuffer, characterVisualsTable, rowNumber) : writeTable3IsonData(isonBuffer, characterVisualsTable, rowNumber);
 }
 
 // Function to read the ISON data from the CharacterVisuals table
@@ -81,6 +124,19 @@ function getTable3IsonData(characterVisualsTable, rowNumber)
 	return zlib.gunzipSync(compressedData);
 }
 
+function getZstdTable3IsonData(characterVisualsTable, rowNumber)
+{
+	const table3Field = characterVisualsTable.records[rowNumber].getFieldByKey('RawData').thirdTableField;
+	const table3Buffer = table3Field.unformattedValue;
+	const compressedLength = table3Buffer.readUInt16LE(0);
+
+	const compressedData = table3Buffer.subarray(2, 2 + compressedLength);
+
+	const decoder = new Decoder(dictBuf);
+	
+	return decoder.decodeSync(compressedData);
+}
+
 // Function to write the ISON data to the CharacterVisuals table
 function writeTable3IsonData(isonBuffer, characterVisualsTable, rowNumber)
 {
@@ -88,6 +144,20 @@ function writeTable3IsonData(isonBuffer, characterVisualsTable, rowNumber)
 	const compressedData = zlib.gzipSync(isonBuffer);
 
 	const newBuffer = Buffer.alloc(503);
+
+	newBuffer.writeUInt16LE(compressedData.length, 0);
+	compressedData.copy(newBuffer, 2);
+	newBuffer.fill(0, compressedData.length + 2);
+
+	table3Field.unformattedValue = newBuffer;
+}
+
+function writeZstdTable3IsonData(isonBuffer, characterVisualsTable, rowNumber)
+{
+	const table3Field = characterVisualsTable.records[rowNumber].getFieldByKey('RawData').thirdTableField;
+	const compressedData = zlib.zstdCompressSync(isonBuffer);
+
+	const newBuffer = Buffer.alloc(377);
 
 	newBuffer.writeUInt16LE(compressedData.length, 0);
 	compressedData.copy(newBuffer, 2);
@@ -267,7 +337,9 @@ function readObject() {
 }
 
 module.exports = {
+	initGameSpecific,
 	isonVisualsToJson,
 	jsonVisualsToIson,
-	getTable3IsonData
+	getTable3IsonData,
+	getZstdTable3IsonData
 };
