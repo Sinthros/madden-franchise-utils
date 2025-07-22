@@ -1,6 +1,6 @@
 const Franchise = require('madden-franchise');
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
-const { tables, tablesM25 } = require('./FranchiseTableId');
+const { tables, tablesM25, tablesM26 } = require('./FranchiseTableId');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
@@ -492,8 +492,10 @@ function getTablesObject(franchise) {
   switch (true) {
     case fileGameYear <= 24:
       return tables;
-    case fileGameYear >= 25:
+    case fileGameYear === 25:
       return tablesM25;
+    case fileGameYear >= 26:
+      return tablesM26;
     default:
       return tables;
   }
