@@ -1,10 +1,10 @@
 const fs = require('fs');
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 
-const gameYear = FranchiseUtils.YEARS.M24;
+const gameYear = FranchiseUtils.YEARS.M26;
 const franchise = FranchiseUtils.init(gameYear, {isFtcFile: true});
 const SUM = 10;
-const POSITION_ORDER = ["QB", "HB", "FB", "WR", "TE", "OT", "G", "C", "DE", "DT", "OLB", "MLB", "CB", "S", "KP"];
+const POSITION_ORDER = ["QB", "HB", "FB", "WR", "TE", "OT", "G", "C", "DE", "DT", "OLB", "MLB", "CB", "S", "KP", "LS"];
 const COLUMN_LOOKUP = {
   "DeepAccuracy": "ThrowAccuracyDeepRating",
   "MediumAccuracy": "ThrowAccuracyMidRating",
