@@ -304,7 +304,7 @@ async function selectFranchiseFileAsync(gameYear, isAutoUnemptyEnabled = false, 
     while (true) {
         try {
             console.log("Please enter the name of your franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.");
-            let fileName = prompt().trim(); // Remove leading/trailing spaces
+            let fileName = prompt().trim().replace(/['"]/g, ''); // Remove leading/trailing spaces
 
             if (fileName === "0") {
               EXIT_PROGRAM();
