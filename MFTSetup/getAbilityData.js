@@ -26,47 +26,10 @@ const signatureAbilities = {
 
 const gameYear = FranchiseUtils.YEARS.M26;
 
+// This script relies on the franchise tuning FTC
 const franchise = FranchiseUtils.init(gameYear, {isFtcFile: true, promptForBackup: false})
 
-
-
-// Function I used to manually get certain data from FTC tables into an array, can be modified to be used however you want
-async function getFtcReferences() {
-
-    const currentTable = franchise.getTableById(603); // Whatever table you're working with
-                                                                                // Change to getTableByUniqueId if using
-    await currentTable.readRecords();
-    const currentTableId = currentTable.header.tableId //Table ID
-    let finalArray = [];
-  
-    const allAssets = franchise.assetTable; //Get all available assets and their references
-  
-    for (const record of currentTable.records) {
-      
-      const binReference = getBinaryReferenceData(currentTableId,record.index) 
-      const assetReference = FranchiseUtils.bin2Dec(binReference) //This will match up with the reference in the assetTable
-    
-      const assetId = allAssets.find(obj => obj.reference === assetReference)?.assetId; //This finds our desired assetId
-      const finalBin = FranchiseUtils.dec2bin(assetId, 2); // Convert to binary
-      const columns = FranchiseUtils.getColumnNames(currentTable);
-      const updatedJson = {};
-
-      updatedJson.Row = record.index;
-      updatedJson.AssetId = assetId;
-      updatedJson.Binary = finalBin;
-
-      for (const column of columns) {
-        updatedJson[column] = record[column];
-      }
-      
-      
-      finalArray.push(updatedJson);
-    }
-    return finalArray
-  
-  }
-
-  async function convertArrayToJSONFile(dataArray, filePath) {
+ function convertArrayToJSONFile(dataArray, filePath) {
     const jsonData = JSON.stringify(dataArray, null, 2); // Convert array to JSON string with indentation
   
     fs.writeFileSync(filePath, jsonData, (error) => {
@@ -77,7 +40,6 @@ async function getFtcReferences() {
       }
     });
   };
-
 franchise.on('ready', async function () {
     //const json = await getFtcReferences();
     // Convert array to JSON string
@@ -110,12 +72,10 @@ franchise.on('ready', async function () {
     const allAssets = franchise.assetTable; //Get all available assets and their references
 
     for (const key in signatureAbilities) {
-      console.log(key)
         const xFactorAbilityIndices = [];
         const allAbilityIndices = [];
         const currentPositionBinary = SignatureAbilitesTable.records[0][key];
         const rowRef = FranchiseUtils.bin2Dec(currentPositionBinary.slice(15));
-        console.log(rowRef)
 
         const activeSignaturesBin = SignatureByPosition.records[rowRef]['ActiveSignatures']
         const passiveSignaturesBin = SignatureByPosition.records[rowRef]['PassiveSignatures']
@@ -189,9 +149,7 @@ franchise.on('ready', async function () {
       }
 
     }
-    const jsonString = JSON.stringify(signatureAbilities, null, 2);
-    //console.log(jsonString);
-    await convertArrayToJSONFile(signatureAbilities,'abilities.json')
+    convertArrayToJSONFile(signatureAbilities,'abilities.json')
     
     
 });
