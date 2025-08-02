@@ -7,6 +7,7 @@ const COLS_TO_KEEP = ["ShortName", "LongName", "Value"];
 
 const gameYear = FranchiseUtils.YEARS.M26;
 
+// This uses the franchise-tuning-binary.FTC file 
 const franchise = FranchiseUtils.init(gameYear, {isFtcFile: true, promptForBackup: false})
 
 franchise.on('ready', async function () {

@@ -18,6 +18,4 @@ franchise.on('ready', async function () {
     const defJsonArray = await FranchiseUtils.getTableDataAsArray(franchise, defPlaybookEnum, options);
     FranchiseUtils.convertArrayToJSONFile(offJsonArray,'offensive_playbooks.json');
     FranchiseUtils.convertArrayToJSONFile(defJsonArray,'defensive_playbooks.json');
-    
-    
 });

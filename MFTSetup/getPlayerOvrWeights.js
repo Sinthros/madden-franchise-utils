@@ -2,7 +2,8 @@ const fs = require('fs');
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 const gameYear = FranchiseUtils.YEARS.M26;
-const franchise = FranchiseUtils.init(gameYear, {isFtcFile: true});
+// This uses the franchise-tuning-binary.FTC file
+const franchise = FranchiseUtils.init(gameYear, {isFtcFile: true, promptForBackup: false});
 const SUM = 10;
 const POSITION_ORDER = ["QB", "HB", "FB", "WR", "TE", "OT", "G", "C", "DE", "DT", "OLB", "MLB", "CB", "S", "KP", "LS"];
 const COLUMN_LOOKUP = {
@@ -112,6 +113,6 @@ franchise.on('ready', async function () {
         return POSITION_ORDER.indexOf(a.Pos) - POSITION_ORDER.indexOf(b.Pos);
     });
 
-    await convertArrayToJSONFile(finalArray,'test.json')
+    await convertArrayToJSONFile(finalArray,'ovrweights.json')
     
 });
