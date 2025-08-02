@@ -3036,6 +3036,7 @@ function getEnumValuesForField(source, fieldName) {
  * @param {boolean} [options.includeRow=true] - Whether to include the row index in the result.
  * @param {boolean} [options.includeAssetId=true] - Whether to include the asset ID in the result.
  * @param {boolean} [options.includeBinary=true] - Whether to include the binary reference in the result.
+ * @param {boolean} [options.convertRefToRowNo=false] - Convert reference fields to the associated row number
  *
  * @returns {Promise<Array<Object>>} - A promise that resolves to an array of record objects containing table and asset data.
  *
@@ -3046,7 +3047,8 @@ function getEnumValuesForField(source, fieldName) {
  *   columnsToReturn: ['PLYR_NAME', 'AGE'],
  *   includeRow: false,
  *   includeAssetId: true,
- *   includeBinary: false
+ *   includeBinary: false,
+ *   convertRefToRowNo: false
  * });
  */
 async function getTableDataAsArray(franchise, table, options = {}) {
@@ -3054,7 +3056,8 @@ async function getTableDataAsArray(franchise, table, options = {}) {
     columnsToReturn = null,
     includeRow = true,
     includeAssetId = true,
-    includeBinary = true
+    includeBinary = true,
+    convertRefToRowNo = false
   } = options;
 
   const assetMap = new Map();
@@ -3084,9 +3087,14 @@ async function getTableDataAsArray(franchise, table, options = {}) {
     if (includeBinary) rowData.Binary = binary;
 
     for (const col of columns) {
-      rowData[col] = record[col];
-    }
+      const value = record[col];
 
+      if (convertRefToRowNo && isReferenceColumn(record, col, true)) {
+        rowData[col] = value === ZERO_REF ? -1 : getRowFromRef(value);
+      } else {
+        rowData[col] = value;
+      }
+    }
     results.push(rowData);
   }
 
@@ -3104,6 +3112,7 @@ async function getTableDataAsArray(franchise, table, options = {}) {
  * @param {boolean} [options.includeRow=true] - Include the 'Row' field.
  * @param {boolean} [options.includeAssetId=true] - Include the 'AssetId' field.
  * @param {boolean} [options.includeBinary=true] - Include the 'Binary' field.
+ * @param {boolean} [options.convertRefToRowNo=false] - Convert reference fields to the associated row number
  * @returns {Promise<Array<Object>>} - Structured record data including asset info and record columns.
  */
 async function getTableDataAsArrayFromId(franchise, tableId, options = {}) {
@@ -3112,7 +3121,8 @@ async function getTableDataAsArrayFromId(franchise, tableId, options = {}) {
     columnsToReturn = null,
     includeRow = true,
     includeAssetId = true,
-    includeBinary = true
+    includeBinary = true,
+    convertRefToRowNo = false
   } = options;
 
   const table = useUniqueId
@@ -3128,7 +3138,8 @@ async function getTableDataAsArrayFromId(franchise, tableId, options = {}) {
     columnsToReturn,
     includeRow,
     includeAssetId,
-    includeBinary
+    includeBinary,
+    convertRefToRowNo
   });
 }
 
