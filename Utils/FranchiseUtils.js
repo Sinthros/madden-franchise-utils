@@ -3057,7 +3057,8 @@ async function getTableDataAsArray(franchise, table, options = {}) {
     includeRow = true,
     includeAssetId = true,
     includeBinary = true,
-    convertRefToRowNo = false
+    convertRefToRowNo = false,
+    loadReferenceCols = false,
   } = options;
 
   const assetMap = new Map();
@@ -3091,6 +3092,19 @@ async function getTableDataAsArray(franchise, table, options = {}) {
 
       if (convertRefToRowNo && isReferenceColumn(record, col, true)) {
         rowData[col] = value === ZERO_REF ? -1 : getRowFromRef(value);
+      } else if (loadReferenceCols && isReferenceColumn(record, col, true) && value !== ZERO_REF) {
+        const {row, tableId} = getRowAndTableIdFromRef(value);
+        const refTable = franchise.getTableById(tableId);
+        if (refTable === undefined) {
+          rowData[col] = value;
+        }
+        else {
+          await refTable.readRecords();
+          const refBinary = getBinaryReferenceData(refTable.header.tableId, row);
+          const refAsset = bin2Dec(refBinary);
+          const refAssetId = assetMap.get(refAsset);
+          rowData[col] = dec2bin(refAssetId, 2);
+        }
       } else {
         rowData[col] = value;
       }
@@ -3144,14 +3158,16 @@ async function getTableDataAsArrayFromId(franchise, tableId, options = {}) {
 }
 
 /**
- * Converts an array of data into a JSON file at the specified path.
+ * Converts an array or object of data into a JSON file at the specified path.
  *
- * @param {Array} dataArray - The array of data to write to the JSON file.
+ * @param {Array|Object} data - The data to write to the JSON file.
  * @param {string} filePath - Full file path where JSON will be saved.
  */
-function convertArrayToJSONFile(dataArray, filePath) {
-  if (!Array.isArray(dataArray)) {
-    throw new TypeError('Input must be an array.');
+function convertArrayToJSONFile(data, filePath) {
+  const isValidType = Array.isArray(data) || (data && typeof data === 'object' && data.constructor === Object);
+
+  if (!isValidType) {
+    throw new TypeError('Input must be an array or a plain object.');
   }
 
   if (typeof filePath !== 'string') {
@@ -3167,7 +3183,7 @@ function convertArrayToJSONFile(dataArray, filePath) {
       return;
     }
 
-    const jsonData = JSON.stringify(dataArray, null, 2);
+    const jsonData = JSON.stringify(data, null, 2);
 
     fs.writeFile(filePath, jsonData, 'utf8', (writeErr) => {
       if (writeErr) {
