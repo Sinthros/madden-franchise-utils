@@ -536,6 +536,21 @@ const tablesM26 = {
     schedulerRelativeApptTable: 1629033009,
 
     //FTC Tables
+    staffArchetypeFtcTable: 2944785953,
+    talentInfoArrayFtcTable: 3586239515,
+    gamedayTalentInfoFtcTable: 936669134,
+    seasonTalentInfoFtcTable: 1292751200,
+    wearAndTearTalentInfoFtcTable: 4006632291,
+    playsheetTalentInfoFtcTable: 1732061135,
+    talentTierInfoArrayFtcTable: 2812762241,
+    playsheetTalentTierInfoFtcTable: 3334686952,
+    talentTierInfoFtcTable: 2475154830,
+    wearAndTearTalentTierInfoFtcTable: 2521731491,
+    talentDisplayStatFtcTable: 418183319,
+    staffStatGoalFtcTable: 71114008,
+    staffStatGameBasedCumulativeGoalFtcTable: 3264271062,
+    staffDynamicGoalFtcTable: 3947206865,
+
     signatureAbilitesFtcTable: 4012247826,
     signatureByPositionFtcTable: 2601028454,
     positionSignatureAbilityArrayFtcTable: 3517346360,
