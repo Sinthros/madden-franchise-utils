@@ -3,6 +3,7 @@ const prompt = require('prompt-sync')();
 const UNDEFINED_TABLE_MSG = "Unable to load any table matching the name/ID provided.";
 const EXIT_KWD = 'EXIT';
 const PRINT_KWD = 'PRINT';
+const PRINTALL_KWD = "PRINTALL";
 
 const validGameYears = [
   FranchiseUtils.YEARS.M20,
@@ -11,6 +12,7 @@ const validGameYears = [
   FranchiseUtils.YEARS.M23,
   FranchiseUtils.YEARS.M24,
   FranchiseUtils.YEARS.M25,
+  FranchiseUtils.YEARS.M26
 ];
 
 console.log("This program will allow you to select any table by name or ID, and then will let you select a column to get valid schema values for.");
@@ -19,7 +21,7 @@ const franchise = FranchiseUtils.init(validGameYears, {promptForBackup: false});
 
 async function getTable(franchise) {
   while (true) {
-    console.log("Please enter a table name or table ID to check (For example, Player or 4220).");
+    console.log("Please enter a table name or table ID to check (For example, Player or 4220). Table name is case sensitive.");
     let tableId = prompt().trim();
     let table;
 
@@ -28,8 +30,6 @@ async function getTable(franchise) {
       // Check for either the ID or the unique ID
       table = franchise.getTableById(tableId) || franchise.getTableByUniqueId(tableId);
     } else {
-      // Capitalize the first letter and make the rest lowercase
-      tableId = tableId.charAt(0).toUpperCase() + tableId.slice(1).toLowerCase();
       table = franchise.getTableByName(tableId);
     }
 
@@ -40,6 +40,39 @@ async function getTable(franchise) {
       console.log(UNDEFINED_TABLE_MSG);
     }
   }
+}
+
+function printColumnTypes(table) {
+  const record = table.records[0];
+  const columnNames = Object.keys(record._fields);
+
+  console.log(`TypeScript field types for table: ${table.header.name}`);
+  console.log(`----------------------------------------------------`);
+
+  columnNames.forEach(column => {
+    const fieldOffset = record._fields[column].offset;
+    const enumField = fieldOffset.enum;
+    const isReference = fieldOffset.isReference;
+    const type = fieldOffset.type;
+
+    let tsType;
+
+    if (enumField) {
+      tsType = 'string'; // or `'EnumName'` if you want to customize it
+    } else if (isReference) {
+      tsType = 'ReferenceField';
+    } else if (type === 'int' || type === 's_int' || type === 'uint' || type === 'float') {
+      tsType = 'number';
+    } else if (type === 'bool') {
+      tsType = 'boolean';
+    } else if (type === 'string') {
+      tsType = 'string';
+    } else {
+      tsType = 'any'; // fallback for unknown/custom types
+    }
+
+    console.log(`${column}: ${tsType},`);
+  });
 }
 
 function getTableField(table) {
@@ -53,7 +86,7 @@ function getTableField(table) {
 
 
   while (true) {
-    console.log(`Select a column from ${table.header.name} to get data for. If you want to print out the column names, enter 'print'. Enter 'exit' to stop searching for columns in this table.`);
+    console.log(`Select a column from ${table.header.name} to get data for. If you want to print out the column names, enter 'print'. Enter 'printall' to print all column names and types. Enter 'exit' to stop searching for columns in this table.`);
     const columnName = prompt().trim();
 
     if (columnName.toUpperCase() === EXIT_KWD) {
@@ -65,6 +98,11 @@ function getTableField(table) {
       for (let i = 0; i < columnNames.length; i += chunkSize) {
         console.log(columnNames.slice(i, i + chunkSize).join(', '));
       }
+      continue;
+    }
+
+    if (columnName.toUpperCase() === PRINTALL_KWD) {
+      printColumnTypes(table);
       continue;
     }
 
