@@ -1,10 +1,13 @@
 // Required modules
 const fs = require('fs');
 const FranchiseUtils = require('../Utils/FranchiseUtils');
+const path = require('path');
+const ISON_FUNCTIONS = require('../isonParser/isonFunctions');
 
 // Valid game years
 const validYears = [
-	FranchiseUtils.YEARS.M25
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26
 ];
 
 // Print tool header message
@@ -16,8 +19,9 @@ const gameYear = franchise.schema.meta.gameYear;
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 // Required lookups
-const topLookup = JSON.parse(fs.readFileSync('lookupFiles/coachTopLookup.json'), 'utf8');
-const overrideLookup = JSON.parse(fs.readFileSync('lookupFiles/overrideTopLookup.json'), 'utf8');
+const topLookup = JSON.parse(fs.readFileSync(path.resolve(__dirname, `lookupFiles/coachTopLookup_${gameYear}.json`), 'utf8'));
+const femaleTopLookup = JSON.parse(fs.readFileSync(path.resolve(__dirname, `lookupFiles/coachTopLookup_${gameYear}F.json`), 'utf8'));
+const overrideLookup = JSON.parse(fs.readFileSync(path.resolve(__dirname, `lookupFiles/overrideTopLookup_${gameYear}.json`), 'utf8'));
 
 /**
  * Copies all data in the equipment columns of the source row in the player table to the target row in the player table
@@ -32,7 +36,7 @@ async function assignCoachGear(targetRow, item, slotType, coachTable, visualsTab
 {
 	const targetVisualsRow = FranchiseUtils.bin2Dec(coachTable.records[targetRow]['CharacterVisuals'].slice(15));
 
-	let targetVisualsData = JSON.parse(visualsTable.records[targetVisualsRow]['RawData']);
+	let targetVisualsData = ISON_FUNCTIONS.isonVisualsToJson(visualsTable, targetVisualsRow, gameYear);//JSON.parse(visualsTable.records[targetVisualsRow]['RawData']);
 
 	const targetVisualsLoadouts = targetVisualsData['loadouts'];
 
@@ -88,7 +92,8 @@ async function assignCoachGear(targetRow, item, slotType, coachTable, visualsTab
 
 	targetVisualsData['loadouts'] = targetVisualsLoadouts;
 
-	visualsTable.records[targetVisualsRow]['RawData'] = JSON.stringify(targetVisualsData);
+	//visualsTable.records[targetVisualsRow]['RawData'] = JSON.stringify(targetVisualsData);
+	ISON_FUNCTIONS.jsonVisualsToIson(visualsTable, targetVisualsRow, targetVisualsData, gameYear);
 
 };
 
@@ -215,39 +220,46 @@ franchise.on('ready', async function () {
 		console.log("\nThere are no coaches in your franchise file.");
 		FranchiseUtils.EXIT_PROGRAM();
 	}
+
+	const slotType = gameYear >= FranchiseUtils.YEARS.M26 ? "OuterShirt" : "JerseyStyle";
 	
 	// Iterate through all head coaches
 	for (let j = 0; j < coachRows.length; j++)
 	{
+		
 		const coachRow = coachRows[j];
 		let coachRecord = coachTable.records[coachRow];
+
+		// If female coach, use the female top lookup, otherwise use the regular top lookup
+		let currLookup = FranchiseUtils.FEMALE_BODY_TYPES.includes(coachRecord.characterBodyType) ? femaleTopLookup : topLookup;
 
 		// If the coach's assetname is in the override lookup, just assign that item
 		if(overrideLookup.hasOwnProperty(coachRecord['AssetName']))
 		{
 			let item = overrideLookup[coachRecord['AssetName']];
-			await assignCoachGear(coachRow, item, 'JerseyStyle', coachTable, visualsTable);
+			await assignCoachGear(coachRow, item, slotType, coachTable, visualsTable);
 			continue;
 		}
 		else if(overrideLookup.hasOwnProperty(coachRecord['AssetName'].replace("_C_PRO", "")))
 		{
 			let item = overrideLookup[coachRecord['AssetName'].replace("_C_PRO", "")];
-			await assignCoachGear(coachRow, item, 'JerseyStyle', coachTable, visualsTable);
+			await assignCoachGear(coachRow, item, slotType, coachTable, visualsTable);
 			continue;
 		}
 		else if(overrideLookup.hasOwnProperty(coachRecord['AssetName'] + "_C_PRO"))
 		{
 			let item = overrideLookup[coachRecord['AssetName'] + "_C_PRO"];
-			await assignCoachGear(coachRow, item, 'JerseyStyle', coachTable, visualsTable);
+			await assignCoachGear(coachRow, item, slotType, coachTable, visualsTable);
 			continue;
 		}
 
 		// If the coach is a free agent, just randomly choose a gear option
 		if(coachRecord['ContractStatus'] === 'FreeAgent')
 		{
-			let keys = Object.keys(topLookup);
-			let item = topLookup[keys[FranchiseUtils.getRandomNumber(0, keys.length - 1)]];
-			await assignCoachGear(coachRow, item, 'JerseyStyle', coachTable, visualsTable);
+			let keys = Object.keys(currLookup);
+
+			let item = currLookup[keys[FranchiseUtils.getRandomNumber(0, keys.length - 1)]];
+			await assignCoachGear(coachRow, item, slotType, coachTable, visualsTable);
 			continue;
 		}
 
@@ -257,7 +269,7 @@ franchise.on('ready', async function () {
 		// If it's a warm game and outdoors, randomly select a gear option with polo as an option (but rarer than the others)
 		if(isWarmOutdoorCoach)
 		{
-			let keys = Object.keys(topLookup);
+			let keys = Object.keys(currLookup);
 
 			let randomNumber;
 			let itemKey;
@@ -269,19 +281,19 @@ franchise.on('ready', async function () {
 			}
 			while(itemKey === "Polo" && randomNumber !== 2);
 
-			let item = topLookup[itemKey];
-			await assignCoachGear(coachRow, item, 'JerseyStyle', coachTable, visualsTable);
+			let item = currLookup[itemKey];
+			await assignCoachGear(coachRow, item, slotType, coachTable, visualsTable);
 			continue;
 		}
 		else // Otherwise, randomly select a gear option without polo as an option
 		{
-			let keys = Object.keys(topLookup);
-			
+			let keys = Object.keys(currLookup);
+
 			// Remove polo from keys
 			keys = keys.filter(key => key !== "Polo");
 
-			let item = topLookup[keys[FranchiseUtils.getRandomNumber(0, keys.length - 1)]];
-			await assignCoachGear(coachRow, item, 'JerseyStyle', coachTable, visualsTable);
+			let item = currLookup[keys[FranchiseUtils.getRandomNumber(0, keys.length - 1)]];
+			await assignCoachGear(coachRow, item, slotType, coachTable, visualsTable);
 			continue;
 		}
 	}

@@ -24,7 +24,7 @@ const N_KWD = "N";
 const YES_KWD = "YES";
 const NO_KWD = "NO";
 const FORCEQUIT_KWD = "FORCEQUIT";
-const DEBUG_MODE = !process.__nexe;
+const DEBUG_MODE = !process.__nexe && !process.pkg?.entrypoint;
 
 // GAME YEARS
 const YEARS = {
@@ -130,6 +130,11 @@ const BODY_MAP = {
 	2: 'Muscular',
 	3: 'Heavy' 
 };
+
+const FEMALE_BODY_TYPES = [
+  "Standard_Alternate",
+  "Thin_Alternate"
+]
 
 // Default FULL_CONTROL settings
 const USER_CONTROL_SETTINGS = [
@@ -3306,6 +3311,7 @@ module.exports = {
     SPECIAL_TEAM_POSITIONS,
     COACH_SKIN_TONES,
     COACH_APPAREL,
+    FEMALE_BODY_TYPES,
     CONTRACT_STATUSES,
     TABLE_NAMES,
     SEASON_STAGES,

@@ -58,3 +58,19 @@ Please note that nexe requires both Python and NASM to be installed. You can dow
 The above example builds an executable (`test.exe`) from `testScript.js`, including schemas from the madden-franchise API and all JSON files in the current directory.
 
 Replace `PATH_TO_NODE_MODULES` with the actual path to your `node_modules` directory.
+
+### Building with pkg
+
+You may notice that some scripts in this repository include a `pkgConfig.json` file. These scripts must be built using the [yao-pkg fork of pkg](https://github.com/yao-pkg/pkg). To install pkg globally, run:
+
+```bash
+npm install -g @yao-pkg/pkg
+```
+
+Then, you can build an executable using the following command:
+
+```bash
+pkg -c pkgConfig.json scriptName.js -o outputExecutable.exe
+```
+
+The `pkgConfig.json` file contains configuration options for the build process, including any requires script or asset dependencies and the target platform and node version. See the pkg repo linked above for more details on how this file should be formatted.
