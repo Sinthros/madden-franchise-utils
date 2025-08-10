@@ -1,12 +1,14 @@
 // Required modules
 const fs = require('fs');
+const path = require('path');
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
 
 // Valid game years
 const validYears = [
 	FranchiseUtils.YEARS.M24,
-	FranchiseUtils.YEARS.M25
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26
 ];
 
 // Print tool header message
@@ -22,13 +24,13 @@ let useJsonStrategy = gameYear >= FranchiseUtils.YEARS.M24; // Latest version of
 
 const lookupFileName = `all_asset_names_m${gameYear}.json`;
 
-if(!fs.existsSync(`lookupFiles/${lookupFileName}`))
+if(!fs.existsSync(path.join(__dirname, `lookupFiles/${lookupFileName}`)))
 {
 	console.log(`\nAssetname lookup file for Madden ${gameYear} not found. Unable to continue.`);
 	FranchiseUtils.EXIT_PROGRAM();
 }
 
-let allAssetNames = JSON.parse(fs.readFileSync(`lookupFiles/${lookupFileName}`, 'utf-8'));
+let allAssetNames = JSON.parse(fs.readFileSync(path.join(__dirname, `lookupFiles/${lookupFileName}`), 'utf-8'));
 
 if(gameYear === FranchiseUtils.YEARS.M24)
 {
@@ -227,10 +229,7 @@ async function enumeratePlayers(playerTable, draftRows, nflRows, miscRows)
 }
 
 
-franchise.on('ready', async function () {
-
-	
-	
+franchise.on('ready', async function () {	
     // Get required tables
 	const playerTable = franchise.getTableByUniqueId(tables.playerTable);
 	const visualsTable = franchise.getTableByUniqueId(tables.characterVisualsTable);
