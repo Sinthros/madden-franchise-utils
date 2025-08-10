@@ -131,10 +131,30 @@ const BODY_MAP = {
 	3: 'Heavy' 
 };
 
+const BODY_TYPES = {
+  STANDARD: "Standard",
+  THIN: "Thin",
+  MUSCULAR: "Muscular",
+  HEAVY: "Heavy",
+  STANDARD_ALT: "Standard_Alternate",
+  THIN_ALT: "Thin_Alternate",
+  LEAN: "Freshman"
+}
+
 const FEMALE_BODY_TYPES = [
-  "Standard_Alternate",
-  "Thin_Alternate"
+  BODY_TYPES.STANDARD_ALT,
+  BODY_TYPES.THIN_ALT
 ]
+
+const BODY_TYPE_ITEMS = {
+  [BODY_TYPES.STANDARD]: "standard_bodytype",
+  [BODY_TYPES.THIN]: "thin_bodytype",
+  [BODY_TYPES.MUSCULAR]: "muscular_bodytype",
+  [BODY_TYPES.HEAVY]: "heavy_bodytype",
+  [BODY_TYPES.STANDARD_ALT]: "standardalternate_bodytype",
+  [BODY_TYPES.THIN_ALT]: "thinalternate_bodytype",
+  [BODY_TYPES.LEAN]: "lean_bodytype"
+}
 
 // Default FULL_CONTROL settings
 const USER_CONTROL_SETTINGS = [
@@ -2046,80 +2066,135 @@ function approximateBodyType(visualsObject) {
 }
 
 // Function to generate a body type based on player info
-function generateBodyType(playerRecord)
+function generateBodyType(playerRecord, gameYear = YEARS.M25)
 {
   const position = playerRecord['Position'];
   const height = playerRecord['Height'];
   const weight = playerRecord['Weight'] + 160;
 
+  if(gameYear >= YEARS.M26 && weight <= 180)
+  {
+    return BODY_TYPES.LEAN;
+  }
+
   if(SPECIAL_TEAM_POSITIONS.includes(position))
   {
-    return 'Standard';
+    return BODY_TYPES.STANDARD;
   }
 
   if(position === 'QB' || position === 'WR')
   {
     if(weight >= 210 && height <= 71)
     {
-      return 'Muscular';
+      return BODY_TYPES.MUSCULAR;
     }
     else if(height >= 76)
     {
-      return 'Thin';
+      return BODY_TYPES.THIN;
     }
 
-    return 'Standard';
+    return BODY_TYPES.STANDARD;
   }
 
   if(OLINE_POSITIONS.includes(position))
   {
     if(weight >= 300)
     {
-      return 'Heavy';
+      return BODY_TYPES.HEAVY;
     }
 
-    return 'Muscular';
+    return BODY_TYPES.MUSCULAR;
   }
 
   if(LINEBACKER_POSITIONS.includes(position) || position === 'TE' || position === 'FB')
   {
-    return 'Muscular';
+    return BODY_TYPES.MUSCULAR;
   }
 
   if(DEFENSIVE_LINE_POSITIONS.includes(position))
   {
     if(weight >= 275)
     {
-      return 'Heavy';
+      return BODY_TYPES.HEAVY;
     }
 
-    return 'Muscular';
+    return BODY_TYPES.MUSCULAR;
   }
 
   if(position === 'HB')
   {
     if(weight >= 220)
     {
-      return 'Muscular';
+      return BODY_TYPES.MUSCULAR;
     }
     else if(weight >= 180)
     {
-      return 'Standard';
+      return BODY_TYPES.STANDARD;
     }
 
-    return 'Thin';
+    return BODY_TYPES.THIN;
   }
 
   if(DEFENSIVE_BACK_POSITIONS.includes(position))
   {
     if(weight >= 180)
     {
-      return 'Standard';
+      return BODY_TYPES.STANDARD;
     }
-    
-    return 'Thin';
+
+    return BODY_TYPES.THIN;
   }
-  return 'Standard';
+  return BODY_TYPES.STANDARD;
+}
+
+function getBodyType(record, visualsTable)
+{
+  const recordBodyType = record["CharacterBodyType"];
+  const visualsRow = bin2Dec(record["CharacterVisuals"].slice(15));
+  const visualsData = JSON.parse(visualsTable.records[visualsRow].RawData);
+
+  // Iterate through each loadout and see if it has a body type slot
+  for (const loadout of visualsData.loadouts) {
+    if(loadout.loadoutElements)
+    {
+      for(const loadoutElement of loadout.loadoutElements) {
+        if (loadoutElement.slotType?.toLowerCase() === 'characterbodytype') {
+          let visualsBodyType = loadoutElement.itemAssetName.toLowerCase()
+
+          // Find the key in the BODY_TYPE_ITEMS object
+          const bodyTypeKey = Object.keys(BODY_TYPE_ITEMS).find(key => BODY_TYPE_ITEMS[key] === visualsBodyType);
+          if (bodyTypeKey) {
+            return bodyTypeKey;
+          }
+
+          return recordBodyType;
+
+        }
+      }
+    }
+  }
+
+  return recordBodyType;
+}
+
+function setBodyType(record, visualsTable, bodyType)
+{
+  record["CharacterBodyType"] = bodyType;
+  const visualsRow = bin2Dec(record["CharacterVisuals"].slice(15));
+  const visualsData = JSON.parse(visualsTable.records[visualsRow].RawData);
+
+  // Update the visuals data with the new body type
+  for (const loadout of visualsData.loadouts) {
+    if(loadout.loadoutElements)
+    {
+      for (const loadoutElement of loadout.loadoutElements) {
+        if (loadoutElement.slotType?.toLowerCase() === 'characterbodytype') {
+          loadoutElement.itemAssetName = BODY_TYPE_ITEMS[bodyType]
+        }
+      }
+    }
+  }
+
 }
 
 function getRowAndTableIdFromRef(binary) {
@@ -3246,6 +3321,8 @@ module.exports = {
     fixDraftPicks,
     approximateBodyType,
     generateBodyType,
+    getBodyType,
+    setBodyType,
     getRowAndTableIdFromRef,
     getRowFromRef,
     getTableIdFromRef,
@@ -3312,6 +3389,7 @@ module.exports = {
     COACH_SKIN_TONES,
     COACH_APPAREL,
     FEMALE_BODY_TYPES,
+    BODY_TYPES,
     CONTRACT_STATUSES,
     TABLE_NAMES,
     SEASON_STAGES,
