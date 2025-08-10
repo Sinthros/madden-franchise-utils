@@ -1,14 +1,17 @@
 // Required modules
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 
+const validGames = [
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26
+];
+
 // Print tool header message
-console.log("This program will update player body types in a Madden 25 franchise file to better reflect their body size.\n");
+console.log(`This program will update player body types in a franchise file to better reflect their body size. Madden ${FranchiseUtils.formatListString(validGames)} are supported\n`);
 
 // Set up franchise file
-const validGames = [
-	FranchiseUtils.YEARS.M25
-];
 const franchise = FranchiseUtils.init(validGames);
+const gameYear = franchise.schema.meta.gameYear;
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 franchise.on('ready', async function () {
@@ -59,7 +62,7 @@ franchise.on('ready', async function () {
 		}*/
 
 		// Update the player's body type
-		playerTable.records[i]['CharacterBodyType'] = FranchiseUtils.generateBodyType(playerTable.records[i]);
+		FranchiseUtils.setBodyType(playerTable.records[i], characterVisualsTable, FranchiseUtils.generateBodyType(playerTable.records[i], gameYear));
 	}
 	
 	// Program complete, so print success message, save the franchise file, and exit
