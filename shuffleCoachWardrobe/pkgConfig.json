@@ -1,8 +1,8 @@
 {
-"pkg": {
-    "scripts": ["../Utils/FranchiseUtils.js", "../isonParser/isonFunctions.js"],
-    "assets": ["../node_modules/madden-franchise/data/schemas/**/*", "../node_modules/madden-franchise/services/lookupFiles/*", "../isonParser/lookupFiles/*", "./lookupFiles/*.json"],
-    "targets": [ "node22-win" ],
-    "outputPath": "."
-}
+    "pkg": {
+        "scripts": ["../Utils/FranchiseUtils.js"],
+        "assets": ["../node_modules/madden-franchise/data/schemas/**/*", "../node_modules/madden-franchise/data/interned-strings/**/*", "../node_modules/madden-franchise/data/zstd-dicts/**/*", "../node_modules/madden-franchise/services/lookupFiles/*", "./lookupFiles/*.json"],
+        "targets": [ "node22-win" ],
+        "outputPath": "."
+    }
 }
