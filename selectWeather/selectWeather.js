@@ -2,14 +2,16 @@
 const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 
-// Print tool header message
-console.log("This program will allow you to update the weather for a game in your Madden 24 or 25 franchise file. This tool must be run during the regular season or playoffs.\n")
-
-// Set up franchise file
 const validGameYears = [
 	FranchiseUtils.YEARS.M24,
-	FranchiseUtils.YEARS.M25
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26
 ];
+
+// Print tool header message
+console.log(`This program will allow you to update the weather for a game in your franchise file. This tool must be run during the regular season or playoffs. Madden ${FranchiseUtils.formatListString(validGameYears)} are supported.\n`);
+
+// Set up franchise file
 const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
 const gameYear = parseInt(franchise.schema.meta.gameYear);
@@ -26,7 +28,7 @@ const clearRand = FranchiseUtils.getRandomNumber(0,3);
 let weatherOptions = ['Snow', 'Rain (Warm)', 'Rain (Cold)', 'Clear (Warm)', 'Clear (Cold)', 'Overcast (Warm)', 'Overcast (Cold)'];
 
 // Weather values for each option in order of Wind, Precipitation, CloudCover, Weather, and Temperature values
-let snowValues = [windOptions[snowRand], gameYear >= FranchiseUtils.YEARS.M25 ? 'Medium' : 'Heavy', 'Overcast', 'Snow', 0]; // Override for M25 precipitation requirement
+let snowValues = [windOptions[snowRand], gameYear === FranchiseUtils.YEARS.M25 ? 'Medium' : 'Heavy', 'Overcast', 'Snow', 0]; // Override for M25 precipitation requirement
 let rainWarmValues = [windOptions[rainRand], 'Heavy', 'Overcast', 'Rain', 70];
 let rainColdValues = [windOptions[rainRand], 'Heavy', 'Overcast', 'Rain', 35];
 let clearWarmValues = [windOptions[clearRand], 'None', 'None', 'Clear', 70];

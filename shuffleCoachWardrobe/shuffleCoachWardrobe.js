@@ -2,7 +2,6 @@
 const fs = require('fs');
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const path = require('path');
-const ISON_FUNCTIONS = require('../isonParser/isonFunctions');
 
 // Valid game years
 const validYears = [
@@ -36,7 +35,7 @@ async function assignCoachGear(targetRow, item, slotType, coachTable, visualsTab
 {
 	const targetVisualsRow = FranchiseUtils.bin2Dec(coachTable.records[targetRow]['CharacterVisuals'].slice(15));
 
-	let targetVisualsData = ISON_FUNCTIONS.isonVisualsToJson(visualsTable, targetVisualsRow, gameYear);//JSON.parse(visualsTable.records[targetVisualsRow]['RawData']);
+	let targetVisualsData = JSON.parse(visualsTable.records[targetVisualsRow]['RawData']);
 
 	const targetVisualsLoadouts = targetVisualsData['loadouts'];
 
@@ -92,8 +91,7 @@ async function assignCoachGear(targetRow, item, slotType, coachTable, visualsTab
 
 	targetVisualsData['loadouts'] = targetVisualsLoadouts;
 
-	//visualsTable.records[targetVisualsRow]['RawData'] = JSON.stringify(targetVisualsData);
-	ISON_FUNCTIONS.jsonVisualsToIson(visualsTable, targetVisualsRow, targetVisualsData, gameYear);
+	visualsTable.records[targetVisualsRow]['RawData'] = JSON.stringify(targetVisualsData);
 
 };
 
@@ -231,7 +229,7 @@ franchise.on('ready', async function () {
 		let coachRecord = coachTable.records[coachRow];
 
 		// If female coach, use the female top lookup, otherwise use the regular top lookup
-		let currLookup = FranchiseUtils.FEMALE_BODY_TYPES.includes(coachRecord.characterBodyType) ? femaleTopLookup : topLookup;
+		let currLookup = FranchiseUtils.FEMALE_BODY_TYPES.includes(coachRecord.CharacterBodyType) ? femaleTopLookup : topLookup;
 
 		// If the coach's assetname is in the override lookup, just assign that item
 		if(overrideLookup.hasOwnProperty(coachRecord['AssetName']))
