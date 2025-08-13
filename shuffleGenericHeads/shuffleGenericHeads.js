@@ -1,8 +1,8 @@
 // Required modules
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
+const path = require('path');
 const fs = require('fs');
-const { start } = require('repl');
 
 // Print tool header message
 console.log("\nThis tool will shuffle the generic heads and portraits (ie game generated and not real face scans or real player portraits) for players. Most people shouldn't have a need to run this tool unless you are using the NCAA > Madden draft class converter or have another reason for needing to do so. Please follow the instructions below and read carefully!");
@@ -10,12 +10,13 @@ console.log("\nThis tool will shuffle the generic heads and portraits (ie game g
 // Set up franchise file
 const validGames = [
 	FranchiseUtils.YEARS.M24,
-  FranchiseUtils.YEARS.M25
+  FranchiseUtils.YEARS.M25,
+  FranchiseUtils.YEARS.M26
 ];
 const franchise = FranchiseUtils.init(validGames);
 const tables = FranchiseUtils.getTablesObject(franchise);
 const gameYear = franchise.schema.meta.gameYear;
-const genericHeadLookup = JSON.parse(fs.readFileSync('lookupFiles/genericHeadLookup.json', 'utf-8'));
+const genericHeadLookup = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/genericHeadLookup.json'), 'utf-8'));
 
 
 async function shuffleHeads(franchise, draftClassOnly) 
@@ -76,7 +77,7 @@ async function shuffleHeads(franchise, draftClassOnly)
       
         // Change the head and portrait, then update the player visuals (if it's M24) so the head and mesh get updated properly
         playerTable.records[i]['PLYR_GENERICHEAD'] = newHead;
-        if(gameYear == FranchiseUtils.YEARS.M25)
+        if(gameYear >= FranchiseUtils.YEARS.M25)
         {
           playerTable.records[i]['GenericHeadAssetName'] = "gen_" + newHead;
         }
