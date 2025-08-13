@@ -2,13 +2,15 @@
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const prompt = require('prompt-sync')();
 
+const validGames = [
+    FranchiseUtils.YEARS.M25,
+    FranchiseUtils.YEARS.M26
+];
+
 // Print tool header message
-console.log("This program will calculate the strength of victory for a selected team in a franchise file. Only Madden 25 franchise files are supported.\n");
+console.log(`This program will calculate the strength of victory for a selected team in a franchise file. Madden ${FranchiseUtils.formatListString(validGames)} franchise files are supported.\n`);
 
 // Set up franchise file
-const validGames = [
-    FranchiseUtils.YEARS.M25
-];
 const franchise = FranchiseUtils.init(validGames, {promptForBackup: false});
 const tables = FranchiseUtils.getTablesObject(franchise);
 

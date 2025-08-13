@@ -4,12 +4,13 @@ const FranchiseUtils = require('../Utils/FranchiseUtils');
 const ScheduleFunctions = require('../Utils/ScheduleFunctions');
 
 // Print tool header message
-console.log("This program will allow you to extract the schedule in your Madden 24 or 25 franchise file to JSON.\n")
+console.log("This program will allow you to extract the schedule in your Madden 24/25/26 franchise file to JSON.\n")
 
 // Set up franchise file
 const validGames = [ 
 	FranchiseUtils.YEARS.M24,
-	FranchiseUtils.YEARS.M25
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26
 ];
 const franchise = FranchiseUtils.init(validGames);
 

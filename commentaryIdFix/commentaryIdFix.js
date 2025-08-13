@@ -1,9 +1,10 @@
 // Required modules
 const fs = require('fs');
+const path = require('path');
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 // Required lookups
-const commentaryIdLookup = JSON.parse(fs.readFileSync('../Utils/JsonLookups/commentary_lookup.json'));
+const commentaryIdLookup = JSON.parse(fs.readFileSync(path.join(__dirname, '../Utils/JsonLookups/commentary_lookup.json')));
 
 // Normalize keys to lowercase
 for (const key in commentaryIdLookup)
@@ -21,7 +22,8 @@ const validGames = [
 	FranchiseUtils.YEARS.M22,
 	FranchiseUtils.YEARS.M23,
 	FranchiseUtils.YEARS.M24,
-	FranchiseUtils.YEARS.M25
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26
 ];
 
 // Print tool header message
