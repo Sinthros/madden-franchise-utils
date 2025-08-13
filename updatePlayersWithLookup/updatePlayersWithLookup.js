@@ -5,12 +5,13 @@ const FranchiseUtils = require('../Utils/FranchiseUtils');
 const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
 
 // Print tool header message
-console.log("This program will update values for all players in a Madden 24/25 franchise file based on a lookup.\n")
+console.log("This program will update values for all players in a Madden 24/25/26 franchise file based on a lookup.\n")
 
 // Set up franchise file
 const validGameYears = [
 	FranchiseUtils.YEARS.M24,
-	FranchiseUtils.YEARS.M25
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26
 ];
 const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);

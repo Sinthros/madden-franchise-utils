@@ -1,1 +1,1 @@
-nexe --build -i updatePlayersWithLookup.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "../Utils/FranchiseUtils.js" -r "../Utils/FranchiseTableId.js" -r "../Utils/**/characterVisualsLookups/*" -o "updatePlayersWithLookup.exe" --verbose 
+pkg -c pkgConfig.json updatePlayersWithLookup.js -o updatePlayersWithLookup.exe
