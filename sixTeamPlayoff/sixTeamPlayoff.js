@@ -4,7 +4,8 @@ const FranchiseUtils = require('../Utils/FranchiseUtils');
 // Valid years
 const validGameYears = [
 	FranchiseUtils.YEARS.M24,
-	FranchiseUtils.YEARS.M25
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26
 ];
 
 // Print tool header message
