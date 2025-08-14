@@ -4,10 +4,11 @@ const { getBinaryReferenceData } = require('madden-franchise/services/utilServic
 const TiebreakerCalc = require('../teamTiebreakerCalculator/tiebreakerFunctions');
 const validGameYears = [
     FranchiseUtils.YEARS.M24,
-    FranchiseUtils.YEARS.M25
+    FranchiseUtils.YEARS.M25,
+    FranchiseUtils.YEARS.M26
 ];
 
-console.log("This program will recalculate the draft order, fixing issues related to duplicate picks.");
+console.log("This program will recalculate the draft order, fixing issues related to duplicate picks and also ensuring tiebreaker rules are followed.");
 
 // Set up franchise file
 const franchise = FranchiseUtils.init(validGameYears);
@@ -625,7 +626,7 @@ function setDraftPickOrder(draftPickTable, draftPicks, teamPositions, teamTableI
 
 franchise.on('ready', async function () {
 
-    if (franchise.schema.meta.gameYear >= 25) await FranchiseUtils.fixDraftPicks(franchise); 
+    if (franchise.schema.meta.gameYear === 25) await FranchiseUtils.fixDraftPicks(franchise); 
     
     // Required tables 
     const draftPickTable = franchise.getTableByUniqueId(tables.draftPickTable);
