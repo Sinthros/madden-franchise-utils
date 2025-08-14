@@ -1,23 +1,25 @@
 // Required modules
 const fs = require('fs');
+const path = require('path');
 const papa = require('papaparse');
 const execSync = require('child_process').execSync;
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const TRANSFER_SCHEDULE_FUNCTIONS = require('../retroSchedules/transferScheduleFromJson');
 
 // Required lookup files
-const teamLookup = JSON.parse(fs.readFileSync('lookupFiles/teamLookup.json', 'utf8'));
-const teamAbbrevLookup = JSON.parse(fs.readFileSync('lookupFiles/teamAbbrevLookup.json', 'utf8'));
-const teamIdentityLookup = JSON.parse(fs.readFileSync('lookupFiles/teamIdentityLookup.json', 'utf8'));
-const timeSlotLookup = JSON.parse(fs.readFileSync('lookupFiles/timeSlotLookup.json', 'utf8'));
+const teamLookup = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/teamLookup.json'), 'utf8'));
+const teamAbbrevLookup = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/teamAbbrevLookup.json'), 'utf8'));
+const teamIdentityLookup = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/teamIdentityLookup.json'), 'utf8'));
+const timeSlotLookup = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/timeSlotLookup.json'), 'utf8'));
 
 const validGameYears = [
 	FranchiseUtils.YEARS.M24,
-	FranchiseUtils.YEARS.M25
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26
 ];
 
 // Print tool header message
-console.log("This program will allow you to regenerate the schedule in your Madden 24 or 25 franchise file to be closer to a real NFL schedule. This tool must be run during the preseason.\n")
+console.log(`This program will allow you to regenerate the schedule in your franchise file to be closer to a real NFL schedule. This tool must be run during the preseason. Madden ${FranchiseUtils.formatListString(validGameYears)} are supported.\n`)
 
 // Set up franchise file and get table object
 const gameYear = FranchiseUtils.getGameYear(validGameYears);
@@ -574,7 +576,7 @@ franchise.on('ready', async function () {
 	fs.writeFileSync(auxFilePath, auxLookupString, 'utf-8');
 
 	// Copy the generator to the working directory
-	fs.copyFileSync('HW12-17Game.exe', './HW12-17Game.exe');
+	fs.copyFileSync(path.join(__dirname, 'HW12-17Game.exe'), './HW12-17Game.exe');
 
 	// If an existing schedule solution is present
 	if(fs.existsSync('solution.json'))
