@@ -1,0 +1,14 @@
+{
+    "First_": 0,
+    "Normal": 0,
+    "College_Impact": 1,
+    "Star": 1,
+    "College_Star": 2,
+    "Superstar": 2,
+    "College_Elite": 3,
+    "Last_": 3,
+    "XFactor": 3,
+    "Count_": 4,
+    "Hidden": 4,
+    "Invalid_": 5
+}

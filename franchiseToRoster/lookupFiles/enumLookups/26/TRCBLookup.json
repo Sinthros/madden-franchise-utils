@@ -1,0 +1,10 @@
+{
+    "First_": 1,
+    "Never": 1,
+    "OnBigHits": 2,
+    "OnMediumHits": 3,
+    "ForAllHits": 4,
+    "Always": 5,
+    "Last_": 5,
+    "Max_": 6
+}

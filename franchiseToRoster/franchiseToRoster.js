@@ -1,34 +1,37 @@
 // Required modules
 const FranchiseUtils = require('../Utils/FranchiseUtils');
+const path = require('path');
 const MaddenRosterHelper = require('madden-file-tools/helpers/MaddenRosterHelper');
 const fs = require('fs');
 
 // Valid game years
 const validGameYears = [
-    FranchiseUtils.YEARS.M25
+    FranchiseUtils.YEARS.M25,
+    FranchiseUtils.YEARS.M26
 ];
 
 // Required lookup files
-const directTransferFields = JSON.parse(fs.readFileSync('lookupFiles/directTransferFields.json', 'utf8'));
-const booleanFields = JSON.parse(fs.readFileSync('lookupFiles/booleanFields.json', 'utf8'));
-const arithmeticFields = JSON.parse(fs.readFileSync('lookupFiles/arithmeticFields.json', 'utf8'));
-const enumFields = JSON.parse(fs.readFileSync('lookupFiles/enumFields.json', 'utf8'));
-const miscFields = JSON.parse(fs.readFileSync('lookupFiles/miscFields.json', 'utf8'));
-const collegeLookup = JSON.parse(fs.readFileSync('../Utils/JsonLookups/25/colleges.json', 'utf8'));
+const directTransferFields = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/directTransferFields.json'), 'utf8'));
+const booleanFields = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/booleanFields.json'), 'utf8'));
+const arithmeticFields = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/arithmeticFields.json'), 'utf8'));
+const enumFields = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/enumFields.json'), 'utf8'));
+const miscFields = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/miscFields.json'), 'utf8'));
+const collegeLookup = JSON.parse(fs.readFileSync(path.join(__dirname, '../Utils/JsonLookups/25/colleges.json'), 'utf8'));
 
-// VIsuals lookup files
-const bodyTypeLookup = JSON.parse(fs.readFileSync('lookupFiles/visualsLookups/bodyTypeLookup.json', 'utf8'));
-const loadoutLookup = JSON.parse(fs.readFileSync('lookupFiles/visualsLookups/loadoutLookup.json', 'utf8'));
-const slotLookup = JSON.parse(fs.readFileSync('lookupFiles/visualsLookups/slotTypeLookup.json', 'utf8'));
+// Visuals lookup files
+const bodyTypeLookup = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/visualsLookups/bodyTypeLookup.json'), 'utf8'));
+const loadoutLookup = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/visualsLookups/loadoutLookup.json'), 'utf8'));
+const slotLookup = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/visualsLookups/slotTypeLookup.json'), 'utf8'));
 
-console.log("This program will allow you to convert a franchise file into a roster file. Madden 25 franchise files are supported.\n");
+console.log(`This program will allow you to convert a franchise file into a roster file. Madden ${FranchiseUtils.formatListString(validGameYears)} franchise files are supported.\n`);
 
 // Set up franchise file
 const franchise = FranchiseUtils.init(validGameYears, {promptForBackup: false});
 const tables = FranchiseUtils.getTablesObject(franchise);
+const gameYear = franchise.schema.meta.gameYear;
 
 
-let rosterPath = FranchiseUtils.getSaveFilePath(franchise.schema.meta.gameYear, FranchiseUtils.SAVE_TYPES.ROSTER);
+let rosterPath = FranchiseUtils.getSaveFilePath(gameYear, FranchiseUtils.SAVE_TYPES.ROSTER);
 const roster = new MaddenRosterHelper();
 
 // Function to handle transferring direct transfer fields
@@ -84,7 +87,7 @@ async function handleEnumFields(player, rosterPlayer)
 
         const rosterField = enumFields[field];
 
-        const currLookup = JSON.parse(fs.readFileSync(`lookupFiles/enumLookups/${rosterField}Lookup.json`, 'utf8'));
+        const currLookup = JSON.parse(fs.readFileSync(path.join(__dirname, `lookupFiles/enumLookups/${gameYear.toString()}/${rosterField}Lookup.json`), 'utf8'));
 
         rosterPlayer[rosterField] = currLookup[player[field]];
     }
@@ -169,6 +172,7 @@ async function handleCharacterVisuals(player, rosterPlayer, visualsTable, roster
     //console.log(`Player Visuals Row: ${playerVisualsRow}`);
 
     const rosterVisuals = rosterVisualsTable.records.find(visuals => visuals.index === rosterVisualsIndex);
+
     const playerVisuals = JSON.parse(visualsTable.records[playerVisualsRow].RawData);
 
     // Set player body type (this is for franchise to work properly, thanks a bunch EA!)
@@ -203,6 +207,7 @@ async function handleLoadouts(playerVisuals, rosterVisuals)
             if(currRosterLoadout.fields.hasOwnProperty("LDCT") && currRosterLoadout.LDCT === 5)
             {
                 rosterLoadouts.removeRecord(j);
+                break;
             }
         }
     }
@@ -214,7 +219,7 @@ async function handleLoadouts(playerVisuals, rosterVisuals)
 
         
 
-        if(currLoadout.hasOwnProperty("loadoutCategory"))
+        if(currLoadout.hasOwnProperty("loadoutCategory") && currLoadout.loadoutCategory.toLowerCase() !== "gearonly")
         {
             const loadoutCategory = loadoutLookup["loadoutCategory"][currLoadout.loadoutCategory];
             rosterLoadout = rosterLoadouts.records.find(loadout => loadout.LDCT === loadoutCategory);
@@ -228,6 +233,12 @@ async function handleLoadouts(playerVisuals, rosterVisuals)
             for(let j = 0; j < rosterLoadout.PINS.numEntries; j++)
             {
                 const currElement = rosterLoadout.PINS.records[j];
+
+                if(!currElement.IBLD)
+                {
+                    continue;
+                }
+
                 const currBlend = currElement.IBLD.records[0];
                 if(currBlend.BASE)
                 {
@@ -240,7 +251,7 @@ async function handleLoadouts(playerVisuals, rosterVisuals)
                 }
             }
         }
-        else if(currLoadout.hasOwnProperty("loadoutType"))
+        else if(currLoadout.hasOwnProperty("loadoutType") && currLoadout.loadoutType.toLowerCase() !== "head")
         {
             const loadoutType = loadoutLookup["loadoutType"][currLoadout.loadoutType];
             rosterLoadout = rosterLoadouts.records.find(loadout => loadout.LDTY === loadoutType);
@@ -270,12 +281,23 @@ async function handleLoadouts(playerVisuals, rosterVisuals)
             continue;
         }
 
+        if(!loadoutElements)
+        {
+            // Remove each loadout element record from the target loadout elements
+            for(let j = rosterElements.numEntries - 1; j >= 0; j--)
+            {
+                rosterElements.removeRecord(j);
+            }
+
+            continue;
+        }
+
         // If there are two of a slot type in the loadout elements, remove one if any that has "_None" in the itemassetname
         Object.keys(slotLookup).forEach(slotType => {
             const slotElements = loadoutElements.filter(element => element.slotType === slotType);
             if(slotElements.length > 1)
             {
-                const noneElement = slotElements.find(element => element.itemAssetName.includes("_None"));
+                const noneElement = slotElements.find(element => element.itemAssetName.toLowerCase().includes("_none"));
                 if(noneElement)
                 {
                     const index = loadoutElements.indexOf(noneElement);
@@ -308,14 +330,14 @@ async function handleLoadouts(playerVisuals, rosterVisuals)
         for(let j = 0; j < loadoutElements.length; j++)
         {
             const currElement = loadoutElements[j];
-            const currSlot = slotLookup[currElement.slotType];
-            let rosterElement = rosterElements.records.find(element => element.SLOT === currSlot);
+            const currSlot = currElement.slotType ? slotLookup[currElement.slotType] : slotLookup["FaceMask"];
+            let rosterElement = rosterElements.records.find(element => currSlot === slotLookup["FaceMask"] ? !element.SLOT || element.SLOT === currSlot : element.SLOT === currSlot);
 
             if(!rosterElement)
             {
                 //continue; // Placeholder, deal with this later
                 const newItem = rosterElements.records[0].deepCopyRecord();
-                newItem.SLOT = currSlot;
+                newItem.SLOT = currSlot ? currSlot : slotLookup["FaceMask"];
                 rosterElements.addRecord(newItem);
                 rosterElement = newItem;
             }
@@ -347,10 +369,10 @@ async function handleLoadouts(playerVisuals, rosterVisuals)
         }
 
         // Remove any unused slot records
-        for(let j = 0; j < rosterElements.numEntries; j++)
+        for(let j = rosterElements.numEntries - 1; j >= 0; j--)
         {
             const currElement = rosterElements.records[j];
-            const currSlot = currElement.SLOT;
+            const currSlot = currElement.SLOT ? currElement.SLOT : slotLookup["FaceMask"];
 
             if(!usedSlots.includes(currSlot))
             {
@@ -534,8 +556,8 @@ franchise.on('ready', async function () {
 
         // Set up tables from the roster
         const rosterPlayerTable = roster.file.PLAY;
-        const rosterVisualsTable = roster.file.PLEX;
-        const rosterInjuryTable = roster.file.INJY;
+        const rosterVisualsTable = gameYear >= FranchiseUtils.YEARS.M26 ? roster.file.BLOB.records[0].BLBM : roster.file.PLEX;
+        const rosterInjuryTable = roster.file.INJY ? roster.file.INJY : null;
 
         // Number of rows in the player table
         const numRows = playerTable.header.recordCapacity;
@@ -583,11 +605,16 @@ franchise.on('ready', async function () {
         }*/
 
         console.log("Working on conversion...");
-        clearInjuries(rosterInjuryTable);
+
+        if(rosterInjuryTable)
+        {
+            clearInjuries(rosterInjuryTable);
+        }
         await handlePlayerRecords(recordsToTransfer, playerTable, visualsTable, rosterPlayerTable, rosterVisualsTable);
 
         // Program complete, so print success message, save the franchise file, and exit
-        console.log("\nFranchise converted successfully.\n");
+        console.log("\nFranchise converted to roster successfully.");
+        console.log("\nIMPORTANT: Please note that you will have to manually reorder the depth chart in-game for each team before using the roster. Otherwise, you may run into crashes/other issues.\n");
         await saveRosterFile(roster);
         FranchiseUtils.EXIT_PROGRAM();
     });
