@@ -1,5 +1,5 @@
-const Franchise = require('madden-franchise');
-const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
+const Franchise = require('madden-franchise').FranchiseFile;
+const { getBinaryReferenceData } = require('madden-franchise');
 const { tables, tablesM25, tablesM26 } = require('./FranchiseTableId');
 const path = require('path');
 const os = require('os');
