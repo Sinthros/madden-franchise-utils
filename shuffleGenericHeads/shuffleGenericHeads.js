@@ -43,7 +43,7 @@ async function shuffleHeads(franchise, draftClassOnly)
       continue;
     }
 
-    let existingHead = gameYear == FranchiseUtils.YEARS.M24 ? playerTable.records[i]['PLYR_GENERICHEAD'] : playerTable.records[i]['GenericHeadAssetName'].replace("gen_", "");
+    let existingHead = gameYear === FranchiseUtils.YEARS.M24 ? playerTable.records[i]['PLYR_GENERICHEAD'] : playerTable.records[i]['GenericHeadAssetName'].replace("gen_", "");
     let existingPortrait = playerTable.records[i]['PLYR_PORTRAIT'];
 
     // Player has a real portrait/face, don't change it

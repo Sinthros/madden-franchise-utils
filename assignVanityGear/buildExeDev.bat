@@ -1,1 +1,1 @@
-nexe --build -i assignVanityGear.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "../node_modules/madden-franchise/services/lookupFiles/*.json" -r "../Utils/FranchiseUtils.js" -r "../Utils/FranchiseTableId.js" -r "../Utils/**/characterVisualsLookups/*" -r "../isonParser/isonFunctions.js" -r "../isonParser/lookupFiles/*.json" -o "assignVanityGearDev.exe" --verbose 
+pkg -c pkgConfig.json assignVanityGearDev.js -o assignVanityGearDev.exe

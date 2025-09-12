@@ -18,7 +18,7 @@ const franchise = FranchiseUtils.init(validGames);
 const tables = FranchiseUtils.getTablesObject(franchise);
 const gameYear = parseInt(franchise.schema.meta.gameYear);
 
-const lookupFileName = path.join(__dirname, `./lookupFiles/vanityGearLookup${gameYear}.json`);
+const lookupFileName = `./lookupFiles/vanityGearLookup${gameYear}.json`;
 if(!fs.existsSync(lookupFileName))
 {
 	console.log("No lookup file exists for the current game year. Unable to continue.");
@@ -33,7 +33,7 @@ const vanityGearLookup = JSON.parse(fs.readFileSync(lookupFileName, 'utf8'));
  * @param {string} ref The reference value
  * @returns {number} The row number specified by the reference, or -1 if it's a zero reference
  */
-async function getRowFromRef(ref)
+function getRowFromRef(ref)
 {
 	// If the ref is all zeroes, we can save time and just return -1
 	if(ref === FranchiseUtils.ZERO_REF)
@@ -43,7 +43,7 @@ async function getRowFromRef(ref)
 
 	// Get the last 15 digits of the ref, which is the row number in binary, then convert it to decimal
 	const rowBinVal = ref.slice(15);
-	const rowNum = await FranchiseUtils.bin2Dec(rowBinVal);
+	const rowNum = FranchiseUtils.bin2Dec(rowBinVal);
 	
 	// Return the converted row number
 	return rowNum;
