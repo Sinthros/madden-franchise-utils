@@ -155,7 +155,7 @@ function writeTable3IsonData(isonBuffer, characterVisualsTable, rowNumber)
 function writeZstdTable3IsonData(isonBuffer, characterVisualsTable, rowNumber)
 {
 	const table3Field = characterVisualsTable.records[rowNumber].getFieldByKey('RawData').thirdTableField;
-	const compressedData = zlib.zstdCompressSync(isonBuffer);
+	const compressedData = zlib.zstdCompressSync(isonBuffer, {dictionary: dictBuf, params: {[zlib.constants.ZSTD_c_compressionLevel]: 7}});
 
 	const newBuffer = Buffer.alloc(377);
 
@@ -341,5 +341,7 @@ module.exports = {
 	isonVisualsToJson,
 	jsonVisualsToIson,
 	getTable3IsonData,
-	getZstdTable3IsonData
+	getZstdTable3IsonData,
+	writeTable3IsonData,
+	writeZstdTable3IsonData
 };
