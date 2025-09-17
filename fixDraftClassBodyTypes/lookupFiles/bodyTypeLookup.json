@@ -1,0 +1,17 @@
+{
+    "First_": 0,
+    "FirstMain_": 0,
+    "Standard": 0,
+    "Thin": 1,
+    "Muscular": 2,
+    "Heavy": 3,
+    "Freshman": 4,
+    "LastMain_": 4,
+    "ReservedMain_1": 5,
+    "ReservedMain_2": 6,
+    "ReservedMain_3": 7,
+    "FirstAlternate_": 8,
+    "LastAlternate_": 8,
+    "Standard_Alternate": 8,
+    "Max_": 9
+}
