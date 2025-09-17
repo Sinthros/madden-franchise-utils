@@ -1,8 +1,8 @@
 const fs = require('fs');
-const LZ4 = require('lz4');
+//const LZ4 = require('lz4');
 const zlib = require('zlib');
 const path = require('path');
-const schemaGenerator = require('madden-franchise/services/schemaGenerator');
+const schemaGenerator = require('madden-franchise').schemaGenerator;
 const outputPath = 'output';
 
 let schemaGenerationService = {};
