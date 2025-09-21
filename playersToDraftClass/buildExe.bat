@@ -1,1 +1,1 @@
-nexe --build -i playersToDraftClass.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "*.json" -r "../Utils/FranchiseUtils.js" -r "../Utils/JsonLookups/*.json" -o "playersToDraftClass.exe" --verbose
+pkg -c pkgConfig.json playersToDraftClass.js -o playersToDraftClass.exe
