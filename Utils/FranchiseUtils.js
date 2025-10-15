@@ -1,5 +1,5 @@
 const Franchise = require('madden-franchise').FranchiseFile;
-const { getBinaryReferenceData } = require('madden-franchise');
+const { getBinaryReferenceData } = require('madden-franchise').utilService;
 const { tables, tablesM25, tablesM26 } = require('./FranchiseTableId');
 const path = require('path');
 const os = require('os');
@@ -531,16 +531,26 @@ function getTablesObject(franchise) {
 // with row i, pass through playerTable.records[i]
 // Call it exactly like this:
 // const player = playerTable.records[i];
-// const {newOverall, newArchetype} = FranchiseUtils.calculateBestOverall(player);
+// const {newOverall, newArchetype} = FranchiseUtils.calculateBestOverall(player, gameYear);
 
 // Afterwards, you can set the overall/archetype like this:
 // player.OverallRating = newOverall;
 // player.PlayerType = newArchetype;
 
 // If you use this function, you HAVE to include ovrweights/ovrweightsPosMap in your included files when compiling to an exe
-function calculateBestOverall(player) {
+function calculateBestOverall(player, gameYear = 25) {
 
-    const ovrWeights = JSON.parse(fs.readFileSync(path.join(__dirname, 'JsonLookups/ovrweights.json'), 'utf8'));
+    let ovrWeights;
+    
+    if(gameYear <= 25)
+    {
+      ovrWeights = JSON.parse(fs.readFileSync(path.join(__dirname, 'JsonLookups/ovrweights.json'), 'utf8'));
+    }
+    else
+    {
+      ovrWeights = JSON.parse(fs.readFileSync(path.join(__dirname, `JsonLookups/ovrweights_${gameYear}.json`), 'utf8'));
+    }
+
     const ovrWeightsPosMap = JSON.parse(fs.readFileSync(path.join(__dirname, 'JsonLookups/ovrweightsPosMap.json'), 'utf8'));
     
     let newOverall = 0;
