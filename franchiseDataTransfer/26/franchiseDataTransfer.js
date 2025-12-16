@@ -20,7 +20,6 @@ const STADIUM_LOOKUP = JSON.parse(fs.readFileSync('lookupFiles/stadiums_lookup.j
 const TRANSFER_SCHEDULE_FUNCTIONS = require('../../retroSchedules/transferScheduleFromJson');
 const SCHEDULE_FUNCTIONS = require('../../Utils/ScheduleFunctions');
 const FranchiseUtils = require('../../Utils/FranchiseUtils');
-const ISON_FUNCTIONS = require('../../isonParser/isonFunctions');
 const VISUAL_FUNCTIONS = require('../../Utils/characterVisualsLookups/characterVisualFunctions');
 const VISUAL_FUNCTIONS_26 = require('../../Utils/characterVisualsLookups/characterVisualFunctions26');
 const COACH_VISUAL_LOOKUP_M25 = JSON.parse(fs.readFileSync('../../Utils/characterVisualsLookups/25/coachVisualsLookup.json', 'utf-8'));
@@ -37,9 +36,9 @@ const VISUAL_KEYS_TO_REMOVE = [
   "skinToneScale",
   "containerId",
   "assetName",
-  "heightInches"
-  //"firstName",
-  //"lastName",
+  "heightInches",
+  "firstName",
+  "lastName",
   //"skinTone",
   //"weightPounds"
 ];
@@ -674,13 +673,18 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
 
     const visualsRecord = visualsTable.records[visualsMetadata.row];
 
+    // Leaving this like this for now, in case we decide to re-add the coach visuals regeneration for 25 -> 26 similar to previous year.
+    // It really shouldn't be necessary for most cases, outside of Start Today coaches *maybe* (it might not be an issue because of us
+    // using duplications last year for this year's new head coaches)
     if (is25To26) {
-      try { // We should always regenerate coach visuals if from 25 to 26
-        jsonData = /*isPlayer ?*/ JSON.parse(visualsRecord.RawData) //: await VISUAL_FUNCTIONS.getGeneratedCoachVisual(sourceCoachTable,sourceRecord.index,"N/A",COACH_VISUAL_LOOKUP_M25);
+      try {
+        jsonData = JSON.parse(visualsRecord.RawData);
+
+        // Many slot type names changed from 25 to 26, so we need to update them
         VISUAL_FUNCTIONS_26.updateVisualSlotTypes(jsonData);
       } catch (error) {
-          jsonData = isPlayer ? await VISUAL_FUNCTIONS.getGeneratedPlayerVisual(sourcePlayerTable,sourceRecord.index)
-          : await VISUAL_FUNCTIONS.getGeneratedCoachVisual(sourceCoachTable,sourceRecord.index,"N/A",COACH_VISUAL_LOOKUP_M25);
+          console.error(error);
+          return;
       }
     }
     else {
@@ -697,7 +701,8 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
     return;
   }
 
-  genericHead = targetRecord.GenericHeadAssetName;
+  // Can copy genhead name directly even from 25, works fine
+  genericHead = sourceRecord.GenericHeadAssetName;
 
   if (jsonData === null) {
     jsonData = {}; // Should never happen, but just to be safe
@@ -708,14 +713,20 @@ async function handleCharacterVisuals(sourceRecord, targetRecord, currentTableNa
     FranchiseUtils.removeKeyFromJson(jsonData, key);
   });
 
-  ISON_FUNCTIONS.jsonVisualsToIson(targetVisualsTable,nextRecord,jsonData); // Set the data in the visuals table
+  // Ensure overflow is zeroed out before editing RawData (was causing crashes in some cases)
+  targetVisualsTable.records[nextRecord].Overflow = FranchiseUtils.ZERO_REF;
   targetVisualsTable.records[nextRecord].RawData = JSON.stringify(jsonData);
 
   targetRecord.CharacterVisuals = getBinaryReferenceData(targetVisualsTable.header.tableId, nextRecord);
 
   targetRecord.GenericHeadAssetName = typeof genericHead !== 'undefined' ? genericHead : "";
 
-  targetRecord.CharacterBodyType = FranchiseUtils.generateBodyType(targetRecord, 26);
+
+  // Don't regenerate coach body types, just transfer directly from 25 (generation function doesn't support coaches properly)
+  if (isPlayer)
+  {
+    targetRecord.CharacterBodyType = FranchiseUtils.generateBodyType(targetRecord, 26);
+  }
 
 }
 
