@@ -466,6 +466,8 @@ const tablesM26 = {
     ownerTable: 2357578975,
     coachTalentEffects: 2084066789,
     coachTable: 1860529246,
+    trainerTable: 122870842,
+    talentArrayTable: 110252030,
     freeAgentCoachTable: 2912348295,
     playerPersonnelTable: 4279422699,
     storyTable: 53507767,

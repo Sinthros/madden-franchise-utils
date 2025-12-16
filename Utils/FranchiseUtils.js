@@ -687,7 +687,17 @@ async function emptyCharacterVisualsTable(franchise) {
     const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
     const playerTable = franchise.getTableByUniqueId(tables.playerTable);
     const coachTable = franchise.getTableByUniqueId(tables.coachTable);
-    await readTableRecords([characterVisuals,playerTable,coachTable]);
+    let trainerTable = franchise.getTableByUniqueId(tables.trainerTable);
+
+
+    const tableList = [characterVisuals, playerTable, coachTable];
+
+    if(franchise.schema.meta.gameYear >= 26)
+    {
+      tableList.push(trainerTable);
+    }
+
+    await readTableRecords(tableList);
 
     for (const record of playerTable.records) {
       if (!record.isEmpty) {
@@ -698,6 +708,15 @@ async function emptyCharacterVisualsTable(franchise) {
     for (const record of coachTable.records) {
       if (!record.isEmpty) {
         record.CharacterVisuals = ZERO_REF;
+      }
+    }
+
+    if(franchise.schema.meta.gameYear >= 26)
+    {
+      for (const record of trainerTable.records) {
+        if (!record.isEmpty) {
+          record.CharacterVisuals = ZERO_REF;
+        }
       }
     }
 
