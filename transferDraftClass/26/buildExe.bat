@@ -1,0 +1,1 @@
+pkg -c pkgConfig.json transferDraftClass.js -o transferDraftClass.exe

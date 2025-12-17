@@ -1,4 +1,4 @@
-const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
+const { getBinaryReferenceData } = require('madden-franchise').utilService;
 const fs = require('fs');
 const path = require('path');
 const allPlayerVisuals = JSON.parse(fs.readFileSync(path.join(__dirname, 'playerVisualsLookup.json'), 'utf8'));

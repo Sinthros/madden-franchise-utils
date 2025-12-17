@@ -4,7 +4,7 @@
 
 
 // Requirements
-const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
+const { getBinaryReferenceData } = require('madden-franchise').utilService;
 let tables = null;
 let franchise = null;
 const path = require('path');

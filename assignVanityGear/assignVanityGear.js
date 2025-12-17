@@ -1,5 +1,6 @@
 // Required modules
 const fs = require('fs');
+const path = require('path');
 const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const characterVisualFunctions = require('../Utils/characterVisualsLookups/characterVisualFunctions');
@@ -10,13 +11,14 @@ console.log("This program will update all players with your chosen vanity gear i
 // Set up franchise file
 const validGames = [
 	FranchiseUtils.YEARS.M24,
-	FranchiseUtils.YEARS.M25
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26
 ];
 const franchise = FranchiseUtils.init(validGames);
 const tables = FranchiseUtils.getTablesObject(franchise);
 const gameYear = parseInt(franchise.schema.meta.gameYear);
 
-const lookupFileName = `./lookupFiles/vanityGearLookup${gameYear}.json`;
+const lookupFileName = path.join(__dirname, `./lookupFiles/vanityGearLookup${gameYear}.json`);
 if(!fs.existsSync(lookupFileName))
 {
 	console.log("No lookup file exists for the current game year. Unable to continue.");
@@ -67,7 +69,7 @@ function assignGear(visualsData, gearAssetInfo)
 		let j;
 		for(j = 0; j < loadouts.length; j++)
 		{
-			if(loadouts[j].hasOwnProperty("loadoutType"))
+			if(loadouts[j].hasOwnProperty("loadoutType") && loadouts[j].hasOwnProperty("loadoutElements"))
 			{
 				break;
 			}

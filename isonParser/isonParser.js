@@ -9,7 +9,6 @@
 	console.log("This program will read raw ISON entries (typically used for CharacterVisuals data) and allow you to convert between ISON and JSON.\n");
 	// Set up franchise file
 	const validGames = [
-		FranchiseUtils.YEARS.M25,
 		FranchiseUtils.YEARS.M26
 	];
 	const gameYear = FranchiseUtils.getGameYear(validGames);
@@ -27,11 +26,12 @@
 		console.log("1 - Convert ISON to JSON (read CharacterVisuals)");
 		console.log("2 - Convert JSON to ISON (write CharacterVisuals)");
 		console.log("3 - Dump raw ISON entry (advanced)");
-		console.log("4 - Exit");
+		console.log("4 - Import raw ISON entry (advanced)");
+		console.log("5 - Exit");
 
 		option = parseInt(prompt().trim());
 
-		if(option < 1 || option > 4 || isNaN(option))
+		if(option < 1 || option > 5 || isNaN(option))
 		{
 			console.log("Invalid option.\n");
 		}
@@ -189,6 +189,64 @@
 			console.log(`\nSuccessfully wrote raw ISON data to ${newFilePath}.`);
 		}
 		else if(option === 4)
+		{
+			// Get the target file path from the user
+			let newFilePath;
+			do
+			{
+				console.log("\nEnter the path to the ISON file to write: ");
+				newFilePath = prompt().trim().replace(/['"]/g, '');
+	
+				if(!fs.existsSync(newFilePath) && !newFilePath.endsWith('.ison')) 
+				{
+					newFilePath += '.ison';
+				}
+	
+				if(!fs.existsSync(newFilePath))
+				{
+					console.log("ISON file not found at given path. Please enter a valid path to an ISON file.\n");
+				}
+			}
+			while(!fs.existsSync(newFilePath));
+
+			// Read the ISON file
+			let ison;
+			try
+			{
+				ison = fs.readFileSync(newFilePath, 'utf8');
+			}
+			catch(e)
+			{
+				console.error("Error reading ISON file. Please ensure the file is a valid ISON.\n");
+				continue;
+			}
+
+			let rowNumber;
+
+			do
+			{
+				// Get the CharacterVisuals row number from the user
+				console.log("\nEnter the CharacterVisuals row number to write to: ");
+				rowNumber = parseInt(prompt().trim());
+	
+				if(isNaN(rowNumber) || characterVisualsTable.header.recordCapacity <= rowNumber || rowNumber < 0)
+				{
+					console.log("Invalid row number. Please enter a valid row number that exists in the table.\n");
+				}
+	
+				if(characterVisualsTable.records[rowNumber].isEmpty)
+				{
+					console.log("The selected row is an empty record. Please select a non-empty row.\n");
+				}
+			}
+			while(isNaN(rowNumber) || characterVisualsTable.header.recordCapacity <= rowNumber || characterVisualsTable.records[rowNumber].isEmpty || rowNumber < 0);
+
+			ISON_FUNCTIONS.initGameSpecific(gameYear);
+
+			gameYear >= FranchiseUtils.YEARS.M26 ? ISON_FUNCTIONS.writeZstdTable3IsonData(ison, characterVisualsTable, rowNumber) : ISON_FUNCTIONS.writeTable3IsonData(ison, characterVisualsTable, rowNumber);
+
+		}
+		else if(option === 5)
 		{
 			break;
 		}

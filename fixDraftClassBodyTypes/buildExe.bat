@@ -1,0 +1,1 @@
+pkg -c pkgConfig.json fixDraftClassBodyTypes.js -o fixDraftClassBodyTypes.exe

@@ -1,5 +1,6 @@
 // Required modules
 const fs = require('fs');
+const path = require('path');
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 // Valid years
@@ -7,7 +8,8 @@ const validGames = [
 	FranchiseUtils.YEARS.M22,
 	FranchiseUtils.YEARS.M23,
 	FranchiseUtils.YEARS.M24,
-	FranchiseUtils.YEARS.M25
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26
 ];
 
 // Print tool header message
@@ -21,11 +23,13 @@ const gameYear = parseInt(franchise.schema.meta.gameYear);
 // Assetname lookup
 let nflcLookup;
 
-if(fs.existsSync(`lookupFiles/nflcLookup_${gameYear}.json`))
+const lookupPath = path.join(__dirname, `lookupFiles/nflcLookup_${gameYear}.json`);
+
+if(fs.existsSync(lookupPath))
 {
 	try
 	{
-		nflcLookup = Object.keys(JSON.parse(fs.readFileSync(`lookupFiles/nflcLookup_${gameYear}.json`, 'utf-8')));
+		nflcLookup = Object.keys(JSON.parse(fs.readFileSync(lookupPath, 'utf-8')));
 	}
 	catch(error)
 	{
@@ -269,7 +273,7 @@ franchise.on('ready', async function () {
 			customMeshFile = true;
 			try
 			{
-				overrideAssetNames = JSON.parse(fs.readFileSync(`lookupFiles/${fingerprint}_${gameYear}.json`, 'utf-8'));
+				overrideAssetNames = JSON.parse(fs.readFileSync(path.join(__dirname, `lookupFiles/${fingerprint}_${gameYear}.json`), 'utf-8'));
 			}
 			catch(error)
 			{

@@ -6,10 +6,13 @@ console.log("This program will copy appearance from players in a source franchis
 
 // Set up franchise file
 const validGames = [
-	FranchiseUtils.YEARS.M25
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26
 ];
 const sourceFranchise = FranchiseUtils.init(validGames, {promptForBackup: false, customFranchiseMessage: "Please enter the name of your source franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit."});
-const targetFranchise = FranchiseUtils.init(validGames, {promptForBackup: false, customFranchiseMessage: "Please enter the name of your target franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit."});
+
+// Make sure target franchise is always same game year as source, since compatibility across game years isn't guaranteed.
+const targetFranchise = FranchiseUtils.init(sourceFranchise.schema.meta.gameYear, {promptForBackup: false, customFranchiseMessage: "Please enter the name of your target franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit."});
 
 const SOURCE_TABLES = FranchiseUtils.getTablesObject(sourceFranchise);
 const TARGET_TABLES = FranchiseUtils.getTablesObject(targetFranchise);

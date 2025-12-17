@@ -1,1 +1,1 @@
-nexe --build -i presentationIdFix.js -t x64-14.15.3 -r "../node_modules/madden-franchise/data/schemas" -r "../node_modules/madden-franchise/services/lookupFiles/*.json" -r "lookupFiles/*.json" -r "../Utils/FranchiseUtils.js" -r "../Utils/FranchiseTableId.js" -o "presentationIdFix.exe" --verbose
+pkg -c pkgConfig.json presentationIdFix.js -o presentationIdFix.exe

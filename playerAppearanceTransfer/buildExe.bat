@@ -1,1 +1,1 @@
-nexe --build -i playerAppearanceTransfer.js -t x64-20.12.2 -r "../node_modules/madden-franchise/data/schemas" -r "../node_modules/madden-franchise/services/lookupFiles/*.json" -r "../Utils/FranchiseUtils.js" -r "../Utils/FranchiseTableId.js" -o "playerAppearanceTransfer.exe" --verbose
+pkg -c pkgConfig.json playerAppearanceTransfer.js -o playerAppearanceTransfer.exe

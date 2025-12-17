@@ -1,8 +1,8 @@
 const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
 
 
-const FranchiseUtils = require('../Utils/FranchiseUtils');
-const VISUAL_FUNCTIONS = require('../Utils/characterVisualsLookups/characterVisualFunctions');
+const FranchiseUtils = require('../../Utils/FranchiseUtils');
+const VISUAL_FUNCTIONS = require('../../Utils/characterVisualsLookups/characterVisualFunctions');
 
 const VISUAL_KEYS_TO_REMOVE = [
   "genericHeadName",
