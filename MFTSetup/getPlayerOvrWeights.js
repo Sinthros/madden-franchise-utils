@@ -15,7 +15,7 @@ const COLUMN_LOOKUP = {
   "Spin": "SpinMoveRating"
 };
 
-const SKIP_COLUMNS = ["Toughness","KickReturn"];
+const SKIP_COLUMNS = ["Toughness"];
 
 const tables = FranchiseUtils.getTablesObject(franchise);
 
