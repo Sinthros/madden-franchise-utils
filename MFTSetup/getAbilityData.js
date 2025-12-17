@@ -1,11 +1,7 @@
-
-
-
-
-const FranchiseUtils = require('../Utils/FranchiseUtils');
-const { tables } = require('../Utils/FranchiseTableId');
-const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
-const fs = require('fs');
+const FranchiseUtils = require("../Utils/FranchiseUtils");
+const { tables } = require("../Utils/FranchiseTableId");
+const { getBinaryReferenceData } = require("madden-franchise/services/utilService");
+const fs = require("fs");
 
 const signatureAbilities = {
     WRSignatureAbilities: {},
@@ -21,135 +17,123 @@ const signatureAbilities = {
     DTSignatureAbilities: {},
     DESignatureAbilities: {},
     CBSignatureAbilities: {},
-  };
-
+};
 
 const gameYear = FranchiseUtils.YEARS.M26;
+const franchise = FranchiseUtils.init(gameYear, { isFtcFile: true, promptForBackup: false });
 
-// This script relies on the franchise tuning FTC
-const franchise = FranchiseUtils.init(gameYear, {isFtcFile: true, promptForBackup: false})
+function writeJSON(data, file) {
+  fs.writeFileSync(file, JSON.stringify(data, null, 2), "utf8");
+}
 
- function convertArrayToJSONFile(dataArray, filePath) {
-    const jsonData = JSON.stringify(dataArray, null, 2); // Convert array to JSON string with indentation
-  
-    fs.writeFileSync(filePath, jsonData, (error) => {
-      if (error) {
-        console.error('Error writing JSON file:', error);
-      } else {
-        console.log('JSON file created successfully!');
-      }
-    });
-  };
-franchise.on('ready', async function () {
-    //const json = await getFtcReferences();
-    // Convert array to JSON string
-//const teamIdentityStr = JSON.stringify(json, null, 2); // `null, 2` formats the JSON nicely
+franchise.on("ready", async function () {
+  const SignatureAbilitiesTable = franchise.getTableByUniqueId(tables.signatureAbilitesFtcTable);
+  const SignatureByPosition = franchise.getTableByUniqueId(tables.signatureByPositionFtcTable);
+  const PositionSignatureAbilityArray = franchise.getTableByUniqueId(3517346360);
+  const PositionSignatureAbility = franchise.getTableByUniqueId(tables.positionSignatureAbilityFtcTable);
+  const SignatureAbility = franchise.getTableByUniqueId(tables.signatureAbilityFtcTable);
 
-// Write the JSON string to a file
-//fs.writeFileSync('output.json', teamIdentityStr, 'utf8');
-//process.exit(0)
+  const tableId = PositionSignatureAbility.header.tableId;
 
-    const SignatureAbilitesTable = franchise.getTableByUniqueId(tables.signatureAbilitesFtcTable);
-    const SignatureByPosition = franchise.getTableByUniqueId(tables.signatureByPositionFtcTable);
+  await FranchiseUtils.readTableRecords([
+    SignatureAbilitiesTable,
+    SignatureByPosition,
+    PositionSignatureAbilityArray,
+    PositionSignatureAbility,
+    SignatureAbility,
+  ]);
 
-    const gameYear = franchise.schema.meta.gameYear;
+  const allAssets = franchise.assetTable;
 
-    const positionSigArrayId = 3517346360;
+  // -----------------------
+  // Extract ability indices
+  // -----------------------
+  function extractAbilityIndices(arrayTable, abilityTable, binValue, capacity) {
+    const out = [];
+    if (binValue === FranchiseUtils.ZERO_REF) return out;
 
-    const PositionSignatureAbilityArray = franchise.getTableByUniqueId(positionSigArrayId);
-    const PositionSignatureAbility = franchise.getTableByUniqueId(tables.positionSignatureAbilityFtcTable);
-    const SignatureAbility = franchise.getTableByUniqueId(tables.signatureAbilityFtcTable);
+    const rowRef = FranchiseUtils.bin2Dec(binValue.slice(15));
+    const row = arrayTable.records[rowRef];
 
-    const PositionSignatureAbilityTableId = PositionSignatureAbility.header.tableId //Table ID
+    for (let i = 0; i < capacity; i++) {
+      const abilityBin = row[`PositionSignatureAbility${i}`];
+      if (abilityBin === FranchiseUtils.ZERO_REF) continue;
 
-    await FranchiseUtils.readTableRecords([
-      SignatureAbilitesTable,
-      SignatureByPosition,
+      const posAbilityRow = FranchiseUtils.bin2Dec(abilityBin.slice(15));
+      const abilityBinRef = abilityTable.records[posAbilityRow]["Ability"];
+      const abilityRow = FranchiseUtils.bin2Dec(abilityBinRef.slice(15));
+
+      out.push({ posAbilityRow, abilityRow });
+    }
+    return out;
+  }
+
+  // ----------------------------------------
+  // Build legacy structure with new fields
+  // ----------------------------------------
+  for (const key in signatureAbilities) {
+    const colBinary = SignatureAbilitiesTable.records[0][key];
+    const sigRowRef = FranchiseUtils.bin2Dec(colBinary.slice(15));
+    const sigRow = SignatureByPosition.records[sigRowRef];
+
+    const active = extractAbilityIndices(
       PositionSignatureAbilityArray,
       PositionSignatureAbility,
-      SignatureAbility
-  ]);
-    const allAssets = franchise.assetTable; //Get all available assets and their references
+      sigRow["ActiveSignatures"],
+      PositionSignatureAbilityArray.header.recordCapacity
+    );
 
-    for (const key in signatureAbilities) {
-        const xFactorAbilityIndices = [];
-        const allAbilityIndices = [];
-        const currentPositionBinary = SignatureAbilitesTable.records[0][key];
-        const rowRef = FranchiseUtils.bin2Dec(currentPositionBinary.slice(15));
+    const passive = extractAbilityIndices(
+      PositionSignatureAbilityArray,
+      PositionSignatureAbility,
+      sigRow["PassiveSignatures"],
+      PositionSignatureAbilityArray.header.numMembers
+    );
 
-        const activeSignaturesBin = SignatureByPosition.records[rowRef]['ActiveSignatures']
-        const passiveSignaturesBin = SignatureByPosition.records[rowRef]['PassiveSignatures']
-        
-        if (activeSignaturesBin !== FranchiseUtils.ZERO_REF) {
-            signatureAbilities[key].XFactorAbilities = [];
-            const activeSignaturesRowRef = FranchiseUtils.bin2Dec(activeSignaturesBin.slice(15));
-            for (let i = 0;i < PositionSignatureAbilityArray.header.recordCapacity;i++) {
-                const currentPosSigAbility = PositionSignatureAbilityArray.records[activeSignaturesRowRef][`PositionSignatureAbility${i}`];
-                if (currentPosSigAbility !== FranchiseUtils.ZERO_REF) {
-                    const currentPosSigAbilityRow = FranchiseUtils.bin2Dec(currentPosSigAbility.slice(15));
-                    const abilityBin = PositionSignatureAbility.records[currentPosSigAbilityRow]['Ability'];
-                    console.log(abilityBin)
-                    const abilityBinRow = FranchiseUtils.bin2Dec(abilityBin.slice(15));
-                    console.log(abilityBinRow)
-                    xFactorAbilityIndices.push(abilityBinRow);
-                    allAbilityIndices.push({ [currentPosSigAbilityRow]: abilityBinRow });
-                }
-            }
-        }
+    const xFactorRows = active.map(a => a.abilityRow);
 
-        if (passiveSignaturesBin !== FranchiseUtils.ZERO_REF) {
-            signatureAbilities[key].SuperStarAbilities = [];
-            const passiveSignaturesRowRef = FranchiseUtils.bin2Dec(passiveSignaturesBin.slice(15));
-            for (let i = 0;i < PositionSignatureAbilityArray.header.numMembers;i++) {
-                const currentPosSigAbility = PositionSignatureAbilityArray.records[passiveSignaturesRowRef][`PositionSignatureAbility${i}`];
-                if (currentPosSigAbility !== FranchiseUtils.ZERO_REF) {
-                    const currentPosSigAbilityRow = FranchiseUtils.bin2Dec(currentPosSigAbility.slice(15));
-                    const abilityBin = PositionSignatureAbility.records[currentPosSigAbilityRow]['Ability'];
-                    const abilityBinRow = FranchiseUtils.bin2Dec(abilityBin.slice(15));
-                    allAbilityIndices.push({ [currentPosSigAbilityRow]: abilityBinRow });
+    signatureAbilities[key].XFactorAbilities = [];
+    signatureAbilities[key].SuperStarAbilities = [];
 
-                }
-            }
+    const allAbilities = [...active, ...passive];
 
-        }
+    for (const { posAbilityRow, abilityRow } of allAbilities) {
+      const ability = SignatureAbility.records[abilityRow];
+      if (!ability?.Name || ability.Name.trim() === "") continue;
 
+      const abilityType =
+        xFactorRows.includes(abilityRow) ? "XFactorAbilities" : "SuperStarAbilities";
 
-        for (const abilityIndexObject of allAbilityIndices) {
-          for (const abilityIndex in abilityIndexObject) {
-            const value = abilityIndexObject[abilityIndex];
-            let abilityType = 'SuperStarAbilities'
-            if (xFactorAbilityIndices.includes(value)) {
-                abilityType = 'XFactorAbilities';
-            }
-            const abilityName = SignatureAbility.records[value]['Name'];
+      const posAbilityRecord = PositionSignatureAbility.records[posAbilityRow];
 
-            const abilityGuid = SignatureAbility.records[value]['GUID'];
-            const abilityDescription = SignatureAbility.records[value]['Description'];
-            
-            const binReference = getBinaryReferenceData(PositionSignatureAbilityTableId,abilityIndex) 
-            const assetReference = FranchiseUtils.bin2Dec(binReference) //This will match up with the reference in the assetTable
+      const binRef = getBinaryReferenceData(tableId, posAbilityRow);
+      const assetRef = FranchiseUtils.bin2Dec(binRef);
 
-            const assetId = allAssets.find(obj => obj.reference === assetReference)?.assetId; //This finds our desired assetId
-            const finalBin = FranchiseUtils.dec2bin(assetId,2) //Convert to binary
+      const assetId = allAssets.find(a => a.reference === assetRef)?.assetId;
+      const finalBin = FranchiseUtils.dec2bin(assetId, 2);
+      if (ability.Name.trim() !== "") {
+        signatureAbilities[key][abilityType].push({
+          Ability: ability.Name,
+          GUID: ability.GUID,
+          Description: ability.Description,
 
-            
-            const updatedJson = { 
-                'Ability': abilityName,
-                'GUID': abilityGuid,
-                'Description': abilityDescription,
-                'binaryReference': finalBin,
-                'assetId': assetId,
-                'assetBinReference': assetReference
-               };
+          // Original fields
+          binaryReference: finalBin,
+          assetId,
+          assetBinReference: assetRef,
 
-            signatureAbilities[key][abilityType].push(updatedJson)
-
-
-        }
+          // NEW fields
+          Disable: posAbilityRecord?.Disable ?? null,
+          ArchetypeRequirement: posAbilityRecord?.ArchetypeRequirement ?? null,
+          MaxSlotPosition: posAbilityRecord?.MaxSlotPosition ?? null,
+          MinSlotPosition: posAbilityRecord?.MinSlotPosition ?? null,
+          OVRRequirement: posAbilityRecord?.OVRRequirement ?? null,
+          DraftPositionRequirement: posAbilityRecord?.DraftPositionRequirement ?? null,
+          IconId: ability.IconId,
+        });
       }
-
     }
-    convertArrayToJSONFile(signatureAbilities,'abilities.json')
-    
-    
+  }
+
+  writeJSON(signatureAbilities, "abilities.json");
 });
