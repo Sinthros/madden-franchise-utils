@@ -2323,12 +2323,34 @@ async function fixDraftPicks(franchise) {
         }
       });
     }
+
+    // Update any remaining references
+    let refList = franchise.getReferencesToRecord(currentTable.header.tableId, rowNum)
+    for(const ref of refList) {
+      const refTable = franchise.getTableById(ref.tableId);
+      await refTable.readRecords();
+      updateBinaryReferenceInTable(refTable, binary, updatedBinary);
+    }
   
     // Empty the record from the other table
     emptyRecord(currentRecord, defaultColumns);
   }
 
   return alteredPicks;
+}
+
+function updateBinaryReferenceInTable(table, oldBinary, newBinary) {
+  const columns = getColumnNames(table);
+
+  for (const record of table.records) {
+    if (record.isEmpty) continue;
+
+    for (const column of columns) {
+      if (record[column] === oldBinary) {
+        record[column] = newBinary;
+      }
+    }
+  }
 }
 
 /**

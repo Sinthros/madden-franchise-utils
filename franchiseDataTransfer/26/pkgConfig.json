@@ -1,0 +1,8 @@
+{
+    "pkg": {
+        "scripts": ["../Utils/FranchiseUtils.js", "../Utils/ScheduleFunctions.js", "../retroSchedules/transferScheduleFromJson.js", "../../Utils/characterVisualsLookups/characterVisualFunctions26.js", "../../Utils/characterVisualsLookups/characterVisualFunctions.js"],
+        "assets": ["../node_modules/madden-franchise/data/schemas/**/*", "../node_modules/madden-franchise/data/interned-strings/**/*", "../node_modules/madden-franchise/data/zstd-dicts/**/*", "../node_modules/madden-franchise/services/lookupFiles/*", "lookupFiles/*", "../../Utils/characterVisualsLookups/26/**/*", "../../Utils/JsonLookups/**/*"],
+        "targets": [ "node22-win" ],
+        "outputPath": "."
+    }
+}
