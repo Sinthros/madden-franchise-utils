@@ -4,19 +4,19 @@ const { getBinaryReferenceData } = require("madden-franchise/services/utilServic
 const fs = require("fs");
 
 const signatureAbilities = {
-    WRSignatureAbilities: {},
-    TESignatureAbilities: {},
-    QBSignatureAbilities: {},
-    OLSignatureAbilities: {},
-    OLBSignatureAbilities: {},
-    MLBSignatureAbilities: {},
-    K_PSignatureAbilities: {},
-    HBSignatureAbilities: {},
-    FS_SSSignatureAbilities: {},
-    FBSignatureAbilities: {},
-    DTSignatureAbilities: {},
-    DESignatureAbilities: {},
-    CBSignatureAbilities: {},
+  WRSignatureAbilities: {},
+  TESignatureAbilities: {},
+  QBSignatureAbilities: {},
+  OLSignatureAbilities: {},
+  OLBSignatureAbilities: {},
+  MLBSignatureAbilities: {},
+  K_PSignatureAbilities: {},
+  HBSignatureAbilities: {},
+  FS_SSSignatureAbilities: {},
+  FBSignatureAbilities: {},
+  DTSignatureAbilities: {},
+  DESignatureAbilities: {},
+  CBSignatureAbilities: {},
 };
 
 const gameYear = FranchiseUtils.YEARS.M26;
@@ -111,27 +111,21 @@ franchise.on("ready", async function () {
 
       const assetId = allAssets.find(a => a.reference === assetRef)?.assetId;
       const finalBin = FranchiseUtils.dec2bin(assetId, 2);
-      if (ability.Name.trim() !== "") {
-        signatureAbilities[key][abilityType].push({
-          Ability: ability.Name,
-          GUID: ability.GUID,
-          Description: ability.Description,
 
-          // Original fields
-          binaryReference: finalBin,
-          assetId,
-          assetBinReference: assetRef,
-
-          // NEW fields
-          Disable: posAbilityRecord?.Disable ?? null,
-          ArchetypeRequirement: posAbilityRecord?.ArchetypeRequirement ?? null,
-          MaxSlotPosition: posAbilityRecord?.MaxSlotPosition ?? null,
-          MinSlotPosition: posAbilityRecord?.MinSlotPosition ?? null,
-          OVRRequirement: posAbilityRecord?.OVRRequirement ?? null,
-          DraftPositionRequirement: posAbilityRecord?.DraftPositionRequirement ?? null,
-          IconId: ability.IconId,
-        });
-      }
+      signatureAbilities[key][abilityType].push({
+        Ability: ability.Name,
+        GUID: ability.GUID,
+        Description: ability.Description,
+        binaryReference: finalBin,
+        assetId,
+        assetBinReference: assetRef,
+        Disable: posAbilityRecord?.Disable ?? null,
+        ArchetypeRequirement: posAbilityRecord?.ArchetypeRequirement ?? null,
+        MaxSlotPosition: posAbilityRecord?.MaxSlotPosition ?? null,
+        MinSlotPosition: posAbilityRecord?.MinSlotPosition ?? null,
+        OVRRequirement: posAbilityRecord?.OVRRequirement ?? null,
+        DraftPositionRequirement: posAbilityRecord?.DraftPositionRequirement ?? null,
+      });
     }
   }
 
