@@ -2257,8 +2257,9 @@ async function fixDraftPicks(franchise) {
   const draftInfoTable = franchise.getTableByUniqueId(tables.draftInfoTable);
   const draftPickEventTable = franchise.getTableByUniqueId(tables.draftPickEventTable);
   const draftManagerTable = franchise.getTableByUniqueId(tables.draftManagerTable);
+  const teamTradePackageTable = franchise.getTableByUniqueId(tables.teamTradePackageTable);
   let pickOrderRecord = null;
-  await readTableRecords([draftPickArrayTable, mainDraftPickTable, draftInfoTable, draftPickEventTable, draftManagerTable]);
+  await readTableRecords([draftPickArrayTable, mainDraftPickTable, draftInfoTable, draftPickEventTable, draftManagerTable, teamTradePackageTable]);
 
   const arrayRecord = draftPickArrayTable.records[0];
   const draftInfoRecord = draftInfoTable.records[0];
@@ -2323,6 +2324,9 @@ async function fixDraftPicks(franchise) {
         }
       });
     }
+
+    // Update any references in the team trade package table
+    updateBinaryReferenceInTable(teamTradePackageTable, binary, updatedBinary);
 
     // Update any remaining references
     let refList = franchise.getReferencesToRecord(currentTable.header.tableId, rowNum)
