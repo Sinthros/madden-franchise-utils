@@ -1,0 +1,1 @@
+pkg -c pkgConfig.json clearTeamStaffAbilities.js -o clearTeamStaffAbilities.exe
