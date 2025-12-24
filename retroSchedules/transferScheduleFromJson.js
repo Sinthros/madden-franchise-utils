@@ -135,7 +135,7 @@ function findGameEventBinary(seasonRowBinary,gameEventTable) {
 
 function countTargetRowsWithSeasonWeekType(table) {
   return table.records.reduce((count, record) => {
-    if (!record.isEmpty && (record['SeasonWeekType'] === "RegularSeason" && record['IsPractice'] === false) ||
+    if (!record.isEmpty && (record['GameStatus'] === 'Unplayed' && record['SeasonWeekType'] === "RegularSeason" && record['IsPractice'] === false) ||
     (record['SeasonWeekType'] === 'OffSeason')) {
       return count + 1;
     }

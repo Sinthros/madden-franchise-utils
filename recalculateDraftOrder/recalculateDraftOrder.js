@@ -1,6 +1,6 @@
 // Required modules
 const FranchiseUtils = require('../Utils/FranchiseUtils');
-const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
+const { getBinaryReferenceData } = require('madden-franchise').utilService;
 const TiebreakerCalc = require('../teamTiebreakerCalculator/tiebreakerFunctions');
 const validGameYears = [
     FranchiseUtils.YEARS.M24,

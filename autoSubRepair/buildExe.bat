@@ -1,0 +1,1 @@
+pkg -c pkgConfig.json autoSubRepair.js -o autoSubRepair.exe

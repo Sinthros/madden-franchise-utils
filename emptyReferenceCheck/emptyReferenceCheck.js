@@ -1,9 +1,10 @@
 // Required modules
 const FranchiseUtils = require('../Utils/FranchiseUtils');
-const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
+const { getBinaryReferenceData } = require('madden-franchise').utilService;
 const validGameYears = [
     FranchiseUtils.YEARS.M24,
-    FranchiseUtils.YEARS.M25
+    FranchiseUtils.YEARS.M25,
+    FranchiseUtils.YEARS.M26
 ];
 
 console.log("This program will check for any empty records that are referenced elsewhere.");
