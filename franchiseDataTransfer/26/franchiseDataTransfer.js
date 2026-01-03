@@ -35,6 +35,8 @@ const IGNORE_COLUMNS = ["CharacterVisuals","SeasonStats","Stadium"];
 const VISUAL_KEYS_TO_REMOVE = [
   "genericHeadName",
   "genericHead",
+  "GenericHead",
+  "GenericHeadName",
   "skinToneScale",
   "containerId",
   "assetName",
@@ -160,8 +162,15 @@ async function getNeededColumns(currentTableName) {
   switch (currentTableName) {
     case FranchiseUtils.TABLE_NAMES.PLAYER:
       keepColumns = [];
-      deleteColumns = ["OverallRating","PlayerType", "TraitDevelopment"];
+      deleteColumns = ["OverallRating","PlayerType"];
       zeroColumns = ["GameStats","CharacterVisuals","SeasonalGoal","WeeklyGoals","SeasonStats"];
+
+      if(is25To26)
+      {
+        deleteColumns.push("TraitDevelopment");
+      }
+
+
       return [keepColumns,deleteColumns,zeroColumns];
     case FranchiseUtils.TABLE_NAMES.TEAM:
       keepColumns = ["Philosophy","HeadCoach","OffensiveCoordinator","DefensiveCoordinator","Roster","PracticeSquad","PlayerPersonnel", "City",
@@ -953,13 +962,11 @@ function getOptionalTables() {
 
   
   const tableIds = [
-    TARGET_TABLES.seasonInfoTable
-    // I've commented these out for now, as transferring year summary was causing a crash when simming from
-    // Pro Bowl to the Super Bowl in testing. Need to investigate if we want to re-add these later.
-    //TARGET_TABLES.leagueHistoryAward,
-    //TARGET_TABLES.leagueHistoryArray,
-    //TARGET_TABLES.yearSummary,
-    //TARGET_TABLES.yearSummaryArray
+    TARGET_TABLES.seasonInfoTable,
+    TARGET_TABLES.leagueHistoryAward,
+    TARGET_TABLES.leagueHistoryArray,
+    TARGET_TABLES.yearSummary,
+    TARGET_TABLES.yearSummaryArray
   ];
 
   const tableArray = [];
@@ -1251,6 +1258,12 @@ async function clearStoryArcRequests() {
   }
 }
 
+async function clearActiveSignatureArray() {
+  const signatureArrayTable = targetFranchise.getTableByUniqueId(TARGET_TABLES.signatureArrayTable);
+
+  FranchiseUtils.clearArrayTable(signatureArrayTable);
+}
+
 function getModeSelection() {
   console.log("Would you like to use Express Mode or Customized Mode?\nExpress Mode will choose options based on what is most commonly used for a transfer, and will only ask you for things that are very important.\nCustomized Mode will let you decide for all options, and is recommended for more advanced users.");
 
@@ -1348,6 +1361,12 @@ sourceFranchise.on('ready', async function () {
     await recalculatePlayerOverall();
 
     await clearStoryArcRequests();
+
+    // Clearing this because just a regular ability transfer was
+    // causing an intermittent crash when simming from Pro Bowl week
+    // to Super Bowl week. Need to investigate why this is if we want to
+    // do ability transfers.
+    await clearActiveSignatureArray();
 
     if (is25To26) {
       const message = "\nWould you like to remove asset names from the Player table that aren't in Madden 26's Database? Enter yes or no.";

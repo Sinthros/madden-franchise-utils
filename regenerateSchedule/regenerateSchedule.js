@@ -481,7 +481,8 @@ franchise.on('ready', async function () {
 				(seasonGameTable.records[j]['IsPractice'] === true) ||
 				(seasonGameTable.records[j]['HomeTeam'] === FranchiseUtils.ZERO_REF) ||
 				(seasonGameTable.records[j]['SeasonWeekType'] !== 'RegularSeason') ||
-				(seasonGameTable.records[j]['SeasonWeek'] !== i))
+				(seasonGameTable.records[j]['SeasonWeek'] !== i) ||
+				(seasonGameTable.records[j]['GameStatus'] !== 'Unplayed'))
 			{
 				continue;
 			}
