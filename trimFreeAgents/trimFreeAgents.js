@@ -3,7 +3,7 @@ const { tables } = require('../Utils/FranchiseTableId');
 
 const MIN_EMPTY_PLAYERS = 650;
 
-const validGameYears = [FranchiseUtils.YEARS.M24,FranchiseUtils.YEARS.M25];
+const validGameYears = [FranchiseUtils.YEARS.M24,FranchiseUtils.YEARS.M25, FranchiseUtils.YEARS.M26];
 
 console.log("This program will delete the lowest rated free agent players from your file in order to ensure you have enough empty player table rows.");
 console.log("You only need to use this if you're having an issue importing a custom Draft Class.");
@@ -19,7 +19,7 @@ franchise.on('ready', async function () {
   const currentEmptyPlayers = playerTable.emptyRecords.size;
   const playersToDelete = MIN_EMPTY_PLAYERS - currentEmptyPlayers;
     // This prints out empty player table references. if you see refs from 6000 (Marketing table) it's fine
-  /*for (let currentRow = 0; currentRow < playerTable.header.recordCapacity;currentRow++) {
+  for (let currentRow = 0; currentRow < playerTable.header.recordCapacity;currentRow++) {
     if (playerTable.records[currentRow].isEmpty)  {
       referencedRow = franchise.getReferencesToRecord(playerTable.header.tableId,currentRow)
   
@@ -27,7 +27,7 @@ franchise.on('ready', async function () {
         console.log(`${table.tableId}: ${table.name}: ${currentRow}`)
       })
     }
-  }*/
+  }
 
   if (currentEmptyPlayers >= MIN_EMPTY_PLAYERS) {
     console.log(`Your Franchise File already contains enough empty player rows. Your file has ${currentEmptyPlayers} empty rows.`);
