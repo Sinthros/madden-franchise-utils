@@ -1,6 +1,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const FranchiseUtils = require("../../Utils/FranchiseUtils");
+const StartTodayUtils = require("../../startTodayUtilities/StartTodayUtils");
 const fs = require("fs");
 const path = require("path");
 
@@ -20,9 +21,77 @@ const BROWSER_HEADERS = {
 };
 
 const PLAYER_DRAFT_CACHE_FILE = path.join(__dirname, "./lookupFiles/player_draft_cache.json");
+const ASSET_FILE_PATH = path.join(__dirname, `./lookupFiles/${ASSET_FILE_NAME}`);
 
 const PLAYER_DRAFT_CACHE = loadJsonSafe(PLAYER_DRAFT_CACHE_FILE);
+const ALL_ASSETS = loadJsonSafe(ASSET_FILE_PATH);
+
 let draftCacheDirty = false;
+
+/**
+ * Handles assigning a player to a position by checking cache or running a fuzzy search.
+ *
+ * @param {string} playerName - The player's name (e.g., "Josh Allen").
+ * @param {string} url - The unique player URL used for caching.
+ * @param {number} teamIndex - The team index to help disambiguate player records.
+ */
+async function handlePlayer(playerName, url, position, teamIndex) {
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+
+  // Use cached asset if available
+  if (ALL_ASSETS.hasOwnProperty(url)) {
+    const asset = ALL_ASSETS[url];
+    if (!FranchiseUtils.isBlank(asset)) {
+      const assetRowIndex = playerTable.records.findIndex((record) => record.PLYR_ASSETNAME === asset);
+      if (assetRowIndex !== -1) {
+        playerTable.records[assetRowIndex].Position = position;
+      }
+    }
+    return;
+  }
+
+  const playerInfo = await StartTodayUtils.getEspnPlayerInfo(url);
+  const skippedPlayers = [];
+  let result = -1;
+  const options = {
+    url: url,
+    age: playerInfo.age,
+    college: playerInfo.college,
+    position: playerInfo.position,
+  };
+
+  // Try high similarity first
+  result = await StartTodayUtils.searchForPlayer(
+    franchise,
+    tables,
+    playerName,
+    0.95,
+    skippedPlayers,
+    teamIndex,
+    options
+  );
+
+  // Retry with lower threshold if no match
+  if (result === -1) {
+    result = await StartTodayUtils.searchForPlayer(
+      franchise,
+      tables,
+      playerName,
+      0.64,
+      skippedPlayers,
+      teamIndex,
+      options
+    );
+  }
+
+  if (result !== -1) {
+    const playerAssetName = playerTable.records[result].PLYR_ASSETNAME;
+    ALL_ASSETS[url] = playerAssetName;
+    playerTable.records[result].Position = position;
+  } else {
+    ALL_ASSETS[url] = FranchiseUtils.EMPTY_STRING;
+  }
+}
 
 function isDraftCacheDirty() {
   return draftCacheDirty;
@@ -334,6 +403,8 @@ async function getDraftRoundMap(year, round) {
   return playerLinkToPick;
 }
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 module.exports = {
   searchForPlayer,
   fetchPlayersByLastName,
@@ -347,10 +418,13 @@ module.exports = {
   toSlug,
   isDraftCacheDirty,
   setDraftCacheDirty,
+  sleep,
 
   BASE_URL,
   ROSTER_PREFIX_URL,
   ASSET_FILE_NAME,
   PLAYER_DRAFT_CACHE,
   PLAYER_DRAFT_CACHE_FILE,
+  ASSET_FILE_PATH,
+  ALL_ASSETS,
 };
