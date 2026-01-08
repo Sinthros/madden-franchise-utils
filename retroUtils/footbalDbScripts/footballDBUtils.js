@@ -64,10 +64,10 @@ async function matchPlayer(franchise, tables, playerName, url, options = {}) {
     if (!FranchiseUtils.isBlank(asset)) {
       const assetRowIndex = playerTable.records.findIndex((record) => record.PLYR_ASSETNAME === asset);
       if (assetRowIndex !== -1) {
-        // DO SOMETHING
+        return playerTable.records[assetRowIndex];
       }
     }
-    return;
+    return null;
   }
 
   const skippedPlayers = [];
@@ -103,76 +103,13 @@ async function matchPlayer(franchise, tables, playerName, url, options = {}) {
   }
 
   if (result !== -1) {
-    const playerAssetName = playerTable.records[result].PLYR_ASSETNAME;
+    const record = playerTable.records[result];
+    const playerAssetName = record.PLYR_ASSETNAME;
     ALL_ASSETS[url] = playerAssetName;
-    //playerTable.records[result].Position = position;
+    return record;
   } else {
     ALL_ASSETS[url] = FranchiseUtils.EMPTY_STRING;
-  }
-}
-
-/**
- * Handles assigning a player to a position by checking cache or running a fuzzy search.
- *
- * @param {string} playerName - The player's name (e.g., "Josh Allen").
- * @param {string} url - The unique player URL used for caching.
- * @param {number} teamIndex - The team index to help disambiguate player records.
- */
-async function handlePlayer(playerName, url, position, teamIndex) {
-  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
-
-  // Use cached asset if available
-  if (ALL_ASSETS.hasOwnProperty(url)) {
-    const asset = ALL_ASSETS[url];
-    if (!FranchiseUtils.isBlank(asset)) {
-      const assetRowIndex = playerTable.records.findIndex((record) => record.PLYR_ASSETNAME === asset);
-      if (assetRowIndex !== -1) {
-        playerTable.records[assetRowIndex].Position = position;
-      }
-    }
-    return;
-  }
-
-  const playerInfo = await StartTodayUtils.getEspnPlayerInfo(url);
-  const skippedPlayers = [];
-  let result = -1;
-  const options = {
-    url: url,
-    age: playerInfo.age,
-    college: playerInfo.college,
-    position: playerInfo.position,
-  };
-
-  // Try high similarity first
-  result = await StartTodayUtils.searchForPlayer(
-    franchise,
-    tables,
-    playerName,
-    0.95,
-    skippedPlayers,
-    teamIndex,
-    options
-  );
-
-  // Retry with lower threshold if no match
-  if (result === -1) {
-    result = await StartTodayUtils.searchForPlayer(
-      franchise,
-      tables,
-      playerName,
-      0.64,
-      skippedPlayers,
-      teamIndex,
-      options
-    );
-  }
-
-  if (result !== -1) {
-    const playerAssetName = playerTable.records[result].PLYR_ASSETNAME;
-    ALL_ASSETS[url] = playerAssetName;
-    playerTable.records[result].Position = position;
-  } else {
-    ALL_ASSETS[url] = FranchiseUtils.EMPTY_STRING;
+    return null;
   }
 }
 
@@ -244,7 +181,7 @@ async function fetchPlayersByLastName(lastName) {
 
       const yearsText = cells.eq(2).text().trim();
 
-      // Filter out players whose end year is before 1985
+      // Filter out players whose end year is before 1990
       let endYear = null;
       if (/^\d{4}-\d{4}$/.test(yearsText)) {
         endYear = parseInt(yearsText.split("-")[1], 10);
