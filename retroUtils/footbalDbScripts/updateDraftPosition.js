@@ -15,6 +15,7 @@ franchise.on("ready", async function () {
   const seasonInfoTable = franchise.getTableByUniqueId(tables.seasonInfoTable);
 
   await FranchiseUtils.readTableRecords([playerTable, teamTable, seasonInfoTable]);
+  FranchiseUtils.addAssetNames(franchise);
 
   const seasonYear = seasonInfoTable.records[0].CurrentSeasonYear;
   const teamRecords = teamTable.records.filter((team) => !team.isEmpty && team.TeamIndex < 32 && team.TEAM_VISIBLE);
@@ -24,31 +25,68 @@ franchise.on("ready", async function () {
     const displayNameSlug = FootballDBUtils.toSlug(team.DisplayName);
     const teamIndex = team.TeamIndex;
 
-    const url = `${FootballDBUtils.ROSTER_PREFIX_URL}${longNameSlug}-${displayNameSlug}/roster/${seasonYear}`;
+    const rosterUrl = `${FootballDBUtils.ROSTER_PREFIX_URL}${longNameSlug}-${displayNameSlug}/roster/${seasonYear}`;
+
+    let playerData;
 
     try {
-      const playerData = await FootballDBUtils.scrapeRoster(url, teamIndex);
+      playerData = await FootballDBUtils.scrapeRoster(rosterUrl, teamIndex);
+    } catch (err) {
+      console.error(
+        `🚫 FAILED during ROSTER FETCH for team ${team.LongName}`,
+        `\n   URL: ${rosterUrl}`,
+        `\n   Error: ${err.message}`
+      );
+      continue;
+    }
 
-      for (const player of playerData) {
-        try {
-          const { draftInfo, fromCache } = await FootballDBUtils.getPlayerDraftInfoCached(player.profileUrl);
+    for (const player of playerData) {
 
-          Object.assign(player, draftInfo);
+      let draftInfo;
+      let fromCache = false;
 
-          console.log(
-            `${player.name} → ${
-              draftInfo.isUndrafted ? "Undrafted" : `R${draftInfo.round} P${draftInfo.draftPick} (${draftInfo.team})`
-            } ${fromCache ? "⚡" : "🌐"}`
-          );
+      try {
+        const result = await FootballDBUtils.getPlayerDraftInfoCached(player.profileUrl);
+        draftInfo = result.draftInfo;
+        fromCache = result.fromCache;
 
-          if (!fromCache) {
-            await FootballDBUtils.sleep(600);
-          }
-        } catch (err) {
-          console.error(`Failed to scrape player ${player.name}:`, err.message);
-        }
+        Object.assign(player, draftInfo);
+      } catch (err) {
+        console.error(
+          `   🚫 FAILED during DRAFT INFO fetch`,
+          `\n      Player: ${player.name}`,
+          `\n      URL: ${player.profileUrl}`,
+          `\n      Error: ${err.message}`
+        );
+        continue;
       }
 
+      /* ---- Asset matching ---- */
+      try {
+        const options = {
+          age: player.age,
+          college: player.college,
+          teamIndex: player.teamIndex,
+        };
+
+        await FootballDBUtils.matchPlayer(franchise, tables, player.name, player.profileUrl, options);
+
+        if (!fromCache) {
+          await FootballDBUtils.sleep(600);
+        }
+      } catch (err) {
+        console.error(
+          `   🚫 FAILED during ASSET MATCH`,
+          `\n      Player: ${player.name}`,
+          `\n      Error: ${err.message}`
+        );
+      }
+    }
+
+    /* ===============================
+       PHASE 3: CACHE WRITES
+       =============================== */
+    try {
       if (FootballDBUtils.isDraftCacheDirty()) {
         fs.writeFileSync(
           FootballDBUtils.PLAYER_DRAFT_CACHE_FILE,
@@ -57,8 +95,12 @@ franchise.on("ready", async function () {
         );
         FootballDBUtils.setDraftCacheDirty(false);
       }
+
+      fs.writeFileSync(FootballDBUtils.ASSET_FILE_PATH, JSON.stringify(FootballDBUtils.ALL_ASSETS, null, 2), "utf8");
     } catch (err) {
-      console.error(`🚫 Failed for team ${team.LongName}`, err.message);
+      console.error(`🚫 FAILED during CACHE WRITE for team ${team.LongName}`, `\n   Error: ${err.message}`);
     }
+
+    console.log(`✅ Finished team: ${team.LongName}`);
   }
 });
