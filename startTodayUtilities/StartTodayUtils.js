@@ -47,6 +47,20 @@ function getTeamRecordByIndex(teamIndex, teamTable) {
   return teamRecord;
 }
 
+function getTeamRecordByPresentationId(presentationId, teamTable) {
+  const teamRecord = teamTable.records.find(
+    record => !record.isEmpty &&
+    record.presentationId === presentationId && !FranchiseUtils.NFL_CONFERENCES.includes(record.DisplayName)
+  );
+
+  if (!teamRecord && presentationId !== 32) {
+    console.log(`Couldn't find team record based on index ${presentationId}.`);
+    return null;
+  }
+
+  return teamRecord;
+}
+
 /**
  * Scrapes player info (age, position, college) from an ESPN NFL player profile page.
  * Handles 503s and encoding issues.
@@ -218,6 +232,7 @@ module.exports = {
     getTeamRecordByFullName,
     getTeamRecordByIndex,
     getTeamRecordByShortName,
+    getTeamRecordByPresentationId,
     getEspnPlayerInfo,
     searchForPlayer
 };
