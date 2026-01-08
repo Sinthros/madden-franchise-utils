@@ -28,12 +28,24 @@ const BROWSER_HEADERS = {
 };
 
 const PLAYER_DRAFT_CACHE_FILE = path.join(__dirname, "./lookupFiles/player_draft_cache.json");
-const ASSET_FILE_PATH = path.join(__dirname, `./lookupFiles/${ASSET_FILE_NAME}`);
+let ASSET_FILE_PATH = null;
+let ALL_ASSETS = {};
 
 const PLAYER_DRAFT_CACHE = loadJsonSafe(PLAYER_DRAFT_CACHE_FILE);
-const ALL_ASSETS = loadJsonSafe(ASSET_FILE_PATH);
 
 let draftCacheDirty = false;
+
+function initAssets(seasonYear) {
+  const assetDir = path.join(__dirname, "lookupFiles", "assets", String(seasonYear));
+
+  ASSET_FILE_PATH = path.join(assetDir, ASSET_FILE_NAME);
+
+  // Ensure directory exists
+  fs.mkdirSync(assetDir, { recursive: true });
+
+  // Load or create file
+  ALL_ASSETS = loadJsonSafe(ASSET_FILE_PATH, {});
+}
 
 /**
  * Handles assigning a player to a position by checking cache or running a fuzzy search.
@@ -475,6 +487,7 @@ async function getDraftRoundMap(year, round) {
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 module.exports = {
+  initAssets,
   searchForPlayer,
   fetchPlayersByLastName,
   filterByFirstName,
@@ -495,6 +508,10 @@ module.exports = {
   ASSET_FILE_NAME,
   PLAYER_DRAFT_CACHE,
   PLAYER_DRAFT_CACHE_FILE,
-  ASSET_FILE_PATH,
-  ALL_ASSETS,
+  get ASSET_FILE_PATH() {
+    return ASSET_FILE_PATH;
+  },
+  get ALL_ASSETS() {
+    return ALL_ASSETS;
+  },
 };

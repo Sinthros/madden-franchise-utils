@@ -19,6 +19,7 @@ franchise.on("ready", async function () {
 
   const seasonYear = seasonInfoTable.records[0].CurrentSeasonYear;
   const teamRecords = teamTable.records.filter((team) => !team.isEmpty && team.TeamIndex < 32 && team.TEAM_VISIBLE);
+  FootballDBUtils.initAssets(seasonYear);
 
   for (const team of teamRecords) {
     const longNameSlug = FootballDBUtils.toSlug(team.LongName);
