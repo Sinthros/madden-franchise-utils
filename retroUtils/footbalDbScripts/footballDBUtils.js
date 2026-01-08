@@ -5,6 +5,13 @@ const StartTodayUtils = require("../../startTodayUtilities/StartTodayUtils");
 const fs = require("fs");
 const path = require("path");
 
+function createAxios() {
+  return axios.create({
+    headers: BROWSER_HEADERS,
+    timeout: 15000,
+  });
+}
+
 const BASE_URL = "https://www.footballdb.com";
 const ROSTER_PREFIX_URL = "https://www.footballdb.com/teams/nfl/";
 const ASSET_FILE_NAME = "asset_lookup.json";
@@ -27,6 +34,70 @@ const PLAYER_DRAFT_CACHE = loadJsonSafe(PLAYER_DRAFT_CACHE_FILE);
 const ALL_ASSETS = loadJsonSafe(ASSET_FILE_PATH);
 
 let draftCacheDirty = false;
+
+/**
+ * Handles assigning a player to a position by checking cache or running a fuzzy search.
+ *
+ * @param {string} playerName - The player's name (e.g., "Josh Allen").
+ * @param {string} url - The unique player URL used for caching.
+ * @param {number} teamIndex - The team index to help disambiguate player records.
+ */
+async function matchPlayer(franchise, tables, playerName, url, options = {}) {
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  const { teamIndex = -1, jersey = null, college = null, age = null } = options;
+
+  // Use cached asset if available
+  if (ALL_ASSETS.hasOwnProperty(url)) {
+    const asset = ALL_ASSETS[url];
+    if (!FranchiseUtils.isBlank(asset)) {
+      const assetRowIndex = playerTable.records.findIndex((record) => record.PLYR_ASSETNAME === asset);
+      if (assetRowIndex !== -1) {
+        // DO SOMETHING
+      }
+    }
+    return;
+  }
+
+  const skippedPlayers = [];
+  let result = -1;
+  const searchOptions = {
+    url: url,
+    age: age,
+    college: college,
+  };
+
+  // Try high similarity first
+  result = await StartTodayUtils.searchForPlayer(
+    franchise,
+    tables,
+    playerName,
+    0.95,
+    skippedPlayers,
+    teamIndex,
+    searchOptions
+  );
+
+  // Retry with lower threshold if no match
+  if (result === -1) {
+    result = await StartTodayUtils.searchForPlayer(
+      franchise,
+      tables,
+      playerName,
+      0.64,
+      skippedPlayers,
+      teamIndex,
+      searchOptions
+    );
+  }
+
+  if (result !== -1) {
+    const playerAssetName = playerTable.records[result].PLYR_ASSETNAME;
+    ALL_ASSETS[url] = playerAssetName;
+    //playerTable.records[result].Position = position;
+  } else {
+    ALL_ASSETS[url] = FranchiseUtils.EMPTY_STRING;
+  }
+}
 
 /**
  * Handles assigning a player to a position by checking cache or running a fuzzy search.
@@ -246,10 +317,8 @@ function toSlug(value) {
 }
 
 async function scrapeRoster(url, teamIndex) {
-  const { data: html } = await axios.get(url, {
-    headers: BROWSER_HEADERS,
-    timeout: 15000,
-  });
+  const client = createAxios();
+  const { data: html } = await client.get(url);
 
   const $ = cheerio.load(html);
   const players = [];
@@ -419,6 +488,7 @@ module.exports = {
   isDraftCacheDirty,
   setDraftCacheDirty,
   sleep,
+  matchPlayer,
 
   BASE_URL,
   ROSTER_PREFIX_URL,
