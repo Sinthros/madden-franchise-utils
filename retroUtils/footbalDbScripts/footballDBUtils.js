@@ -44,38 +44,50 @@ function initAssets(seasonYear) {
   fs.mkdirSync(assetDir, { recursive: true });
 
   // Load or create file
-  ALL_ASSETS = loadJsonSafe(ASSET_FILE_PATH, {});
+  ALL_ASSETS = loadJsonSafe(ASSET_FILE_PATH, {
+    urlLookup: {},
+    assetLookup: {},
+  });
 }
 
 /**
- * Handles assigning a player to a position by checking cache or running a fuzzy search.
+ * Matches a player to a franchise record
  *
- * @param {string} playerName - The player's name (e.g., "Josh Allen").
- * @param {string} url - The unique player URL used for caching.
- * @param {number} teamIndex - The team index to help disambiguate player records.
+ * Cache structure:
+ *   ALL_ASSETS.byUrl[url] = assetName
+ *   ALL_ASSETS.byAsset[assetName] = url
  */
 async function matchPlayer(franchise, tables, playerName, url, options = {}) {
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   const { teamIndex = -1, jersey = null, college = null, age = null } = options;
 
-  // Use cached asset if available
-  if (ALL_ASSETS.hasOwnProperty(url)) {
-    const asset = ALL_ASSETS[url];
+  /* ===============================
+     Check if we already have the player
+     =============================== */
+  if (ALL_ASSETS.byUrl.hasOwnProperty(url)) {
+    const asset = ALL_ASSETS.byUrl[url];
+
     if (!FranchiseUtils.isBlank(asset)) {
       const assetRowIndex = playerTable.records.findIndex((record) => record.PLYR_ASSETNAME === asset);
+
       if (assetRowIndex !== -1) {
         return playerTable.records[assetRowIndex];
       }
     }
+
     return null;
   }
 
+  /* ===============================
+     Search for player
+     =============================== */
   const skippedPlayers = [];
   let result = -1;
+
   const searchOptions = {
-    url: url,
-    age: age,
-    college: college,
+    url,
+    age,
+    college,
   };
 
   // Try high similarity first
@@ -102,15 +114,23 @@ async function matchPlayer(franchise, tables, playerName, url, options = {}) {
     );
   }
 
+  /* ===============================
+     Write to cache
+     =============================== */
   if (result !== -1) {
     const record = playerTable.records[result];
-    const playerAssetName = record.PLYR_ASSETNAME;
-    ALL_ASSETS[url] = playerAssetName;
+    const assetName = record.PLYR_ASSETNAME;
+    ALL_ASSETS.byUrl[url] = assetName;
+    ALL_ASSETS.byAsset[assetName] = url;
+
     return record;
-  } else {
-    ALL_ASSETS[url] = FranchiseUtils.EMPTY_STRING;
-    return null;
   }
+
+  /* ===============================
+     If no match, write empty string for the URL
+     =============================== */
+  ALL_ASSETS.byUrl[url] = FranchiseUtils.EMPTY_STRING;
+  return null;
 }
 
 function isDraftCacheDirty() {

@@ -1,5 +1,7 @@
 const FranchiseUtils = require("../../Utils/FranchiseUtils");
+const StartTodayUtils = require("../../startTodayUtilities/StartTodayUtils");
 const FootballDBUtils = require("./footballDBUtils");
+const playersProcessed = new Set();
 
 const fs = require("fs");
 
@@ -8,6 +10,42 @@ const validGameYears = [FranchiseUtils.YEARS.M26];
 console.log("This program will update draft positions for all players based on footballdb.com");
 const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
+
+function assignDraftInfo(playerRecord, teamTable, playerInfo, seasonYear) {
+  let draftYearOffset;
+
+  // - drafted: playerInfo.year - seasonYear (relative offset)
+  // - undrafted: YearsPro * -1
+  if (typeof playerInfo.year === "number") {
+    draftYearOffset = playerInfo.year - seasonYear - 1;
+  } else {
+    draftYearOffset = playerRecord.YearsPro * -1;
+  }
+
+  // -1 is illegal, force to 0
+  if (draftYearOffset === -1 || Number.isNaN(draftYearOffset)) {
+    draftYearOffset = 0;
+  }
+
+  playerRecord.YearDrafted = draftYearOffset;
+
+  // Draft round / pick
+  if (playerInfo.isUndrafted) {
+    playerRecord.PLYR_DRAFTROUND = 63;
+    playerRecord.PLYR_DRAFTPICK = 511;
+  } else {
+    playerRecord.PLYR_DRAFTROUND = Number.isInteger(playerInfo.round) ? playerInfo.round : 63;
+
+    playerRecord.PLYR_DRAFTPICK = Number.isInteger(playerInfo.draftPick) ? playerInfo.draftPick : 511;
+  }
+
+  // Draft team
+  const draftTeam =
+    typeof playerInfo.team === "string" ? StartTodayUtils.getTeamRecordByShortName(playerInfo.team, teamTable) : null;
+
+  // Draft team is based on presentation ID
+  playerRecord.PLYR_DRAFTTEAM = draftTeam !== null ? draftTeam.PresentationId : 32;
+}
 
 franchise.on("ready", async function () {
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
@@ -18,6 +56,7 @@ franchise.on("ready", async function () {
   FranchiseUtils.addAssetNames(franchise);
 
   const seasonYear = seasonInfoTable.records[0].CurrentSeasonYear;
+
   const teamRecords = teamTable.records.filter((team) => !team.isEmpty && team.TeamIndex < 32 && team.TEAM_VISIBLE);
   FootballDBUtils.initAssets(seasonYear);
 
@@ -42,16 +81,10 @@ franchise.on("ready", async function () {
     }
 
     for (const player of playerData) {
-
       let draftInfo;
       let fromCache = false;
 
       try {
-        const result = await FootballDBUtils.getPlayerDraftInfoCached(player.profileUrl);
-        draftInfo = result.draftInfo;
-        fromCache = result.fromCache;
-
-        Object.assign(player, draftInfo);
       } catch (err) {
         console.error(
           `   🚫 FAILED during DRAFT INFO fetch`,
@@ -70,7 +103,21 @@ franchise.on("ready", async function () {
           teamIndex: player.teamIndex,
         };
 
-        await FootballDBUtils.matchPlayer(franchise, tables, player.name, player.profileUrl, options);
+        const playerRecord = await FootballDBUtils.matchPlayer(
+          franchise,
+          tables,
+          player.name,
+          player.profileUrl,
+          options
+        );
+
+        // If we found a matching player record, get the draft info and then assign it to the record
+        if (playerRecord !== null) {
+          const draftResult = await FootballDBUtils.getPlayerDraftInfoCached(player.profileUrl);
+          draftInfo = draftResult.draftInfo;
+          fromCache = draftResult.fromCache;
+          assignDraftInfo(playerRecord, teamTable, draftInfo, seasonYear);
+        }
 
         if (!fromCache) {
           await FootballDBUtils.sleep(600);
@@ -104,4 +151,5 @@ franchise.on("ready", async function () {
 
     console.log(`✅ Finished team: ${team.LongName}`);
   }
+  await FranchiseUtils.saveFranchiseFile(franchise);
 });
