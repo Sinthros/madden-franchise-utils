@@ -4,6 +4,7 @@ const FranchiseUtils = require("../../Utils/FranchiseUtils");
 const StartTodayUtils = require("../../startTodayUtilities/StartTodayUtils");
 const fs = require("fs");
 const path = require("path");
+const stringSimilarity = require("string-similarity");
 
 function createAxios() {
   return axios.create({
@@ -27,13 +28,13 @@ const BROWSER_HEADERS = {
   Referer: "https://www.footballdb.com/",
 };
 
-const PLAYER_DRAFT_CACHE_FILE = path.join(__dirname, "./lookupFiles/player_draft_cache.json");
+const PLAYER_CACHE_FILE = path.join(__dirname, "./lookupFiles/player_cache.json");
 let ASSET_FILE_PATH = null;
 let ALL_ASSETS = {};
 
-const PLAYER_DRAFT_CACHE = loadJsonSafe(PLAYER_DRAFT_CACHE_FILE);
+const PLAYER_CACHE = loadJsonSafe(PLAYER_CACHE_FILE);
 
-let draftCacheDirty = false;
+let cacheDirty = false;
 
 function initAssets(seasonYear) {
   const assetDir = path.join(__dirname, "lookupFiles", "assets", String(seasonYear));
@@ -133,12 +134,12 @@ async function matchPlayer(franchise, tables, playerName, url, options = {}) {
   return null;
 }
 
-function isDraftCacheDirty() {
-  return draftCacheDirty;
+function isCacheDirty() {
+  return cacheDirty;
 }
 
-function setDraftCacheDirty(val) {
-  draftCacheDirty = val;
+function setCacheDirty(val) {
+  cacheDirty = val;
 }
 
 function loadJsonSafe(filePath, fallback = {}) {
@@ -212,7 +213,7 @@ async function fetchPlayersByLastName(lastName) {
       if (endYear && endYear < 1990) return;
 
       players.push({
-        name: link.text().trim(),
+        name: FranchiseUtils.getNormalizedCommaName(link.text().trim()),
         profileUrl: BASE_URL + profileUrl,
         position: position,
         years: yearsText,
@@ -241,40 +242,108 @@ function filterByFirstName(fullName, players) {
   });
 }
 
-async function searchForPlayer(playerRecord) {
-  if (!playerRecord) {
-    console.error("Player record is null");
-    process.exit(1);
+/**
+ * Validates whether a FootballDB candidate matches a specific Madden player record.
+ * Uses fuzzy / contextual logic identical to searchForPlayer.
+ *
+ * @returns {Promise<boolean>} true if confirmed match
+ */
+async function validatePlayerMatch(franchise, tables, playerRecord, candidate, options = {}) {
+  const { teamIndex = -1, age = null, college = null, position = null, yearsPro = null, url = null } = options;
+
+  const teamTable = franchise.getTableByUniqueId(tables.teamTable);
+  await FranchiseUtils.readTableRecords([teamTable]);
+
+  const normalizedInputName = FranchiseUtils.getNormalizedName(candidate.name);
+  const normalizedMaddenName = FranchiseUtils.getNormalizedName(playerRecord);
+
+  const similarity = stringSimilarity.compareTwoStrings(normalizedInputName, normalizedMaddenName);
+
+  // Hard reject if similarity is very low
+  if (similarity < 0.5) return false;
+
+  const teamRecord = StartTodayUtils.getTeamRecordByIndex(teamIndex, teamTable);
+  const teamName = teamRecord ? `${teamRecord.LongName} ${teamRecord.DisplayName}` : null;
+
+  const playerTeamRecord = StartTodayUtils.getTeamRecordByIndex(playerRecord.TeamIndex, teamTable);
+  const playerTeamName = playerTeamRecord ? `${playerTeamRecord.LongName} ${playerTeamRecord.DisplayName}` : null;
+
+  const maddenCollege = await FranchiseUtils.getCollege(franchise, playerRecord.College);
+
+  //const isExactNameAndTeamMatch = normalizedInputName === normalizedMaddenName && teamName === playerTeamName;
+
+  const isFAMatch =
+    normalizedInputName === normalizedMaddenName &&
+    age !== null &&
+    Math.abs(Number(playerRecord.Age) - Number(age)) <= 1 && // 👈 tolerant
+    college !== null &&
+    (maddenCollege || "").toLowerCase() === college.toLowerCase();
+
+  if (isFAMatch) {
+    return true;
   }
+
+  // Interactive fallback (unchanged behavior)
+  const message =
+    `FootballDB: ${candidate.name} (${candidate.position || "?"}, ${candidate.years || "N/A"})` +
+    (college ? ` College: ${candidate.college}.` : "") +
+    (url ? ` URL: ${url}.` : "") +
+    `\n\nMadden: ${normalizedMaddenName}, ${playerRecord.Age}, ${playerRecord.Position} ` +
+    `for the ${playerTeamName}. ` +
+    (maddenCollege ? `College: ${maddenCollege}. ` : "") +
+    `${playerRecord.YearsPro} years of experience.` +
+    `\n\nIs this the correct player?`;
+
+  return FranchiseUtils.getYesOrNo(message, true);
+}
+
+function sortPlayersByNameSimilarity(inputName, players) {
+  const normalizedInput = FranchiseUtils.getNormalizedName(inputName);
+
+  return players
+    .map((p) => ({
+      ...p,
+      _similarity: stringSimilarity.compareTwoStrings(normalizedInput, FranchiseUtils.getNormalizedName(p.name)),
+    }))
+    .sort((a, b) => b._similarity - a._similarity)
+    .filter((p) => p._similarity >= 0.65);
+}
+
+async function searchForPlayerUrl(franchise, tables, playerRecord) {
+  const assetName = playerRecord.PLYR_ASSETNAME;
+
+  // Cache hit
+  const cachedUrl = ALL_ASSETS.byAsset[assetName];
+  if (!FranchiseUtils.isBlank(cachedUrl)) return cachedUrl;
 
   const inputName = `${playerRecord.FirstName} ${playerRecord.LastName}`;
   const normalizedInput = FranchiseUtils.getNormalizedName(inputName);
-  const [, lastName] = normalizedInput.split(" ");
+  const lastName = FranchiseUtils.getNormalizedName(playerRecord.LastName);
+  if (!lastName) return null;
 
-  if (!lastName) {
-    console.error("Please provide at least a first and last name");
-    process.exit(1);
-  }
+  const allPlayers = await fetchPlayersByLastName(lastName);
+  const candidates = sortPlayersByNameSimilarity(normalizedInput, allPlayers);
 
-  try {
-    const allPlayers = await fetchPlayersByLastName(lastName);
-    const matches = filterByFirstName(normalizedInput, allPlayers);
-
-    if (matches.length === 0) {
-      console.log("No matching players found");
-      return;
-    }
-
-    console.log(`Found ${matches.length} matching players:\n`);
-
-    matches.forEach((p, i) => {
-      console.log(`${i + 1}. ${p.name} | ${p.position || "?"} | ${p.years || "N/A"}`);
-      console.log(`   College: ${p.college || "N/A"}`);
-      console.log(`   ${p.profileUrl}\n`);
+  for (const candidate of candidates) {
+    const isMatch = await validatePlayerMatch(franchise, tables, playerRecord, candidate, {
+      teamIndex: playerRecord.TeamIndex,
+      age: playerRecord.Age,
+      college: candidate.college,
+      position: candidate.position,
+      yearsPro: playerRecord.YearsPro,
+      url: candidate.profileUrl,
     });
-  } catch (err) {
-    console.error("🚫 Search failed:", err.message);
+
+    if (isMatch) {
+      ALL_ASSETS.byUrl[candidate.profileUrl] = assetName;
+      ALL_ASSETS.byAsset[assetName] = candidate.profileUrl;
+      return candidate.profileUrl;
+    }
   }
+
+  // Cache miss
+  ALL_ASSETS.byAsset[assetName] = FranchiseUtils.EMPTY_STRING;
+  return null;
 }
 
 function toSlug(value) {
@@ -333,34 +402,63 @@ function parseDraftInfo(text) {
   };
 }
 
-async function getPlayerDraftInfoCached(profileUrl) {
-  if (PLAYER_DRAFT_CACHE[profileUrl]) {
+async function getPlayerInfoCached(profileUrl) {
+  if (PLAYER_CACHE[profileUrl]) {
     return {
-      draftInfo: PLAYER_DRAFT_CACHE[profileUrl],
+      playerInfo: PLAYER_CACHE[profileUrl],
       fromCache: true,
     };
   }
 
-  const draftInfo = await scrapePlayerDraft(profileUrl);
+  const scrapedInfo = await scrapePlayerProfile(profileUrl);
 
-  if (!draftInfo.isUndrafted) {
-    if (draftInfo.isSupplemental) {
-      draftInfo.draftPick = 1;
+  if (!scrapedInfo.draft_isUndrafted) {
+    if (scrapedInfo.draft_isSupplemental) {
+      scrapedInfo.draft_pick = 1;
     } else {
-      draftInfo.draftPick = await resolvePickInRoundByLink(draftInfo.year, draftInfo.round, profileUrl);
+      scrapedInfo.draft_pick = await resolvePickInRoundByLink(
+        scrapedInfo.draft_year,
+        scrapedInfo.draft_round,
+        profileUrl
+      );
     }
   }
 
-  PLAYER_DRAFT_CACHE[profileUrl] = draftInfo;
-  draftCacheDirty = true;
+  PLAYER_CACHE[profileUrl] = scrapedInfo;
+  cacheDirty = true;
 
   return {
-    draftInfo,
+    playerInfo: scrapedInfo,
     fromCache: false,
   };
 }
 
-async function scrapePlayerDraft(profileUrl) {
+function getLabeledValue($, labelText) {
+  const label = $("b")
+    .filter((_, el) => $(el).text().trim() === labelText)
+    .first();
+
+  if (!label.length) return null;
+
+  let node = label[0].nextSibling;
+
+  while (node) {
+    // Grab the first text node immediately after the <b>
+    if (node.type === "text") {
+      const value = node.data.replace(/\s+/g, " ").trim();
+      return value || null;
+    }
+
+    // Stop once we hit a line break
+    if (node.name === "br") break;
+
+    node = node.nextSibling;
+  }
+
+  return null;
+}
+
+async function scrapePlayerProfile(profileUrl) {
   const { data: html } = await axios.get(profileUrl, {
     headers: BROWSER_HEADERS,
     timeout: 15000,
@@ -368,7 +466,71 @@ async function scrapePlayerDraft(profileUrl) {
 
   const $ = cheerio.load(html);
 
-  // Look for the mobile/truncated draft line
+  const info = {
+    current_team: null,
+    position: null,
+    height: null,
+    weight: null,
+    birthdate: null,
+    college: null,
+
+    // draft fields (flat, cache-friendly)
+    draft_isUndrafted: true,
+    draft_isSupplemental: false,
+    draft_overallPick: null,
+    draft_year: null,
+    draft_round: null,
+    draft_pick: null,
+    draft_team: null,
+  };
+
+  /* ---------------- TEAM ---------------- */
+  const teamLink = $('.sectiontop-players a[href^="/teams/"]').first();
+  if (teamLink.length) {
+    info.current_team = teamLink.text().trim();
+  }
+
+  /* ---------------- POSITION ---------------- */
+  info.position = getLabeledValue($, "Position:");
+
+  /* ---------------- HEIGHT / WEIGHT ---------------- */
+  const heightText = getLabeledValue($, "Height:");
+  if (heightText) info.height = heightText;
+
+  const weightText = getLabeledValue($, "Weight:");
+  if (weightText) {
+    const parsed = parseInt(weightText, 10);
+    info.weight = Number.isNaN(parsed) ? weightText : parsed;
+  }
+
+  /* ---------------- BIRTHDATE ---------------- */
+  const birthSpan =
+    $("b")
+      .filter((_, el) => $(el).text().trim() === "Birthdate:")
+      .parent()
+      .find("span.d-none.d-xl-inline")
+      .text()
+      .trim() ||
+    $("b")
+      .filter((_, el) => $(el).text().trim() === "Birthdate:")
+      .parent()
+      .find("span.d-inline.d-xl-none")
+      .text()
+      .trim();
+
+  if (birthSpan) {
+    // Extract a date pattern (e.g., "May 28, 1988" or "03/10/1998")
+    const dateMatch = birthSpan.match(/([A-Za-z]{3,9}\s\d{1,2},\s\d{4})|(\d{1,2}\/\d{1,2}\/\d{4})/);
+    if (dateMatch) {
+      const date = new Date(dateMatch[0]);
+      info.birthdate = isNaN(date.getTime()) ? dateMatch[0] : date.toISOString().slice(0, 10);
+    }
+  }
+
+  /* ---------------- COLLEGE ---------------- */
+  info.college = getLabeledValue($, "College:");
+
+  /* ---------------- DRAFT (existing logic) ---------------- */
   const draftSpan = $("b")
     .filter((_, el) => $(el).text().trim() === "Draft:")
     .parent()
@@ -376,32 +538,20 @@ async function scrapePlayerDraft(profileUrl) {
     .text()
     .trim();
 
-  // Undrafted
-  if (!draftSpan) {
-    return {
-      isUndrafted: true,
-      isSupplemental: false,
-      overallPick: null,
-      year: null,
-      round: null,
-      pick: null,
-      team: null,
-    };
+  if (draftSpan) {
+    const parsedDraft = parseDraftInfo(draftSpan);
+    if (parsedDraft) {
+      info.draft_isUndrafted = parsedDraft.isUndrafted;
+      info.draft_isSupplemental = parsedDraft.isSupplemental;
+      info.draft_overallPick = parsedDraft.overallPick;
+      info.draft_year = parsedDraft.year;
+      info.draft_round = parsedDraft.round;
+      info.draft_pick = parsedDraft.pick;
+      info.draft_team = parsedDraft.team;
+    }
   }
 
-  const parsed = parseDraftInfo(draftSpan);
-
-  return (
-    parsed ?? {
-      isUndrafted: true,
-      isSupplemental: false,
-      overallPick: null,
-      year: null,
-      round: null,
-      pick: null,
-      team: null,
-    }
-  );
+  return info;
 }
 
 async function resolvePickInRoundByLink(year, round, playerProfileUrl) {
@@ -445,26 +595,27 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 module.exports = {
   initAssets,
-  searchForPlayer,
+  searchForPlayerUrl,
+  validatePlayerMatch,
   fetchPlayersByLastName,
   filterByFirstName,
   getDraftRoundMap,
   resolvePickInRoundByLink,
-  scrapePlayerDraft,
-  getPlayerDraftInfoCached,
+  scrapePlayerProfile,
+  getPlayerInfoCached,
   parseDraftInfo,
   scrapeRoster,
   toSlug,
-  isDraftCacheDirty,
-  setDraftCacheDirty,
+  isCacheDirty,
+  setCacheDirty,
   sleep,
   matchPlayer,
 
   BASE_URL,
   ROSTER_PREFIX_URL,
   ASSET_FILE_NAME,
-  PLAYER_DRAFT_CACHE,
-  PLAYER_DRAFT_CACHE_FILE,
+  PLAYER_CACHE,
+  PLAYER_CACHE_FILE,
   get ASSET_FILE_PATH() {
     return ASSET_FILE_PATH;
   },

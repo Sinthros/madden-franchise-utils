@@ -7,17 +7,17 @@ const fs = require("fs");
 
 const validGameYears = [FranchiseUtils.YEARS.M26];
 
-console.log("This program will update draft positions for all players based on footballdb.com");
+console.log("This program will update draft/player information for all players based on footballdb.com");
 const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 function assignDraftInfo(playerRecord, teamTable, playerInfo, seasonYear) {
   let draftYearOffset;
 
-  // - drafted: playerInfo.year - seasonYear (relative offset)
+  // - drafted: playerInfo.draft_year - seasonYear - 1
   // - undrafted: YearsPro * -1
-  if (typeof playerInfo.year === "number") {
-    draftYearOffset = playerInfo.year - seasonYear - 1;
+  if (typeof playerInfo.draft_year === "number") {
+    draftYearOffset = playerInfo.draft_year - seasonYear - 1;
   } else {
     draftYearOffset = playerRecord.YearsPro * -1;
   }
@@ -34,14 +34,14 @@ function assignDraftInfo(playerRecord, teamTable, playerInfo, seasonYear) {
     playerRecord.PLYR_DRAFTROUND = 63;
     playerRecord.PLYR_DRAFTPICK = 511;
   } else {
-    playerRecord.PLYR_DRAFTROUND = Number.isInteger(playerInfo.round) ? playerInfo.round : 63;
+    playerRecord.PLYR_DRAFTROUND = Number.isInteger(playerInfo.draft_round) ? playerInfo.draft_round : 63;
 
-    playerRecord.PLYR_DRAFTPICK = Number.isInteger(playerInfo.draftPick) ? playerInfo.draftPick : 511;
+    playerRecord.PLYR_DRAFTPICK = Number.isInteger(playerInfo.draft_pick) ? playerInfo.draft_pick : 511;
   }
 
   // Draft team
   const draftTeam =
-    typeof playerInfo.team === "string" ? StartTodayUtils.getTeamRecordByShortName(playerInfo.team, teamTable) : null;
+    typeof playerInfo.draft_team === "string" ? StartTodayUtils.getTeamRecordByShortName(playerInfo.draft_team, teamTable) : null;
 
   // Draft team is based on presentation ID
   playerRecord.PLYR_DRAFTTEAM = draftTeam !== null ? draftTeam.PresentationId : 32;
@@ -81,13 +81,13 @@ franchise.on("ready", async function () {
     }
 
     for (const player of playerData) {
-      let draftInfo;
+      let playerInfo;
       let fromCache = false;
 
       try {
       } catch (err) {
         console.error(
-          `   🚫 FAILED during DRAFT INFO fetch`,
+          `   🚫 FAILED during PLAYER INFO fetch`,
           `\n      Player: ${player.name}`,
           `\n      URL: ${player.profileUrl}`,
           `\n      Error: ${err.message}`
@@ -111,12 +111,13 @@ franchise.on("ready", async function () {
           options
         );
 
-        // If we found a matching player record, get the draft info and then assign it to the record
+        // If we found a matching player record, get their info and then assign it to the record
         if (playerRecord !== null) {
-          const draftResult = await FootballDBUtils.getPlayerDraftInfoCached(player.profileUrl);
-          draftInfo = draftResult.draftInfo;
-          fromCache = draftResult.fromCache;
-          assignDraftInfo(playerRecord, teamTable, draftInfo, seasonYear);
+          const result = await FootballDBUtils.getPlayerInfoCached(player.profileUrl);
+          playerInfo = result.playerInfo;
+          fromCache = result.fromCache;
+          assignDraftInfo(playerRecord, teamTable, playerInfo, seasonYear);
+          playersProcessed.add(playerRecord.index);
         }
 
         if (!fromCache) {
@@ -135,13 +136,13 @@ franchise.on("ready", async function () {
        PHASE 3: CACHE WRITES
        =============================== */
     try {
-      if (FootballDBUtils.isDraftCacheDirty()) {
+      if (FootballDBUtils.isCacheDirty()) {
         fs.writeFileSync(
-          FootballDBUtils.PLAYER_DRAFT_CACHE_FILE,
-          JSON.stringify(FootballDBUtils.PLAYER_DRAFT_CACHE, null, 2),
+          FootballDBUtils.PLAYER_CACHE_FILE,
+          JSON.stringify(FootballDBUtils.PLAYER_CACHE, null, 2),
           "utf8"
         );
-        FootballDBUtils.setDraftCacheDirty(false);
+        FootballDBUtils.setCacheDirty(false);
       }
 
       fs.writeFileSync(FootballDBUtils.ASSET_FILE_PATH, JSON.stringify(FootballDBUtils.ALL_ASSETS, null, 2), "utf8");
@@ -151,5 +152,45 @@ franchise.on("ready", async function () {
 
     console.log(`✅ Finished team: ${team.LongName}`);
   }
+
+  const remainingPlayers = playerTable.records.filter(
+    (record) => !playersProcessed.has(record.index) && FranchiseUtils.isValidPlayer(record)
+  );
+
+  // Go over all remaining players
+  for (const record of remainingPlayers) {
+    const assetName = record.PLYR_ASSETNAME;
+    let url = FootballDBUtils.ALL_ASSETS.byAsset[assetName];
+    let playerInfo;
+    let fromCache = false;
+
+    if (!url) {
+      url = await FootballDBUtils.searchForPlayerUrl(franchise, tables, record);
+      if (!url) continue;
+      const result = await FootballDBUtils.getPlayerInfoCached(url);
+      playerInfo = result.playerInfo;
+      fromCache = result.fromCache;
+      assignDraftInfo(record, teamTable, playerInfo, seasonYear);
+      playersProcessed.add(record.index);
+    }
+    if (!fromCache) {
+      await FootballDBUtils.sleep(600);
+    }
+    try {
+      if (FootballDBUtils.isCacheDirty()) {
+        fs.writeFileSync(
+          FootballDBUtils.PLAYER_CACHE_FILE,
+          JSON.stringify(FootballDBUtils.PLAYER_CACHE, null, 2),
+          "utf8"
+        );
+        FootballDBUtils.setCacheDirty(false);
+      }
+
+      fs.writeFileSync(FootballDBUtils.ASSET_FILE_PATH, JSON.stringify(FootballDBUtils.ALL_ASSETS, null, 2), "utf8");
+    } catch (err) {
+      console.error(`FAILED during CACHE WRITE`, `\n   Error: ${err.message}`);
+    }
+  }
+
   await FranchiseUtils.saveFranchiseFile(franchise);
 });

@@ -2065,7 +2065,8 @@
     "https://www.footballdb.com/players/chilo-rachal-rachach01": "RachalChilo_20843_2046",
     "https://www.footballdb.com/players/carlos-rogers-rogerca01": "RogersCarlos_2497_2389",
     "https://www.footballdb.com/players/aldon-smith-smithal13": "SmithAldon_2335_2875",
-    "https://www.footballdb.com/players/alex-smith-smithal04": "SmithAlex"
+    "https://www.footballdb.com/players/alex-smith-smithal04": "SmithAlex",
+    "https://www.footballdb.com/players/curtis-taylor-taylocu01": "TaylorCurtis_22662_34"
   },
   "byAsset": {
     "SmithJustin_112_2492": "https://www.footballdb.com/players/justin-smith-smithju01",
@@ -4091,6 +4092,7 @@
     "RachalChilo_20843_2046": "https://www.footballdb.com/players/chilo-rachal-rachach01",
     "RogersCarlos_2497_2389": "https://www.footballdb.com/players/carlos-rogers-rogerca01",
     "SmithAldon_2335_2875": "https://www.footballdb.com/players/aldon-smith-smithal13",
-    "SmithAlex": "https://www.footballdb.com/players/alex-smith-smithal04"
+    "SmithAlex": "https://www.footballdb.com/players/alex-smith-smithal04",
+    "TaylorCurtis_22662_34": "https://www.footballdb.com/players/curtis-taylor-taylocu01"
   }
 }
