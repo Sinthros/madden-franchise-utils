@@ -248,13 +248,13 @@ function filterByFirstName(fullName, players) {
  *
  * @returns {Promise<boolean>} true if confirmed match
  */
-async function validatePlayerMatch(franchise, tables, playerRecord, candidate, options = {}) {
-  const { teamIndex = -1, age = null, college = null, position = null, yearsPro = null, url = null } = options;
+async function validatePlayerMatch(franchise, tables, playerRecord, playerName, playerInfo, options = {}) {
+  const { teamIndex = -1, age = null, yearsPro = null, url = null } = options;
 
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
   await FranchiseUtils.readTableRecords([teamTable]);
 
-  const normalizedInputName = FranchiseUtils.getNormalizedName(candidate.name);
+  const normalizedInputName = FranchiseUtils.getNormalizedName(playerName);
   const normalizedMaddenName = FranchiseUtils.getNormalizedName(playerRecord);
 
   const similarity = stringSimilarity.compareTwoStrings(normalizedInputName, normalizedMaddenName);
@@ -276,8 +276,8 @@ async function validatePlayerMatch(franchise, tables, playerRecord, candidate, o
     normalizedInputName === normalizedMaddenName &&
     age !== null &&
     Math.abs(Number(playerRecord.Age) - Number(age)) <= 1 && // 👈 tolerant
-    college !== null &&
-    (maddenCollege || "").toLowerCase() === college.toLowerCase();
+    playerInfo.college !== null &&
+    (maddenCollege || "").toLowerCase() === playerInfo.college.toLowerCase();
 
   if (isFAMatch) {
     return true;
@@ -285,8 +285,8 @@ async function validatePlayerMatch(franchise, tables, playerRecord, candidate, o
 
   // Interactive fallback (unchanged behavior)
   const message =
-    `FootballDB: ${candidate.name} (${candidate.position || "?"}, ${candidate.years || "N/A"})` +
-    (college ? ` College: ${candidate.college}.` : "") +
+    `FootballDB: ${playerName} (${playerInfo.position || "?"}` +
+    (playerInfo.college ? ` College: ${playerInfo.college}.` : "") +
     (url ? ` URL: ${url}.` : "") +
     `\n\nMadden: ${normalizedMaddenName}, ${playerRecord.Age}, ${playerRecord.Position} ` +
     `for the ${playerTeamName}. ` +
@@ -297,7 +297,7 @@ async function validatePlayerMatch(franchise, tables, playerRecord, candidate, o
   return FranchiseUtils.getYesOrNo(message, true);
 }
 
-function sortPlayersByNameSimilarity(inputName, players) {
+function sortPlayersByNameSimilarity(inputName, players, matchMinimum) {
   const normalizedInput = FranchiseUtils.getNormalizedName(inputName);
 
   return players
@@ -306,7 +306,7 @@ function sortPlayersByNameSimilarity(inputName, players) {
       _similarity: stringSimilarity.compareTwoStrings(normalizedInput, FranchiseUtils.getNormalizedName(p.name)),
     }))
     .sort((a, b) => b._similarity - a._similarity)
-    .filter((p) => p._similarity >= 0.65);
+    .filter((p) => p._similarity >= matchMinimum);
 }
 
 async function searchForPlayerUrl(franchise, tables, playerRecord) {
@@ -322,17 +322,20 @@ async function searchForPlayerUrl(franchise, tables, playerRecord) {
   if (!lastName) return null;
 
   const allPlayers = await fetchPlayersByLastName(lastName);
-  const candidates = sortPlayersByNameSimilarity(normalizedInput, allPlayers);
+  const candidates = sortPlayersByNameSimilarity(normalizedInput, allPlayers, 0.65);
 
   for (const candidate of candidates) {
-    const isMatch = await validatePlayerMatch(franchise, tables, playerRecord, candidate, {
+    const scrapedInfo = await getPlayerInfoCached(candidate.profileUrl);
+    const fromCache = scrapedInfo.fromCache;
+    const playerInfo = scrapedInfo.playerInfo;
+    const isMatch = await validatePlayerMatch(franchise, tables, playerRecord, candidate.name, playerInfo, {
       teamIndex: playerRecord.TeamIndex,
       age: playerRecord.Age,
-      college: candidate.college,
-      position: candidate.position,
       yearsPro: playerRecord.YearsPro,
       url: candidate.profileUrl,
     });
+
+    if (!fromCache) await sleep(600);
 
     if (isMatch) {
       ALL_ASSETS.byUrl[candidate.profileUrl] = assetName;

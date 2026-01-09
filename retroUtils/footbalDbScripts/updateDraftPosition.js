@@ -3,6 +3,9 @@ const StartTodayUtils = require("../../startTodayUtilities/StartTodayUtils");
 const FootballDBUtils = require("./footballDBUtils");
 const playersProcessed = new Set();
 
+const SAVE_EVERY = 10;
+let processedCount = 0;
+
 const fs = require("fs");
 
 const validGameYears = [FranchiseUtils.YEARS.M26];
@@ -41,10 +44,29 @@ function assignDraftInfo(playerRecord, teamTable, playerInfo, seasonYear) {
 
   // Draft team
   const draftTeam =
-    typeof playerInfo.draft_team === "string" ? StartTodayUtils.getTeamRecordByShortName(playerInfo.draft_team, teamTable) : null;
+    typeof playerInfo.draft_team === "string"
+      ? StartTodayUtils.getTeamRecordByShortName(playerInfo.draft_team, teamTable)
+      : null;
 
   // Draft team is based on presentation ID
   playerRecord.PLYR_DRAFTTEAM = draftTeam !== null ? draftTeam.PresentationId : 32;
+}
+
+function flushCaches() {
+  try {
+    if (FootballDBUtils.isCacheDirty()) {
+      fs.writeFileSync(
+        FootballDBUtils.PLAYER_CACHE_FILE,
+        JSON.stringify(FootballDBUtils.PLAYER_CACHE, null, 2),
+        "utf8"
+      );
+      FootballDBUtils.setCacheDirty(false);
+    }
+
+    fs.writeFileSync(FootballDBUtils.ASSET_FILE_PATH, JSON.stringify(FootballDBUtils.ALL_ASSETS, null, 2), "utf8");
+  } catch (err) {
+    console.error(`FAILED during CACHE WRITE\n   Error: ${err.message}`);
+  }
 }
 
 franchise.on("ready", async function () {
@@ -157,7 +179,6 @@ franchise.on("ready", async function () {
     (record) => !playersProcessed.has(record.index) && FranchiseUtils.isValidPlayer(record)
   );
 
-  // Go over all remaining players
   for (const record of remainingPlayers) {
     const assetName = record.PLYR_ASSETNAME;
     let url = FootballDBUtils.ALL_ASSETS.byAsset[assetName];
@@ -166,31 +187,27 @@ franchise.on("ready", async function () {
 
     if (!url) {
       url = await FootballDBUtils.searchForPlayerUrl(franchise, tables, record);
-      if (!url) continue;
-      const result = await FootballDBUtils.getPlayerInfoCached(url);
-      playerInfo = result.playerInfo;
-      fromCache = result.fromCache;
-      assignDraftInfo(record, teamTable, playerInfo, seasonYear);
-      playersProcessed.add(record.index);
+      if (!url) continue; // still skip, but batching works
     }
+
+    const result = await FootballDBUtils.getPlayerInfoCached(url);
+    playerInfo = result.playerInfo;
+    fromCache = result.fromCache;
+
+    assignDraftInfo(record, teamTable, playerInfo, seasonYear);
+    playersProcessed.add(record.index);
+
+    processedCount++;
+
     if (!fromCache) {
       await FootballDBUtils.sleep(600);
     }
-    try {
-      if (FootballDBUtils.isCacheDirty()) {
-        fs.writeFileSync(
-          FootballDBUtils.PLAYER_CACHE_FILE,
-          JSON.stringify(FootballDBUtils.PLAYER_CACHE, null, 2),
-          "utf8"
-        );
-        FootballDBUtils.setCacheDirty(false);
-      }
 
-      fs.writeFileSync(FootballDBUtils.ASSET_FILE_PATH, JSON.stringify(FootballDBUtils.ALL_ASSETS, null, 2), "utf8");
-    } catch (err) {
-      console.error(`FAILED during CACHE WRITE`, `\n   Error: ${err.message}`);
+    // 🔥 checkpoint every X processed records
+    if (processedCount % SAVE_EVERY === 0) {
+      flushCaches();
     }
   }
-
+  flushCaches();
   await FranchiseUtils.saveFranchiseFile(franchise);
 });
