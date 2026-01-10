@@ -14,6 +14,22 @@ console.log("This program will update draft/player information for all players b
 const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
+function assignGeneralInfo(playerRecord, playerInfo, seasonYear) {
+  const weight = playerInfo.weight;
+  const height = playerInfo.height;
+  const birthdate = playerInfo.birthdate;
+
+  const calculatedAge = FootballDBUtils.maddenAgeAsOfYear(birthdate, seasonYear);
+  const calculatedHeight = FootballDBUtils.heightToInches(height);
+
+  playerRecord.Age = calculatedAge !== null ? calculatedAge : playerRecord.Age;
+
+  // Clamp weight to a minimum of 0
+  playerRecord.Weight = weight !== null && typeof weight === "number" ? Math.max(0, weight - 160) : playerRecord.Weight;
+
+  playerRecord.Height = calculatedHeight !== null ? calculatedHeight : playerRecord.Height;
+}
+
 function assignDraftInfo(playerRecord, teamTable, playerInfo, seasonYear) {
   let draftYearOffset;
 
@@ -139,6 +155,7 @@ franchise.on("ready", async function () {
           playerInfo = result.playerInfo;
           fromCache = result.fromCache;
           assignDraftInfo(playerRecord, teamTable, playerInfo, seasonYear);
+          assignGeneralInfo(playerRecord, playerInfo, seasonYear);
           playersProcessed.add(playerRecord.index);
         }
 
@@ -195,6 +212,7 @@ franchise.on("ready", async function () {
     fromCache = result.fromCache;
 
     assignDraftInfo(record, teamTable, playerInfo, seasonYear);
+    assignGeneralInfo(record, playerInfo, seasonYear);
     playersProcessed.add(record.index);
 
     processedCount++;

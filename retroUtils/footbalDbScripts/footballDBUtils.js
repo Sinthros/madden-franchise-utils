@@ -712,6 +712,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 module.exports = {
   initAssets,
+  heightToInches,
   maddenAgeAsOfYear,
   searchForPlayerUrl,
   validatePlayerMatch,
