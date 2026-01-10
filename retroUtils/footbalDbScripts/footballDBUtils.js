@@ -6,9 +6,21 @@ const fs = require("fs");
 const path = require("path");
 const stringSimilarity = require("string-similarity");
 
+// Madden value -> Football DB Value
 const COLLEGE_LOOKUP = {
   LSU: "Louisiana State",
   FSU: "Florida State",
+  UTEP: "Texas-El Paso",
+  UNLV: "Nevada-Las Vegas",
+  "LA. Tech": "Louisiana Tech",
+  USC: "Southern California",
+  "UL Lafayette": "Louisiana-Lafayette",
+  "N.C. State": "North Carolina State",
+  "NW Missouri State": "Northwest Missouri State",
+  "Ole Miss": "Mississippi",
+  TCU: "Texas Christian",
+  USF: "South Florida",
+  USC: "Southern California",
 };
 
 function createAxios() {
@@ -717,6 +729,7 @@ module.exports = {
   sleep,
   matchPlayer,
 
+  COLLEGE_LOOKUP,
   BASE_URL,
   ROSTER_PREFIX_URL,
   ASSET_FILE_NAME,
