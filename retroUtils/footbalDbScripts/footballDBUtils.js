@@ -6,6 +6,11 @@ const fs = require("fs");
 const path = require("path");
 const stringSimilarity = require("string-similarity");
 
+const COLLEGE_LOOKUP = {
+  LSU: "Louisiana State",
+  FSU: "Florida State",
+};
+
 function createAxios() {
   return axios.create({
     headers: BROWSER_HEADERS,
@@ -35,6 +40,23 @@ let ALL_ASSETS = {};
 const PLAYER_CACHE = loadJsonSafe(PLAYER_CACHE_FILE);
 
 let cacheDirty = false;
+
+function collegesMatch(maddenCollege, dbCollege) {
+  if (!maddenCollege || !dbCollege) return false;
+
+  // Step 1: direct match (case-insensitive)
+  if (maddenCollege.trim().toLowerCase() === dbCollege.trim().toLowerCase()) {
+    return true;
+  }
+
+  // Step 2: fallback to lookup
+  // Look up aliases using original casing keys
+  const maddenCanonical = COLLEGE_LOOKUP[maddenCollege] || maddenCollege;
+  const dbCanonical = COLLEGE_LOOKUP[dbCollege] || dbCollege;
+
+  // Compare canonical names in lowercase
+  return maddenCanonical.trim().toLowerCase() === dbCanonical.trim().toLowerCase();
+}
 
 function heightToInches(heightStr) {
   if (!heightStr || typeof heightStr !== "string") return null;
@@ -317,7 +339,7 @@ async function validatePlayerMatch(franchise, tables, playerRecord, playerName, 
   if (similarity < 0.5) return false;
 
   // Hard reject if age gap is impossible
-  if (age !== null && playerRecord.Age !== null && Math.abs(Number(playerRecord.Age) - Number(age)) > 12) {
+  if (age !== null && playerRecord.Age !== null && Math.abs(Number(playerRecord.Age) - Number(age)) > 15) {
     return false;
   }
 
@@ -337,14 +359,14 @@ async function validatePlayerMatch(franchise, tables, playerRecord, playerName, 
   // 1 year tolerance
   const ageMatches = age !== null && Math.abs(Number(playerRecord.Age) - Number(age)) <= 1;
 
-  const collegeMatches = college !== null && (maddenCollege || "").toLowerCase() === college.toLowerCase();
+  const collegeMatches = collegesMatch(maddenCollege, college);
 
   // 1 inch tolerance
   const heightMatches =
     footballDbHeightInches !== null && Math.abs(Number(playerRecord.Height) - footballDbHeightInches) <= 1;
 
-  // 2 pound tolerance
-  const weightMatches = weight !== null && Math.abs(Number(playerRecord.Weight + 160) - Number(weight)) <= 2;
+  // 5 pound tolerance
+  const weightMatches = weight !== null && Math.abs(Number(playerRecord.Weight + 160) - Number(weight)) <= 5;
 
   // If name matches and age matches and (college match OR height + weight match)
   const isFAMatch = nameMatches && ageMatches && (collegeMatches || (heightMatches && weightMatches));
