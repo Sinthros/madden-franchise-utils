@@ -186,8 +186,8 @@ franchise.on("ready", async function () {
     let fromCache = false;
 
     if (!url) {
-      url = await FootballDBUtils.searchForPlayerUrl(franchise, tables, record);
-      if (!url) continue; // still skip, but batching works
+      url = await FootballDBUtils.searchForPlayerUrl(franchise, tables, record, seasonYear);
+      if (!url) continue;
     }
 
     const result = await FootballDBUtils.getPlayerInfoCached(url);

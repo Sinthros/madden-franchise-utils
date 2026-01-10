@@ -36,6 +36,20 @@ const PLAYER_CACHE = loadJsonSafe(PLAYER_CACHE_FILE);
 
 let cacheDirty = false;
 
+function heightToInches(heightStr) {
+  if (!heightStr || typeof heightStr !== "string") return null;
+
+  const match = heightStr.match(/^(\d+)[-'\s]?(\d+)$/);
+  if (!match) return null;
+
+  const feet = Number(match[1]);
+  const inches = Number(match[2]);
+
+  if (!Number.isFinite(feet) || !Number.isFinite(inches)) return null;
+
+  return feet * 12 + inches;
+}
+
 function initAssets(seasonYear) {
   const assetDir = path.join(__dirname, "lookupFiles", "assets", String(seasonYear));
 
@@ -49,6 +63,38 @@ function initAssets(seasonYear) {
     urlLookup: {},
     assetLookup: {},
   });
+}
+
+function maddenAgeAsOfYear(birthdateStr, year) {
+  // Validate inputs
+  if (!birthdateStr || typeof birthdateStr !== "string") return null;
+  if (!Number.isInteger(year)) return null;
+
+  const parts = birthdateStr.split("-");
+  if (parts.length !== 3) return null;
+
+  const [birthYear, birthMonth, birthDay] = parts.map(Number);
+
+  // Basic numeric validation
+  if (!Number.isInteger(birthYear) || !Number.isInteger(birthMonth) || !Number.isInteger(birthDay)) {
+    return null;
+  }
+
+  // Date sanity checks
+  if (birthMonth < 1 || birthMonth > 12 || birthDay < 1 || birthDay > 31 || birthYear > year) {
+    return null;
+  }
+
+  let age = year - birthYear;
+
+  // After September 1st → subtract 1 (Sept 1 inclusive)
+  const isAfterCutoff = birthMonth > 9 || (birthMonth === 9 && birthDay > 1);
+
+  if (isAfterCutoff) {
+    age -= 1;
+  }
+
+  return age >= 0 ? age : null;
 }
 
 /**
@@ -248,8 +294,16 @@ function filterByFirstName(fullName, players) {
  *
  * @returns {Promise<boolean>} true if confirmed match
  */
-async function validatePlayerMatch(franchise, tables, playerRecord, playerName, playerInfo, options = {}) {
-  const { teamIndex = -1, age = null, yearsPro = null, url = null } = options;
+async function validatePlayerMatch(franchise, tables, playerRecord, playerName, options = {}) {
+  const {
+    teamIndex = -1,
+    position = null,
+    age = null,
+    weight = null,
+    height = null,
+    college = null,
+    url = null,
+  } = options;
 
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
   await FranchiseUtils.readTableRecords([teamTable]);
@@ -262,7 +316,12 @@ async function validatePlayerMatch(franchise, tables, playerRecord, playerName, 
   // Hard reject if similarity is very low
   if (similarity < 0.5) return false;
 
-  const teamRecord = StartTodayUtils.getTeamRecordByIndex(teamIndex, teamTable);
+  // Hard reject if age gap is impossible
+  if (age !== null && playerRecord.Age !== null && Math.abs(Number(playerRecord.Age) - Number(age)) > 12) {
+    return false;
+  }
+
+  const teamRecord = teamIndex === -1 ? null : StartTodayUtils.getTeamRecordByIndex(teamIndex, teamTable);
   const teamName = teamRecord ? `${teamRecord.LongName} ${teamRecord.DisplayName}` : null;
 
   const playerTeamRecord = StartTodayUtils.getTeamRecordByIndex(playerRecord.TeamIndex, teamTable);
@@ -272,23 +331,39 @@ async function validatePlayerMatch(franchise, tables, playerRecord, playerName, 
 
   //const isExactNameAndTeamMatch = normalizedInputName === normalizedMaddenName && teamName === playerTeamName;
 
-  const isFAMatch =
-    normalizedInputName === normalizedMaddenName &&
-    age !== null &&
-    Math.abs(Number(playerRecord.Age) - Number(age)) <= 1 && // 👈 tolerant
-    playerInfo.college !== null &&
-    (maddenCollege || "").toLowerCase() === playerInfo.college.toLowerCase();
+  const footballDbHeightInches = heightToInches(height);
+  const nameMatches = normalizedInputName === normalizedMaddenName;
+
+  // 1 year tolerance
+  const ageMatches = age !== null && Math.abs(Number(playerRecord.Age) - Number(age)) <= 1;
+
+  const collegeMatches = college !== null && (maddenCollege || "").toLowerCase() === college.toLowerCase();
+
+  // 1 inch tolerance
+  const heightMatches =
+    footballDbHeightInches !== null && Math.abs(Number(playerRecord.Height) - footballDbHeightInches) <= 1;
+
+  // 2 pound tolerance
+  const weightMatches = weight !== null && Math.abs(Number(playerRecord.Weight + 160) - Number(weight)) <= 2;
+
+  // If name matches and age matches and (college match OR height + weight match)
+  const isFAMatch = nameMatches && ageMatches && (collegeMatches || (heightMatches && weightMatches));
 
   if (isFAMatch) {
     return true;
   }
 
-  // Interactive fallback (unchanged behavior)
   const message =
-    `FootballDB: ${playerName} (${playerInfo.position || "?"}` +
-    (playerInfo.college ? ` College: ${playerInfo.college}.` : "") +
-    (url ? ` URL: ${url}.` : "") +
-    `\n\nMadden: ${normalizedMaddenName}, ${playerRecord.Age}, ${playerRecord.Position} ` +
+    `FootballDB: ${playerName}` +
+    (position ? `, ${position}` : "") +
+    (age !== null ? `, Age: ${age}` : "") +
+    (weight !== null ? `, Weight: ${weight}` : "") +
+    (height !== null ? `, Height: ${height}` : "") +
+    (college ? `, College: ${college}` : "") +
+    (url ? `, URL: ${url}` : "") +
+    `\n\nMadden: ${normalizedMaddenName}, ${playerRecord.Position}, Age: ${playerRecord.Age}, Weight: ${
+      playerRecord.Weight + 160
+    }, Height: ${FranchiseUtils.formatHeight(playerRecord.Height)} ` +
     `for the ${playerTeamName}. ` +
     (maddenCollege ? `College: ${maddenCollege}. ` : "") +
     `${playerRecord.YearsPro} years of experience.` +
@@ -309,12 +384,15 @@ function sortPlayersByNameSimilarity(inputName, players, matchMinimum) {
     .filter((p) => p._similarity >= matchMinimum);
 }
 
-async function searchForPlayerUrl(franchise, tables, playerRecord) {
+async function searchForPlayerUrl(franchise, tables, playerRecord, seasonYear) {
   const assetName = playerRecord.PLYR_ASSETNAME;
 
   // Cache hit
   const cachedUrl = ALL_ASSETS.byAsset[assetName];
-  if (!FranchiseUtils.isBlank(cachedUrl)) return cachedUrl;
+
+  if (cachedUrl !== undefined) {
+    return FranchiseUtils.isBlank(cachedUrl) ? null : cachedUrl;
+  }
 
   const inputName = `${playerRecord.FirstName} ${playerRecord.LastName}`;
   const normalizedInput = FranchiseUtils.getNormalizedName(inputName);
@@ -328,10 +406,12 @@ async function searchForPlayerUrl(franchise, tables, playerRecord) {
     const scrapedInfo = await getPlayerInfoCached(candidate.profileUrl);
     const fromCache = scrapedInfo.fromCache;
     const playerInfo = scrapedInfo.playerInfo;
-    const isMatch = await validatePlayerMatch(franchise, tables, playerRecord, candidate.name, playerInfo, {
-      teamIndex: playerRecord.TeamIndex,
-      age: playerRecord.Age,
-      yearsPro: playerRecord.YearsPro,
+    const isMatch = await validatePlayerMatch(franchise, tables, playerRecord, candidate.name, {
+      position: playerInfo.position,
+      weight: playerInfo.weight,
+      height: playerInfo.height,
+      age: maddenAgeAsOfYear(playerInfo.birthdate, seasonYear),
+      college: playerInfo.college,
       url: candidate.profileUrl,
     });
 
@@ -598,6 +678,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 module.exports = {
   initAssets,
+  maddenAgeAsOfYear,
   searchForPlayerUrl,
   validatePlayerMatch,
   fetchPlayersByLastName,
