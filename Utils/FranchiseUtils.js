@@ -3330,6 +3330,12 @@ function convertArrayToJSONFile(data, filePath) {
   });
 }
 
+function formatHeight(height) {
+  if (!height) return null;
+  const feet = Math.floor(height / 12);
+  const inches = height % 12;
+  return `${feet}'${inches}"`;
+}
 
 module.exports = {
     init,
@@ -3420,6 +3426,7 @@ module.exports = {
     validateGameYears,
     startsWithNumber,
     getCharacterAfterNthUnderscore,
+    formatHeight,
     isBlank,
     EXIT_PROGRAM,
 
