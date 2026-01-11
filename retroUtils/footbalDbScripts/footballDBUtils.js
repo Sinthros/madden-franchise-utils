@@ -20,7 +20,6 @@ const COLLEGE_LOOKUP = {
   "Ole Miss": "Mississippi",
   TCU: "Texas Christian",
   USF: "South Florida",
-  USC: "Southern California",
 };
 
 function createAxios() {
@@ -94,8 +93,8 @@ function initAssets(seasonYear) {
 
   // Load or create file
   ALL_ASSETS = FranchiseUtils.loadJsonSafe(ASSET_FILE_PATH, {
-    urlLookup: {},
-    assetLookup: {},
+    byUrl: {},
+    byAsset: {},
   });
 }
 
@@ -726,7 +725,7 @@ function assignDraftInfo(playerRecord, teamTable, playerInfo, seasonYear) {
   playerRecord.YearDrafted = draftYearOffset;
 
   // Draft round / pick
-  if (playerInfo.isUndrafted) {
+  if (playerInfo.draft_isUndrafted) {
     playerRecord.PLYR_DRAFTROUND = 63;
     playerRecord.PLYR_DRAFTPICK = 511;
   } else {
