@@ -3337,6 +3337,23 @@ function formatHeight(height) {
   return `${feet}'${inches}"`;
 }
 
+function loadJsonSafe(filePath, fallback = {}) {
+  try {
+    if (!fs.existsSync(filePath)) {
+      fs.mkdirSync(path.dirname(filePath), { recursive: true });
+      fs.writeFileSync(filePath, JSON.stringify(fallback, null, 2));
+      return fallback;
+    }
+
+    const raw = fs.readFileSync(filePath, "utf8").trim();
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (err) {
+    console.warn(`⚠️ Cache corrupted, resetting: ${filePath}`);
+    fs.writeFileSync(filePath, JSON.stringify(fallback, null, 2));
+    return fallback;
+  }
+}
+
 module.exports = {
     init,
     selectFranchiseFile, // FUNCTIONS
@@ -3427,6 +3444,7 @@ module.exports = {
     startsWithNumber,
     getCharacterAfterNthUnderscore,
     formatHeight,
+    loadJsonSafe,
     isBlank,
     EXIT_PROGRAM,
 

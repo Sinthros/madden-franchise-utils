@@ -49,7 +49,7 @@ const PLAYER_CACHE_FILE = path.join(__dirname, "./lookupFiles/player_cache.json"
 let ASSET_FILE_PATH = null;
 let ALL_ASSETS = {};
 
-const PLAYER_CACHE = loadJsonSafe(PLAYER_CACHE_FILE);
+const PLAYER_CACHE = FranchiseUtils.loadJsonSafe(PLAYER_CACHE_FILE);
 
 let cacheDirty = false;
 
@@ -93,7 +93,7 @@ function initAssets(seasonYear) {
   fs.mkdirSync(assetDir, { recursive: true });
 
   // Load or create file
-  ALL_ASSETS = loadJsonSafe(ASSET_FILE_PATH, {
+  ALL_ASSETS = FranchiseUtils.loadJsonSafe(ASSET_FILE_PATH, {
     urlLookup: {},
     assetLookup: {},
   });
@@ -220,23 +220,6 @@ function isCacheDirty() {
 
 function setCacheDirty(val) {
   cacheDirty = val;
-}
-
-function loadJsonSafe(filePath, fallback = {}) {
-  try {
-    if (!fs.existsSync(filePath)) {
-      fs.mkdirSync(path.dirname(filePath), { recursive: true });
-      fs.writeFileSync(filePath, JSON.stringify(fallback, null, 2));
-      return fallback;
-    }
-
-    const raw = fs.readFileSync(filePath, "utf8").trim();
-    return raw ? JSON.parse(raw) : fallback;
-  } catch (err) {
-    console.warn(`⚠️ Cache corrupted, resetting: ${filePath}`);
-    fs.writeFileSync(filePath, JSON.stringify(fallback, null, 2));
-    return fallback;
-  }
 }
 
 /* -----------------------------
