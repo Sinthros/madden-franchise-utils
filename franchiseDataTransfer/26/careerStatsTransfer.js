@@ -1,12 +1,10 @@
+const path = require("path");
+const fs = require("fs");
 const { getBinaryReferenceData } = require("madden-franchise").utilService;
-
-/*const ALL_ASSET_NAMES = JSON.parse(
-  fs.readFileSync(
-    path.join(__dirname, "lookupFiles/careerStatsLookups/all_asset_names.json"),
-    "utf-8"
-  )
-);*/
 const FranchiseUtils = require("../../Utils/FranchiseUtils");
+const StartTodayUtils = require("../../startTodayUtilities/StartTodayUtils");
+const ASSET_FILE = path.join(__dirname, "./lookupFiles/careerStatsLookups/all_asset_names.json");
+const ALL_ASSETS = FranchiseUtils.loadJsonSafe(ASSET_FILE);
 
 const SOURCE_VALID_YEARS = [FranchiseUtils.YEARS.M25, FranchiseUtils.YEARS.M26];
 const TARGET_VALID_YEARS = [FranchiseUtils.YEARS.M26];
@@ -93,6 +91,57 @@ sourceFranchise.on("ready", async function () {
         (player) => player.PLYR_ASSETNAME === asset
       );
 
+      if (!matchingRecord) {
+        if (ALL_ASSETS.hasOwnProperty(asset)) {
+          const matchingAsset = ALL_ASSETS[asset];
+
+          if (!FranchiseUtils.isBlank(matchingAsset)) {
+            const assetRowIndex = targetPlayerTable.records.findIndex(
+              (record) => record.PLYR_ASSETNAME === matchingAsset
+            );
+
+            if (assetRowIndex !== -1) {
+              matchingRecord = targetPlayerTable.records[assetRowIndex];
+            }
+          }
+        }
+        if (!matchingRecord) {
+          let skippedPlayers = [];
+          const playerName = `${record.FirstName} ${record.LastName}`;
+          const options = {
+            age: record.Age,
+            position: record.Position,
+            yearsPro: record.YearsPro,
+            college: await FranchiseUtils.getCollege(sourceFranchise, record.College),
+          };
+          let playerIndex = await StartTodayUtils.searchForPlayer(
+            targetFranchise,
+            TARGET_TABLES,
+            playerName,
+            0.95,
+            skippedPlayers,
+            record.TeamIndex,
+            options
+          );
+          if (playerIndex === -1) {
+            playerIndex = await StartTodayUtils.searchForPlayer(
+              targetFranchise,
+              TARGET_TABLES,
+              playerName,
+              0.63,
+              skippedPlayers,
+              record.TeamIndex,
+              options
+            );
+          }
+          if (playerIndex !== -1) {
+            matchingRecord = targetPlayerTable.records[playerIndex];
+            ALL_ASSETS[record.PLYR_ASSETNAME] = matchingRecord.PLYR_ASSETNAME;
+          } else {
+            ALL_ASSETS[record.PLYR_ASSETNAME] = FranchiseUtils.EMPTY_STRING;
+          }
+        }
+      }
       if (matchingRecord) {
         const { row, tableId } = FranchiseUtils.getRowAndTableIdFromRef(careerStatsRef);
         const statTable = sourceFranchise.getTableById(tableId);
@@ -110,6 +159,7 @@ sourceFranchise.on("ready", async function () {
       }
     }
     console.log("\nSuccessfully completed transfer of data.");
+    fs.writeFileSync(ASSET_FILE, JSON.stringify(ALL_ASSETS, null, 2), "utf8");
 
     await FranchiseUtils.saveFranchiseFile(targetFranchise);
     FranchiseUtils.EXIT_PROGRAM();
