@@ -708,6 +708,77 @@ async function getDraftRoundMap(year, round) {
   return playerLinkToPick;
 }
 
+function assignGeneralInfo(playerRecord, playerInfo, seasonYear) {
+  const weight = playerInfo.weight;
+  const height = playerInfo.height;
+  const birthdate = playerInfo.birthdate;
+
+  const calculatedAge = maddenAgeAsOfYear(birthdate, seasonYear);
+  const calculatedHeight = heightToInches(height);
+
+  playerRecord.Age = calculatedAge !== null ? calculatedAge : playerRecord.Age;
+
+  // Clamp weight to a minimum of 0
+  playerRecord.Weight = weight !== null && typeof weight === "number" ? Math.max(0, weight - 160) : playerRecord.Weight;
+
+  playerRecord.Height = calculatedHeight !== null ? calculatedHeight : playerRecord.Height;
+}
+
+function assignDraftInfo(playerRecord, teamTable, playerInfo, seasonYear) {
+  let draftYearOffset;
+
+  // - drafted: playerInfo.draft_year - seasonYear - 1
+  // - undrafted: YearsPro * -1
+  if (typeof playerInfo.draft_year === "number") {
+    draftYearOffset = playerInfo.draft_year - seasonYear - 1;
+  } else {
+    draftYearOffset = playerRecord.YearsPro * -1;
+  }
+
+  // -1 is illegal, force to 0
+  if (draftYearOffset === -1 || Number.isNaN(draftYearOffset)) {
+    draftYearOffset = 0;
+  }
+
+  playerRecord.YearDrafted = draftYearOffset;
+
+  // Draft round / pick
+  if (playerInfo.isUndrafted) {
+    playerRecord.PLYR_DRAFTROUND = 63;
+    playerRecord.PLYR_DRAFTPICK = 511;
+  } else {
+    playerRecord.PLYR_DRAFTROUND = Number.isInteger(playerInfo.draft_round) ? playerInfo.draft_round : 63;
+
+    playerRecord.PLYR_DRAFTPICK = Number.isInteger(playerInfo.draft_pick) ? playerInfo.draft_pick : 511;
+  }
+
+  // Draft team
+  const draftTeam =
+    typeof playerInfo.draft_team === "string"
+      ? StartTodayUtils.getTeamRecordByShortName(playerInfo.draft_team, teamTable)
+      : null;
+
+  // Draft team is based on presentation ID
+  playerRecord.PLYR_DRAFTTEAM = draftTeam !== null ? draftTeam.PresentationId : 32;
+}
+
+function flushCaches() {
+  try {
+    if (isCacheDirty()) {
+      fs.writeFileSync(
+        PLAYER_CACHE_FILE,
+        JSON.stringify(PLAYER_CACHE, null, 2),
+        "utf8"
+      );
+      setCacheDirty(false);
+    }
+
+    fs.writeFileSync(ASSET_FILE_PATH, JSON.stringify(ALL_ASSETS, null, 2), "utf8");
+  } catch (err) {
+    console.error(`FAILED during CACHE WRITE\n   Error: ${err.message}`);
+  }
+}
+
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 module.exports = {
@@ -729,6 +800,9 @@ module.exports = {
   setCacheDirty,
   sleep,
   matchPlayer,
+  assignGeneralInfo,
+  assignDraftInfo,
+  flushCaches,
 
   COLLEGE_LOOKUP,
   BASE_URL,
