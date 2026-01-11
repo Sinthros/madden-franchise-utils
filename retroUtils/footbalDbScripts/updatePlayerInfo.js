@@ -83,7 +83,7 @@ franchise.on("ready", async function () {
   }
 
   const remainingPlayers = playerTable.records.filter(
-    (record) => FranchiseUtils.isValidPlayer(record) && !playersProcessed.has(record.index)
+    (record) => FranchiseUtils.isValidPlayer(record, {includeRetiredPlayers: true, includeDeletedPlayers: true}) && !playersProcessed.has(record.index)
   );
 
   for (const playerRecord of remainingPlayers) {
