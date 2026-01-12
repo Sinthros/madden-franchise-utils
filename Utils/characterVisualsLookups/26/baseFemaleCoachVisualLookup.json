@@ -1,0 +1,35 @@
+{
+  "loadouts": [
+    {
+      "loadoutCategory": "CoachApparel",
+      "loadoutType": "Misc",
+      "outfitType": "Field",
+      "loadoutElements": [
+        {
+          "itemAssetName": "CoachWardrobe_NikeAirMax90Black",
+          "slotType": "RightShoe"
+        },
+        {
+          "itemAssetName": "CoachWardrobe_Khaki_Pants",
+          "slotType": "OuterPants"
+        },
+        {
+          "itemAssetName": "UC_Headset_1",
+          "slotType": "EarWear"
+        },
+        {
+          "itemAssetName": "CoachWardrobe_Polo",
+          "slotType": "OuterShirt"
+        },
+        {
+          "itemAssetName": "UC_None",
+          "slotType": "HeadWear"
+        },
+        {
+          "itemAssetName": "CoachWardrobe_NikeAirMax90Black",
+          "slotType": "LeftShoe"
+        }
+      ]
+    }
+  ]
+}
