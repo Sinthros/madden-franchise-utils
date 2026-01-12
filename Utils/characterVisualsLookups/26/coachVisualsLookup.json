@@ -1,0 +1,1752 @@
+{
+  "TaylorZac_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "GearOnly",
+        "loadoutElements": [
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_ShortSleeveTshirt"
+          },
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "TaylorZac_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "TaylorZac_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "McCarthyMike_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "McCarthyMike_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "McCarthyMike_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "StefanskiKevin_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEBlack"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEBlack"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_ShortSleeveTshirt_secondary"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "StefanskiKevin_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "StefanskiKevin_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "VrabelMike_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSE"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSE"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_PulloverSleeveless"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "VrabelMike_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "ReidAndy": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_NikeAirMax90Black"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_NikeAirMax90Black"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_PulloverLongSleeve"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "ReidAndy_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "ReidAndy_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "HarbaughJim_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "GearOnly",
+        "loadoutElements": [
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro12Playoffs"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro12Playoffs"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Grey_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "HarbaughJim_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "HarbaughJim_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "WrightJonathan_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "WrightJonathan_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "WrightJonathan_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "College3_C_NCAA": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "College3_C_NCAA_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "College3_C_NCAA_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "WelterJennifer_C_KO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "WelterJennifer_C_KO_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "WelterJennifer_C_KO_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "AriansBruce_C_KO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "AriansBruce_C_KO_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "AriansBruce_C_KO_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "GrudenJon_C_KO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "GrudenJon_C_KO_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "GrudenJon_C_KO_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "McVaySean_C_KO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "McVaySean_C_KO_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "McVaySean_C_KO_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "MahomesPatrick_C_KO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "MahomesPatrick_C_KO_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "MahomesPatrick_C_KO_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "MaddenJohn_C_KO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "MaddenJohn_C_KO_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "MaddenJohn_C_KO_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "BeckhamJrOdell_C_KO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "BeckhamJrOdell_C_KO_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "BeckhamJrOdell_C_KO_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "YachtyLil_C_KO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "YachtyLil_C_KO_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "YachtyLil_C_KO_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "McDanielMike_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEWhite"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEWhite"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Hoodie"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Joggers_khaki"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "McDanielMike_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "BowlesTodd_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEWhite"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEWhite"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Hoodie"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "BowlesTodd_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "BowlesTodd_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "EberflusMatt_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "EberflusMatt_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "EberflusMatt_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "HarbaughJohn_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "GearOnly",
+        "loadoutElements": [
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Khaki_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "HarbaughJohn_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "HarbaughJohn_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "DabollBrian_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_NikeAirMax270"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_NikeAirMax270"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_PullOverShortSleeveCotton"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Grey_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "DabollBrian_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "DabollBrian_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "OConnellKevin_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEBlack"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEBlack"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Hoodie"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "OConnellKevin_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "OConnellKevin_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "AllenDennis_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "AllenDennis_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "AllenDennis_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "LeFleurMatt_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3White"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3White"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeve"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "Hat_None"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "LeFleurMatt_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "MaddenJohn_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "MaddenJohn_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "MaddenJohn_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "McDermottSean_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeve"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Khaki_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "McDermottSean_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "McDermottSean_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "TomlinMike_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_NikeAirMax90Black"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_NikeAirMax90Black"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeve_black"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Black_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "TomlinMike_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "TomlinMike_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "QuinnDan_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "GearOnly",
+        "loadoutElements": [
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeve_black"
+          },
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro11CapNGown"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro11CapNGown"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "QuinnDan_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "QuinnDan_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "College1_C_NCAA": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "College1_C_NCAA_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "College1_C_NCAA_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "ReidAndy_C_KO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Polo"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "ReidAndy_C_KO_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "ReidAndy_C_KO_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "CarrollPete_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_NikeAirMax90White"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_NikeAirMax90White"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeve"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Grey_Pants"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "CarrollPete_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "SirianniNick_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEBlack"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEBlack"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_TshirtHoodie"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "SirianniNick_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "SirianniNick_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "CampbellDan_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeveRolledUp_black"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "CampbellDan_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "CampbellDan_headset_Item"
+          },
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3"
+          }
+        ]
+      }
+    ]
+  },
+  "McVaySean_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_NikeAirMax270"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_NikeAirMax270"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Hoodie"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Joggers_black"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "Hat_None"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "McVaySean_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "SteichenShane_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3White"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3White"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeve"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "SteichenShane_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "SteichenShane_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "RyansDeMeco_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEWhite"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEWhite"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeve_secondary"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Grey_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "Hat_None"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "RyansDeMeco_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "GannonJonathan_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3White"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3White"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeve_black"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Joggers_black"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "GannonJonathan_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "GannonJonathan_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "CanalesDave_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3White"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3White"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeveRolledUp_black"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Grey_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "CanalesDave_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "CanalesDave_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "ShanahanKyle_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro12TaxiFlip"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro12TaxiFlip"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeveRolledUp"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Joggers_black"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "ShanahanKyle_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "ShanahanKyle_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "MacdonaldMike_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeveRolledUp"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Grey_Pants"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "MacDonaldMike_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "MacDonaldMike_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "MorrisRaheem_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro11CapNGown"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro11CapNGown"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Hoodie"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Joggers_black"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "MorrisRaheem_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "MorrisRaheem_headset_Item"
+          }
+        ]
+      }
+    ]
+  },
+  "2_M_WHT_H_003": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3White"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_NikeZoomInvincible3White"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeveRolledUp"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Joggers_gray"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "CallahanBrian_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "CallahanBrian_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      }
+    ]
+  },
+  "SchottenheimerBrian_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro11Diffused"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro11Diffused"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_ShortSleeveTshirt"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "SchottenheimerBrian_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "SchottenheimerBrian_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          }
+        ]
+      }
+    ]
+  },
+  "MooreKellen_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeveRolledUp_black"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "MooreKellen_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "MooreKellen_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          }
+        ]
+      }
+    ]
+  },
+  "JohnsonBen_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Hoodie"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "JohnsonBen_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "JohnsonBen_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_Pants"
+          },
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_Shoe"
+          }
+        ]
+      }
+    ]
+  },
+  "GlennAaron_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEBlack"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEBlack"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_LongSleeveRolledUp_black"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "GlennAaron_headset_Item"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          }
+        ]
+      }
+    ]
+  },
+  "CoenLiam_C_PRO": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEWhite"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_AirJordanRetro1LowSEWhite"
+          },
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_Hoodie"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "CoenLiam_hat_Item"
+          },
+          {
+            "slotType": "EarWear",
+            "itemAssetName": "CoenLiam_headset_Item"
+          },
+          {
+            "slotType": "PlayCard",
+            "itemAssetName": "Coach_ClipBoard"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "coachwardrobe_black_pants"
+          }
+        ]
+      }
+    ]
+  },
+  "maddenJohn_AFC": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_maddenJohn_warm1_top"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_maddenJohn_warm1_pants"
+          },
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_maddenJohn_warm1_shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_maddenJohn_warm1_shoe"
+          },
+          {
+            "slotType": "RightHandWear",
+            "itemAssetName": "GearHand_maddenJohn_ring"
+          },
+          {
+            "slotType": "LeftWristWear",
+            "itemAssetName": "GearWrist_maddenJohn_watch"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "Hat_None"
+          },
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Heavy_BodyType"
+          }
+        ]
+      }
+    ]
+  },
+  "maddenJohn_NFC": {
+    "loadouts": [
+      {
+        "loadoutType": "CoachOnField",
+        "loadoutCategory": "CoachApparel",
+        "loadoutElements": [
+          {
+            "slotType": "OuterShirt",
+            "itemAssetName": "CoachWardrobe_maddenJohn_warm2_top"
+          },
+          {
+            "slotType": "OuterPants",
+            "itemAssetName": "CoachWardrobe_maddenJohn_warm2_pants"
+          },
+          {
+            "slotType": "LeftShoe",
+            "itemAssetName": "CoachWardrobe_maddenJohn_warm2_shoe"
+          },
+          {
+            "slotType": "RightShoe",
+            "itemAssetName": "CoachWardrobe_maddenJohn_warm2_shoe"
+          },
+          {
+            "slotType": "RightHandWear",
+            "itemAssetName": "GearHand_maddenJohn_ring"
+          },
+          {
+            "slotType": "LeftWristWear",
+            "itemAssetName": "GearWrist_maddenJohn_watch"
+          },
+          {
+            "slotType": "HeadWear",
+            "itemAssetName": "Hat_None"
+          },
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Heavy_BodyType"
+          }
+        ]
+      }
+    ]
+  }
+}

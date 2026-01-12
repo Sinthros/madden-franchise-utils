@@ -1,0 +1,34 @@
+{
+  "loadouts": [
+    {
+      "loadoutType": "CoachOnField",
+      "loadoutCategory": "CoachApparel",
+      "loadoutElements": [
+        {
+          "slotType": "LeftShoe",
+          "itemAssetName": "CoachWardrobe_Shoe"
+        },
+        {
+          "slotType": "RightShoe",
+          "itemAssetName": "CoachWardrobe_Shoe"
+        },
+        {
+          "slotType": "OuterShirt",
+          "itemAssetName": "CoachWardrobe_Polo"
+        },
+        {
+          "slotType": "OuterPants",
+          "itemAssetName": "CoachWardrobe_Pants"
+        },
+        {
+          "slotType": "HeadWear",
+          "itemAssetName": "CoachWardrobe_Hat"
+        },
+        {
+          "slotType": "EarWear",
+          "itemAssetName": "UC_Headset_1"
+        }
+      ]
+    }
+  ]
+}

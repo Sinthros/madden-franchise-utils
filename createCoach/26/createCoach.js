@@ -1,70 +1,52 @@
-
-
-
-
-const prompt = require('prompt-sync')();
-const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
-const fs = require('fs');
-const CHARACTER_VISUALS_FUNCTIONS = require('../../Utils/characterVisualsLookups/characterVisualFunctions25');
+const prompt = require("prompt-sync")();
+const { getBinaryReferenceData } = require("madden-franchise/services/utilService");
+const fs = require("fs");
+const CHARACTER_VISUALS_FUNCTIONS = require("../../Utils/characterVisualsLookups/characterVisualFunctions25");
 const COACH_BASE_JSON = CHARACTER_VISUALS_FUNCTIONS.baseCoachVisualJson;
-const FranchiseUtils = require('../../Utils/FranchiseUtils');
-const AUTOMATIC_KWD = 'a';
-const MANUAL_KWD = 'm';
+const FranchiseUtils = require("../../Utils/FranchiseUtils");
+const AUTOMATIC_KWD = "a";
+const MANUAL_KWD = "m";
 
-const offPlaybookLookup = JSON.parse(fs.readFileSync('lookupFiles/off_playbook_lookup.json', 'utf8'));
-const defPlaybookLookup = JSON.parse(fs.readFileSync('lookupFiles/def_playbook_lookup.json', 'utf8'));
-const philosophyLookup = JSON.parse(fs.readFileSync('lookupFiles/philosophy_lookup.json', 'utf8'));
-const offSchemeLookup = JSON.parse(fs.readFileSync('lookupFiles/off_scheme_lookup.json', 'utf8'));
-const defSchemeLookup = JSON.parse(fs.readFileSync('lookupFiles/def_scheme_lookup.json', 'utf8'));
-const coachTalentsPositions = JSON.parse(fs.readFileSync('lookupFiles/coach_talents.json', 'utf8'));
-const coachTalentsLookup = JSON.parse(fs.readFileSync('lookupFiles/coach_talents_lookup.json', 'utf8'));
-const allCoachHeads = JSON.parse(fs.readFileSync('lookupFiles/coach_heads_lookup.json', 'utf8'));
-
+const offPlaybookLookup = JSON.parse(fs.readFileSync("lookupFiles/off_playbook_lookup.json", "utf8"));
+const defPlaybookLookup = JSON.parse(fs.readFileSync("lookupFiles/def_playbook_lookup.json", "utf8"));
+const philosophyLookup = JSON.parse(fs.readFileSync("lookupFiles/philosophy_lookup.json", "utf8"));
+const offSchemeLookup = JSON.parse(fs.readFileSync("lookupFiles/off_scheme_lookup.json", "utf8"));
+const defSchemeLookup = JSON.parse(fs.readFileSync("lookupFiles/def_scheme_lookup.json", "utf8"));
+const allCoachHeads = JSON.parse(fs.readFileSync("lookupFiles/coach_heads_lookup.json", "utf8"));
 
 // Visual morph keys for players and coaches
-const VISUAL_MORPH_KEYS = [
-  "ArmSize",
-  "CalfBlend",
-  "Chest",
-  "Feet",
-  "Glute",
-  "Gut",
-  "Thighs"
-];
+const VISUAL_MORPH_KEYS = ["ArmSize", "CalfBlend", "Chest", "Feet", "Glute", "Gut", "Thighs"];
 
-
-const gameYear = FranchiseUtils.YEARS.M25;
-const dir = './coachPreviews';
-const headsDirName = 'coachHeads';
+const gameYear = FranchiseUtils.YEARS.M26;
+const dir = "./coachPreviews";
+const headsDirName = "coachHeads";
 
 console.log(`This program will allow you to create new Free Agent coaches in your Madden ${gameYear} franchise file.`);
 
 fs.rmSync(dir, { recursive: true, force: true }); //Remove this folder if it already exists and recreate it
-if (!fs.existsSync(dir)){
-    fs.mkdirSync(dir);
-};
+if (!fs.existsSync(dir)) {
+  fs.mkdirSync(dir);
+}
 
-
-const franchise = FranchiseUtils.init(gameYear,{isAutoUnemptyEnabled: true, promptForBackup: true});
+const franchise = FranchiseUtils.init(gameYear, { isAutoUnemptyEnabled: true, promptForBackup: true });
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 function adjustPresentationId(presentationTable) {
-
-    const record = presentationTable.records[0];
-    const presentationId = record.PresentationId;
-    record.PresentationId++;
-    record.IdsRemaining--;
-    return presentationId;
+  const record = presentationTable.records[0];
+  const presentationId = record.PresentationId;
+  record.PresentationId++;
+  record.IdsRemaining--;
+  return presentationId;
 }
 
-
-function setDefaultCoachValues(coachRecord,presentationId) {
+function setDefaultCoachValues(coachRecord, presentationId) {
   try {
     // Self explanatory - These are the default values for the coach table
     coachRecord.SeasonsWithTeam = 0;
     coachRecord.IsCreated = false;
-    coachRecord.CoachBackstory = 'TeamBuilder';
-    coachRecord.ContractStatus = 'FreeAgent';
+    coachRecord.IsLegend = false;
+    coachRecord.CoachBackstory = "TeamBuilder";
+    coachRecord.ContractStatus = "FreeAgent";
     coachRecord.ContractLength = 0;
     coachRecord.ContractYearsRemaining = 0;
     coachRecord.TeamIndex = 32;
@@ -115,24 +97,34 @@ function setDefaultCoachValues(coachRecord,presentationId) {
     coachRecord.YearsCoaching = 0;
     coachRecord.Level = 0;
     coachRecord.PresentationId = presentationId;
-    coachRecord.TeamBuilding = 'ThroughFreeAgency';
+    coachRecord.TeamBuilding = "ThroughFreeAgency";
     coachRecord.LegacyScore = 0;
     coachRecord.Face = 0;
     coachRecord.HairResid = 0;
     coachRecord.Geometry = 0;
-    coachRecord.Personality = 'Unpredictable';
+    coachRecord.Personality = "Unpredictable";
     coachRecord.MultipartBody = false;
     coachRecord.HasCustomBody = false;
     coachRecord.YearlyAwardCount = 0;
     coachRecord.SpeechId = 31;
-    coachRecord.AssetName = '';
+    coachRecord.AssetName = FranchiseUtils.EMPTY_STRING;
     coachRecord.Height = 70;
     coachRecord.Weight = 10;
+    coachRecord.Portrait_Force_Silhouette = false;
+
+    // New M26 fields
+    coachRecord.CurrentPurchasedTalentCosts = 0;
+    coachRecord.IndexInUnlockList = 0;
+    coachRecord.COACH_ADAPTIVE_AI = "Aggressive";
+    coachRecord.COACH_DEMEANOR = "Classic";
+    coachRecord.Archetype = "DevelopmentWizard";
+    coachRecord.COACH_RATING = 50;
+    coachRecord.COACH_STANCE = "Classic";
+    coachRecord.IsMaxLevel = false;
   } catch (e) {
-    console.warn('ERROR! Exiting program due to; ', e);
+    console.warn("ERROR! Exiting program due to; ", e);
     FranchiseUtils.EXIT_PROGRAM();
   }
-
 }
 
 function setCoachName(coachRecord) {
@@ -157,23 +149,26 @@ function setCoachName(coachRecord) {
 
     return [coachFirstName, coachLastName];
   } catch (e) {
-    console.warn('ERROR! Exiting program due to:', e);
+    console.warn("ERROR! Exiting program due to:", e);
     FranchiseUtils.EXIT_PROGRAM();
   }
 }
 
 function setCoachPosition(coachRecord) {
   try {
-    const validCoachPositions = ['HeadCoach', 'OffensiveCoordinator', 'DefensiveCoordinator'];
+    const validCoachPositions = ["HeadCoach", "OffensiveCoordinator", "DefensiveCoordinator"];
     let coachPosition;
 
-    while (true) { // Infinite loop, until a valid position is entered
-      console.log("Enter the position of the coach. Valid values are HeadCoach, OffensiveCoordinator, and DefensiveCoordinator.");
+    while (true) {
+      // Infinite loop, until a valid position is entered
+      console.log(
+        "Enter the position of the coach. Valid values are HeadCoach, OffensiveCoordinator, and DefensiveCoordinator."
+      );
       coachPosition = prompt();
 
       const lowercaseInput = coachPosition.toLowerCase(); // Convert input to lowercase
 
-      const matchingPosition = validCoachPositions.find(position => position.toLowerCase() === lowercaseInput);
+      const matchingPosition = validCoachPositions.find((position) => position.toLowerCase() === lowercaseInput);
 
       if (matchingPosition) {
         // If valid, set the position in its original case
@@ -185,7 +180,7 @@ function setCoachPosition(coachRecord) {
       }
     }
   } catch (e) {
-    console.warn('ERROR! Exiting program due to:', e);
+    console.warn("ERROR! Exiting program due to:", e);
     FranchiseUtils.EXIT_PROGRAM();
   }
 }
@@ -208,7 +203,7 @@ async function setDefaultScheme(coachRecord) {
     selectFirstScheme(offSchemeKeys, offSchemeLookup, "OffensiveScheme");
     selectFirstScheme(defSchemeKeys, defSchemeLookup, "DefensiveScheme");
   } catch (e) {
-    console.warn('ERROR! Exiting program due to:', e);
+    console.warn("ERROR! Exiting program due to:", e);
     FranchiseUtils.EXIT_PROGRAM();
   }
 }
@@ -236,7 +231,7 @@ async function setSchemes(coachRecord) {
     selectScheme("Which offensive scheme should this coach have?", offSchemeKeys, offSchemeLookup, "OffensiveScheme");
     selectScheme("Which defensive scheme should this coach have?", defSchemeKeys, defSchemeLookup, "DefensiveScheme");
   } catch (e) {
-    console.warn('ERROR! Exiting program due to:', e);
+    console.warn("ERROR! Exiting program due to:", e);
     FranchiseUtils.EXIT_PROGRAM();
   }
 }
@@ -262,11 +257,13 @@ async function setPlaybooks(coachRecord) {
 
         break;
       } else {
-        console.log("Invalid value. Enter only the display name of the team, such as Jets, Titans, etc. Options are not case sensitive.");
+        console.log(
+          "Invalid value. Enter only the display name of the team, such as Jets, Titans, etc. Options are not case sensitive."
+        );
       }
     }
   } catch (e) {
-    console.warn('ERROR! Exiting the program due to:', e);
+    console.warn("ERROR! Exiting the program due to:", e);
     FranchiseUtils.EXIT_PROGRAM();
   }
 }
@@ -275,9 +272,7 @@ async function setCoachAppearance(coachRecord) {
   try {
     const allCoachPortraits = Object.values(allCoachHeads); // Get all portrait values from the dictionary
     const allCoachFaces = Object.keys(allCoachHeads); // Get all face keys from the dictionary
-    const portraitToHeadMap = Object.fromEntries(
-      allCoachFaces.map((face, i) => [allCoachPortraits[i], face])
-    ); // Map portraits to their corresponding face keys
+    const portraitToHeadMap = Object.fromEntries(allCoachFaces.map((face, i) => [allCoachPortraits[i], face])); // Map portraits to their corresponding face keys
 
     const filteredCoachPortraits = [...allCoachPortraits]; // Filtered list of portraits
 
@@ -294,15 +289,19 @@ async function setCoachAppearance(coachRecord) {
 
     let selectedPortrait;
     while (true) {
-      console.log('Please pick one of the following valid coach heads for this coach.');
-      console.log("Note: You can view previews for these coach portraits in the coachPreviews folder, which has been generated in the folder of this exe.");
+      console.log("Please pick one of the following valid coach heads for this coach.");
+      console.log(
+        "Note: You can view previews for these coach portraits in the coachPreviews folder, which has been generated in the folder of this exe."
+      );
       console.log(filteredCoachPortraits.join(", "));
 
       selectedPortrait = prompt(); // Get user input as a string
-      console.log(selectedPortrait)
+      console.log(selectedPortrait);
 
       if (filteredCoachPortraits.some((portrait) => String(portrait) === selectedPortrait.toLowerCase())) {
-        const exactPortrait = filteredCoachPortraits.find((portrait) => String(portrait) === selectedPortrait.toLowerCase());
+        const exactPortrait = filteredCoachPortraits.find(
+          (portrait) => String(portrait) === selectedPortrait.toLowerCase()
+        );
         const correspondingHead = portraitToHeadMap[exactPortrait];
 
         //coachRecord.FaceShape = correspondingHead;
@@ -324,300 +323,69 @@ async function setCoachAppearance(coachRecord) {
     }
 
     const genHeadAssetName = coachRecord.GenericHeadAssetName;
-    const prefix = genHeadAssetName.includes("_") 
-        ? FranchiseUtils.startsWithNumber(genHeadAssetName)
-            ? FranchiseUtils.getCharacterAfterNthUnderscore(genHeadAssetName, 3)
-            : FranchiseUtils.getCharacterAfterNthUnderscore(genHeadAssetName, 2)
-        : null;
+    const prefix = genHeadAssetName.includes("_")
+      ? FranchiseUtils.startsWithNumber(genHeadAssetName)
+        ? FranchiseUtils.getCharacterAfterNthUnderscore(genHeadAssetName, 3)
+        : FranchiseUtils.getCharacterAfterNthUnderscore(genHeadAssetName, 2)
+      : null;
 
-    const bodyType = isFemaleHead(coachRecord) 
-        ? "Standard_Alternate"
-        : {
-            "D": "Standard",
-            "B": "Standard",
-            "M": "Muscular",
-            "T": "Thin",
-            "H": "Heavy"
+    const bodyType = isFemaleHead(coachRecord)
+      ? "Standard_Alternate"
+      : {
+          D: "Standard",
+          B: "Standard",
+          M: "Muscular",
+          T: "Thin",
+          H: "Heavy",
         }[prefix] || "Standard";
 
     coachRecord.CharacterBodyType = bodyType;
 
-
     if (genHeadAssetName.includes("coachhead")) {
-      coachRecord.Type = 'Generic';
-    }
-    else {
-      coachRecord.Type = 'Existing';
+      coachRecord.Type = "Generic";
+    } else {
+      coachRecord.Type = "Existing";
     }
 
     return "N/A";
   } catch (e) {
-  console.warn('ERROR! Exiting program due to; ', e);
-  FranchiseUtils.EXIT_PROGRAM();
-}
+    console.warn("ERROR! Exiting program due to; ", e);
+    FranchiseUtils.EXIT_PROGRAM();
+  }
 }
 
 function isFemaleHead(coachRecord) {
   const head = coachRecord.GenericHeadAssetName;
-  return FranchiseUtils.startsWithNumber(head) &&
-    FranchiseUtils.getCharacterAfterNthUnderscore(head, 1) === 'F';
-}
-
-async function automaticallyFillTalents(activeTalentTree, activeTalentTreeNextRecord, coachPosition) {
-  const pickedTalents = [];
-
-  for (let i = 0; i < 3; i++) {
-      let talentNum = i === 0 ? 'first' : i === 1 ? 'second' : 'third';
-      let validChoices = coachTalentsPositions[coachPosition][talentNum];
-
-      if (validChoices.length === 1) {
-          let talentChoice = validChoices[0];
-          console.log(`Setting ${talentChoice} as the ${talentNum} talent for this coach.`);
-          let coachTalentBinary = coachTalentsLookup.find(obj => obj.talentTreeName === talentChoice)?.binaryReference;
-
-          if (i === 0) {
-              activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeFirst = coachTalentBinary;
-          } else if (i === 1) {
-              activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeSecond = coachTalentBinary;
-          } else {
-              activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeThird = coachTalentBinary;
-          }
-
-          pickedTalents.push(talentChoice);
-          continue;
-      }
-
-      validChoices = validChoices.filter(choice => !pickedTalents.includes(choice));
-
-      const randomIndex = Math.floor(Math.random() * validChoices.length);
-      const talentChoice = validChoices[randomIndex];
-      console.log(`Setting ${talentChoice} as the ${talentNum} talent for this coach.`);
-
-      let coachTalentBinary = coachTalentsLookup.find(obj => obj.talentTreeName === talentChoice)?.binaryReference;
-
-      if (i === 0) {
-          activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeFirst = coachTalentBinary;
-      } else if (i === 1) {
-          activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeSecond = coachTalentBinary;
-      } else {
-          activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeThird = coachTalentBinary;
-      }
-
-      pickedTalents.push(talentChoice);
-  }
-  return pickedTalents;
-}
-
-async function manuallySelectTalents(activeTalentTree, activeTalentTreeNextRecord, coachPosition) {
-  const pickedTalents = [];
-
-  for (let i = 0; i < 3; i++) {
-    let talentNum = i === 0 ? 'first' : i === 1 ? 'second' : 'third';
-    let validChoices = coachTalentsPositions[coachPosition][talentNum];
-    validChoices = validChoices.filter(choice => !pickedTalents.includes(choice)); // Exclude the chosen talents
-
-    let caseInsensitiveChoices = validChoices.map(choice => choice.toLowerCase());
-
-    if (validChoices.length === 1) {
-      let talentChoice = validChoices[0];
-      console.log(`Setting ${talentChoice} as the ${talentNum} talent for this coach.`);
-      let coachTalentBinary = coachTalentsLookup.find(obj => obj.talentTreeName === talentChoice)?.binaryReference;
-
-      if (i === 0) {
-        activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeFirst = coachTalentBinary;
-      } else if (i === 1) {
-        activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeSecond = coachTalentBinary;
-      } else {
-        activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeThird = coachTalentBinary;
-      }
-
-      pickedTalents.push(talentChoice);
-      continue;
-    }
-
-    const csvOptions = validChoices.join(', '); // Join options as CSV
-    console.log(`Please select the ${talentNum} talent for your ${coachPosition}. Valid options are as follows (case insensitive):`);
-    console.log(csvOptions);
-
-    let talentChoice = "";
-    while (!caseInsensitiveChoices.includes(talentChoice.toLowerCase())) {
-      talentChoice = prompt().toLowerCase(); // Make the input case-insensitive
-      if (!caseInsensitiveChoices.includes(talentChoice)) {
-        console.log("Invalid choice. As a reminder, choices are CASE INSENSITIVE.");
-      } else {
-        let coachTalentBinary = coachTalentsLookup.find(obj => obj.talentTreeName.toLowerCase() === talentChoice)?.binaryReference;
-
-        if (i === 0) {
-          activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeFirst = coachTalentBinary;
-        } else if (i === 1) {
-          activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeSecond = coachTalentBinary;
-        } else {
-          activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeThird = coachTalentBinary;
-        }
-
-        const originalTalentChoice = validChoices[caseInsensitiveChoices.indexOf(talentChoice.toLowerCase())];
-        pickedTalents.push(originalTalentChoice); // Push the original (case-sensitive) talent to pickedTalents
-        console.log(`Setting ${originalTalentChoice} as the ${talentNum} talent for this coach.`);
-        break;
-      }
-    }
-  }
-  return pickedTalents;
+  return FranchiseUtils.startsWithNumber(head) && FranchiseUtils.getCharacterAfterNthUnderscore(head, 1) === "F";
 }
 
 
-async function handleTalentTree(coachRecord,talentNodeStatus,talentNodeStatusArray,activeTalentTree,activeTalentTreeNextRecord,activeTalentTreeCurrentBinary,talentSubTreeStatus) {
-
-    const coachPosition = coachRecord.Position; // Get coach position
-    const coordinatorTalentNodeCount = 9;
-    const headCoachTalentNodeCount = 8;
-    
-    const talentNodeCount = coachPosition === 'HeadCoach' ? headCoachTalentNodeCount : coordinatorTalentNodeCount;
-    
-    const firstTalentNodeCount = talentNodeCount;
-    const secondTalentNodeCount = talentNodeCount;
-    const thirdTalentNodeCount = talentNodeCount;
-
-    try {
-      console.log("Next, we're going to set the TALENT TREES for your coach.")
-      
-      let pickedTalents = [];
-
-      let userChoice = '';
-
-      while (userChoice !== AUTOMATIC_KWD && userChoice !== MANUAL_KWD) {
-          if (coachPosition === 'HeadCoach') {
-            userChoice = AUTOMATIC_KWD;
-            console.log("Since this is a Head Coach, this is automatic.")
-          }
-          else {
-            console.log(`Would you like to AUTOMATICALLY fill in talents or MANUALLY select them? Valid choices are ${AUTOMATIC_KWD} or ${MANUAL_KWD}.`);
-            userChoice = prompt().toLowerCase();
-
-          }
-      }
-  
-      if (userChoice === AUTOMATIC_KWD) {
-          pickedTalents = await automaticallyFillTalents(
-              activeTalentTree,
-              activeTalentTreeNextRecord,
-              coachPosition
-          );
-      } else if (userChoice === MANUAL_KWD) {
-          pickedTalents = await manuallySelectTalents(
-              activeTalentTree,
-              activeTalentTreeNextRecord,
-              coachPosition
-          );
-      }
-
-
-      var talentNodeStatusNextRecord = talentNodeStatus.header.nextRecordToUse; // Get the next record for the TalentNodeStatus table
-  
-      }
-      catch (e) {
-        console.warn('ERROR! Exiting program due to; ', e);
-        FranchiseUtils.EXIT_PROGRAM();
-      }
-      
-    var talentNodeCountArray = [firstTalentNodeCount,secondTalentNodeCount,thirdTalentNodeCount]
-    for (var currentTalentNodeCount = 0; currentTalentNodeCount < talentNodeCountArray.length;currentTalentNodeCount++) {
-      try {
-        var talentSubTreeStatusNextRecord = talentSubTreeStatus.header.nextRecordToUse;
-        var talentNodeStatusArrayNextRecord = talentNodeStatusArray.header.nextRecordToUse;
-
-        currentNodeArrayCount = talentNodeCountArray[currentTalentNodeCount]
-        var i = 0;
-        var talentNodeArray = [];
-        while (i <= currentNodeArrayCount) {
-            if (i == 0) {
-              var currentBinary = getBinaryReferenceData(talentNodeStatus.header.tableId,talentNodeStatusNextRecord);
-              if (currentTalentNodeCount === 2 && coachPosition !== 'HeadCoach') {
-                talentNodeStatus.records[talentNodeStatusNextRecord].TalentStatus = 'Owned';
-                talentNodeStatus.records[talentNodeStatusNextRecord].UpgradeCount = '1';
-  
-              }
-              else {
-                talentNodeStatus.records[talentNodeStatusNextRecord].TalentStatus = 'NotOwned';
-                talentNodeStatus.records[talentNodeStatusNextRecord].UpgradeCount = 0;
-  
-              }
-              talentNodeArray.push(currentBinary);
-              var talentNodeStatusNextRecord = talentNodeStatus.header.nextRecordToUse;
-    
-            }
-            else {
-              var currentBinary = getBinaryReferenceData(talentNodeStatus.header.tableId,talentNodeStatusNextRecord);
-              talentNodeStatus.records[talentNodeStatusNextRecord].TalentStatus = 'NotOwned';
-              talentNodeStatus.records[talentNodeStatusNextRecord].UpgradeCount = 0;
-              talentNodeArray.push(currentBinary);
-              var talentNodeStatusNextRecord = talentNodeStatus.header.nextRecordToUse;
-            }
-            i++;
-          }
-    
-          var j = 0;
-          while (j <= 11) {
-            if (currentNodeArrayCount >= j) { //Put each talent node from our resulting array into the array table
-              var currentArrayElement = talentNodeArray.shift();
-              talentNodeStatusArray.records[talentNodeStatusArrayNextRecord][`TalentNodeStatus${j}`] = currentArrayElement;
-              j++;
-            }
-            else if (currentNodeArrayCount < j) { //Once our array is empty, make sure the rest of the row is zeroed out
-              talentNodeStatusArray.records[talentNodeStatusArrayNextRecord][`TalentNodeStatus${j}`] = FranchiseUtils.ZERO_REF;
-              j++;
-            }
-          }
-        var talentNodeBinary = getBinaryReferenceData(talentNodeStatusArray.header.tableId,talentNodeStatusArrayNextRecord); //Get the binary for our row in the node status array table
-        talentSubTreeStatus.records[talentSubTreeStatusNextRecord].TalentStatusOrderedList = talentNodeBinary; // Use the above binary in the TalentSubTreeStatus table
-    
-        var currentActiveTalentTreeBinary = getBinaryReferenceData(talentSubTreeStatus.header.tableId,talentSubTreeStatusNextRecord); //The final binary we need for the first active talent tree column
-        if (currentTalentNodeCount == 0) {
-          activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeStatusFirst = currentActiveTalentTreeBinary
-
-        }
-        else if (currentTalentNodeCount == 1) {
-          currentActiveTalentTreeBinary = getBinaryReferenceData(talentSubTreeStatus.header.tableId,talentSubTreeStatusNextRecord) //The final binary we need for the second active talent tree column
-          activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeStatusSecond = currentActiveTalentTreeBinary
-
-        }
-
-        else {
-          currentActiveTalentTreeBinary = getBinaryReferenceData(talentSubTreeStatus.header.tableId,talentSubTreeStatusNextRecord) //The final binary we need for the second active talent tree column
-          activeTalentTree.records[activeTalentTreeNextRecord].TalentSubTreeStatusThird = currentActiveTalentTreeBinary
-
-        }
-      } catch (e) {
-        console.warn("ERROR! Exiting program due to; ", e);
-        FranchiseUtils.EXIT_PROGRAM();
-      }
-
-    }
-    coachRecord.ActiveTalentTree = activeTalentTreeCurrentBinary;
-  
-}
-
-async function addCoachToFATable(freeAgentCoachTable,currentCoachBinary) {
+async function addCoachToFATable(freeAgentCoachTable, currentCoachBinary) {
   try {
     let i = 0;
     coachArrayNotFull = true;
-    while (coachArrayNotFull) { // Find first zeroed out coach value in array table and insert our new coach there
-      if (i > 63) { /// This means the coach array table is full; We can't add a new coach!
+    while (coachArrayNotFull) {
+      // Find first zeroed out coach value in array table and insert our new coach there
+      if (i > 63) {
+        /// This means the coach array table is full; We can't add a new coach!
         coachArrayNotFull = false;
-        break
+        break;
       }
       if (freeAgentCoachTable.records[0][`Coach${i}`] == FranchiseUtils.ZERO_REF) {
         if (i > 58) {
-          console.log(`Warning: There are 64 total slots for free agent coaches and you've now taken up ${i + 1} slots out of 64. It's not advisable to completely fill up the Coach FA pool.`)
+          console.log(
+            `Warning: There are 64 total slots for free agent coaches and you've now taken up ${
+              i + 1
+            } slots out of 64. It's not advisable to completely fill up the Coach FA pool.`
+          );
         }
-        freeAgentCoachTable.records[0][`Coach${i}`] = currentCoachBinary
-        break
-
+        freeAgentCoachTable.records[0][`Coach${i}`] = currentCoachBinary;
+        break;
       }
       i++;
     }
   } catch (e) {
-    console.warn("ERROR! Exiting program due to; ",e)
+    console.warn("ERROR! Exiting program due to; ", e);
     FranchiseUtils.EXIT_PROGRAM();
   }
   if (!coachArrayNotFull) {
@@ -626,64 +394,67 @@ async function addCoachToFATable(freeAgentCoachTable,currentCoachBinary) {
   }
 }
 
-async function updateCoachVisual(coachTable,characterVisuals,nextCoachRecord, coachSize) {
-
-
+async function updateCoachVisual(coachTable, characterVisuals, nextCoachRecord, coachSize) {
   let jsonToUpdate = JSON.parse(JSON.stringify(COACH_BASE_JSON)); // Get our current base JSON
 
   const coachValues = await CHARACTER_VISUALS_FUNCTIONS.getCoachValues(coachTable, nextCoachRecord);
 
-  jsonToUpdate = await CHARACTER_VISUALS_FUNCTIONS.updateCoachVisuals(coachValues,jsonToUpdate,VISUAL_MORPH_KEYS, coachSize)
+  jsonToUpdate = await CHARACTER_VISUALS_FUNCTIONS.updateCoachVisuals(
+    coachValues,
+    jsonToUpdate,
+    VISUAL_MORPH_KEYS,
+    coachSize
+  );
 
   jsonToUpdate = await CHARACTER_VISUALS_FUNCTIONS.removeEmptyCoachBlends(jsonToUpdate);
   jsonToUpdate = FranchiseUtils.cleanJson(jsonToUpdate);
 
-  
-  let characterVisualsRef = coachTable.records[nextCoachRecord]['CharacterVisuals'];
+  let characterVisualsRef = coachTable.records[nextCoachRecord]["CharacterVisuals"];
   let characterVisualsRow = await FranchiseUtils.bin2Dec(characterVisualsRef.slice(15));
   const visualsRecordCapacity = characterVisuals.header.recordCapacity;
 
-  if (characterVisualsRef === FranchiseUtils.ZERO_REF) { // If it's all zeroes, we need to set a new reference
+  if (characterVisualsRef === FranchiseUtils.ZERO_REF) {
+    // If it's all zeroes, we need to set a new reference
     characterVisualsRow = characterVisuals.header.nextRecordToUse; // Get the first empty row
     if (characterVisualsRow >= visualsRecordCapacity) {
       console.log("ERROR - The CharacterVisuals table has run out of space. Your changes have not been saved.");
-      console.log(`This means that the amount of players + coaches in your Franchise File exceeds ${visualsRecordCapacity}.`)
+      console.log(
+        `This means that the amount of players + coaches in your Franchise File exceeds ${visualsRecordCapacity}.`
+      );
       FranchiseUtils.EXIT_PROGRAM();
     }
-    characterVisualsRef = getBinaryReferenceData(characterVisuals.header.tableId,characterVisualsRow); //Convert to binary
-    coachTable.records[nextCoachRecord]['CharacterVisuals'] = characterVisualsRef;
-  }
-  else { //Else, simply convert the binary ref to the row number value
+    characterVisualsRef = getBinaryReferenceData(characterVisuals.header.tableId, characterVisualsRow); //Convert to binary
+    coachTable.records[nextCoachRecord]["CharacterVisuals"] = characterVisualsRef;
+  } else {
+    //Else, simply convert the binary ref to the row number value
     characterVisualsRow = await FranchiseUtils.bin2Dec(characterVisualsRef.slice(15));
   }
 
-  characterVisuals.records[characterVisualsRow]['RawData'] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
+  characterVisuals.records[characterVisualsRow]["RawData"] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
 }
 
 async function createNewCoach(franchise) {
-
   const coachTable = franchise.getTableByUniqueId(tables.coachTable); // Get all the tables we'll need
   const freeAgentCoachTable = franchise.getTableByUniqueId(tables.freeAgentCoachTable);
-  const activeTalentTree = franchise.getTableByUniqueId(tables.activeTalentTree);
-  const talentNodeStatus = franchise.getTableByUniqueId(tables.talentNodeStatus);
-  const talentNodeStatusArray = franchise.getTableByUniqueId(tables.talentNodeStatusArray);
-  const talentSubTreeStatus = franchise.getTableByUniqueId(tables.talentSubTreeStatus);
   const presentationTable = franchise.getTableByUniqueId(tables.presentationTable);
   const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
 
-  await FranchiseUtils.readTableRecords([coachTable,freeAgentCoachTable,activeTalentTree,talentNodeStatus,talentNodeStatusArray,talentSubTreeStatus,presentationTable,characterVisuals]);
-  
-  const nextCoachRecord = coachTable.header.nextRecordToUse; // Get next record to use for the coach table and activeTalentTree table
-  const activeTalentTreeNextRecord = activeTalentTree.header.nextRecordToUse;
-  const coachBinary = getBinaryReferenceData(coachTable.header.tableId,nextCoachRecord); // Then, we need the current row binary for both tables
-  const activeTalentTreeCurrentBinary = getBinaryReferenceData(activeTalentTree.header.tableId,activeTalentTreeNextRecord);
+  await FranchiseUtils.readTableRecords([
+    coachTable,
+    freeAgentCoachTable,
+    presentationTable,
+    characterVisuals,
+  ]);
+
+  const nextCoachRecord = coachTable.header.nextRecordToUse; // Get next record to use for the coach table
+  const coachBinary = getBinaryReferenceData(coachTable.header.tableId, nextCoachRecord); // Then, we need the current row binary for both tables
 
   const coachRecord = coachTable.records[nextCoachRecord];
 
   const presentationId = adjustPresentationId(presentationTable); // Get presentation id
-  setDefaultCoachValues(coachRecord,presentationId); // Set all default coach values
-  
-  const [coachFirstName,coachLastName] = setCoachName(coachRecord); // Get coach name from user
+  setDefaultCoachValues(coachRecord, presentationId); // Set all default coach values
+
+  const [coachFirstName, coachLastName] = setCoachName(coachRecord); // Get coach name from user
 
   const coachPosition = setCoachPosition(coachRecord); // Get coach position
 
@@ -692,44 +463,39 @@ async function createNewCoach(franchise) {
   await setPlaybooks(coachRecord); // Get playbooks
 
   const coachSize = await setCoachAppearance(coachRecord);
-  
-  await handleTalentTree(coachRecord,talentNodeStatus,talentNodeStatusArray,activeTalentTree,activeTalentTreeNextRecord,activeTalentTreeCurrentBinary,talentSubTreeStatus);
 
-  await addCoachToFATable(freeAgentCoachTable,coachBinary);
+  await addCoachToFATable(freeAgentCoachTable, coachBinary);
 
-  await updateCoachVisual(coachTable,characterVisuals,nextCoachRecord, coachSize);
+  await updateCoachVisual(coachTable, characterVisuals, nextCoachRecord, coachSize);
 
   console.log(`Successfully created ${coachPosition} ${coachFirstName} ${coachLastName}!`);
   return;
-
-
 }
 
-franchise.on('ready', async function () {
- 
-  do { // Do while loop to keep creating coaches
-    await createNewCoach(franchise); // Call the function here to ensure it runs at least once
-  
+franchise.on("ready", async function () {
+  do {
+    // Do while loop to keep creating coaches
+    await createNewCoach(franchise);
+
     const message = `Would you like to create another coach? Enter ${FranchiseUtils.YES_KWD} to create another coach or ${FranchiseUtils.NO_KWD} to quit the program. Alternatively, enter ${FranchiseUtils.FORCEQUIT_KWD} to exit the program WITHOUT saving your most recent added coach.`;
-    
+
     const prompt = FranchiseUtils.getYesNoForceQuit(message);
-    
-    if (prompt === FranchiseUtils.NO_KWD) { // If no, save and quit
+
+    if (prompt === FranchiseUtils.NO_KWD) {
+      // If no, save and quit
       await franchise.save();
-  
+
       fs.rmSync(dir, { recursive: true, force: true }); // Remove the coach previews folder
       console.log("Franchise file successfully saved.");
       FranchiseUtils.EXIT_PROGRAM();
-    } 
-    else if (prompt === FranchiseUtils.FORCEQUIT_KWD) {
+    } else if (prompt === FranchiseUtils.FORCEQUIT_KWD) {
       fs.rmSync(dir, { recursive: true, force: true }); // Remove the coach previews folder
       console.log("Exiting without saving your last added coach.");
       FranchiseUtils.EXIT_PROGRAM();
-    }
-    else if (prompt === FranchiseUtils.YES_KWD) { //Save the file and run the program again
+    } else if (prompt === FranchiseUtils.YES_KWD) {
+      //Save the file and run the program again
       await franchise.save();
       console.log("Franchise file successfully saved.");
     }
-  } while (true); // Loop indefinitely until an exit condition is met
+  } while (true);
 });
-
