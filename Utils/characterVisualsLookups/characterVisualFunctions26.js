@@ -46,6 +46,7 @@ async function generateCoachVisuals(franchise, tables, coachRecord) {
   if (visualsRecord) {
     visualsRecord.RawData = visuals;
   }
+  return visuals;
 }
 
 /**

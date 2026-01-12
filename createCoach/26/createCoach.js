@@ -1,9 +1,9 @@
 const prompt = require("prompt-sync")();
-const { getBinaryReferenceData } = require("madden-franchise/services/utilService");
+const { getBinaryReferenceData } = require("madden-franchise").utilService;
 const fs = require("fs");
-const CHARACTER_VISUALS_FUNCTIONS = require("../../Utils/characterVisualsLookups/characterVisualFunctions25");
-const COACH_BASE_JSON = CHARACTER_VISUALS_FUNCTIONS.baseCoachVisualJson;
+const path = require("path");
 const FranchiseUtils = require("../../Utils/FranchiseUtils");
+const CharacterVisualFunctions = require("../../Utils/characterVisualsLookups/characterVisualFunctions26")
 const AUTOMATIC_KWD = "a";
 const MANUAL_KWD = "m";
 
@@ -394,56 +394,19 @@ async function addCoachToFATable(freeAgentCoachTable, currentCoachBinary) {
   }
 }
 
-async function updateCoachVisual(coachTable, characterVisuals, nextCoachRecord, coachSize) {
-  let jsonToUpdate = JSON.parse(JSON.stringify(COACH_BASE_JSON)); // Get our current base JSON
-
-  const coachValues = await CHARACTER_VISUALS_FUNCTIONS.getCoachValues(coachTable, nextCoachRecord);
-
-  jsonToUpdate = await CHARACTER_VISUALS_FUNCTIONS.updateCoachVisuals(
-    coachValues,
-    jsonToUpdate,
-    VISUAL_MORPH_KEYS,
-    coachSize
-  );
-
-  jsonToUpdate = await CHARACTER_VISUALS_FUNCTIONS.removeEmptyCoachBlends(jsonToUpdate);
-  jsonToUpdate = FranchiseUtils.cleanJson(jsonToUpdate);
-
-  let characterVisualsRef = coachTable.records[nextCoachRecord]["CharacterVisuals"];
-  let characterVisualsRow = await FranchiseUtils.bin2Dec(characterVisualsRef.slice(15));
-  const visualsRecordCapacity = characterVisuals.header.recordCapacity;
-
-  if (characterVisualsRef === FranchiseUtils.ZERO_REF) {
-    // If it's all zeroes, we need to set a new reference
-    characterVisualsRow = characterVisuals.header.nextRecordToUse; // Get the first empty row
-    if (characterVisualsRow >= visualsRecordCapacity) {
-      console.log("ERROR - The CharacterVisuals table has run out of space. Your changes have not been saved.");
-      console.log(
-        `This means that the amount of players + coaches in your Franchise File exceeds ${visualsRecordCapacity}.`
-      );
-      FranchiseUtils.EXIT_PROGRAM();
-    }
-    characterVisualsRef = getBinaryReferenceData(characterVisuals.header.tableId, characterVisualsRow); //Convert to binary
-    coachTable.records[nextCoachRecord]["CharacterVisuals"] = characterVisualsRef;
-  } else {
-    //Else, simply convert the binary ref to the row number value
-    characterVisualsRow = await FranchiseUtils.bin2Dec(characterVisualsRef.slice(15));
-  }
-
-  characterVisuals.records[characterVisualsRow]["RawData"] = jsonToUpdate; //Set the RawData of the CharacterVisuals row = our updated JSON
+async function updateCoachVisual(nextCoachRecord) {
+  const visuals = CharacterVisualFunctions.generateCoachVisuals(franchise, tables, nextCoachRecord);
 }
 
 async function createNewCoach(franchise) {
   const coachTable = franchise.getTableByUniqueId(tables.coachTable); // Get all the tables we'll need
   const freeAgentCoachTable = franchise.getTableByUniqueId(tables.freeAgentCoachTable);
   const presentationTable = franchise.getTableByUniqueId(tables.presentationTable);
-  const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
 
   await FranchiseUtils.readTableRecords([
     coachTable,
     freeAgentCoachTable,
     presentationTable,
-    characterVisuals,
   ]);
 
   const nextCoachRecord = coachTable.header.nextRecordToUse; // Get next record to use for the coach table
@@ -466,7 +429,7 @@ async function createNewCoach(franchise) {
 
   await addCoachToFATable(freeAgentCoachTable, coachBinary);
 
-  await updateCoachVisual(coachTable, characterVisuals, nextCoachRecord, coachSize);
+  await updateCoachVisual(nextCoachRecord);
 
   console.log(`Successfully created ${coachPosition} ${coachFirstName} ${coachLastName}!`);
   return;
