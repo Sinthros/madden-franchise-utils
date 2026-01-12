@@ -21,14 +21,30 @@ const FEMALE_BODY_TYPES = ["Standard_Alternate", "Thin_Alternate"];
  */
 async function generateCoachVisuals(franchise, tables, coachRecord) {
   if (!coachRecord) return;
+
   const assetName = coachRecord.AssetName;
-  // Get the current visuals record
+  const headAssetName = coachRecord.GenericHeadAssetName;
+
+  // Get current visuals record
   const visualsRecord = await getCharacterVisualsRecord(franchise, tables, coachRecord);
 
-  let visuals = coachVisualsLookup[assetName];
+  let visuals = coachVisualsLookup[assetName] || (isFemaleHead(coachRecord) ? baseFemaleVisuals : baseCoachVisuals);
 
-  if (!visuals) {
-    visuals = isFemaleHead(coachRecord) ? baseFemaleVisuals : baseCoachVisuals;
+  // Clone to avoid mutating shared base visuals
+  visuals = structuredClone(visuals);
+
+  // Add or replace Head section
+  if (shouldAddHeadSection(coachRecord) && headAssetName) {
+    visuals.loadouts = visuals.loadouts || [];
+
+    // Remove existing Head loadout
+    visuals.loadouts = visuals.loadouts.filter((l) => l.loadoutCategory !== "Head" && l.loadoutType !== "Head");
+
+    // Prepend new Head loadout
+    visuals.loadouts.unshift(buildHeadLoadout(headAssetName));
+  }
+  if (visualsRecord) {
+    visualsRecord.RawData = visuals;
   }
 }
 
@@ -113,6 +129,27 @@ function shouldAddHeadSection(coachRecord) {
   return typeof head === "string" && head.endsWith("_HS");
 }
 
+function buildHeadLoadout(headAssetName) {
+  return {
+    loadoutCategory: "Head",
+    loadoutType: "Head",
+    loadoutElements: [
+      {
+        slotType: "PlusHead",
+        itemAssetName: headAssetName,
+        itemInstanceTag: headAssetName,
+        blends: [{}],
+        transforms: [{}],
+      },
+    ],
+  };
+}
+
 module.exports = {
+  generateCoachVisuals,
+  getCharacterVisualsRecord,
   updateVisualSlotTypes,
+  isFemaleHead,
+  shouldAddHeadSection,
+  buildHeadLoadout,
 };
