@@ -10,6 +10,7 @@ const baseFemaleVisuals = JSON.parse(
 const baseCoachVisuals = JSON.parse(fs.readFileSync(path.join(__dirname, "./26/baseCoachVisualLookup.json"), "utf-8"));
 const coachVisualsLookup = JSON.parse(fs.readFileSync(path.join(__dirname, "./26/coachVisualsLookup.json"), "utf-8"));
 const allSlotTypes = Object.keys(JSON.parse(fs.readFileSync(path.join(__dirname, "./26/loadoutSlots.json"), "utf-8")));
+const MALE_BODY_TYPES = ["Standard", "Muscular", "Thin", "Heavy"];
 const FEMALE_BODY_TYPES = ["Standard_Alternate", "Thin_Alternate"];
 
 /**
@@ -147,6 +148,13 @@ function buildHeadLoadout(headAssetName) {
 }
 
 module.exports = {
+
+  baseFemaleVisuals,
+  baseCoachVisuals,
+  coachVisualsLookup,
+  MALE_BODY_TYPES,
+  FEMALE_BODY_TYPES,
+
   generateCoachVisuals,
   getCharacterVisualsRecord,
   updateVisualSlotTypes,

@@ -1,11 +1,8 @@
 const prompt = require("prompt-sync")();
 const { getBinaryReferenceData } = require("madden-franchise").utilService;
 const fs = require("fs");
-const path = require("path");
 const FranchiseUtils = require("../../Utils/FranchiseUtils");
-const CharacterVisualFunctions = require("../../Utils/characterVisualsLookups/characterVisualFunctions26")
-const AUTOMATIC_KWD = "a";
-const MANUAL_KWD = "m";
+const CharacterVisualFunctions = require("../../Utils/characterVisualsLookups/characterVisualFunctions26");
 
 const offPlaybookLookup = JSON.parse(fs.readFileSync("lookupFiles/off_playbook_lookup.json", "utf8"));
 const defPlaybookLookup = JSON.parse(fs.readFileSync("lookupFiles/def_playbook_lookup.json", "utf8"));
@@ -13,9 +10,10 @@ const philosophyLookup = JSON.parse(fs.readFileSync("lookupFiles/philosophy_look
 const offSchemeLookup = JSON.parse(fs.readFileSync("lookupFiles/off_scheme_lookup.json", "utf8"));
 const defSchemeLookup = JSON.parse(fs.readFileSync("lookupFiles/def_scheme_lookup.json", "utf8"));
 const allCoachHeads = JSON.parse(fs.readFileSync("lookupFiles/coach_heads_lookup.json", "utf8"));
-
-// Visual morph keys for players and coaches
-const VISUAL_MORPH_KEYS = ["ArmSize", "CalfBlend", "Chest", "Feet", "Glute", "Gut", "Thighs"];
+const COACH_ARCHETYPES = ["OffensiveGuru", "DefensiveGenius", "DevelopmentWizard", "MasterMotivator"];
+const MALE_BODY_TYPES = CharacterVisualFunctions.MALE_BODY_TYPES;
+const FEMALE_BODY_TYPES = CharacterVisualFunctions.FEMALE_BODY_TYPES;
+const COACH_POSITIONS = ["HeadCoach", "OffensiveCoordinator", "DefensiveCoordinator"];
 
 const gameYear = FranchiseUtils.YEARS.M26;
 const dir = "./coachPreviews";
@@ -31,15 +29,15 @@ if (!fs.existsSync(dir)) {
 const franchise = FranchiseUtils.init(gameYear, { isAutoUnemptyEnabled: true, promptForBackup: true });
 const tables = FranchiseUtils.getTablesObject(franchise);
 
-function adjustPresentationId(presentationTable) {
+function adjustPresentationId(coachRecord, presentationTable) {
   const record = presentationTable.records[0];
   const presentationId = record.PresentationId;
   record.PresentationId++;
   record.IdsRemaining--;
-  return presentationId;
+  coachRecord.PresentationId = presentationId;
 }
 
-function setDefaultCoachValues(coachRecord, presentationId) {
+function setDefaultCoachValues(coachRecord) {
   try {
     // Self explanatory - These are the default values for the coach table
     coachRecord.SeasonsWithTeam = 0;
@@ -96,7 +94,6 @@ function setDefaultCoachValues(coachRecord, presentationId) {
     coachRecord.RegularWinStreak = 0;
     coachRecord.YearsCoaching = 0;
     coachRecord.Level = 0;
-    coachRecord.PresentationId = presentationId;
     coachRecord.TeamBuilding = "ThroughFreeAgency";
     coachRecord.LegacyScore = 0;
     coachRecord.Face = 0;
@@ -155,34 +152,9 @@ function setCoachName(coachRecord) {
 }
 
 function setCoachPosition(coachRecord) {
-  try {
-    const validCoachPositions = ["HeadCoach", "OffensiveCoordinator", "DefensiveCoordinator"];
-    let coachPosition;
-
-    while (true) {
-      // Infinite loop, until a valid position is entered
-      console.log(
-        "Enter the position of the coach. Valid values are HeadCoach, OffensiveCoordinator, and DefensiveCoordinator."
-      );
-      coachPosition = prompt();
-
-      const lowercaseInput = coachPosition.toLowerCase(); // Convert input to lowercase
-
-      const matchingPosition = validCoachPositions.find((position) => position.toLowerCase() === lowercaseInput);
-
-      if (matchingPosition) {
-        // If valid, set the position in its original case
-        coachRecord.Position = matchingPosition;
-        coachRecord.OriginalPosition = matchingPosition;
-        return coachRecord.Position;
-      } else {
-        console.log("Invalid value. Please enter one of the valid options.");
-      }
-    }
-  } catch (e) {
-    console.warn("ERROR! Exiting program due to:", e);
-    FranchiseUtils.EXIT_PROGRAM();
-  }
+  const position = FranchiseUtils.getUserSelection("Enter the position of the coach", COACH_POSITIONS);
+  coachRecord.Position = position;
+  coachRecord.OriginalPosition = position;
 }
 
 // Used for Start Today
@@ -329,7 +301,7 @@ async function setCoachAppearance(coachRecord) {
         : FranchiseUtils.getCharacterAfterNthUnderscore(genHeadAssetName, 2)
       : null;
 
-    const bodyType = isFemaleHead(coachRecord)
+    const bodyType = CharacterVisualFunctions.isFemaleHead(coachRecord)
       ? "Standard_Alternate"
       : {
           D: "Standard",
@@ -353,12 +325,6 @@ async function setCoachAppearance(coachRecord) {
     FranchiseUtils.EXIT_PROGRAM();
   }
 }
-
-function isFemaleHead(coachRecord) {
-  const head = coachRecord.GenericHeadAssetName;
-  return FranchiseUtils.startsWithNumber(head) && FranchiseUtils.getCharacterAfterNthUnderscore(head, 1) === "F";
-}
-
 
 async function addCoachToFATable(freeAgentCoachTable, currentCoachBinary) {
   try {
@@ -395,50 +361,54 @@ async function addCoachToFATable(freeAgentCoachTable, currentCoachBinary) {
 }
 
 async function updateCoachVisual(nextCoachRecord) {
-  const visuals = CharacterVisualFunctions.generateCoachVisuals(franchise, tables, nextCoachRecord);
+  const visuals = await CharacterVisualFunctions.generateCoachVisuals(franchise, tables, nextCoachRecord);
 }
 
-async function createNewCoach(franchise) {
+function getArchetype(coachRecord) {
+  const archetype = FranchiseUtils.getUserSelection("Please select an archetype for the coach", COACH_ARCHETYPES);
+  coachRecord.Archetype = archetype;
+}
+
+async function createNewCoach() {
   const coachTable = franchise.getTableByUniqueId(tables.coachTable); // Get all the tables we'll need
   const freeAgentCoachTable = franchise.getTableByUniqueId(tables.freeAgentCoachTable);
   const presentationTable = franchise.getTableByUniqueId(tables.presentationTable);
 
-  await FranchiseUtils.readTableRecords([
-    coachTable,
-    freeAgentCoachTable,
-    presentationTable,
-  ]);
+  await FranchiseUtils.readTableRecords([coachTable, freeAgentCoachTable, presentationTable]);
 
   const nextCoachRecord = coachTable.header.nextRecordToUse; // Get next record to use for the coach table
   const coachBinary = getBinaryReferenceData(coachTable.header.tableId, nextCoachRecord); // Then, we need the current row binary for both tables
 
   const coachRecord = coachTable.records[nextCoachRecord];
 
-  const presentationId = adjustPresentationId(presentationTable); // Get presentation id
-  setDefaultCoachValues(coachRecord, presentationId); // Set all default coach values
+  adjustPresentationId(coachRecord, presentationTable); // Get presentation id
+
+  setDefaultCoachValues(coachRecord); // Set all default coach values
 
   const [coachFirstName, coachLastName] = setCoachName(coachRecord); // Get coach name from user
 
-  const coachPosition = setCoachPosition(coachRecord); // Get coach position
+  setCoachPosition(coachRecord); // Get coach position
 
   await setSchemes(coachRecord); // Get coach schemes
 
   await setPlaybooks(coachRecord); // Get playbooks
 
-  const coachSize = await setCoachAppearance(coachRecord);
-
-  await addCoachToFATable(freeAgentCoachTable, coachBinary);
+  await setCoachAppearance(coachRecord);
 
   await updateCoachVisual(nextCoachRecord);
 
-  console.log(`Successfully created ${coachPosition} ${coachFirstName} ${coachLastName}!`);
+  getArchetype(coachRecord);
+
+  await addCoachToFATable(freeAgentCoachTable, coachBinary);
+
+  console.log(`Successfully created ${coachRecord.Position} ${coachFirstName} ${coachLastName}!`);
   return;
 }
 
 franchise.on("ready", async function () {
   do {
     // Do while loop to keep creating coaches
-    await createNewCoach(franchise);
+    await createNewCoach();
 
     const message = `Would you like to create another coach? Enter ${FranchiseUtils.YES_KWD} to create another coach or ${FranchiseUtils.NO_KWD} to quit the program. Alternatively, enter ${FranchiseUtils.FORCEQUIT_KWD} to exit the program WITHOUT saving your most recent added coach.`;
 
