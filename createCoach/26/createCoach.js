@@ -268,7 +268,6 @@ async function setCoachAppearance(coachRecord) {
       console.log(filteredCoachPortraits.join(", "));
 
       selectedPortrait = prompt(); // Get user input as a string
-      console.log(selectedPortrait);
 
       if (filteredCoachPortraits.some((portrait) => String(portrait) === selectedPortrait.toLowerCase())) {
         const exactPortrait = filteredCoachPortraits.find(
@@ -360,8 +359,8 @@ async function addCoachToFATable(freeAgentCoachTable, currentCoachBinary) {
   }
 }
 
-async function updateCoachVisual(nextCoachRecord) {
-  const visuals = await CharacterVisualFunctions.generateCoachVisuals(franchise, tables, nextCoachRecord);
+async function updateCoachVisual(coachRecord) {
+  const visuals = await CharacterVisualFunctions.generateCoachVisuals(franchise, tables, coachRecord);
 }
 
 function getArchetype(coachRecord) {
@@ -395,7 +394,7 @@ async function createNewCoach() {
 
   await setCoachAppearance(coachRecord);
 
-  await updateCoachVisual(nextCoachRecord);
+  await updateCoachVisual(coachRecord);
 
   getArchetype(coachRecord);
 
