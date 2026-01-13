@@ -1,0 +1,82 @@
+[
+  {
+    "Binary": "10000000101000111110011011001110",
+    "UnlockPath": "10000000101001100001110101000000",
+    "TieredArchetypeTalents": "00000000000000000000000000000000",
+    "ExclusiveTalent": "10000000101010101100111100001100",
+    "ArchetypeTalents": "10000000101101010110001101011001",
+    "Name": "Defensive Genius",
+    "IsDefault": false,
+    "Archetype": "DefensiveGenius"
+  },
+  {
+    "Binary": "10000000101000111110011011010000",
+    "UnlockPath": "10000000101010010110100100001101",
+    "TieredArchetypeTalents": "00000000000000000000000000000000",
+    "ExclusiveTalent": "10000000101010101100111010010100",
+    "ArchetypeTalents": "10000000101010010110100100001100",
+    "Name": "Development Wizard",
+    "IsDefault": true,
+    "Archetype": "DevelopmentWizard"
+  },
+  {
+    "Binary": "10000000101000111110011011010001",
+    "UnlockPath": "10000000101001100001110101000011",
+    "TieredArchetypeTalents": "00000000000000000000000000000000",
+    "ExclusiveTalent": "10000000100110001111110111111111",
+    "ArchetypeTalents": "10000000100110001111111000000000",
+    "Name": "Head Scout",
+    "IsDefault": false,
+    "Archetype": "HeadScout"
+  },
+  {
+    "Binary": "10000000101000111110011011010010",
+    "UnlockPath": "10000000101001100001110101000100",
+    "TieredArchetypeTalents": "00000000000000000000000000000000",
+    "ExclusiveTalent": "10000000100110001111110111111111",
+    "ArchetypeTalents": "10000000100110001111111000000000",
+    "Name": "Head Trainer",
+    "IsDefault": false,
+    "Archetype": "HeadTrainer"
+  },
+  {
+    "Binary": "10000000101000111110011011001101",
+    "UnlockPath": "10000000101001100001110101000001",
+    "TieredArchetypeTalents": "00000000000000000000000000000000",
+    "ExclusiveTalent": "10000000101101010000001000101000",
+    "ArchetypeTalents": "10000000101101010110001101011000",
+    "Name": "Offensive Guru",
+    "IsDefault": false,
+    "Archetype": "OffensiveGuru"
+  },
+  {
+    "Binary": "10000000101000111110011011001111",
+    "UnlockPath": "10000000101001100001110101000010",
+    "TieredArchetypeTalents": "00000000000000000000000000000000",
+    "ExclusiveTalent": "10000000101010101100111010011010",
+    "ArchetypeTalents": "10000000101101010110001101010111",
+    "Name": "Personnel Czar",
+    "IsDefault": false,
+    "Archetype": "PersonnelCzar"
+  },
+  {
+    "Binary": "10000000101111110011001100010000",
+    "UnlockPath": "10000000101111110011001100010100",
+    "TieredArchetypeTalents": "10000000101111110011001100111011",
+    "ExclusiveTalent": "10000000101110010110111101001010",
+    "ArchetypeTalents": "10000000101111110011001100010011",
+    "Name": "Master Motivator",
+    "IsDefault": false,
+    "Archetype": "MasterMotivator_JohnMadden"
+  },
+  {
+    "Binary": "10000000101110010110111101010001",
+    "UnlockPath": "10000000101110010110111101010011",
+    "TieredArchetypeTalents": "00000000000000000000000000000000",
+    "ExclusiveTalent": "10000000101110010110111101001010",
+    "ArchetypeTalents": "10000000101110010110111101010010",
+    "Name": "Master Motivator",
+    "IsDefault": false,
+    "Archetype": "MasterMotivator"
+  }
+]

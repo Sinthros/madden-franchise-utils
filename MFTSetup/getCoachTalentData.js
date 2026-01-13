@@ -32,7 +32,7 @@ function filterNonZeroRefEntries(dataArray, prefix, minimumCount = 4) {
     }
   }
 
-  console.log(filtered)
+  //console.log(filtered)
   // If nothing made it through, add 1 fallback entry with 4 zeroRef fields
   if (filtered.length === 0) {
     const fallback = { Binary: FranchiseUtils.ZERO_REF };
@@ -84,7 +84,7 @@ franchise.on('ready', async function () {
     const staffStatGameBasedCumulativeGoal = await FranchiseUtils.getTableDataAsArray(franchise, staffStatGameBasedCumulativeGoalFtcTable, options);
     const staffDynamicGoal = await FranchiseUtils.getTableDataAsArray(franchise, staffDynamicGoalFtcTable, options);
 
-    //const filteredTalentTierInfoArray = filterNonZeroRefEntries(talentTierInfoArray, 'TalentTierInfo');
+    const filteredTalentTierInfoArray = filterNonZeroRefEntries(talentTierInfoArray, 'TalentTierInfo');
     const filteredTalentInfoArray = filterNonZeroRefEntries(talentInfoArray, 'TalentInfo');
 
     const talents = {
@@ -98,7 +98,7 @@ franchise.on('ready', async function () {
         TalentTierInfo: talentTierInfo,
         PlaysheetTalentTierInfo: playsheetTalentTierInfo,
         WearAndTearTalentTierInfo: wearAndTearTalentTierInfo,
-        TalentTierInfoArray: null,
+        TalentTierInfoArray: filteredTalentTierInfoArray,
     };
     const staffGoals = {
         StaffStatGoal: staffStatGoal,
