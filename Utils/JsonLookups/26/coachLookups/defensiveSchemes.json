@@ -1,0 +1,82 @@
+[
+  {
+    "AssetId": 2147606190,
+    "ShortName": "3-4 Storm",
+    "LongName": "3-4 Storm",
+    "Description": "Speed up front and coverage in the middle; the 3-4 Storm defense is geared towards applying pressure to the quarterback as quickly as possible and having linebackers ready to capitalize on any passing errors.",
+    "Value": "Storm3_4",
+    "Base": "3-4"
+  },
+  {
+    "AssetId": 2147606297,
+    "ShortName": "4-3 Cover 3",
+    "LongName": "4-3 Cover 3",
+    "Description": "A 4-3 Cover 3 defense focuses on forcing methodical offensive drives. Pass rushing up front, coverage in the middle, and safeties unafraid to play aggressively, this defense will force the offense to sustain their drives with small gains.",
+    "Value": "Cover3_4_3",
+    "Base": "4-3"
+  },
+  {
+    "AssetId": 2147606191,
+    "ShortName": "4-3 Quarters",
+    "LongName": "4-3 Quarters",
+    "Description": "Quarters, also known as Cover 4, is a scheme that puts four defenders deep but allows for opportunities to split the field in man and zone coverage. As such, 4-3 Quarters is a good match against versatile offenses like Spreads.",
+    "Value": "Quarters4_3",
+    "Base": "4-3"
+  },
+  {
+    "AssetId": 2147588232,
+    "ShortName": "Base 3-4",
+    "LongName": "Base 3-4",
+    "Description": "The base 3-4 defense utilizes bigger DL to eat up blockers, allowing four LBs to attack from multiple angles. The 3-4 excels at generating pressure with clever blitzes and is a solid defense against base running plays.",
+    "Value": "Base3_4",
+    "Base": "3-4"
+  },
+  {
+    "AssetId": 2147588229,
+    "ShortName": "Base 4-3",
+    "LongName": "Base 4-3",
+    "Description": "The 4-3 defensive scheme is a defensive formation with 4 defensive linemen and 3 linebackers, ideal for generating a pass rush with minimal blitzing, allowing for 7 defenders to drop into coverage.",
+    "Value": "Base4_3",
+    "Base": "4-3"
+  },
+  {
+    "AssetId": 2147588233,
+    "ShortName": "46 Defense",
+    "LongName": "46 Defense",
+    "Description": "The 46 Defense features 8 players in the box, and a weak side defensive line shift. Designed to confuse blocking assignments and bring heavy blitzes to outman and overwhelm offenses.",
+    "Value": "Defense_46",
+    "Base": "4-3"
+  },
+  {
+    "AssetId": 2147606192,
+    "ShortName": "Disguise 3-4",
+    "LongName": "Disguise 3-4",
+    "Description": "As offensive production is at an all-time high, defenses need to be unpredictable to succeed. This defense draws strength from the flexibility of its symmetrical lineup, and it shines with disguise concepts and malleable fronts.",
+    "Value": "Disguise3_4",
+    "Base": "3-4"
+  },
+  {
+    "AssetId": 2147588234,
+    "ShortName": "Tampa 2",
+    "LongName": "Tampa 2",
+    "Description": "The Tampa 2 formation is similar to the base 4-3, as the defensive line is expected to pressure the QB without help from blitzes. The Tampa 2 is unique for often having the MLB responsible for covering deep middle zone.",
+    "Value": "Tampa2",
+    "Base": "4-3"
+  },
+  {
+    "AssetId": 2147588231,
+    "ShortName": "3-4 Under",
+    "LongName": "3-4 Under",
+    "Description": "The 3-4 Under adds even more flexibility with linebackers that can line up on the defensive line. Using bigger linebackers, the defense looks to switch the roles play to play to keep the offense off balance.",
+    "Value": "Under3_4",
+    "Base": "3-4"
+  },
+  {
+    "AssetId": 2147588230,
+    "ShortName": "4-3 Under",
+    "LongName": "4-3 Under",
+    "Description": "The 4-3 Under defensive scheme allows for more flexibility than the base 4-3, as it can change to a 3-4 or 5-2. It requires solid fill-in players at both the DL and LB positions to be used at full potential.",
+    "Value": "Under4_3",
+    "Base": "4-3"
+  }
+]

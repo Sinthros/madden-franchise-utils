@@ -1,0 +1,134 @@
+[
+  {
+    "ShortName": "QB",
+    "LongName": "Quarterback"
+  },
+  {
+    "ShortName": "HB",
+    "LongName": "Halfback"
+  },
+  {
+    "ShortName": "FB",
+    "LongName": "Fullback"
+  },
+  {
+    "ShortName": "WR",
+    "LongName": "Wide Receiver"
+  },
+  {
+    "ShortName": "TE",
+    "LongName": "Tight End"
+  },
+  {
+    "ShortName": "RT",
+    "LongName": "Right Tackle"
+  },
+  {
+    "ShortName": "RG",
+    "LongName": "Right Guard"
+  },
+  {
+    "ShortName": "C",
+    "LongName": "Center"
+  },
+  {
+    "ShortName": "LG",
+    "LongName": "Left Guard"
+  },
+  {
+    "ShortName": "LT",
+    "LongName": "Left Tackle"
+  },
+  {
+    "ShortName": "RE",
+    "LongName": "Right Defensive End"
+  },
+  {
+    "ShortName": "DT",
+    "LongName": "Defensive Tackle"
+  },
+  {
+    "ShortName": "LE",
+    "LongName": "Left Defensive Tackle"
+  },
+  {
+    "ShortName": "ROLB",
+    "LongName": "Right Outside Linebacker"
+  },
+  {
+    "ShortName": "MLB",
+    "LongName": "Middle Linebacker"
+  },
+  {
+    "ShortName": "LOLB",
+    "LongName": "Left Outside Linebacker"
+  },
+  {
+    "ShortName": "CB",
+    "LongName": "Cornerback"
+  },
+  {
+    "ShortName": "FS",
+    "LongName": "Free Safety"
+  },
+  {
+    "ShortName": "SS",
+    "LongName": "Strong Safety"
+  },
+  {
+    "ShortName": "K",
+    "LongName": "Kicker"
+  },
+  {
+    "ShortName": "P",
+    "LongName": "Punter"
+  },
+  {
+    "ShortName": "KR",
+    "LongName": "Kick Returner"
+  },
+  {
+    "ShortName": "PR",
+    "LongName": "Punt Returner"
+  },
+  {
+    "ShortName": "KOS",
+    "LongName": "Kickoff Start"
+  },
+  {
+    "ShortName": "LS",
+    "LongName": "Long Snapper"
+  },
+  {
+    "ShortName": "3DRB",
+    "LongName": "3rd Down Back"
+  },
+  {
+    "ShortName": "PWHB",
+    "LongName": "Power Back"
+  },
+  {
+    "ShortName": "SLWR",
+    "LongName": "Slot Receiver"
+  },
+  {
+    "ShortName": "RLE",
+    "LongName": "Punter"
+  },
+  {
+    "ShortName": "RRE",
+    "LongName": "Punter"
+  },
+  {
+    "ShortName": "RDT",
+    "LongName": "Punter"
+  },
+  {
+    "ShortName": "SUBLB",
+    "LongName": "Punter"
+  },
+  {
+    "ShortName": "SLCB",
+    "LongName": "Punter"
+  }
+]

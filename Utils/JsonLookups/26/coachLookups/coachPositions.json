@@ -1,0 +1,17 @@
+[
+  {
+    "ShortName": "HeadCoach",
+    "LongName": "Head Coach",
+    "Order": 0
+  },
+  {
+    "ShortName": "OffensiveCoordinator",
+    "LongName": "Offensive Coordinator",
+    "Order": 1
+  },
+  {
+    "ShortName": "DefensiveCoordinator",
+    "LongName": "Defensive Coordinator",
+    "Order": 2
+  }
+]

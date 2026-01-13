@@ -1,0 +1,187 @@
+[
+  {
+    "AssetId": 2147588142,
+    "ShortName": "49ers",
+    "Value": "FortyNiners"
+  },
+  {
+    "AssetId": 2147586421,
+    "ShortName": "Bears",
+    "Value": "Bears"
+  },
+  {
+    "AssetId": 2147588121,
+    "ShortName": "Bengals",
+    "Value": "Bengals"
+  },
+  {
+    "AssetId": 2147588152,
+    "ShortName": "Bills",
+    "Value": "Bills"
+  },
+  {
+    "AssetId": 2147588124,
+    "ShortName": "Broncos",
+    "Value": "Broncos"
+  },
+  {
+    "AssetId": 2147588122,
+    "ShortName": "Browns",
+    "Value": "Browns"
+  },
+  {
+    "AssetId": 2147588144,
+    "ShortName": "Buccaneers",
+    "Value": "Buccaneers"
+  },
+  {
+    "AssetId": 2147588081,
+    "ShortName": "Cardinals",
+    "Value": "Cardinals"
+  },
+  {
+    "AssetId": 2147588131,
+    "ShortName": "Chargers",
+    "Value": "Chargers"
+  },
+  {
+    "AssetId": 2147588130,
+    "ShortName": "Chiefs",
+    "Value": "Chiefs"
+  },
+  {
+    "AssetId": 2147588128,
+    "ShortName": "Colts",
+    "Value": "Colts"
+  },
+  {
+    "AssetId": 2147588146,
+    "ShortName": "Commanders",
+    "Value": "Commanders"
+  },
+  {
+    "AssetId": 2147588123,
+    "ShortName": "Cowboys",
+    "Value": "Cowboys"
+  },
+  {
+    "AssetId": 2147588133,
+    "ShortName": "Dolphins",
+    "Value": "Dolphins"
+  },
+  {
+    "AssetId": 2147588140,
+    "ShortName": "Eagles",
+    "Value": "Eagles"
+  },
+  {
+    "AssetId": 2147588154,
+    "ShortName": "Falcons",
+    "Value": "Falcons"
+  },
+  {
+    "AssetId": 2147588137,
+    "ShortName": "Giants",
+    "Value": "Giants"
+  },
+  {
+    "AssetId": 2147588129,
+    "ShortName": "Jaguars",
+    "Value": "Jaguars"
+  },
+  {
+    "AssetId": 2147588138,
+    "ShortName": "Jets",
+    "Value": "Jets"
+  },
+  {
+    "AssetId": 2147588125,
+    "ShortName": "Lions",
+    "Value": "Lions"
+  },
+  {
+    "AssetId": 2147588126,
+    "ShortName": "Packers",
+    "Value": "Packers"
+  },
+  {
+    "AssetId": 2147588153,
+    "ShortName": "Panthers",
+    "Value": "Panthers"
+  },
+  {
+    "AssetId": 2147588135,
+    "ShortName": "Patriots",
+    "Value": "Patriots"
+  },
+  {
+    "AssetId": 2147588139,
+    "ShortName": "Raiders",
+    "Value": "Raiders"
+  },
+  {
+    "AssetId": 2147588132,
+    "ShortName": "Rams",
+    "Value": "Rams"
+  },
+  {
+    "AssetId": 2147588155,
+    "ShortName": "Ravens",
+    "Value": "Ravens"
+  },
+  {
+    "AssetId": 2147588136,
+    "ShortName": "Saints",
+    "Value": "Saints"
+  },
+  {
+    "AssetId": 2147588143,
+    "ShortName": "Seahawks",
+    "Value": "Seahawks"
+  },
+  {
+    "AssetId": 2147588141,
+    "ShortName": "Steelers",
+    "Value": "Steelers"
+  },
+  {
+    "AssetId": 2147588127,
+    "ShortName": "Texans",
+    "Value": "Texans"
+  },
+  {
+    "AssetId": 2147588145,
+    "ShortName": "Titans",
+    "Value": "Titans"
+  },
+  {
+    "AssetId": 2147588134,
+    "ShortName": "Vikings",
+    "Value": "Vikings"
+  },
+  {
+    "AssetId": 2147588148,
+    "ShortName": "Generic 3-4",
+    "Value": "ThreeFour"
+  },
+  {
+    "AssetId": 2147588147,
+    "ShortName": "Generic 4-3",
+    "Value": "FourThree"
+  },
+  {
+    "AssetId": 2147588149,
+    "ShortName": "Generic 46",
+    "Value": "FourSix"
+  },
+  {
+    "AssetId": 2147588150,
+    "ShortName": "Generic Cover 2",
+    "Value": "Cover2"
+  },
+  {
+    "AssetId": 2147588151,
+    "ShortName": "Generic Multiple D",
+    "Value": "MultipleD"
+  }
+]
