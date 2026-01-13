@@ -188,7 +188,7 @@ async function setSchemes(coachRecord) {
           continue;
         }
 
-        coachRecord[coachField] = getBinaryReferenceByAssetId(selected.AssetId);
+        coachRecord[coachField] = FranchiseUtils.dec2bin(selected.AssetId);
 
         break;
       }
@@ -233,9 +233,9 @@ async function setPlaybooks(coachRecord) {
       }
 
       // Convert AssetIds → binary refs
-      coachRecord.OffensivePlaybook = FranchiseUtils.dec2bin(offensive.AssetId, 2);
+      coachRecord.OffensivePlaybook = FranchiseUtils.dec2bin(offensive.AssetId);
 
-      coachRecord.DefensivePlaybook = FranchiseUtils.dec2bin(defensive.AssetId, 2);
+      coachRecord.DefensivePlaybook = FranchiseUtils.dec2bin(defensive.AssetId);
 
       // Philosophy (fallback to 49ers)
       const philosophyBinary = philosophyMap[teamKey] ?? philosophyMap["49ers".toLowerCase()];
@@ -250,6 +250,17 @@ async function setPlaybooks(coachRecord) {
     FranchiseUtils.EXIT_PROGRAM();
   }
 }
+
+function getBodyType(coachRecord) {
+  const isFemale = CharacterVisualFunctions.isFemaleHead(coachRecord);
+
+  const options = isFemale ? FEMALE_BODY_TYPES : MALE_BODY_TYPES;
+
+  const message = "Select a body type for your coach.";
+  const bodyType = FranchiseUtils.getUserSelection(message, options);
+  coachRecord.CharacterBodyType = bodyType;
+}
+
 async function setCoachAppearance(coachRecord) {
   try {
     const allCoachPortraits = Object.values(allCoachHeads); // Get all portrait values from the dictionary
@@ -289,13 +300,9 @@ async function setCoachAppearance(coachRecord) {
         coachRecord.GenericHeadAssetName = correspondingHead;
         coachRecord.Portrait = exactPortrait; // Set portrait based on selected value
 
-        try {
-          //const skinToneNum = correspondingHead.charAt(10);
-          //const skinTone = "SkinTone".concat(skinToneNum);
-          //coachRecord.SkinTone = skinTone;
-        } catch (e) {
-          //coachRecord.SkinTone = "SkinTone1";
-        }
+        // Have the user select the body type
+        getBodyType(coachRecord);
+
 
         break;
       } else {
@@ -304,23 +311,7 @@ async function setCoachAppearance(coachRecord) {
     }
 
     const genHeadAssetName = coachRecord.GenericHeadAssetName;
-    const prefix = genHeadAssetName.includes("_")
-      ? FranchiseUtils.startsWithNumber(genHeadAssetName)
-        ? FranchiseUtils.getCharacterAfterNthUnderscore(genHeadAssetName, 3)
-        : FranchiseUtils.getCharacterAfterNthUnderscore(genHeadAssetName, 2)
-      : null;
 
-    const bodyType = CharacterVisualFunctions.isFemaleHead(coachRecord)
-      ? "Standard_Alternate"
-      : {
-          D: "Standard",
-          B: "Standard",
-          M: "Muscular",
-          T: "Thin",
-          H: "Heavy",
-        }[prefix] || "Standard";
-
-    coachRecord.CharacterBodyType = bodyType;
 
     if (genHeadAssetName.includes("coachhead")) {
       coachRecord.Type = "Generic";
@@ -328,7 +319,6 @@ async function setCoachAppearance(coachRecord) {
       coachRecord.Type = "Existing";
     }
 
-    return "N/A";
   } catch (e) {
     console.warn("ERROR! Exiting program due to; ", e);
     FranchiseUtils.EXIT_PROGRAM();
@@ -378,6 +368,17 @@ function getArchetype(coachRecord) {
   coachRecord.Archetype = archetype;
 }
 
+async function updateTalents(franchise, tables, coachRecord) {
+
+  const talentArrayTable = franchise.getTableByUniqueId(tables.talentArrayTable)
+  const gamedayTalentTable = franchise.getTableByUniqueId(tables.gamedayTalentTable);
+  const wearAndTearTalentTable = franchise.getTableByUniqueId(tables.wearAndTearTalentTable);
+  const playsheetTalentTable = franchise.getTableByUniqueId(tables.playsheetTalentTable);
+  const seasonTalentTable = franchise.getTableByUniqueId(tables.seasonTalentTable);
+  const talentTierArrayTable = franchise.getTableByUniqueId(tables.talentTierArrayTable);
+  const talentTierTable = franchise.getTableByUniqueId(tables.talentTierTable);
+}
+
 async function createNewCoach() {
   const coachTable = franchise.getTableByUniqueId(tables.coachTable); // Get all the tables we'll need
   const freeAgentCoachTable = franchise.getTableByUniqueId(tables.freeAgentCoachTable);
@@ -407,6 +408,8 @@ async function createNewCoach() {
   await updateCoachVisual(coachRecord);
 
   getArchetype(coachRecord);
+
+  await updateTalents(coachRecord);
 
   await addCoachToFATable(freeAgentCoachTable, coachBinary);
 
