@@ -4,12 +4,22 @@ const fs = require("fs");
 const FranchiseUtils = require("../../Utils/FranchiseUtils");
 const CharacterVisualFunctions = require("../../Utils/characterVisualsLookups/characterVisualFunctions26");
 
-const offPlaybookLookup = JSON.parse(fs.readFileSync("lookupFiles/off_playbook_lookup.json", "utf8"));
-const defPlaybookLookup = JSON.parse(fs.readFileSync("lookupFiles/def_playbook_lookup.json", "utf8"));
+const offPlaybookLookup = JSON.parse(
+  fs.readFileSync("../../Utils/JsonLookups/coachLookups/offensivePlaybooks.json", "utf8")
+);
+const defPlaybookLookup = JSON.parse(
+  fs.readFileSync("../../Utils/JsonLookups/coachLookups/defensivePlaybooks.json", "utf8")
+);
 const philosophyLookup = JSON.parse(fs.readFileSync("lookupFiles/philosophy_lookup.json", "utf8"));
-const offSchemeLookup = JSON.parse(fs.readFileSync("lookupFiles/off_scheme_lookup.json", "utf8"));
-const defSchemeLookup = JSON.parse(fs.readFileSync("lookupFiles/def_scheme_lookup.json", "utf8"));
-const allCoachHeads = JSON.parse(fs.readFileSync("lookupFiles/coach_heads_lookup.json", "utf8"));
+const offSchemeLookup = JSON.parse(
+  fs.readFileSync("../../Utils/JsonLookups/coachLookups/offensiveSchemes.json", "utf8")
+);
+const defSchemeLookup = JSON.parse(
+  fs.readFileSync("../../Utils/JsonLookups/coachLookups/defensiveSchemes.json", "utf8")
+);
+const allCoachHeads = JSON.parse(
+  fs.readFileSync("../../Utils/JsonLookups/coachLookups/genericCoachHeadsLookup.json", "utf8")
+);
 const COACH_ARCHETYPES = ["OffensiveGuru", "DefensiveGenius", "DevelopmentWizard", "MasterMotivator"];
 const MALE_BODY_TYPES = CharacterVisualFunctions.MALE_BODY_TYPES;
 const FEMALE_BODY_TYPES = CharacterVisualFunctions.FEMALE_BODY_TYPES;
@@ -157,51 +167,36 @@ function setCoachPosition(coachRecord) {
   coachRecord.OriginalPosition = position;
 }
 
-// Used for Start Today
-async function setDefaultScheme(coachRecord) {
-  try {
-    const offSchemeKeys = Object.keys(offSchemeLookup);
-    const defSchemeKeys = Object.keys(defSchemeLookup);
-
-    const selectFirstScheme = (validKeys, schemeLookup, coachField) => {
-      if (validKeys.length > 0) {
-        const selectedScheme = validKeys[0]; // Select the first scheme
-        coachRecord[coachField] = schemeLookup[selectedScheme];
-      } else {
-        console.warn(`No valid schemes found for ${coachField}`);
-      }
-    };
-
-    selectFirstScheme(offSchemeKeys, offSchemeLookup, "OffensiveScheme");
-    selectFirstScheme(defSchemeKeys, defSchemeLookup, "DefensiveScheme");
-  } catch (e) {
-    console.warn("ERROR! Exiting program due to:", e);
-    FranchiseUtils.EXIT_PROGRAM();
-  }
-}
 
 async function setSchemes(coachRecord) {
   try {
-    const offSchemeKeys = Object.keys(offSchemeLookup);
-    const defSchemeKeys = Object.keys(defSchemeLookup);
-
-    const selectScheme = (promptMessage, validKeys, schemeLookup, coachField) => {
+    const selectScheme = (promptMessage, schemes, coachField) => {
       while (true) {
-        console.log(`${promptMessage} Valid values are: ${validKeys.join(", ")}`);
-        const userScheme = prompt().toLowerCase();
+        const validNames = schemes.map((s) => s.ShortName).join(", ");
+        console.log(`${promptMessage} Valid values are: ${validNames}`);
 
-        if (validKeys.some((key) => key.toLowerCase() === userScheme)) {
-          const selectedScheme = validKeys.find((key) => key.toLowerCase() === userScheme);
-          coachRecord[coachField] = schemeLookup[selectedScheme];
-          break;
-        } else {
-          console.log("Invalid value. Please enter a valid listed value.");
+        const input = prompt()?.trim().toLowerCase();
+        if (!input) {
+          console.log("Please enter a scheme name.");
+          continue;
         }
+
+        const selected = schemes.find((s) => s.ShortName.toLowerCase() === input);
+
+        if (!selected) {
+          console.log("Invalid value. Please enter a valid listed value.");
+          continue;
+        }
+
+        coachRecord[coachField] = getBinaryReferenceByAssetId(selected.AssetId);
+
+        break;
       }
     };
 
-    selectScheme("Which offensive scheme should this coach have?", offSchemeKeys, offSchemeLookup, "OffensiveScheme");
-    selectScheme("Which defensive scheme should this coach have?", defSchemeKeys, defSchemeLookup, "DefensiveScheme");
+    selectScheme("Which offensive scheme should this coach have?", offSchemeLookup, "OffensiveScheme");
+
+    selectScheme("Which defensive scheme should this coach have?", defSchemeLookup, "DefensiveScheme");
   } catch (e) {
     console.warn("ERROR! Exiting program due to:", e);
     FranchiseUtils.EXIT_PROGRAM();
@@ -210,36 +205,51 @@ async function setSchemes(coachRecord) {
 
 async function setPlaybooks(coachRecord) {
   try {
-    const playbookKeys = Object.keys(offPlaybookLookup);
+    // Precompute case-insensitive philosophy map once
+    const philosophyMap = Object.fromEntries(
+      Object.entries(philosophyLookup).map(([key, value]) => [key.toLowerCase(), value])
+    );
 
     while (true) {
       console.log("Which team's playbooks should this coach use (Bears, 49ers, etc)? ");
-      const teamPlaybook = prompt().toLowerCase(); // Convert user input to lowercase
+      const input = prompt()?.trim();
 
-      const index = playbookKeys.findIndex((key) => key.toLowerCase() === teamPlaybook);
-      if (index !== -1) {
-        const selectedTeam = playbookKeys[index];
-        const playbook = offPlaybookLookup[selectedTeam];
-        const philosophy = philosophyLookup[selectedTeam];
+      if (!input) {
+        console.log("Please enter a team name.");
+        continue;
+      }
 
-        coachRecord.DefensivePlaybook = defPlaybookLookup[selectedTeam];
-        coachRecord.TeamPhilosophy = philosophy;
-        coachRecord.DefaultTeamPhilosophy = philosophy;
-        coachRecord.OffensivePlaybook = playbook;
+      const teamKey = input.toLowerCase();
 
-        break;
-      } else {
+      // Find playbooks by ShortName
+      const offensive = offPlaybookLookup.find((p) => p.ShortName.toLowerCase() === teamKey);
+      const defensive = defPlaybookLookup.find((p) => p.ShortName.toLowerCase() === teamKey);
+
+      if (!offensive || !defensive) {
         console.log(
           "Invalid value. Enter only the display name of the team, such as Jets, Titans, etc. Options are not case sensitive."
         );
+        continue;
       }
+
+      // Convert AssetIds → binary refs
+      coachRecord.OffensivePlaybook = FranchiseUtils.dec2bin(offensive.AssetId, 2);
+
+      coachRecord.DefensivePlaybook = FranchiseUtils.dec2bin(defensive.AssetId, 2);
+
+      // Philosophy (fallback to 49ers)
+      const philosophyBinary = philosophyMap[teamKey] ?? philosophyMap["49ers".toLowerCase()];
+
+      coachRecord.TeamPhilosophy = philosophyBinary;
+      coachRecord.DefaultTeamPhilosophy = philosophyBinary;
+
+      break;
     }
   } catch (e) {
     console.warn("ERROR! Exiting the program due to:", e);
     FranchiseUtils.EXIT_PROGRAM();
   }
 }
-
 async function setCoachAppearance(coachRecord) {
   try {
     const allCoachPortraits = Object.values(allCoachHeads); // Get all portrait values from the dictionary
