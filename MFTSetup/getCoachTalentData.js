@@ -1,13 +1,9 @@
-
-
-
-
-const FranchiseUtils = require('../Utils/FranchiseUtils');
+const FranchiseUtils = require("../Utils/FranchiseUtils");
 
 const gameYear = FranchiseUtils.YEARS.M26;
 
-// This uses the franchise-tuning-binary.FTC file 
-const franchise = FranchiseUtils.init(gameYear, {isFtcFile: true, promptForBackup: false});
+// This uses the franchise-tuning-binary.FTC file
+const franchise = FranchiseUtils.init(gameYear, { isFtcFile: true, promptForBackup: false });
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 function filterNonZeroRefEntries(dataArray, prefix, minimumCount = 4) {
@@ -18,7 +14,7 @@ function filterNonZeroRefEntries(dataArray, prefix, minimumCount = 4) {
     let hasNonZero = false;
 
     for (const key in entry) {
-      if (key.startsWith(prefix) && key !== 'Binary') {
+      if (key.startsWith(prefix) && key !== "Binary") {
         const val = entry[key];
         if (val !== FranchiseUtils.ZERO_REF) {
           filteredEntry[key] = val;
@@ -45,69 +41,121 @@ function filterNonZeroRefEntries(dataArray, prefix, minimumCount = 4) {
   return filtered;
 }
 
+function flattenArray(staffGoals) {
+  const flattened = new Map();
 
-franchise.on('ready', async function () {
-    const staffArchetypeFtcTable = franchise.getTableByUniqueId(tables.staffArchetypeFtcTable);
-    const talentInfoArrayFtcTable = franchise.getTableByUniqueId(tables.talentInfoArrayFtcTable);
-    const gamedayTalentInfoFtcTable = franchise.getTableByUniqueId(tables.gamedayTalentInfoFtcTable);
-    const seasonTalentInfoFtcTable = franchise.getTableByUniqueId(tables.seasonTalentInfoFtcTable);
-    const wearAndTearTalentInfoFtcTable = franchise.getTableByUniqueId(tables.wearAndTearTalentInfoFtcTable);
-    const playsheetTalentInfoFtcTable = franchise.getTableByUniqueId(tables.playsheetTalentInfoFtcTable);
-    const talentTierInfoArrayFtcTable = franchise.getTableByUniqueId(tables.talentTierInfoArrayFtcTable);
-    const playsheetTalentTierInfoFtcTable = franchise.getTableByUniqueId(tables.playsheetTalentTierInfoFtcTable);
-    const talentTierInfoFtcTable = franchise.getTableByUniqueId(tables.talentTierInfoFtcTable);
-    const wearAndTearTalentTierInfoFtcTable = franchise.getTableByUniqueId(tables.wearAndTearTalentTierInfoFtcTable);
-    const talentDisplayStatFtcTable = franchise.getTableByUniqueId(tables.talentDisplayStatFtcTable);
-    const staffStatGoalFtcTable = franchise.getTableByUniqueId(tables.staffStatGoalFtcTable);
-    const staffStatGameBasedCumulativeGoalFtcTable = franchise.getTableByUniqueId(tables.staffStatGameBasedCumulativeGoalFtcTable);
-    const staffDynamicGoalFtcTable = franchise.getTableByUniqueId(tables.staffDynamicGoalFtcTable);
+  for (const [section, records] of Object.entries(staffGoals)) {
+    if (!Array.isArray(records)) continue;
 
-    await FranchiseUtils.readTableRecords([staffArchetypeFtcTable, talentInfoArrayFtcTable, gamedayTalentInfoFtcTable, seasonTalentInfoFtcTable, wearAndTearTalentInfoFtcTable,
-        talentTierInfoArrayFtcTable, playsheetTalentTierInfoFtcTable, talentTierInfoFtcTable,
-        wearAndTearTalentTierInfoFtcTable, talentDisplayStatFtcTable, staffStatGoalFtcTable, staffStatGameBasedCumulativeGoalFtcTable, staffDynamicGoalFtcTable
-    ]);
+    for (const record of records) {
+      if (!record?.Binary) continue;
 
-    const options = { includeRow: false, includeAssetId: false, loadReferenceCols: true };
+      flattened.set(record.Binary, {
+        ...record,
+        Source: section,
+      });
+    }
+  }
 
-    const staffArchetype = await FranchiseUtils.getTableDataAsArray(franchise, staffArchetypeFtcTable, options);
-    const talentInfoArray = await FranchiseUtils.getTableDataAsArray(franchise, talentInfoArrayFtcTable, options);
-    const gamedayTalentInfo = await FranchiseUtils.getTableDataAsArray(franchise, gamedayTalentInfoFtcTable, options);
-    const seasonTalentInfo = await FranchiseUtils.getTableDataAsArray(franchise, seasonTalentInfoFtcTable, options);
-    const wearAndTearTalentInfo = await FranchiseUtils.getTableDataAsArray(franchise, wearAndTearTalentInfoFtcTable, options);
-    const playsheetTalentInfo = await FranchiseUtils.getTableDataAsArray(franchise, playsheetTalentInfoFtcTable, options);
-    const talentTierInfoArray = await FranchiseUtils.getTableDataAsArray(franchise, talentTierInfoArrayFtcTable, options);
-    const talentTierInfo = await FranchiseUtils.getTableDataAsArray(franchise, talentTierInfoFtcTable, options);
-    const playsheetTalentTierInfo = await FranchiseUtils.getTableDataAsArray(franchise, playsheetTalentTierInfoFtcTable, options);
-    const wearAndTearTalentTierInfo = await FranchiseUtils.getTableDataAsArray(franchise, wearAndTearTalentTierInfoFtcTable, options);
-    const talentDisplayStat = await FranchiseUtils.getTableDataAsArray(franchise, talentDisplayStatFtcTable, options);
-    const staffStatGoal = await FranchiseUtils.getTableDataAsArray(franchise, staffStatGoalFtcTable, options);
-    const staffStatGameBasedCumulativeGoal = await FranchiseUtils.getTableDataAsArray(franchise, staffStatGameBasedCumulativeGoalFtcTable, options);
-    const staffDynamicGoal = await FranchiseUtils.getTableDataAsArray(franchise, staffDynamicGoalFtcTable, options);
+  return flattened;
+}
 
-    const filteredTalentTierInfoArray = filterNonZeroRefEntries(talentTierInfoArray, 'TalentTierInfo');
-    const filteredTalentInfoArray = filterNonZeroRefEntries(talentInfoArray, 'TalentInfo');
+franchise.on("ready", async function () {
+  const staffArchetypeFtcTable = franchise.getTableByUniqueId(tables.staffArchetypeFtcTable);
+  const talentInfoArrayFtcTable = franchise.getTableByUniqueId(tables.talentInfoArrayFtcTable);
+  const gamedayTalentInfoFtcTable = franchise.getTableByUniqueId(tables.gamedayTalentInfoFtcTable);
+  const seasonTalentInfoFtcTable = franchise.getTableByUniqueId(tables.seasonTalentInfoFtcTable);
+  const wearAndTearTalentInfoFtcTable = franchise.getTableByUniqueId(tables.wearAndTearTalentInfoFtcTable);
+  const playsheetTalentInfoFtcTable = franchise.getTableByUniqueId(tables.playsheetTalentInfoFtcTable);
+  const talentTierInfoArrayFtcTable = franchise.getTableByUniqueId(tables.talentTierInfoArrayFtcTable);
+  const playsheetTalentTierInfoFtcTable = franchise.getTableByUniqueId(tables.playsheetTalentTierInfoFtcTable);
+  const talentTierInfoFtcTable = franchise.getTableByUniqueId(tables.talentTierInfoFtcTable);
+  const wearAndTearTalentTierInfoFtcTable = franchise.getTableByUniqueId(tables.wearAndTearTalentTierInfoFtcTable);
+  const talentDisplayStatFtcTable = franchise.getTableByUniqueId(tables.talentDisplayStatFtcTable);
+  const staffStatGoalFtcTable = franchise.getTableByUniqueId(tables.staffStatGoalFtcTable);
+  const staffStatGameBasedCumulativeGoalFtcTable = franchise.getTableByUniqueId(
+    tables.staffStatGameBasedCumulativeGoalFtcTable
+  );
+  const staffDynamicGoalFtcTable = franchise.getTableByUniqueId(tables.staffDynamicGoalFtcTable);
 
-    const talents = {
-        GamedayTalentInfo: gamedayTalentInfo,
-        PlaysheetTalentInfo: playsheetTalentInfo,
-        SeasonTalentInfo: seasonTalentInfo,
-        WearAndTearTalentInfo: wearAndTearTalentInfo,
-        TalentInfoArray: filteredTalentInfoArray
-    };
-    const talentTiers = {
-        TalentTierInfo: talentTierInfo,
-        PlaysheetTalentTierInfo: playsheetTalentTierInfo,
-        WearAndTearTalentTierInfo: wearAndTearTalentTierInfo,
-        TalentTierInfoArray: filteredTalentTierInfoArray,
-    };
-    const staffGoals = {
-        StaffStatGoal: staffStatGoal,
-        StaffStatGameBasedCumulativeGoal: staffStatGameBasedCumulativeGoal,
-        StaffDynamicGoal: staffDynamicGoal
-    };
-    FranchiseUtils.convertArrayToJSONFile(staffArchetype, 'StaffArchetype.json');
-    FranchiseUtils.convertArrayToJSONFile(talentDisplayStat, 'TalentDisplayStat.json');
-    FranchiseUtils.convertArrayToJSONFile(talents, 'Talents.json');
-    FranchiseUtils.convertArrayToJSONFile(talentTiers, 'TalentTiers.json');
-    FranchiseUtils.convertArrayToJSONFile(staffGoals, 'StaffGoals.json');
+  await FranchiseUtils.readTableRecords([
+    staffArchetypeFtcTable,
+    talentInfoArrayFtcTable,
+    gamedayTalentInfoFtcTable,
+    seasonTalentInfoFtcTable,
+    wearAndTearTalentInfoFtcTable,
+    talentTierInfoArrayFtcTable,
+    playsheetTalentTierInfoFtcTable,
+    talentTierInfoFtcTable,
+    wearAndTearTalentTierInfoFtcTable,
+    talentDisplayStatFtcTable,
+    staffStatGoalFtcTable,
+    staffStatGameBasedCumulativeGoalFtcTable,
+    staffDynamicGoalFtcTable,
+  ]);
+
+  const options = { includeRow: false, includeAssetId: false, loadReferenceCols: true };
+
+  const staffArchetype = await FranchiseUtils.getTableDataAsArray(franchise, staffArchetypeFtcTable, options);
+  const talentInfoArray = await FranchiseUtils.getTableDataAsArray(franchise, talentInfoArrayFtcTable, options);
+  const gamedayTalentInfo = await FranchiseUtils.getTableDataAsArray(franchise, gamedayTalentInfoFtcTable, options);
+  const seasonTalentInfo = await FranchiseUtils.getTableDataAsArray(franchise, seasonTalentInfoFtcTable, options);
+  const wearAndTearTalentInfo = await FranchiseUtils.getTableDataAsArray(
+    franchise,
+    wearAndTearTalentInfoFtcTable,
+    options
+  );
+  const playsheetTalentInfo = await FranchiseUtils.getTableDataAsArray(franchise, playsheetTalentInfoFtcTable, options);
+  const talentTierInfoArray = await FranchiseUtils.getTableDataAsArray(franchise, talentTierInfoArrayFtcTable, options);
+  const talentTierInfo = await FranchiseUtils.getTableDataAsArray(franchise, talentTierInfoFtcTable, options);
+  const playsheetTalentTierInfo = await FranchiseUtils.getTableDataAsArray(
+    franchise,
+    playsheetTalentTierInfoFtcTable,
+    options
+  );
+  const wearAndTearTalentTierInfo = await FranchiseUtils.getTableDataAsArray(
+    franchise,
+    wearAndTearTalentTierInfoFtcTable,
+    options
+  );
+  const talentDisplayStat = await FranchiseUtils.getTableDataAsArray(franchise, talentDisplayStatFtcTable, options);
+  const staffStatGoal = await FranchiseUtils.getTableDataAsArray(franchise, staffStatGoalFtcTable, options);
+  const staffStatGameBasedCumulativeGoal = await FranchiseUtils.getTableDataAsArray(
+    franchise,
+    staffStatGameBasedCumulativeGoalFtcTable,
+    options
+  );
+  const staffDynamicGoal = await FranchiseUtils.getTableDataAsArray(franchise, staffDynamicGoalFtcTable, options);
+
+  const filteredTalentTierInfoArray = filterNonZeroRefEntries(talentTierInfoArray, "TalentTierInfo");
+  const filteredTalentInfoArray = filterNonZeroRefEntries(talentInfoArray, "TalentInfo");
+
+  const talents = {
+    GamedayTalentInfo: gamedayTalentInfo,
+    PlaysheetTalentInfo: playsheetTalentInfo,
+    SeasonTalentInfo: seasonTalentInfo,
+    WearAndTearTalentInfo: wearAndTearTalentInfo,
+  };
+  const talentTiers = {
+    TalentTierInfo: talentTierInfo,
+    PlaysheetTalentTierInfo: playsheetTalentTierInfo,
+    WearAndTearTalentTierInfo: wearAndTearTalentTierInfo,
+  };
+  const staffGoals = {
+    StaffStatGoal: staffStatGoal,
+    StaffStatGameBasedCumulativeGoal: staffStatGameBasedCumulativeGoal,
+    StaffDynamicGoal: staffDynamicGoal,
+  };
+
+  const flattenedStaffGoals = flattenArray(staffGoals);
+  const flattenedTalents = flattenArray(talents);
+  const flattenedTalentTiers = flattenArray(talentTiers);
+  console.log(flattenedStaffGoals);
+  FranchiseUtils.convertArrayToJSONFile(staffArchetype, "StaffArchetype.json");
+  FranchiseUtils.convertArrayToJSONFile(talentDisplayStat, "TalentDisplayStat.json");
+  FranchiseUtils.convertArrayToJSONFile(Array.from(flattenedTalents.values()), "Talents.json");
+  FranchiseUtils.convertArrayToJSONFile(Array.from(flattenedTalentTiers.values()), "TalentTiers.json");
+  FranchiseUtils.convertArrayToJSONFile(Array.from(flattenedStaffGoals.values()), "StaffGoals.json");
+  FranchiseUtils.convertArrayToJSONFile(filteredTalentTierInfoArray, "TalentTiersArray.json");
+  FranchiseUtils.convertArrayToJSONFile(filteredTalentInfoArray, "TalentInfoArray.json");
 });
