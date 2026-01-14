@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const FranchiseUtils = require("../../Utils/FranchiseUtils");
 const CharacterVisualFunctions = require("../../Utils/characterVisualsLookups/characterVisualFunctions26");
-const os = require("os");
+const CoachTalentFunctions = require("../../Utils/coachTalentUtils/coachTalentFunctions26");
 
 // Lookups
 const offPlaybookLookup = require("../../Utils/JsonLookups/26/coachLookups/offensivePlaybooks.json");
@@ -13,11 +13,6 @@ const philosophyLookup = require("./lookupFiles/philosophy_lookup.json");
 const offSchemeLookup = require("../../Utils/JsonLookups/26/coachLookups/offensiveSchemes.json");
 const defSchemeLookup = require("../../Utils/JsonLookups/26/coachLookups/defensiveSchemes.json");
 const allCoachHeads = require("../../Utils/JsonLookups/26/coachLookups/genericCoachHeadsLookup.json");
-const staffArchetypeLookup = require("../../Utils/JsonLookups/26/coachLookups/coachTalents/StaffArchetype.json");
-const staffGoals = require("../../Utils/JsonLookups/26/coachLookups/coachTalents/StaffGoals.json");
-const talentDisplayStatLookup = require("../../Utils/JsonLookups/26/coachLookups/coachTalents/TalentDisplayStat.json");
-const talentsLookup = require("../../Utils/JsonLookups/26/coachLookups/coachTalents/talents.json");
-const talentTiersLookup = require("../../Utils/JsonLookups/26/coachLookups/coachTalents/TalentTiers.json");
 
 const COACH_ARCHETYPES = ["OffensiveGuru", "DefensiveGenius", "DevelopmentWizard", "MasterMotivator"];
 const MALE_BODY_TYPES = CharacterVisualFunctions.MALE_BODY_TYPES;
@@ -25,8 +20,7 @@ const FEMALE_BODY_TYPES = CharacterVisualFunctions.FEMALE_BODY_TYPES;
 const COACH_POSITIONS = ["HeadCoach", "OffensiveCoordinator", "DefensiveCoordinator"];
 
 const gameYear = FranchiseUtils.YEARS.M26;
-const flattenedTalentLookup = buildFlattenedTalentLookup();
-const flattenedTalentTierLookup = buildFlattenedTalentTierLookup();
+
 const allCoachPortraits = Object.values(allCoachHeads); // your JSON
 const allCoachFaces = Object.keys(allCoachHeads);
 const portraitToHeadMap = Object.fromEntries(allCoachFaces.map((face, i) => [allCoachPortraits[i], face]));
@@ -39,57 +33,6 @@ const headsDir = path.join(__dirname, "coachHeads"); // this now points to a rea
 
 const franchise = FranchiseUtils.init(gameYear, { isAutoUnemptyEnabled: true, promptForBackup: true });
 const tables = FranchiseUtils.getTablesObject(franchise);
-
-function loadJson(relativePath) {
-  const fullPath = path.join(__dirname, relativePath);
-  return JSON.parse(fs.readFileSync(fullPath, "utf8"));
-}
-
-function buildFlattenedTalentLookup() {
-  const sections = ["GamedayTalentInfo", "PlaysheetTalentInfo", "SeasonTalentInfo"];
-
-  const flattened = new Map();
-
-  for (const section of sections) {
-    const records = talentsLookup[section];
-    if (!Array.isArray(records)) continue;
-
-    for (const record of records) {
-      if (!record?.Binary) continue;
-
-      // Clone the record and annotate it
-      flattened.set(record.Binary, {
-        ...record,
-        Source: section,
-      });
-    }
-  }
-
-  return flattened;
-}
-
-function buildFlattenedTalentTierLookup() {
-  const sections = ["TalentTierInfo", "PlaysheetTalentTierInfo", "WearAndTearTalentTierInfo"];
-
-  const flattened = new Map();
-
-  for (const section of sections) {
-    const records = talentTiersLookup[section];
-    if (!Array.isArray(records)) continue;
-
-    for (const record of records) {
-      if (!record?.Binary) continue;
-
-      // Clone the record and annotate it
-      flattened.set(record.Binary, {
-        ...record,
-        Source: section,
-      });
-    }
-  }
-
-  return flattened;
-}
 
 function adjustPresentationId(coachRecord, presentationTable) {
   const record = presentationTable.records[0];
@@ -416,177 +359,6 @@ function getArchetype(coachRecord) {
   coachRecord.Archetype = archetype;
 }
 
-function getNextTalentArrayRecord(franchise) {
-  const talentArrayTable = franchise.getTableByUniqueId(tables.talentArrayTable);
-  const nextRow = talentArrayTable.header.nextRecordToUse;
-  const record = talentArrayTable.records[nextRow];
-  for (const col of FranchiseUtils.getColumnNames(talentArrayTable)) {
-    record[col] = FranchiseUtils.ZERO_REF;
-  }
-  return record;
-}
-
-function getTalentTierLookupRecord(talent) {
-  return talentTiersLookup.TalentTierInfoArray.find((t) => t.Binary === talent.Tiers);
-}
-
-function getArchetypeTalents(coachRecord) {
-  // Find matching staff archetype
-  const archetypeRecord = staffArchetypeLookup.find((a) => a.Archetype === coachRecord.Archetype);
-
-  if (!archetypeRecord) {
-    console.warn(`No staff archetype found for Archetype: ${coachRecord.Archetype}`);
-  }
-
-  const archetypeTalentsBinary = archetypeRecord.ArchetypeTalents;
-
-  // Find matching TalentInfoArray entry
-  const talentInfo = talentsLookup.TalentInfoArray.find((t) => t.Binary === archetypeTalentsBinary);
-
-  if (!talentInfo) {
-    console.warn(`No TalentInfoArray entry found for ArchetypeTalents binary: ${archetypeTalentsBinary}`);
-  }
-
-  return talentInfo;
-}
-
-function processArchetypeTalents(talentInfoRecord) {
-  const resolvedTalents = [];
-
-  for (const [key, binary] of Object.entries(talentInfoRecord)) {
-    if (key === "Binary") continue;
-    if (!binary || binary === "00000000000000000000000000000000") continue;
-
-    const talentRecord = flattenedTalentLookup.get(binary);
-
-    if (!talentRecord) {
-      console.warn(`Talent binary not found: ${binary}`);
-      continue;
-    }
-
-    resolvedTalents.push({
-      Slot: key,
-      ...talentRecord,
-    });
-  }
-
-  return resolvedTalents;
-}
-
-function getTalentTierBinaryByIndex(tierRecord, index) {
-  if (!tierRecord || typeof tierRecord !== "object") return null;
-
-  const tierKeys = Object.keys(tierRecord)
-    .filter((k) => k.startsWith("TalentTierInfo"))
-    .sort((a, b) => {
-      const ai = parseInt(a.replace("TalentTierInfo", ""), 10);
-      const bi = parseInt(b.replace("TalentTierInfo", ""), 10);
-      return ai - bi;
-    });
-
-  if (index < 0 || index >= tierKeys.length) return null;
-
-  return tierRecord[tierKeys[index]] ?? null;
-}
-
-function getTalentTierRecordByIndex(tierRecord, index) {
-  const tierBinary = getTalentTierBinaryByIndex(tierRecord, index);
-  if (!tierBinary) return null;
-
-  const fullRecord = flattenedTalentTierLookup.get(tierBinary);
-  if (!fullRecord) {
-    console.warn(`Tier talent binary not found: ${tierBinary}`);
-    return null;
-  }
-
-  return fullRecord;
-}
-
-async function updateTalents(coachRecord) {
-  const talentArrayTable = franchise.getTableByUniqueId(tables.talentArrayTable);
-  const gamedayTalentTable = franchise.getTableByUniqueId(tables.gamedayTalentTable);
-  const wearAndTearTalentTable = franchise.getTableByUniqueId(tables.wearAndTearTalentTable);
-  const playsheetTalentTable = franchise.getTableByUniqueId(tables.playsheetTalentTable);
-  const seasonTalentTable = franchise.getTableByUniqueId(tables.seasonTalentTable);
-  const talentTierArrayTable = franchise.getTableByUniqueId(tables.talentTierArrayTable);
-
-  const playsheetTalentsRecord = getNextTalentArrayRecord(franchise);
-  const gamedayTalentsRecord = getNextTalentArrayRecord(franchise);
-  coachRecord.PlaysheetTalents = getBinaryReferenceData(talentArrayTable.header.tableId, playsheetTalentsRecord.index);
-  coachRecord.GamedayTalents = getBinaryReferenceData(talentArrayTable.header.tableId, gamedayTalentsRecord.index);
-
-  const archetypeTalents = getArchetypeTalents(coachRecord);
-  const talentsList = processArchetypeTalents(archetypeTalents);
-
-  for (const talent of talentsList) {
-    const source = talent.Source;
-    const isPlaysheet = source === "PlaysheetTalentInfo";
-    const isSeasonTalent = source === "SeasonTalentInfo";
-    const isGamedayTalent = source === "GamedayTalentInfo";
-    const tableToUse = isPlaysheet ? playsheetTalentTable : isSeasonTalent ? seasonTalentTable : gamedayTalentTable;
-
-    const nextRow = tableToUse.header.nextRecordToUse;
-
-    const talentRecord = tableToUse.records[nextRow];
-    const talentTierRecord = getTalentTierLookupRecord(talent);
-    const firstTalentTier = getTalentTierRecordByIndex(talentTierRecord, 0);
-    const secondTalentTier = getTalentTierRecordByIndex(talentTierRecord, 1);
-
-    talentRecord.TalentInfo = talent.Binary;
-    talentRecord.CurrentKnockoutCondition = firstTalentTier.KnockoutCondition;
-    talentRecord.CurrentGoal = secondTalentTier.UnlockUpgradeGoal;
-    talentRecord.CurrentTier = 0;
-    talentRecord.Status = "None";
-    talentRecord.GoalProgressValue = 0;
-    talentRecord.KnockoutConditionProgressValue = 0;
-    talentRecord.OwnerPosition = coachRecord.Position;
-    talentRecord.IsRecommended = false;
-    talentRecord.IsTalentActive = false;
-    talentRecord.IsWeeklyLocked = false;
-
-    if (isGamedayTalent) {
-      talentRecord.IsOnCooldown = false;
-      talentRecord.CooldownWeeks = 0;
-      talentRecord.TalentDecayWeeksUsed = 0;
-    }
-    if (isSeasonTalent) {
-      talentRecord.LockedWeeks = 0;
-    }
-
-    // Get talent array record
-    const talentTierArrayRecord = getTalentTierArrayRecord();
-    talentRecord.Tiers = getBinaryReferenceData(talentTierArrayTable.header.tableId, talentTierArrayRecord.index);
-
-    const indexToUse = isPlaysheet ? playsheetTalentsRecord.index : gamedayTalentsRecord.index;
-    FranchiseUtils.addToArrayTable(
-      talentArrayTable,
-      getBinaryReferenceData(tableToUse.header.tableId, talentRecord.index),
-      indexToUse
-    );
-  }
-}
-
-function getTalentTierArrayRecord() {
-  const talentTierArrayTable = franchise.getTableByUniqueId(tables.talentTierArrayTable);
-  const talentTierTable = franchise.getTableByUniqueId(tables.talentTierTable);
-  const nextRow = talentTierArrayTable.header.nextRecordToUse;
-  const record = talentTierArrayTable.records[nextRow];
-
-  for (const col of FranchiseUtils.getColumnNames(talentTierArrayTable)) {
-    const tierRecord = getTalentTierRecord();
-    tierRecord.TierStatus = col === "TalentTier0" ? "Owned" : "Purchasable";
-    record[col] = getBinaryReferenceData(talentTierTable.header.tableId, tierRecord.index);
-  }
-
-  return record;
-}
-
-function getTalentTierRecord() {
-  const talentTierTable = franchise.getTableByUniqueId(tables.talentTierTable);
-  const nextRow = talentTierTable.header.nextRecordToUse;
-  return talentTierTable.records[nextRow];
-}
-
 async function createNewCoach() {
   const coachTable = franchise.getTableByUniqueId(tables.coachTable); // Get all the tables we'll need
   const freeAgentCoachTable = franchise.getTableByUniqueId(tables.freeAgentCoachTable);
@@ -635,7 +407,7 @@ async function createNewCoach() {
 
   getArchetype(coachRecord);
 
-  await updateTalents(coachRecord);
+  await CoachTalentFunctions.regenerateTalents(franchise, tables, coachRecord);
 
   await addCoachToFATable(freeAgentCoachTable, coachBinary);
 
