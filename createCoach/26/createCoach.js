@@ -5,21 +5,42 @@ const FranchiseUtils = require("../../Utils/FranchiseUtils");
 const CharacterVisualFunctions = require("../../Utils/characterVisualsLookups/characterVisualFunctions26");
 
 const offPlaybookLookup = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/coachLookups/offensivePlaybooks.json", "utf8")
+  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/offensivePlaybooks.json", "utf8")
 );
 const defPlaybookLookup = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/coachLookups/defensivePlaybooks.json", "utf8")
+  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/defensivePlaybooks.json", "utf8")
 );
 const philosophyLookup = JSON.parse(fs.readFileSync("lookupFiles/philosophy_lookup.json", "utf8"));
 const offSchemeLookup = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/coachLookups/offensiveSchemes.json", "utf8")
+  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/offensiveSchemes.json", "utf8")
 );
 const defSchemeLookup = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/coachLookups/defensiveSchemes.json", "utf8")
+  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/defensiveSchemes.json", "utf8")
 );
 const allCoachHeads = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/coachLookups/genericCoachHeadsLookup.json", "utf8")
+  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/genericCoachHeadsLookup.json", "utf8")
 );
+
+const staffArchetypeLookup = JSON.parse(
+  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/coachTalents/StaffArchetype.json", "utf8")
+);
+
+const staffGoals = JSON.parse(
+  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/coachTalents/StaffGoals.json", "utf8")
+);
+
+const talentDisplayStatLookup = JSON.parse(
+  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/coachTalents/TalentDisplayStat.json", "utf8")
+);
+
+const talentsLookup = JSON.parse(
+  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/coachTalents/talents.json", "utf8")
+);
+
+const talentTiersLookup = JSON.parse(
+  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/coachTalents/TalentTiers.json", "utf8")
+);
+
 const COACH_ARCHETYPES = ["OffensiveGuru", "DefensiveGenius", "DevelopmentWizard", "MasterMotivator"];
 const MALE_BODY_TYPES = CharacterVisualFunctions.MALE_BODY_TYPES;
 const FEMALE_BODY_TYPES = CharacterVisualFunctions.FEMALE_BODY_TYPES;
@@ -28,6 +49,8 @@ const COACH_POSITIONS = ["HeadCoach", "OffensiveCoordinator", "DefensiveCoordina
 const gameYear = FranchiseUtils.YEARS.M26;
 const dir = "./coachPreviews";
 const headsDirName = "coachHeads";
+const flattenedTalentLookup = buildFlattenedTalentLookup();
+const flattenedTalentTierLookup = buildFlattenedTalentTierLookup();
 
 console.log(`This program will allow you to create new Free Agent coaches in your Madden ${gameYear} franchise file.`);
 
@@ -38,6 +61,52 @@ if (!fs.existsSync(dir)) {
 
 const franchise = FranchiseUtils.init(gameYear, { isAutoUnemptyEnabled: true, promptForBackup: true });
 const tables = FranchiseUtils.getTablesObject(franchise);
+
+function buildFlattenedTalentLookup() {
+  const sections = ["GamedayTalentInfo", "PlaysheetTalentInfo", "SeasonTalentInfo"];
+
+  const flattened = new Map();
+
+  for (const section of sections) {
+    const records = talentsLookup[section];
+    if (!Array.isArray(records)) continue;
+
+    for (const record of records) {
+      if (!record?.Binary) continue;
+
+      // Clone the record and annotate it
+      flattened.set(record.Binary, {
+        ...record,
+        Source: section,
+      });
+    }
+  }
+
+  return flattened;
+}
+
+function buildFlattenedTalentTierLookup() {
+  const sections = ["TalentTierInfo", "PlaysheetTalentTierInfo", "WearAndTearTalentTierInfo"];
+
+  const flattened = new Map();
+
+  for (const section of sections) {
+    const records = talentTiersLookup[section];
+    if (!Array.isArray(records)) continue;
+
+    for (const record of records) {
+      if (!record?.Binary) continue;
+
+      // Clone the record and annotate it
+      flattened.set(record.Binary, {
+        ...record,
+        Source: section,
+      });
+    }
+  }
+
+  return flattened;
+}
 
 function adjustPresentationId(coachRecord, presentationTable) {
   const record = presentationTable.records[0];
@@ -62,8 +131,8 @@ function setDefaultCoachValues(coachRecord) {
     coachRecord.Age = 35;
     coachRecord.COACH_RESIGNREPORTED = true;
     coachRecord.COACH_FIREREPORTED = true;
-    coachRecord.COACH_LASTTEAMFIRED = 0;
-    coachRecord.COACH_LASTTEAMRESIGNED = 0;
+    coachRecord.COACH_LASTTEAMFIRED = 1023;
+    coachRecord.COACH_LASTTEAMRESIGNED = 1023;
     coachRecord.COACH_WASPLAYER = false;
     coachRecord.COACH_DL = 50;
     coachRecord.COACH_LB = 50;
@@ -92,6 +161,7 @@ function setDefaultCoachValues(coachRecord) {
     coachRecord.CareerLosses = 0;
     coachRecord.CareerTies = 0;
     coachRecord.CareerProBowlPlayers = 0;
+    coachRecord.CareerWinSeasons = 0;
     coachRecord.WCPlayoffWinStreak = 0;
     coachRecord.ConfPlayoffWinStreak = 0;
     coachRecord.WinSeasStreak = 0;
@@ -104,7 +174,7 @@ function setDefaultCoachValues(coachRecord) {
     coachRecord.RegularWinStreak = 0;
     coachRecord.YearsCoaching = 0;
     coachRecord.Level = 0;
-    coachRecord.TeamBuilding = "ThroughFreeAgency";
+    coachRecord.TeamBuilding = "Balanced";
     coachRecord.LegacyScore = 0;
     coachRecord.Face = 0;
     coachRecord.HairResid = 0;
@@ -118,6 +188,9 @@ function setDefaultCoachValues(coachRecord) {
     coachRecord.Height = 70;
     coachRecord.Weight = 10;
     coachRecord.Portrait_Force_Silhouette = false;
+    coachRecord.COACH_PERFORMANCELEVEL = 0;
+    coachRecord.Probation = false;
+    coachRecord.TraitExpertScout = false;
 
     // New M26 fields
     coachRecord.CurrentPurchasedTalentCosts = 0;
@@ -128,6 +201,10 @@ function setDefaultCoachValues(coachRecord) {
     coachRecord.COACH_RATING = 50;
     coachRecord.COACH_STANCE = "Classic";
     coachRecord.IsMaxLevel = false;
+    coachRecord.ContractSalary = 0;
+    coachRecord.COACH_LASTCONTRACTTEAM = 0;
+    coachRecord.AwardPoints = 0;
+    coachRecord.IndexInUnlockList = 0;
   } catch (e) {
     console.warn("ERROR! Exiting program due to; ", e);
     FranchiseUtils.EXIT_PROGRAM();
@@ -166,7 +243,6 @@ function setCoachPosition(coachRecord) {
   coachRecord.Position = position;
   coachRecord.OriginalPosition = position;
 }
-
 
 async function setSchemes(coachRecord) {
   try {
@@ -296,13 +372,12 @@ async function setCoachAppearance(coachRecord) {
         );
         const correspondingHead = portraitToHeadMap[exactPortrait];
 
-        //coachRecord.FaceShape = correspondingHead;
+        coachRecord.FaceShape = "Invalid_";
         coachRecord.GenericHeadAssetName = correspondingHead;
         coachRecord.Portrait = exactPortrait; // Set portrait based on selected value
 
         // Have the user select the body type
         getBodyType(coachRecord);
-
 
         break;
       } else {
@@ -312,13 +387,11 @@ async function setCoachAppearance(coachRecord) {
 
     const genHeadAssetName = coachRecord.GenericHeadAssetName;
 
-
     if (genHeadAssetName.includes("coachhead")) {
       coachRecord.Type = "Generic";
     } else {
       coachRecord.Type = "Existing";
     }
-
   } catch (e) {
     console.warn("ERROR! Exiting program due to; ", e);
     FranchiseUtils.EXIT_PROGRAM();
@@ -368,23 +441,197 @@ function getArchetype(coachRecord) {
   coachRecord.Archetype = archetype;
 }
 
-async function updateTalents(franchise, tables, coachRecord) {
+function getNextTalentArrayRecord(franchise) {
+  const talentArrayTable = franchise.getTableByUniqueId(tables.talentArrayTable);
+  const nextRow = talentArrayTable.header.nextRecordToUse;
+  const record = talentArrayTable.records[nextRow];
+  for (const col of FranchiseUtils.getColumnNames(talentArrayTable)) {
+    record[col] = FranchiseUtils.ZERO_REF;
+  }
+  return record;
+}
 
-  const talentArrayTable = franchise.getTableByUniqueId(tables.talentArrayTable)
+function getTalentTierLookupRecord(talent) {
+  return talentTiersLookup.TalentTierInfoArray.find((t) => t.Binary === talent.Tiers);
+}
+
+function getArchetypeTalents(coachRecord) {
+  // Find matching staff archetype
+  const archetypeRecord = staffArchetypeLookup.find((a) => a.Archetype === coachRecord.Archetype);
+
+  if (!archetypeRecord) {
+    console.warn(`No staff archetype found for Archetype: ${coachRecord.Archetype}`);
+  }
+
+  const archetypeTalentsBinary = archetypeRecord.ArchetypeTalents;
+
+  // Find matching TalentInfoArray entry
+  const talentInfo = talentsLookup.TalentInfoArray.find((t) => t.Binary === archetypeTalentsBinary);
+
+  if (!talentInfo) {
+    console.warn(`No TalentInfoArray entry found for ArchetypeTalents binary: ${archetypeTalentsBinary}`);
+  }
+
+  return talentInfo;
+}
+
+function processArchetypeTalents(talentInfoRecord) {
+  const resolvedTalents = [];
+
+  for (const [key, binary] of Object.entries(talentInfoRecord)) {
+    if (key === "Binary") continue;
+    if (!binary || binary === "00000000000000000000000000000000") continue;
+
+    const talentRecord = flattenedTalentLookup.get(binary);
+
+    if (!talentRecord) {
+      console.warn(`Talent binary not found: ${binary}`);
+      continue;
+    }
+
+    resolvedTalents.push({
+      Slot: key,
+      ...talentRecord,
+    });
+  }
+
+  return resolvedTalents;
+}
+
+function getTalentTierBinaryByIndex(tierRecord, index) {
+  if (!tierRecord || typeof tierRecord !== "object") return null;
+
+  const tierKeys = Object.keys(tierRecord)
+    .filter(k => k.startsWith("TalentTierInfo"))
+    .sort((a, b) => {
+      const ai = parseInt(a.replace("TalentTierInfo", ""), 10);
+      const bi = parseInt(b.replace("TalentTierInfo", ""), 10);
+      return ai - bi;
+    });
+
+  if (index < 0 || index >= tierKeys.length) return null;
+
+  return tierRecord[tierKeys[index]] ?? null;
+}
+
+function getTalentTierRecordByIndex(tierRecord, index) {
+  const tierBinary = getTalentTierBinaryByIndex(tierRecord, index);
+  if (!tierBinary) return null;
+
+  const fullRecord = flattenedTalentTierLookup.get(tierBinary);
+  if (!fullRecord) {
+    console.warn(`Tier talent binary not found: ${tierBinary}`);
+    return null;
+  }
+
+  return fullRecord;
+}
+
+async function updateTalents(coachRecord) {
+  const talentArrayTable = franchise.getTableByUniqueId(tables.talentArrayTable);
   const gamedayTalentTable = franchise.getTableByUniqueId(tables.gamedayTalentTable);
   const wearAndTearTalentTable = franchise.getTableByUniqueId(tables.wearAndTearTalentTable);
   const playsheetTalentTable = franchise.getTableByUniqueId(tables.playsheetTalentTable);
   const seasonTalentTable = franchise.getTableByUniqueId(tables.seasonTalentTable);
   const talentTierArrayTable = franchise.getTableByUniqueId(tables.talentTierArrayTable);
+
+  const playsheetTalentsRecord = getNextTalentArrayRecord(franchise);
+  const gamedayTalentsRecord = getNextTalentArrayRecord(franchise);
+  coachRecord.PlaysheetTalents = getBinaryReferenceData(talentArrayTable.header.tableId, playsheetTalentsRecord.index);
+  coachRecord.GamedayTalents = getBinaryReferenceData(talentArrayTable.header.tableId, gamedayTalentsRecord.index);
+
+  const archetypeTalents = getArchetypeTalents(coachRecord);
+  const talentsList = processArchetypeTalents(archetypeTalents);
+
+  for (const talent of talentsList) {
+    const source = talent.Source;
+    const isPlaysheet = source === "PlaysheetTalentInfo";
+    const isSeasonTalent = source === "SeasonTalentInfo";
+    const isGamedayTalent = source === "GamedayTalentInfo";
+    const tableToUse = isPlaysheet ? playsheetTalentTable : isSeasonTalent ? seasonTalentTable : gamedayTalentTable;
+
+    const nextRow = tableToUse.header.nextRecordToUse;
+
+    const talentRecord = tableToUse.records[nextRow];
+    const talentTierRecord = getTalentTierLookupRecord(talent);
+    const firstTalentTier = getTalentTierRecordByIndex(talentTierRecord, 0);
+    const secondTalentTier = getTalentTierRecordByIndex(talentTierRecord, 1);
+
+    talentRecord.TalentInfo = talent.Binary;
+    talentRecord.CurrentKnockoutCondition = firstTalentTier.KnockoutCondition;
+    talentRecord.CurrentGoal = secondTalentTier.UnlockUpgradeGoal;
+    talentRecord.CurrentTier = 0;
+    talentRecord.Status = "None";
+    talentRecord.GoalProgressValue = 0;
+    talentRecord.KnockoutConditionProgressValue = 0;
+    talentRecord.OwnerPosition = coachRecord.Position;
+    talentRecord.IsRecommended = false;
+    talentRecord.IsTalentActive = false;
+    talentRecord.IsWeeklyLocked = false;
+
+    if (isGamedayTalent) {
+      talentRecord.IsOnCooldown = false;
+      talentRecord.CooldownWeeks = 0;
+      talentRecord.TalentDecayWeeksUsed = 0;
+    }
+    if (isSeasonTalent) {
+      talentRecord.LockedWeeks = 0;
+    }
+
+    // Get talent array record
+    const talentTierArrayRecord = getTalentTierArrayRecord();
+    talentRecord.Tiers = getBinaryReferenceData(talentTierArrayTable.header.tableId, talentTierArrayRecord.index);
+
+    const indexToUse = isPlaysheet ? playsheetTalentsRecord.index : gamedayTalentsRecord.index;
+    FranchiseUtils.addToArrayTable(talentArrayTable, getBinaryReferenceData(tableToUse.header.tableId, talentRecord.index), indexToUse);
+  }
+}
+
+function getTalentTierArrayRecord() {
+  const talentTierArrayTable = franchise.getTableByUniqueId(tables.talentTierArrayTable);
   const talentTierTable = franchise.getTableByUniqueId(tables.talentTierTable);
+  const nextRow = talentTierArrayTable.header.nextRecordToUse;
+  const record = talentTierArrayTable.records[nextRow];
+
+  for (const col of FranchiseUtils.getColumnNames(talentTierArrayTable)) {
+    const tierRecord = getTalentTierRecord();
+    tierRecord.TierStatus = col === 'TalentTier0' ? "Owned" : "Purchasable"
+    record[col] = getBinaryReferenceData(talentTierTable.header.tableId, tierRecord.index);
+  }
+
+  return record;
+}
+
+function getTalentTierRecord() {
+  const talentTierTable = franchise.getTableByUniqueId(tables.talentTierTable);
+  const nextRow = talentTierTable.header.nextRecordToUse;
+  return talentTierTable.records[nextRow];
 }
 
 async function createNewCoach() {
   const coachTable = franchise.getTableByUniqueId(tables.coachTable); // Get all the tables we'll need
   const freeAgentCoachTable = franchise.getTableByUniqueId(tables.freeAgentCoachTable);
   const presentationTable = franchise.getTableByUniqueId(tables.presentationTable);
+  const talentArrayTable = franchise.getTableByUniqueId(tables.talentArrayTable);
+  const gamedayTalentTable = franchise.getTableByUniqueId(tables.gamedayTalentTable);
+  const wearAndTearTalentTable = franchise.getTableByUniqueId(tables.wearAndTearTalentTable);
+  const playsheetTalentTable = franchise.getTableByUniqueId(tables.playsheetTalentTable);
+  const seasonTalentTable = franchise.getTableByUniqueId(tables.seasonTalentTable);
+  const talentTierArrayTable = franchise.getTableByUniqueId(tables.talentTierArrayTable);
+  const talentTierTable = franchise.getTableByUniqueId(tables.talentTierTable);
 
-  await FranchiseUtils.readTableRecords([coachTable, freeAgentCoachTable, presentationTable]);
+  await FranchiseUtils.readTableRecords([
+    coachTable,
+    freeAgentCoachTable,
+    presentationTable,
+    talentArrayTable,
+    gamedayTalentTable,
+    wearAndTearTalentTable,
+    playsheetTalentTable,
+    seasonTalentTable,
+    talentTierArrayTable,
+    talentTierTable,
+  ]);
 
   const nextCoachRecord = coachTable.header.nextRecordToUse; // Get next record to use for the coach table
   const coachBinary = getBinaryReferenceData(coachTable.header.tableId, nextCoachRecord); // Then, we need the current row binary for both tables
@@ -414,7 +661,6 @@ async function createNewCoach() {
   await addCoachToFATable(freeAgentCoachTable, coachBinary);
 
   console.log(`Successfully created ${coachRecord.Position} ${coachFirstName} ${coachLastName}!`);
-  return;
 }
 
 franchise.on("ready", async function () {
