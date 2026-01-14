@@ -1,11 +1,10 @@
-const Franchise = require('madden-franchise').FranchiseFile;
-const { getBinaryReferenceData } = require('madden-franchise').utilService;
-const { tables, tablesM25, tablesM26 } = require('./FranchiseTableId');
-const path = require('path');
-const os = require('os');
-const fs = require('fs');
-const prompt = require('prompt-sync')();
-
+const Franchise = require("madden-franchise").FranchiseFile;
+const { getBinaryReferenceData } = require("madden-franchise").utilService;
+const { tables, tablesM25, tablesM26 } = require("./FranchiseTableId");
+const path = require("path");
+const os = require("os");
+const fs = require("fs");
+const prompt = require("prompt-sync")();
 
 /*******************************************************
  *                  GLOBAL CONSTANTS                   *
@@ -14,11 +13,10 @@ const prompt = require('prompt-sync')();
  *   should be placed in this file.                    *
  *******************************************************/
 
-
-const ZERO_REF = '00000000000000000000000000000000';
+const ZERO_REF = "00000000000000000000000000000000";
 const EMPTY_STRING = "";
-const BASE_FILE_INIT_KWD = 'CAREER';
-const FTC_FILE_INIT_KWD = 'franchise-';
+const BASE_FILE_INIT_KWD = "CAREER";
+const FTC_FILE_INIT_KWD = "franchise-";
 const Y_KWD = "Y";
 const N_KWD = "N";
 const YES_KWD = "YES";
@@ -35,7 +33,7 @@ const YEARS = {
   M23: 23,
   M24: 24,
   M25: 25,
-  M26: 26
+  M26: 26,
 };
 
 // TYPES OF SAVE FILES
@@ -44,44 +42,44 @@ const SAVE_TYPES = {
   DRAFTCLASS: "CAREERDRAFT-",
   CPUSLIDER: "CPUSKILL-",
   PLAYERSLIDER: "PLYRSKILL-",
-  TEAMBUILDER: "TEAMBUILDER-"
+  TEAMBUILDER: "TEAMBUILDER-",
 };
 
 const CONTRACT_STATUSES = {
-  SIGNED: 'Signed',
-  FREE_AGENT: 'FreeAgent',
-  PRACTICE_SQUAD: 'PracticeSquad',
-  DRAFT: 'Draft',
-  DRAFTED: 'Drafted',
-  RETIRED: 'Retired',
-  CREATED: 'Created',
-  EXPIRING: 'Expiring',
-  DELETED: 'Deleted',
-  NONE: 'None'
-}
+  SIGNED: "Signed",
+  FREE_AGENT: "FreeAgent",
+  PRACTICE_SQUAD: "PracticeSquad",
+  DRAFT: "Draft",
+  DRAFTED: "Drafted",
+  RETIRED: "Retired",
+  CREATED: "Created",
+  EXPIRING: "Expiring",
+  DELETED: "Deleted",
+  NONE: "None",
+};
 
 const TABLE_NAMES = {
-  PLAYER: 'Player',
-  COACH: 'Coach',
-  TEAM: 'Team',
-  SEASON_INFO: 'SeasonInfo',
-  SALARY_INFO: 'SalaryInfo',
-  TEAM_ROADMAP: 'TeamRoadmap',
-  COACH_TALENT_EFFECTS: 'CoachTalentEffects',
-  STADIUM: 'Stadium'
-}
+  PLAYER: "Player",
+  COACH: "Coach",
+  TEAM: "Team",
+  SEASON_INFO: "SeasonInfo",
+  SALARY_INFO: "SalaryInfo",
+  TEAM_ROADMAP: "TeamRoadmap",
+  COACH_TALENT_EFFECTS: "CoachTalentEffects",
+  STADIUM: "Stadium",
+};
 
 const SEASON_STAGES = {
-  PRESEASON: 'PreSeason',
-  NFL_SEASON: 'NFLSeason',
-  OFFSEASON: 'OffSeason'
-}
+  PRESEASON: "PreSeason",
+  NFL_SEASON: "NFLSeason",
+  OFFSEASON: "OffSeason",
+};
 
 const EXTRA_TEAM_NAMES = {
-  AFC: 'AFC',
-  NFC: 'NFC',
-  FREE_AGENTS: 'Free Agents'
-} 
+  AFC: "AFC",
+  NFC: "NFC",
+  FREE_AGENTS: "Free Agents",
+};
 const NFL_CONFERENCES = [EXTRA_TEAM_NAMES.AFC, EXTRA_TEAM_NAMES.NFC];
 
 /**
@@ -111,8 +109,8 @@ const POSITIONS = {
   SS: "SS",
   K: "K",
   P: "P",
-  LS: "LS"
-}
+  LS: "LS",
+};
 const OFFENSIVE_SKILL_POSITIONS = [POSITIONS.QB, POSITIONS.HB, POSITIONS.FB, POSITIONS.WR, POSITIONS.TE];
 const OLINE_POSITIONS = [POSITIONS.LT, POSITIONS.LG, POSITIONS.C, POSITIONS.RG, POSITIONS.RT];
 const ALL_OFFENSIVE_POSITIONS = [...OFFENSIVE_SKILL_POSITIONS, ...OLINE_POSITIONS];
@@ -122,13 +120,23 @@ const DEFENSIVE_BACK_POSITIONS = [POSITIONS.CB, POSITIONS.FS, POSITIONS.SS];
 const ALL_DEFENSIVE_POSITIONS = [...DEFENSIVE_LINE_POSITIONS, ...LINEBACKER_POSITIONS, ...DEFENSIVE_BACK_POSITIONS];
 const SPECIAL_TEAM_POSITIONS = [POSITIONS.K, POSITIONS.P];
 
-const COACH_SKIN_TONES = ['SkinTone1', 'SkinTone2', 'SkinTone3', 'SkinTone4', 'SkinTone5', 'SkinTone6', 'SkinTone7'];
-const COACH_APPAREL = ['Facility1', 'Facility2', 'Practice1', 'Practice2', 'Practice3', 'Staff1', 'Staff2', 'Staff3', 'Staff4'];
+const COACH_SKIN_TONES = ["SkinTone1", "SkinTone2", "SkinTone3", "SkinTone4", "SkinTone5", "SkinTone6", "SkinTone7"];
+const COACH_APPAREL = [
+  "Facility1",
+  "Facility2",
+  "Practice1",
+  "Practice2",
+  "Practice3",
+  "Staff1",
+  "Staff2",
+  "Staff3",
+  "Staff4",
+];
 
 const BODY_MAP = {
-	1: 'Thin',
-	2: 'Muscular',
-	3: 'Heavy' 
+  1: "Thin",
+  2: "Muscular",
+  3: "Heavy",
 };
 
 const BODY_TYPES = {
@@ -138,13 +146,10 @@ const BODY_TYPES = {
   HEAVY: "Heavy",
   STANDARD_ALT: "Standard_Alternate",
   THIN_ALT: "Thin_Alternate",
-  LEAN: "Freshman"
-}
+  LEAN: "Freshman",
+};
 
-const FEMALE_BODY_TYPES = [
-  BODY_TYPES.STANDARD_ALT,
-  BODY_TYPES.THIN_ALT
-]
+const FEMALE_BODY_TYPES = [BODY_TYPES.STANDARD_ALT, BODY_TYPES.THIN_ALT];
 
 const BODY_TYPE_ITEMS = {
   [BODY_TYPES.STANDARD]: "standard_bodytype",
@@ -153,45 +158,44 @@ const BODY_TYPE_ITEMS = {
   [BODY_TYPES.HEAVY]: "heavy_bodytype",
   [BODY_TYPES.STANDARD_ALT]: "standardalternate_bodytype",
   [BODY_TYPES.THIN_ALT]: "thinalternate_bodytype",
-  [BODY_TYPES.LEAN]: "lean_bodytype"
-}
+  [BODY_TYPES.LEAN]: "lean_bodytype",
+};
 
 // Default FULL_CONTROL settings
 const USER_CONTROL_SETTINGS = [
-  {label: 'Trades and Free Agency', name: 'IsTradeAndFreeAgencyEnabled', value: true},
-  {label: 'Scout College Players', name: 'IsScoutCollegePlayersEnabled', value: true},
-  {label: 'League Advancement', name: 'IsManualAdvancementEnabled', value: true},
-  {label: 'Manage Practice Reps', name: 'IsManagePracticeRepsEnabled', value: true},
-  {label: 'Injury Management', name: 'IsInjuryManagementEnabled', value: true},
-  {label: 'Offseason FA Bidding', name: 'IsCPUSignOffseasonFAEnabled', value: true},
-  {label: 'Contract Negotiations', name: 'IsCPUReSignPlayersEnabled', value: true},
-  {label: 'Preseason Cut Days', name: 'IsCPUCutPlayersEnabled', value: true},
-  {label: 'Tutorial Pop-ups', name: 'IsTutorialPopupEnabled', value: false},
-  {label: 'Auto Progress Talents', name: 'IsCPUProgressTalentsEnabled', value: false},
-  {label: 'Auto Progress Players', name: 'IsCPUProgressPlayersEnabled', value: false},
-  {label: 'Fill Roster', name: 'IsCPUFillRosterEnabled', value: false},
-  {label: 'Manual Depth Chart', name: 'IsManualReorderDepthChartEnabled', value: true},
-  {label: 'Season Experience', name: 'SeasonExperience', value: 'FULL_CONTROL'},
+  { label: "Trades and Free Agency", name: "IsTradeAndFreeAgencyEnabled", value: true },
+  { label: "Scout College Players", name: "IsScoutCollegePlayersEnabled", value: true },
+  { label: "League Advancement", name: "IsManualAdvancementEnabled", value: true },
+  { label: "Manage Practice Reps", name: "IsManagePracticeRepsEnabled", value: true },
+  { label: "Injury Management", name: "IsInjuryManagementEnabled", value: true },
+  { label: "Offseason FA Bidding", name: "IsCPUSignOffseasonFAEnabled", value: true },
+  { label: "Contract Negotiations", name: "IsCPUReSignPlayersEnabled", value: true },
+  { label: "Preseason Cut Days", name: "IsCPUCutPlayersEnabled", value: true },
+  { label: "Tutorial Pop-ups", name: "IsTutorialPopupEnabled", value: false },
+  { label: "Auto Progress Talents", name: "IsCPUProgressTalentsEnabled", value: false },
+  { label: "Auto Progress Players", name: "IsCPUProgressPlayersEnabled", value: false },
+  { label: "Fill Roster", name: "IsCPUFillRosterEnabled", value: false },
+  { label: "Manual Depth Chart", name: "IsManualReorderDepthChartEnabled", value: true },
+  { label: "Season Experience", name: "SeasonExperience", value: "FULL_CONTROL" },
 ];
 
 // Default SIMPLE settings
 const CPU_CONTROL_SETTINGS = [
-  {label: 'Trades and Free Agency', name: 'IsTradeAndFreeAgencyEnabled', value: false},
-  {label: 'Scout College Players', name: 'IsScoutCollegePlayersEnabled', value: false},
-  {label: 'League Advancement', name: 'IsManualAdvancementEnabled', value: false},
-  {label: 'Manage Practice Reps', name: 'IsManagePracticeRepsEnabled', value: false},
-  {label: 'Injury Management', name: 'IsInjuryManagementEnabled', value: false},
-  {label: 'Offseason FA Bidding', name: 'IsCPUSignOffseasonFAEnabled', value: false},
-  {label: 'Contract Negotiations', name: 'IsCPUReSignPlayersEnabled', value: false},
-  {label: 'Preseason Cut Days', name: 'IsCPUCutPlayersEnabled', value: false},
-  {label: 'Tutorial Pop-ups', name: 'IsTutorialPopupEnabled', value: false},
-  {label: 'Auto Progress Talents', name: 'IsCPUProgressTalentsEnabled', value: true},
-  {label: 'Auto Progress Players', name: 'IsCPUProgressPlayersEnabled', value: true},
-  {label: 'Fill Roster', name: 'IsCPUFillRosterEnabled', value: true},
-  {label: 'Manual Depth Chart', name: 'IsManualReorderDepthChartEnabled', value: false},
-  {label: 'Season Experience', name: 'SeasonExperience', value: 'SIMPLE'},
+  { label: "Trades and Free Agency", name: "IsTradeAndFreeAgencyEnabled", value: false },
+  { label: "Scout College Players", name: "IsScoutCollegePlayersEnabled", value: false },
+  { label: "League Advancement", name: "IsManualAdvancementEnabled", value: false },
+  { label: "Manage Practice Reps", name: "IsManagePracticeRepsEnabled", value: false },
+  { label: "Injury Management", name: "IsInjuryManagementEnabled", value: false },
+  { label: "Offseason FA Bidding", name: "IsCPUSignOffseasonFAEnabled", value: false },
+  { label: "Contract Negotiations", name: "IsCPUReSignPlayersEnabled", value: false },
+  { label: "Preseason Cut Days", name: "IsCPUCutPlayersEnabled", value: false },
+  { label: "Tutorial Pop-ups", name: "IsTutorialPopupEnabled", value: false },
+  { label: "Auto Progress Talents", name: "IsCPUProgressTalentsEnabled", value: true },
+  { label: "Auto Progress Players", name: "IsCPUProgressPlayersEnabled", value: true },
+  { label: "Fill Roster", name: "IsCPUFillRosterEnabled", value: true },
+  { label: "Manual Depth Chart", name: "IsManualReorderDepthChartEnabled", value: false },
+  { label: "Season Experience", name: "SeasonExperience", value: "SIMPLE" },
 ];
-
 
 /*******************************************************
  *                  GLOBAL FUNCTIONS                   *
@@ -199,7 +203,6 @@ const CPU_CONTROL_SETTINGS = [
  *   Any function that is not class-specific should    *
  *   be placed in this file.                           *
  *******************************************************/
-
 
 /**
  * Initializes the franchise and optionally prompts for a backup.
@@ -229,20 +232,20 @@ function init(validGameYears, options = {}) {
   if (!skipYearValidation && !isFtcFile) validateGameYears(franchise, validGameYears);
 
   if (promptForBackup) {
-    const backupMessage = "Would you like to make a backup of your franchise file before running this program? Enter yes or no.";
+    const backupMessage =
+      "Would you like to make a backup of your franchise file before running this program? Enter yes or no.";
     const saveBackupFile = getYesOrNo(backupMessage);
-  
+
     if (saveBackupFile) {
       const isoString = new Date().toISOString(); // Full ISO timestamp: YYYY-MM-DDTHH:mm:ss.sssZ
-      const timeOnly = isoString.slice(11, 23).replace(/[:.]/g, ''); // Extract HH:mm:ss.sss and remove ':' and '.'
+      const timeOnly = isoString.slice(11, 23).replace(/[:.]/g, ""); // Extract HH:mm:ss.sss and remove ':' and '.'
       const backupFilePath = `${franchise._filePath}${timeOnly}`;
-      
-  
+
       try {
         fs.copyFileSync(franchise._filePath, backupFilePath);
         console.log(`Backup saved to ${backupFilePath}`);
       } catch (error) {
-        console.error('Error saving backup file: ', error);
+        console.error("Error saving backup file: ", error);
       }
     }
   }
@@ -263,15 +266,16 @@ function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile =
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
   const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
   const defaultPath = fs.existsSync(documentsDir) ? documentsDir : fs.existsSync(oneDriveDir) ? oneDriveDir : null;
-  
+
   if (!defaultPath) {
-    console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`);
+    console.log(
+      `IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`
+    );
   }
 
   const filePrefix = isFtcFile ? FTC_FILE_INIT_KWD : BASE_FILE_INIT_KWD;
   let defaultMessage = `Please enter the name of your Madden ${gameYear} franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.`;
-  if(!defaultPath)
-  {
+  if (!defaultPath) {
     defaultMessage = `Please enter the full path to your Madden ${gameYear} franchise file. Or, enter 0 to exit.`;
   }
   const message = customMessage || defaultMessage;
@@ -279,9 +283,9 @@ function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile =
   while (true) {
     try {
       console.log(message);
-      
-      let fileName = prompt().trim().replace(/['"]/g, '');
-      
+
+      let fileName = prompt().trim().replace(/['"]/g, "");
+
       if (fileName === "0") {
         EXIT_PROGRAM();
       }
@@ -289,12 +293,16 @@ function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile =
       // Attempt to load the franchise with the file name in uppercase first
       try {
         const upperCaseFileName = fileName.toUpperCase();
-        const franchisePathUpper = upperCaseFileName.startsWith(filePrefix) ? path.join(defaultPath, upperCaseFileName) : upperCaseFileName.replace(new RegExp('/', 'g'), '\\');
-        const franchise = new Franchise(franchisePathUpper, {'autoUnempty': isAutoUnemptyEnabled});
+        const franchisePathUpper = upperCaseFileName.startsWith(filePrefix)
+          ? path.join(defaultPath, upperCaseFileName)
+          : upperCaseFileName.replace(new RegExp("/", "g"), "\\");
+        const franchise = new Franchise(franchisePathUpper, { autoUnempty: isAutoUnemptyEnabled });
         return franchise;
       } catch (e) {
-        const franchisePath = fileName.startsWith(filePrefix) ? path.join(defaultPath, fileName) : fileName.replace(new RegExp('/', 'g'), '\\');
-        const franchise = new Franchise(franchisePath, {'autoUnempty': isAutoUnemptyEnabled});
+        const franchisePath = fileName.startsWith(filePrefix)
+          ? path.join(defaultPath, fileName)
+          : fileName.replace(new RegExp("/", "g"), "\\");
+        const franchise = new Franchise(franchisePath, { autoUnempty: isAutoUnemptyEnabled });
         return franchise;
       }
     } catch (e) {
@@ -313,38 +321,44 @@ function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile =
  * @returns {Object} - The selected Franchise object.
  */
 async function selectFranchiseFileAsync(gameYear, isAutoUnemptyEnabled = false, isFtcFile = false) {
-    const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
-    const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
-    const filePrefix = isFtcFile ? FTC_FILE_INIT_KWD : BASE_FILE_INIT_KWD;
-    
-    let defaultPath;
-    if (fs.existsSync(documentsDir)) {
-        defaultPath = documentsDir;
-    } else if (fs.existsSync(oneDriveDir)) {
-        defaultPath = oneDriveDir;
-    } else {
-        console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`);
-    }
-  
-    while (true) {
-        try {
-            console.log("Please enter the name of your franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.");
-            let fileName = prompt().trim().replace(/['"]/g, ''); // Remove leading/trailing spaces
+  const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
+  const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
+  const filePrefix = isFtcFile ? FTC_FILE_INIT_KWD : BASE_FILE_INIT_KWD;
 
-            if (fileName === "0") {
-              EXIT_PROGRAM();
-            }
+  let defaultPath;
+  if (fs.existsSync(documentsDir)) {
+    defaultPath = documentsDir;
+  } else if (fs.existsSync(oneDriveDir)) {
+    defaultPath = oneDriveDir;
+  } else {
+    console.log(
+      `IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`
+    );
+  }
 
-            const franchisePath = fileName.startsWith(filePrefix) ? path.join(defaultPath, fileName) : fileName.replace(new RegExp('/', 'g'), '\\');
-            const franchise = await Franchise.create(franchisePath, {'autoUnempty': isAutoUnemptyEnabled});
-  
-            return franchise;
-        } catch (e) {
-            console.log("Invalid franchise file name/path given. Please provide a valid name or path and try again.");
-            continue;
-        }
+  while (true) {
+    try {
+      console.log(
+        "Please enter the name of your franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit."
+      );
+      let fileName = prompt().trim().replace(/['"]/g, ""); // Remove leading/trailing spaces
+
+      if (fileName === "0") {
+        EXIT_PROGRAM();
+      }
+
+      const franchisePath = fileName.startsWith(filePrefix)
+        ? path.join(defaultPath, fileName)
+        : fileName.replace(new RegExp("/", "g"), "\\");
+      const franchise = await Franchise.create(franchisePath, { autoUnempty: isAutoUnemptyEnabled });
+
+      return franchise;
+    } catch (e) {
+      console.log("Invalid franchise file name/path given. Please provide a valid name or path and try again.");
+      continue;
     }
-};
+  }
+}
 
 /**
  * Selects a file from saves based on the provided game year and options.
@@ -357,48 +371,51 @@ function getSaveFilePath(gameYear, saveType = SAVE_TYPES.ROSTER, customMessage =
   const documentsDir = path.join(os.homedir(), `Documents\\Madden NFL ${gameYear}\\saves\\`);
   const oneDriveDir = path.join(os.homedir(), `OneDrive\\Documents\\Madden NFL ${gameYear}\\saves\\`);
   const defaultPath = fs.existsSync(documentsDir) ? documentsDir : fs.existsSync(oneDriveDir) ? oneDriveDir : null;
-  
+
   if (!defaultPath) {
-    console.log(`IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`);
+    console.log(
+      `IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`
+    );
   }
 
   const filePrefix = saveType;
-  let defaultMessage = `Please enter the name of your Madden ${gameYear} ${saveType.replace("-", "").toLowerCase()} file. Either give the full path of the file OR just give the file name (such as ${saveType}BEARS) if it's in your Documents folder. Or, enter 0 to exit.`;
-  if(!defaultPath)
-  {
-    defaultMessage = `Please enter the full path to your Madden ${gameYear} ${saveType.replace("-", "").toLowerCase()} file. Or, enter 0 to exit.`;
+  let defaultMessage = `Please enter the name of your Madden ${gameYear} ${saveType
+    .replace("-", "")
+    .toLowerCase()} file. Either give the full path of the file OR just give the file name (such as ${saveType}BEARS) if it's in your Documents folder. Or, enter 0 to exit.`;
+  if (!defaultPath) {
+    defaultMessage = `Please enter the full path to your Madden ${gameYear} ${saveType
+      .replace("-", "")
+      .toLowerCase()} file. Or, enter 0 to exit.`;
   }
   const message = customMessage || defaultMessage;
 
   while (true) {
-      console.log(message);
-      
-      let fileName = prompt().trim().replace(/['"]/g, '');
-      
-      if (fileName === "0") {
-        EXIT_PROGRAM();
-      }
+    console.log(message);
 
-      // Check the uppercase path first
-      const upperCaseFileName = fileName.toUpperCase();
-      const savePathUpper = upperCaseFileName.startsWith(filePrefix) ? path.join(defaultPath, upperCaseFileName) : upperCaseFileName.replace(new RegExp('/', 'g'), '\\');
-      const savePath = fileName.startsWith(filePrefix) ? path.join(defaultPath, fileName) : fileName.replace(new RegExp('/', 'g'), '\\');
+    let fileName = prompt().trim().replace(/['"]/g, "");
 
-      if(fs.existsSync(savePathUpper))
-      {
-        return savePathUpper;
-      }
-      else if(fs.existsSync(savePath))
-      {
-        return savePath;
-      }
-      else
-      {
-        console.log("Invalid file name/path given. Please provide a valid name or path and try again.");
-      }
+    if (fileName === "0") {
+      EXIT_PROGRAM();
+    }
+
+    // Check the uppercase path first
+    const upperCaseFileName = fileName.toUpperCase();
+    const savePathUpper = upperCaseFileName.startsWith(filePrefix)
+      ? path.join(defaultPath, upperCaseFileName)
+      : upperCaseFileName.replace(new RegExp("/", "g"), "\\");
+    const savePath = fileName.startsWith(filePrefix)
+      ? path.join(defaultPath, fileName)
+      : fileName.replace(new RegExp("/", "g"), "\\");
+
+    if (fs.existsSync(savePathUpper)) {
+      return savePathUpper;
+    } else if (fs.existsSync(savePath)) {
+      return savePath;
+    } else {
+      console.log("Invalid file name/path given. Please provide a valid name or path and try again.");
+    }
   }
 }
-
 
 /**
  * Prompts the user to save the franchise file, optionally using a custom message.
@@ -409,19 +426,20 @@ function getSaveFilePath(gameYear, saveType = SAVE_TYPES.ROSTER, customMessage =
  * @returns {Promise<void>}
  */
 async function saveFranchiseFile(franchise, customMessage = null, filePath = null) {
-  const message = customMessage || "Would you like to save your changes? Enter yes to save your changes, or no to quit without saving.";
+  const message =
+    customMessage ||
+    "Would you like to save your changes? Enter yes to save your changes, or no to quit without saving.";
   const saveFile = getYesOrNo(message);
   const destination = filePath ? filePath : franchise._filePath;
 
   if (!saveFile) {
-      console.log("Your Franchise File has not been saved.");
-      return;
+    console.log("Your Franchise File has not been saved.");
+    return;
   }
 
   await franchise.save(destination);
   console.log("Franchise file successfully saved!");
-};
-
+}
 
 /**
  * Reads records from a list of tables and handles errors based on the continueIfError flag.
@@ -446,7 +464,7 @@ async function readTableRecords(tablesList, continueIfError = false, franchise =
   for (const table of tablesList) {
     try {
       await table.readRecords();
-      
+
       if (tables && table.header.uniqueId === tables.playerTable) {
         if (await hasMultiplePlayerTables(franchise)) {
           await fixPlayerTables(franchise);
@@ -459,7 +477,7 @@ async function readTableRecords(tablesList, continueIfError = false, franchise =
       //console.error(`Error reading records for table ${table.header.uniqueId}: ${error.message}`);
     }
   }
-};
+}
 
 /**
  * Takes a list of valid game years and has the user select one.
@@ -470,44 +488,46 @@ async function readTableRecords(tablesList, continueIfError = false, franchise =
  * @returns {number} - Returns the selected gameYear
  */
 function getGameYear(validGameYears, customMessage = null) {
-    // If we didn't pass through an array, simply return the value
-    if (!Array.isArray(validGameYears)) {
-        return parseInt(validGameYears);
+  // If we didn't pass through an array, simply return the value
+  if (!Array.isArray(validGameYears)) {
+    return parseInt(validGameYears);
+  }
+
+  if (validGameYears.length === 1) {
+    return parseInt(validGameYears[0]); // Return the integer value directly
+  }
+
+  let gameYear;
+  const validGameYearsStr = validGameYears.map(String);
+
+  while (true) {
+    const defaultMessage = `Select the version of Madden your franchise file uses. Valid inputs are ${validGameYears.join(
+      ", "
+    )}. Or, enter 0 to exit.`;
+    const message = customMessage !== null ? customMessage : defaultMessage;
+    console.log(message);
+    gameYear = prompt();
+
+    if (gameYear === "0") {
+      EXIT_PROGRAM();
     }
 
-    if (validGameYears.length === 1) {
-      return parseInt(validGameYears[0]); // Return the integer value directly
+    if (validGameYearsStr.includes(String(gameYear))) {
+      break;
+    } else {
+      console.log("Invalid option. Please try again.");
     }
+  }
 
-    let gameYear;
-    const validGameYearsStr = validGameYears.map(String);
-
-    while (true) {
-        const defaultMessage = `Select the version of Madden your franchise file uses. Valid inputs are ${validGameYears.join(', ')}. Or, enter 0 to exit.`;
-        const message = customMessage !== null ? customMessage : defaultMessage;
-        console.log(message);
-        gameYear = prompt();
-
-        if (gameYear === '0') {
-          EXIT_PROGRAM();
-        }
-
-        if (validGameYearsStr.includes(String(gameYear))) {
-            break;
-        } else {
-            console.log("Invalid option. Please try again.");
-        }
-    }
-
-    return parseInt(gameYear);
-};
+  return parseInt(gameYear);
+}
 
 /**
  * Returns the correct tables object from FranchiseTableId depending on the GameYear of your franchise file.
  * If Madden 24 or before, 'tables' will be returned.
  * If Madden 25, tablesM25 will be returned.
  *
- * @param {Object} [franchise] - Franchise Object. We get the gameYear value from this object and 
+ * @param {Object} [franchise] - Franchise Object. We get the gameYear value from this object and
  *                               return the proper tables object.
  * @returns {Object}
  */
@@ -539,60 +559,63 @@ function getTablesObject(franchise) {
 
 // If you use this function, you HAVE to include ovrweights/ovrweightsPosMap in your included files when compiling to an exe
 function calculateBestOverall(player, gameYear = 25) {
+  let ovrWeights;
 
-    let ovrWeights;
-    
-    if(gameYear <= 25)
-    {
-      ovrWeights = JSON.parse(fs.readFileSync(path.join(__dirname, 'JsonLookups/ovrweights.json'), 'utf8'));
-    }
-    else
-    {
-      ovrWeights = JSON.parse(fs.readFileSync(path.join(__dirname, `JsonLookups/ovrweights_${gameYear}.json`), 'utf8'));
-    }
+  if (gameYear <= 25) {
+    ovrWeights = JSON.parse(fs.readFileSync(path.join(__dirname, "JsonLookups/ovrweights.json"), "utf8"));
+  } else {
+    ovrWeights = JSON.parse(fs.readFileSync(path.join(__dirname, `JsonLookups/ovrweights_${gameYear}.json`), "utf8"));
+  }
 
-    const ovrWeightsPosMap = JSON.parse(fs.readFileSync(path.join(__dirname, 'JsonLookups/ovrweightsPosMap.json'), 'utf8'));
-    
-    let newOverall = 0;
-    let newArchetype = "";
+  const ovrWeightsPosMap = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "JsonLookups/ovrweightsPosMap.json"), "utf8")
+  );
 
-    const position = ovrWeightsPosMap[player.Position]; //Get position
-    for (const archetype of ovrWeights) { // Iterate to find the highest archetype
-        if (archetype.Pos === position) {
-            const ovrObj = ovrWeights.find(weight => weight.Archetype == archetype.Archetype);
-            let sum = 0;
-            const properties = archetype ? Object.keys(archetype).slice(4,55) : null;
+  let newOverall = 0;
+  let newArchetype = "";
 
-            if (properties.length > 0) {
-                if (player.fields != null) {
-                    for (const attr in player.fields) {
-                        if (properties.includes(attr)) {
-                            const attrValue = ((player[attr] - ovrObj.DesiredLow) / (ovrObj.DesiredHigh - ovrObj.DesiredLow)) * (ovrObj[attr] / ovrObj.Sum);
-                            sum += attrValue;
-                        }
-                    }
-                } else {
-                    for (const attr in player) {
-                        if (properties.includes(attr)) {
-                            const attrValue = ((player[attr] - ovrObj.DesiredLow) / (ovrObj.DesiredHigh - ovrObj.DesiredLow)) * (ovrObj[attr] / ovrObj.Sum);
-                            sum += attrValue;
-                        }
-                    }
-                }
+  const position = ovrWeightsPosMap[player.Position]; //Get position
+  for (const archetype of ovrWeights) {
+    // Iterate to find the highest archetype
+    if (archetype.Pos === position) {
+      const ovrObj = ovrWeights.find((weight) => weight.Archetype == archetype.Archetype);
+      let sum = 0;
+      const properties = archetype ? Object.keys(archetype).slice(4, 55) : null;
+
+      if (properties.length > 0) {
+        if (player.fields != null) {
+          for (const attr in player.fields) {
+            if (properties.includes(attr)) {
+              const attrValue =
+                ((player[attr] - ovrObj.DesiredLow) / (ovrObj.DesiredHigh - ovrObj.DesiredLow)) *
+                (ovrObj[attr] / ovrObj.Sum);
+              sum += attrValue;
             }
-
-            const overall = Math.round(Math.min(sum * 99, 99));
-
-            if (overall > newOverall) {
-                newOverall = overall;
-                newArchetype = archetype.Archetype;
+          }
+        } else {
+          for (const attr in player) {
+            if (properties.includes(attr)) {
+              const attrValue =
+                ((player[attr] - ovrObj.DesiredLow) / (ovrObj.DesiredHigh - ovrObj.DesiredLow)) *
+                (ovrObj[attr] / ovrObj.Sum);
+              sum += attrValue;
             }
+          }
         }
-    }
+      }
 
-    // Return the highest overall/archetype
-    return { newOverall, newArchetype };
-};
+      const overall = Math.round(Math.min(sum * 99, 99));
+
+      if (overall > newOverall) {
+        newOverall = overall;
+        newArchetype = archetype.Archetype;
+      }
+    }
+  }
+
+  // Return the highest overall/archetype
+  return { newOverall, newArchetype };
+}
 
 /**
  * Empties the history tables entirely.
@@ -601,37 +624,37 @@ function calculateBestOverall(player, gameYear = 25) {
  * @returns {Promise<void>}
  */
 async function emptyHistoryTables(franchise) {
-    const tables = getTablesObject(franchise);
-    const historyEntryArray = franchise.getTableByUniqueId(tables.historyEntryArray);
-    const historyEntry = franchise.getTableByUniqueId(tables.historyEntry);
-    const transactionHistoryArray = franchise.getTableByUniqueId(tables.transactionHistoryArray);
-    const transactionHistoryEntry = franchise.getTableByUniqueId(tables.transactionHistoryEntry);
-    await readTableRecords([historyEntryArray,historyEntry,transactionHistoryArray,transactionHistoryEntry]);
-  
-    clearArrayTable(historyEntryArray);
-    clearArrayTable(transactionHistoryArray);
+  const tables = getTablesObject(franchise);
+  const historyEntryArray = franchise.getTableByUniqueId(tables.historyEntryArray);
+  const historyEntry = franchise.getTableByUniqueId(tables.historyEntry);
+  const transactionHistoryArray = franchise.getTableByUniqueId(tables.transactionHistoryArray);
+  const transactionHistoryEntry = franchise.getTableByUniqueId(tables.transactionHistoryEntry);
+  await readTableRecords([historyEntryArray, historyEntry, transactionHistoryArray, transactionHistoryEntry]);
 
-     const defaultColumns = {
-      "OldTeam": ZERO_REF,
-      "NewTeam": ZERO_REF,
-      "SeasonYear": 0,
-      "TransactionId": 0,
-      "SeasonStage": "PreSeason",
-      "ContractStatus": "Drafted",
-      "OldContractStatus": "Drafted",
-      "SeasonWeek": 0,
-      "FifthYearOptionCapHit": 0,
-      "ContractLength": 0,
-      "ContractTotalSalary": 0,
-      "CapSavingsThisYear": 0,
-      "ContractBonus": 0,
-      "ContractSalary": 0
-    };
+  clearArrayTable(historyEntryArray);
+  clearArrayTable(transactionHistoryArray);
 
-    emptyTable(transactionHistoryEntry, defaultColumns);
-  
-    // I wouldn't recommend using this part - It shouldn't be necessary and has over 65k rows
-    /*for (let i = 0; i < historyEntry.header.recordCapacity;i++) {
+  const defaultColumns = {
+    OldTeam: ZERO_REF,
+    NewTeam: ZERO_REF,
+    SeasonYear: 0,
+    TransactionId: 0,
+    SeasonStage: "PreSeason",
+    ContractStatus: "Drafted",
+    OldContractStatus: "Drafted",
+    SeasonWeek: 0,
+    FifthYearOptionCapHit: 0,
+    ContractLength: 0,
+    ContractTotalSalary: 0,
+    CapSavingsThisYear: 0,
+    ContractBonus: 0,
+    ContractSalary: 0,
+  };
+
+  emptyTable(transactionHistoryEntry, defaultColumns);
+
+  // I wouldn't recommend using this part - It shouldn't be necessary and has over 65k rows
+  /*for (let i = 0; i < historyEntry.header.recordCapacity;i++) {
         if (!historyEntry.records[i].isEmpty) {
             const record = historyEntry.records[i];
             record.Person = ZERO_REF;
@@ -651,11 +674,11 @@ async function emptyHistoryTables(franchise) {
             record.empty();
         }
     }*/
-};
-
+}
 
 function getColumnNames(table) {
-  try { // Table object
+  try {
+    // Table object
     if (table.offsetTable) {
       return table.offsetTable.map((offset) => offset.name);
     }
@@ -663,7 +686,8 @@ function getColumnNames(table) {
     //console.error("Error accessing offsetTable:", error);
   }
 
-  try { // Record object
+  try {
+    // Record object
     if (table._offsetTable) {
       return table._offsetTable.map((offset) => offset.name);
     }
@@ -675,7 +699,6 @@ function getColumnNames(table) {
   return [];
 }
 
-
 /**
  * Empties the Character Visuals table entirely.
  *
@@ -683,153 +706,163 @@ function getColumnNames(table) {
  * @returns {Promise<void>}
  */
 async function emptyCharacterVisualsTable(franchise) {
-    const tables = getTablesObject(franchise);
-    const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
-    const playerTable = franchise.getTableByUniqueId(tables.playerTable);
-    const coachTable = franchise.getTableByUniqueId(tables.coachTable);
-    let trainerTable = franchise.getTableByUniqueId(tables.trainerTable);
+  const tables = getTablesObject(franchise);
+  const characterVisuals = franchise.getTableByUniqueId(tables.characterVisualsTable);
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  const coachTable = franchise.getTableByUniqueId(tables.coachTable);
+  let trainerTable = franchise.getTableByUniqueId(tables.trainerTable);
 
+  const tableList = [characterVisuals, playerTable, coachTable];
 
-    const tableList = [characterVisuals, playerTable, coachTable];
+  if (franchise.schema.meta.gameYear >= 26) {
+    tableList.push(trainerTable);
+  }
 
-    if(franchise.schema.meta.gameYear >= 26)
-    {
-      tableList.push(trainerTable);
+  await readTableRecords(tableList);
+
+  for (const record of playerTable.records) {
+    if (!record.isEmpty) {
+      record.CharacterVisuals = ZERO_REF;
     }
+  }
 
-    await readTableRecords(tableList);
+  for (const record of coachTable.records) {
+    if (!record.isEmpty) {
+      record.CharacterVisuals = ZERO_REF;
+    }
+  }
 
-    for (const record of playerTable.records) {
+  if (franchise.schema.meta.gameYear >= 26) {
+    for (const record of trainerTable.records) {
       if (!record.isEmpty) {
         record.CharacterVisuals = ZERO_REF;
       }
     }
+  }
 
-    for (const record of coachTable.records) {
-      if (!record.isEmpty) {
-        record.CharacterVisuals = ZERO_REF;
-      }
-    }
-
-    if(franchise.schema.meta.gameYear >= 26)
-    {
-      for (const record of trainerTable.records) {
-        if (!record.isEmpty) {
-          record.CharacterVisuals = ZERO_REF;
-        }
-      }
-    }
-
-    emptyTable(characterVisuals, {"RawData": {}});
-};
+  emptyTable(characterVisuals, { RawData: {} });
+}
 
 // Regenerates all marketing tables based on top player personalities in the file
 // franchise: Your franchise object
 async function regenerateMarketingTables(franchise) {
-    const tables = getTablesObject(franchise);
-    const playerTable = franchise.getTableByUniqueId(tables.playerTable);
-    const teamTable = franchise.getTableByUniqueId(tables.teamTable);
-    const marketingTable = franchise.getTableByUniqueId(tables.marketedPlayersArrayTable);
-    const topMarketedPlayers = franchise.getTableByUniqueId(tables.topMarketedPlayers);
-    const playerMerchTable = franchise.getTableByUniqueId(tables.playerMerchTable);
-    await readTableRecords([playerTable, teamTable, marketingTable, topMarketedPlayers, playerMerchTable]);
-  
-    for (let i = 0; i < teamTable.header.recordCapacity; i++) {
-      const teamRecord = teamTable.records[i];
-      if (teamRecord.isEmpty) {
-        continue;
-      }
-      let bestPersonalityArray = [];
-  
-      const teamIndex = teamRecord.TeamIndex;
-      const marketedPlayersRow = bin2Dec(teamRecord.MarketedPlayers.slice(15));
-      const filteredRecords = playerTable.records.filter(record => !record.isEmpty); // Filter for where the rows aren't empty
-      const bestPersonalityPlayers = filteredRecords.filter(record => record.ContractStatus === CONTRACT_STATUSES.SIGNED && record.TeamIndex === teamIndex); // Filter nonempty players for where they're signed
-  
-      // Sort the bestPersonalityPlayers array based on PersonalityRating and then OverallRating
-      const top5Players = bestPersonalityPlayers.sort((a, b) => {
+  const tables = getTablesObject(franchise);
+  const playerTable = franchise.getTableByUniqueId(tables.playerTable);
+  const teamTable = franchise.getTableByUniqueId(tables.teamTable);
+  const marketingTable = franchise.getTableByUniqueId(tables.marketedPlayersArrayTable);
+  const topMarketedPlayers = franchise.getTableByUniqueId(tables.topMarketedPlayers);
+  const playerMerchTable = franchise.getTableByUniqueId(tables.playerMerchTable);
+  await readTableRecords([playerTable, teamTable, marketingTable, topMarketedPlayers, playerMerchTable]);
+
+  for (let i = 0; i < teamTable.header.recordCapacity; i++) {
+    const teamRecord = teamTable.records[i];
+    if (teamRecord.isEmpty) {
+      continue;
+    }
+    let bestPersonalityArray = [];
+
+    const teamIndex = teamRecord.TeamIndex;
+    const marketedPlayersRow = bin2Dec(teamRecord.MarketedPlayers.slice(15));
+    const filteredRecords = playerTable.records.filter((record) => !record.isEmpty); // Filter for where the rows aren't empty
+    const bestPersonalityPlayers = filteredRecords.filter(
+      (record) => record.ContractStatus === CONTRACT_STATUSES.SIGNED && record.TeamIndex === teamIndex
+    ); // Filter nonempty players for where they're signed
+
+    // Sort the bestPersonalityPlayers array based on PersonalityRating and then OverallRating
+    const top5Players = bestPersonalityPlayers
+      .sort((a, b) => {
         // First, compare by PersonalityRating
         if (a.PersonalityRating !== b.PersonalityRating) {
           return b.PersonalityRating - a.PersonalityRating; // Sort by PersonalityRating in descending order
         }
         // If PersonalityRating is the same, compare by OverallRating
         return b.OverallRating - a.OverallRating; // Sort by OverallRating in descending order
-      }).slice(0, marketingTable.header.numMembers);
-  
-      for (const record of top5Players) {
-        const rowIndex = playerTable.records.indexOf(record);
-        const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
-        bestPersonalityArray.push(currentBin);
-      }
-  
-      // Set the marketingTable binary = bestPersonalityArray
-      bestPersonalityArray.forEach((val, index) => {
-        marketingTable.records[marketedPlayersRow].fieldsArray[index].value = val;
-      });
+      })
+      .slice(0, marketingTable.header.numMembers);
+
+    for (const record of top5Players) {
+      const rowIndex = playerTable.records.indexOf(record);
+      const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
+      bestPersonalityArray.push(currentBin);
     }
-  
-    let bestPersonalityArray = [];
-    let filteredRecords = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.SIGNED); // Filter for where the rows aren't empty
-    
-    // Sort the filteredRecords array based on PersonalityRating and then OverallRating
-    const topTen = filteredRecords.sort((a, b) => {
+
+    // Set the marketingTable binary = bestPersonalityArray
+    bestPersonalityArray.forEach((val, index) => {
+      marketingTable.records[marketedPlayersRow].fieldsArray[index].value = val;
+    });
+  }
+
+  let bestPersonalityArray = [];
+  let filteredRecords = playerTable.records.filter(
+    (record) => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.SIGNED
+  ); // Filter for where the rows aren't empty
+
+  // Sort the filteredRecords array based on PersonalityRating and then OverallRating
+  const topTen = filteredRecords
+    .sort((a, b) => {
       // First, compare by PersonalityRating
       if (a.PersonalityRating !== b.PersonalityRating) {
         return b.PersonalityRating - a.PersonalityRating; // Sort by PersonalityRating in descending order
       }
       // If PersonalityRating is the same, compare by OverallRating
       return b.OverallRating - a.OverallRating; // Sort by OverallRating in descending order
-    }).slice(0, topMarketedPlayers.header.numMembers);
-    
-    for (const record of topTen) {
-      const rowIndex = playerTable.records.indexOf(record); 
-      const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
-      bestPersonalityArray.push(currentBin);
-    }
-    
-    bestPersonalityArray.forEach((val, index) => { topMarketedPlayers.records[0].fieldsArray[index].value = val; });
-  
-    bestPersonalityArray = [];
-  
-    filteredRecords = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.SIGNED); // Filter for where the rows aren't empty
-    
-    const topPlayers = filteredRecords.sort((a, b) => {
+    })
+    .slice(0, topMarketedPlayers.header.numMembers);
+
+  for (const record of topTen) {
+    const rowIndex = playerTable.records.indexOf(record);
+    const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
+    bestPersonalityArray.push(currentBin);
+  }
+
+  bestPersonalityArray.forEach((val, index) => {
+    topMarketedPlayers.records[0].fieldsArray[index].value = val;
+  });
+
+  bestPersonalityArray = [];
+
+  filteredRecords = playerTable.records.filter(
+    (record) => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.SIGNED
+  ); // Filter for where the rows aren't empty
+
+  const topPlayers = filteredRecords
+    .sort((a, b) => {
       return b.OverallRating - a.OverallRating; // Sort by OverallRating in descending order
-    }).slice(0, playerMerchTable.header.recordCapacity);
-  
-    for (const record of topPlayers) {
-      const rowIndex = playerTable.records.indexOf(record); 
-      const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
-      const jerseyNum = playerTable.records[rowIndex].JerseyNum;
-      const teamIndex = playerTable.records[rowIndex].TeamIndex;
-      let presentationId = 0;
-  
-      const teamRecord = teamTable.records.find(team => team.TeamIndex === teamIndex);
-  
-      if (teamRecord) {
-        presentationId = teamRecord.PresentationId;
-      }
-  
-      bestPersonalityArray.push({playerValue: currentBin, jerseyNumber: jerseyNum, presentationId: presentationId});
+    })
+    .slice(0, playerMerchTable.header.recordCapacity);
+
+  for (const record of topPlayers) {
+    const rowIndex = playerTable.records.indexOf(record);
+    const currentBin = getBinaryReferenceData(playerTable.header.tableId, rowIndex);
+    const jerseyNum = playerTable.records[rowIndex].JerseyNum;
+    const teamIndex = playerTable.records[rowIndex].TeamIndex;
+    let presentationId = 0;
+
+    const teamRecord = teamTable.records.find((team) => team.TeamIndex === teamIndex);
+
+    if (teamRecord) {
+      presentationId = teamRecord.PresentationId;
     }
-  
-    for (let i = 0; i < bestPersonalityArray.length; i++) {
-      const currentPlayer = bestPersonalityArray[i];
-      const merchRecord = playerMerchTable.records[i];
-  
-      merchRecord.Player = currentPlayer.playerValue;
-      merchRecord.MerchandiseType = 'Jersey';
-      merchRecord.JerseyNumber = currentPlayer.jerseyNumber;
-      merchRecord.TeamPresentationId = currentPlayer.presentationId;
-    }
-};
+
+    bestPersonalityArray.push({ playerValue: currentBin, jerseyNumber: jerseyNum, presentationId: presentationId });
+  }
+
+  for (let i = 0; i < bestPersonalityArray.length; i++) {
+    const currentPlayer = bestPersonalityArray[i];
+    const merchRecord = playerMerchTable.records[i];
+
+    merchRecord.Player = currentPlayer.playerValue;
+    merchRecord.MerchandiseType = "Jersey";
+    merchRecord.JerseyNumber = currentPlayer.jerseyNumber;
+    merchRecord.TeamPresentationId = currentPlayer.presentationId;
+  }
+}
 
 async function generateActiveAbilityPlayers(franchise) {
   const tables = getTablesObject(franchise);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
-  await readTableRecords([teamTable,playerTable]);
-
+  await readTableRecords([teamTable, playerTable]);
 
   for (let i = 0; i < teamTable.header.recordCapacity; i++) {
     const record = teamTable.records[i];
@@ -839,16 +872,16 @@ async function generateActiveAbilityPlayers(franchise) {
       const defenseAbilityRef = record.DefenseActiveAbilitiesPlayers;
       const offenseAbilityRef = record.OffenseActiveAbilitiesPlayers;
 
-      const offenseTableId = bin2Dec(offenseAbilityRef.slice(0,15));
-      const defenseTableId = bin2Dec(defenseAbilityRef.slice(0,15));
-      
+      const offenseTableId = bin2Dec(offenseAbilityRef.slice(0, 15));
+      const defenseTableId = bin2Dec(defenseAbilityRef.slice(0, 15));
+
       const defenseRowNum = bin2Dec(defenseAbilityRef.slice(15));
       const offenseRowNum = bin2Dec(offenseAbilityRef.slice(15));
 
       const offenseTable = franchise.getTableById(offenseTableId);
       const defenseTable = franchise.getTableById(defenseTableId);
 
-      await readTableRecords([offenseTable,defenseTable]);
+      await readTableRecords([offenseTable, defenseTable]);
 
       const offenseRecord = offenseTable.records[offenseRowNum];
       const defenseRecord = defenseTable.records[defenseRowNum];
@@ -858,28 +891,33 @@ async function generateActiveAbilityPlayers(franchise) {
         defenseRecord[`Player${j}`] = ZERO_REF;
       }
 
-      const players = playerTable.records.filter(record => record.ContractStatus === 'Signed' && record.TeamIndex === teamIndex
-        && record.TraitDevelopment === 'XFactor'
+      const players = playerTable.records.filter(
+        (record) =>
+          record.ContractStatus === "Signed" && record.TeamIndex === teamIndex && record.TraitDevelopment === "XFactor"
       );
 
-      const offensivePlayers = players.filter(record => OFFENSIVE_SKILL_POSITIONS.includes(record.Position));
-      const defensivePlayers = players.filter(record => ALL_DEFENSIVE_POSITIONS.includes(record.Position));
+      const offensivePlayers = players.filter((record) => OFFENSIVE_SKILL_POSITIONS.includes(record.Position));
+      const defensivePlayers = players.filter((record) => ALL_DEFENSIVE_POSITIONS.includes(record.Position));
 
       // Sort and keep top 3 offensive players by OverallRating (descending)
-      const topOffensivePlayers = offensivePlayers.sort((a, b) => b.OverallRating - a.OverallRating).slice(0, offenseTable.header.numMembers);
+      const topOffensivePlayers = offensivePlayers
+        .sort((a, b) => b.OverallRating - a.OverallRating)
+        .slice(0, offenseTable.header.numMembers);
 
       // Sort and keep top 3 defensive players by OverallRating (descending)
-      const topDefensivePlayers = defensivePlayers.sort((a, b) => b.OverallRating - a.OverallRating).slice(0, defenseTable.header.numMembers);
+      const topDefensivePlayers = defensivePlayers
+        .sort((a, b) => b.OverallRating - a.OverallRating)
+        .slice(0, defenseTable.header.numMembers);
 
       // Iterate through the top offensive players using for...of with index
       for (const [i, player] of topOffensivePlayers.entries()) {
-        const playerBinary = getBinaryReferenceData(playerTable.header.tableId,player.index);
+        const playerBinary = getBinaryReferenceData(playerTable.header.tableId, player.index);
         offenseRecord[`Player${i}`] = playerBinary;
       }
 
       // Iterate through the top defensive players using for...of with index
       for (const [i, player] of topDefensivePlayers.entries()) {
-        const playerBinary = getBinaryReferenceData(playerTable.header.tableId,player.index);
+        const playerBinary = getBinaryReferenceData(playerTable.header.tableId, player.index);
         defenseRecord[`Player${i}`] = playerBinary;
       }
     }
@@ -888,80 +926,79 @@ async function generateActiveAbilityPlayers(franchise) {
 
 // Empties the acquisition array tables
 async function emptyAcquisitionTables(franchise) {
-    const tables = getTablesObject(franchise);
-    const playerAcquisitionEvaluation = franchise.getTableByUniqueId(tables.playerAcquisitionEvaluationTable);
-    const playerAcquisitionEvaluationArray = franchise.getTableByUniqueId(tables.playerAcquisitionEvaluationArrayTable);
+  const tables = getTablesObject(franchise);
+  const playerAcquisitionEvaluation = franchise.getTableByUniqueId(tables.playerAcquisitionEvaluationTable);
+  const playerAcquisitionEvaluationArray = franchise.getTableByUniqueId(tables.playerAcquisitionEvaluationArrayTable);
 
-    await readTableRecords([playerAcquisitionEvaluation, playerAcquisitionEvaluationArray]);
+  await readTableRecords([playerAcquisitionEvaluation, playerAcquisitionEvaluationArray]);
 
-    const defaultColumns = {
-      "Player": ZERO_REF,
-      "IsPlayerSuperstar": false,
-      "IsPlayerXFactor": false,
-      "AddedValue": 0,
-      "DevelopmentValue": 0,
-      "Value": 0,
-      "FreeAgentComparisonValue": 0,
-      "ImportanceValue": 0,
-      "TeamSchemeOverallValue": 0,
-      "TeamTradePhilosophyValue": 0,
-      "AcquisitionType": "Signed",
-      "Rank": 0,
-      "BestSchemeOverallValue": 0,
-      "CoachTradeInfluenceValue": 0,
-      "ContractValue": 0,
-      "IsPlayerHidden": false
-    };
+  const defaultColumns = {
+    Player: ZERO_REF,
+    IsPlayerSuperstar: false,
+    IsPlayerXFactor: false,
+    AddedValue: 0,
+    DevelopmentValue: 0,
+    Value: 0,
+    FreeAgentComparisonValue: 0,
+    ImportanceValue: 0,
+    TeamSchemeOverallValue: 0,
+    TeamTradePhilosophyValue: 0,
+    AcquisitionType: "Signed",
+    Rank: 0,
+    BestSchemeOverallValue: 0,
+    CoachTradeInfluenceValue: 0,
+    ContractValue: 0,
+    IsPlayerHidden: false,
+  };
 
-    emptyTable(playerAcquisitionEvaluation, defaultColumns);
-    clearArrayTable(playerAcquisitionEvaluationArray);
-  
-};
-  
+  emptyTable(playerAcquisitionEvaluation, defaultColumns);
+  clearArrayTable(playerAcquisitionEvaluationArray);
+}
+
 // This function empties the resign table/resign array table
 async function emptyResignTable(franchise) {
-    const tables = getTablesObject(franchise);
-    const resignTable = franchise.getTableByUniqueId(tables.reSignTable);
-    const resignArrayTable = franchise.getTableByUniqueId(tables.reSignArrayTable);
-    await readTableRecords([resignTable,resignArrayTable]);
-    const allResignTables = franchise.getAllTablesByName("PlayerReSignNegotiation[]");
-    
-    const defaultColumns = {
-      "Team": ZERO_REF,
-      "Player": ZERO_REF,
-      "ActiveRequestID": "-2147483648",
-      "NegotiationWeek": 0,
-      "TeamReSignInterest": 0,
-      "ContractSalary": 0,
-      "NegotiationCount": 0,
-      "PlayerReSignInterest": 0,
-      "ContractBonus": 0,
-      "PreviousOfferedContractBonus": 0,
-      "PreviousOfferedContractSalary": 0,
-      "FairMarketContractBonus": 0,
-      "FairMarketContractSalary": 0,
-      "ActualDesiredContractBonus": 0,
-      "ActualDesiredContractSalary": 0,
-      "LatestOfferStage": "PreSeason",
-      "ContractLength": 0,
-      "FairMarketContractLength": 0,
-      "PreviousOfferedContractLength": 0,
-      "PreviousReSignStatus": "Invalid",
-      "ReSignStatus": "NotReady",
-      "LatestOfferWeek": 0,
-      "PlayerPreviousReSignInterest": 0,
-      "InitialContract": false,
-      "NegotiationsEnded": false,
-      "ActualDesiredContractLength": 0
-    };
+  const tables = getTablesObject(franchise);
+  const resignTable = franchise.getTableByUniqueId(tables.reSignTable);
+  const resignArrayTable = franchise.getTableByUniqueId(tables.reSignArrayTable);
+  await readTableRecords([resignTable, resignArrayTable]);
+  const allResignTables = franchise.getAllTablesByName("PlayerReSignNegotiation[]");
 
-    emptyTable(resignTable, defaultColumns);
-    
-    for (const table of allResignTables) {
-      await table.readRecords();
-      clearArrayTable(table);
-    }
-};
+  const defaultColumns = {
+    Team: ZERO_REF,
+    Player: ZERO_REF,
+    ActiveRequestID: "-2147483648",
+    NegotiationWeek: 0,
+    TeamReSignInterest: 0,
+    ContractSalary: 0,
+    NegotiationCount: 0,
+    PlayerReSignInterest: 0,
+    ContractBonus: 0,
+    PreviousOfferedContractBonus: 0,
+    PreviousOfferedContractSalary: 0,
+    FairMarketContractBonus: 0,
+    FairMarketContractSalary: 0,
+    ActualDesiredContractBonus: 0,
+    ActualDesiredContractSalary: 0,
+    LatestOfferStage: "PreSeason",
+    ContractLength: 0,
+    FairMarketContractLength: 0,
+    PreviousOfferedContractLength: 0,
+    PreviousReSignStatus: "Invalid",
+    ReSignStatus: "NotReady",
+    LatestOfferWeek: 0,
+    PlayerPreviousReSignInterest: 0,
+    InitialContract: false,
+    NegotiationsEnded: false,
+    ActualDesiredContractLength: 0,
+  };
+
+  emptyTable(resignTable, defaultColumns);
+
+  for (const table of allResignTables) {
+    await table.readRecords();
+    clearArrayTable(table);
+  }
+}
 
 /**
  * Populates the resign table with players who are signed and in the final year of their contract.
@@ -1037,29 +1074,26 @@ async function regenerateResignTables(franchise) {
 }
 
 async function emptySignatureTables(franchise) {
-
   const tables = getTablesObject(franchise);
 
   const mainSignatureTable = franchise.getTableByUniqueId(tables.mainSigAbilityTable);
   const secondarySignatureTable = franchise.getTableByUniqueId(tables.secondarySigAbilityTable);
   const signatureArrayTable = franchise.getTableByUniqueId(tables.signatureArrayTable);
-  await readTableRecords([mainSignatureTable,secondarySignatureTable,signatureArrayTable]);
+  await readTableRecords([mainSignatureTable, secondarySignatureTable, signatureArrayTable]);
 
   const defaultColumns = {
-    "Player": ZERO_REF,
-    "ActivationEnabled": false,
-    "Active": false,
-    "DeactivationEnabled": false,
-    "StartActivated": false,
-    "SlotIndex": 0
+    Player: ZERO_REF,
+    ActivationEnabled: false,
+    Active: false,
+    DeactivationEnabled: false,
+    StartActivated: false,
+    SlotIndex: 0,
   };
 
   emptyTable(mainSignatureTable, defaultColumns);
   emptyTable(secondarySignatureTable, defaultColumns);
   clearArrayTable(signatureArrayTable);
-};
-
-
+}
 
 /**
  * Empties all records in the input table and sets default values for specified columns.
@@ -1072,13 +1106,11 @@ function emptyTable(table, defaultColumns = {}, rowsToIgnore = []) {
   const tableColumns = getColumnNames(table);
 
   for (const record of table.records) {
-
     if (rowsToIgnore.includes(record.index)) continue;
 
     emptyRecord(record, defaultColumns, tableColumns);
   }
 }
-
 
 /**
  * Empties a single record and sets default values for specified columns.
@@ -1103,21 +1135,20 @@ function emptyRecord(record, defaultColumns = {}, columns = null) {
 
 /**
  * Sets all valid records in the specified array table to ZERO_REF.
- * 
+ *
  * @param {Object} table - The table object containing records to be cleared.
  */
 function clearArrayTable(table) {
   const tableColumns = getColumnNames(table);
 
-  table.records.forEach(record => {
+  table.records.forEach((record) => {
     if (!record.isEmpty) {
-      tableColumns.forEach(column => {
+      tableColumns.forEach((column) => {
         record[column] = ZERO_REF;
       });
     }
   });
 }
-
 
 /**
  * Adds a record to the targetTable by copying all values into the first empty row of the table.
@@ -1128,28 +1159,29 @@ function clearArrayTable(table) {
  * @param {Object} [targetTable] - The table to add the record to.
  */
 function addRecordToTable(record, targetTable, options = {}) {
-
-  const {
-    columnLookup = {},
-    zeroColumns = [],
-    keepColumns = [],
-    ignoreColumns = [],
-    useSameIndex = false,
-  } = options;
+  const { columnLookup = {}, zeroColumns = [], keepColumns = [], ignoreColumns = [], useSameIndex = false } = options;
 
   const isEmpty = record.isEmpty;
   const recordColumns = getColumnNames(record);
   const tableColumns = getColumnNames(targetTable);
-  const recordIndex =  useSameIndex ? record.index : targetTable.header.nextRecordToUse;
+  const recordIndex = useSameIndex ? record.index : targetTable.header.nextRecordToUse;
   const targetTableRecord = targetTable.records[recordIndex];
 
   for (const column of recordColumns) {
     // Only update if the column is valid in the target table
-    if (tableColumns.includes(column) && !ignoreColumns.includes(column) && (keepColumns.length === 0 || keepColumns.includes(column))) {
+    if (
+      tableColumns.includes(column) &&
+      !ignoreColumns.includes(column) &&
+      (keepColumns.length === 0 || keepColumns.includes(column))
+    ) {
       const validColumns = columnLookup[column] || {};
       const value = record[column];
       // Check if validColumns is an object and has the value
-      const finalValue = zeroColumns.includes(column) ? ZERO_REF : (validColumns && value in validColumns) ? validColumns[value] : value;
+      const finalValue = zeroColumns.includes(column)
+        ? ZERO_REF
+        : validColumns && value in validColumns
+        ? validColumns[value]
+        : value;
       targetTableRecord[column] = finalValue;
     }
   }
@@ -1171,24 +1203,24 @@ async function removeFromTable(table, binaryToRemove) {
   const recordCapacity = table.header.recordCapacity;
 
   for (let i = 0; i < recordCapacity; i++) {
-      const currentRecord = table.records[i];
-      
-      if (currentRecord.isEmpty) continue;
+    const currentRecord = table.records[i];
 
-      // Filter out binary to remove
-      let filteredBinary = currentRecord.fieldsArray
-          .map(field => field.value)
-          .filter(value => value !== binaryToRemove);
+    if (currentRecord.isEmpty) continue;
 
-      // Pad with ZERO_REF to maintain numMembers
-      while (filteredBinary.length < numMembers) {
-        filteredBinary.push(ZERO_REF);
-      }
+    // Filter out binary to remove
+    let filteredBinary = currentRecord.fieldsArray
+      .map((field) => field.value)
+      .filter((value) => value !== binaryToRemove);
 
-      // Apply the updated binaries back to the row
-      filteredBinary.forEach((val, index) => {
-          currentRecord.fieldsArray[index].value = val;
-      });
+    // Pad with ZERO_REF to maintain numMembers
+    while (filteredBinary.length < numMembers) {
+      filteredBinary.push(ZERO_REF);
+    }
+
+    // Apply the updated binaries back to the row
+    filteredBinary.forEach((val, index) => {
+      currentRecord.fieldsArray[index].value = val;
+    });
   }
 }
 
@@ -1198,13 +1230,12 @@ function addToArrayTable(table, binaryToAdd, row = 0, checkDuplicate = false) {
 
   if (checkDuplicate) {
     // Extract only the relevant column values for comparison
-    const existingValues = columns.map(column => record[column]);
+    const existingValues = columns.map((column) => record[column]);
 
     // Check if the value already exists in the table
     if (existingValues.includes(binaryToAdd)) {
       return;
     }
-
   }
 
   // Add value to the first available slot
@@ -1229,19 +1260,17 @@ function addToArrayTable(table, binaryToAdd, row = 0, checkDuplicate = false) {
 function getPlayersOnTeam(playerTable, teamIndex, options = {}) {
   if (!playerTable || !Array.isArray(playerTable.records) || teamIndex === 32) return [];
 
-  const {
-    includePracticeSquad = false,
-    includeExpiringPlayers = true,
-  } = options;
+  const { includePracticeSquad = false, includeExpiringPlayers = true } = options;
 
-  return playerTable.records.filter(playerRecord =>
-    playerRecord &&
-    playerRecord.TeamIndex === teamIndex &&
-    isValidPlayer(playerRecord, {
-      includePracticeSquad,
-      includeExpiringPlayers,
-      includeFreeAgents: false
-    })
+  return playerTable.records.filter(
+    (playerRecord) =>
+      playerRecord &&
+      playerRecord.TeamIndex === teamIndex &&
+      isValidPlayer(playerRecord, {
+        includePracticeSquad,
+        includeExpiringPlayers,
+        includeFreeAgents: false,
+      })
   );
 }
 
@@ -1278,9 +1307,7 @@ function getAvailableJerseyNumbers(playerTable, teamIndex) {
   return availableNumbers;
 }
 
-
 async function recalculateRosterSizes(playerTable, teamTable) {
-
   for (let i = 0; i < teamTable.header.recordCapacity; i++) {
     let activeRosterSize = 0; // Current active players
     let salCapRosterSize = 0; // Total rostered players, including IR (but not PS)
@@ -1294,12 +1321,13 @@ async function recalculateRosterSizes(playerTable, teamTable) {
 
     const currentTeamIndex = teamRecord.TeamIndex;
 
-    const filteredPlayerRecords = playerTable.records.filter(playerRecord =>
-      isValidPlayer(playerRecord, {includePracticeSquad: false, includeFreeAgents: false}) &&
-      playerRecord.TeamIndex === currentTeamIndex
-    )
+    const filteredPlayerRecords = playerTable.records.filter(
+      (playerRecord) =>
+        isValidPlayer(playerRecord, { includePracticeSquad: false, includeFreeAgents: false }) &&
+        playerRecord.TeamIndex === currentTeamIndex
+    );
 
-    filteredPlayerRecords.forEach(playerRecord => {
+    filteredPlayerRecords.forEach((playerRecord) => {
       salCapRosterSize++;
 
       if (!playerRecord.IsInjuredReserve) {
@@ -1315,13 +1343,13 @@ async function recalculateRosterSizes(playerTable, teamTable) {
     teamRecord.SalCapRosterSize = salCapRosterSize;
     teamRecord.SalCapNextYearRosterSize = salCapNextYearRosterSize;
   }
-};
+}
 
 // Returns true if there any extra player tables exist with non emptied data
 // Returns false otherwise
 async function hasMultiplePlayerTables(franchise) {
   const tables = getTablesObject(franchise);
-  const allPlayerTables = franchise.getAllTablesByName('Player');
+  const allPlayerTables = franchise.getAllTablesByName("Player");
 
   for (const playerTable of allPlayerTables) {
     await playerTable.readRecords();
@@ -1340,19 +1368,18 @@ async function hasMultiplePlayerTables(franchise) {
 
   // Otherwise, return false
   return false;
-};
-
+}
 
 // This function iterates through each extra player table and adds the player to the main player table if not empty
 // If we reach the limit of the main player table, the program will exit.
 // I will likely come back and clean this function up eventually but it should work fine for now
 async function fixPlayerTables(franchise, forceFix = false) {
-
   if (!forceFix) {
     console.log("IMPORTANT: We've detected that this file has multiple player tables, which should not happen.");
-    const message = "Would you like to attempt to merge the extra player tables into the main table? This is HEAVILY recommended.";
+    const message =
+      "Would you like to attempt to merge the extra player tables into the main table? This is HEAVILY recommended.";
     const mergeTables = getYesOrNo(message);
-  
+
     if (!mergeTables) {
       console.log("Continuing program without merging player tables.");
       return;
@@ -1360,19 +1387,18 @@ async function fixPlayerTables(franchise, forceFix = false) {
   }
 
   const tables = getTablesObject(franchise);
-  
-  
-  const allPlayerTables = franchise.getAllTablesByName('Player'); // All player tables
+
+  const allPlayerTables = franchise.getAllTablesByName("Player"); // All player tables
   const mainPlayerTable = franchise.getTableByUniqueId(tables.playerTable); //Get our main player table
   await mainPlayerTable.readRecords();
 
   //Iterate through all the extra player tables
-  for (let tableIndex = 0; tableIndex < allPlayerTables.length;tableIndex++) {
+  for (let tableIndex = 0; tableIndex < allPlayerTables.length; tableIndex++) {
     const nextPlayerRecord = mainPlayerTable.header.nextRecordToUse;
 
     //If we've run out of rows, we can't transfer the file over
     if (nextPlayerRecord === mainPlayerTable.header.recordCapacity) {
-      console.log("********************************************************************************************")
+      console.log("********************************************************************************************");
       console.log("ERROR! Your file has too many total players and CANNOT be merged into the main player table.");
       console.log("********************************************************************************************");
       EXIT_PROGRAM();
@@ -1383,16 +1409,16 @@ async function fixPlayerTables(franchise, forceFix = false) {
     if (currentTable.header.uniqueId === tables.playerTable) {
       continue;
     }
-    const referencedRow = franchise.getReferencesToRecord(currentTable.header.tableId,0);
+    const referencedRow = franchise.getReferencesToRecord(currentTable.header.tableId, 0);
     if (referencedRow.length === 0) {
       continue;
     }
 
-    const originalPlayerBin = getBinaryReferenceData(currentTable.header.tableId,0);
-    const newPlayerBin = getBinaryReferenceData(mainPlayerTable.header.tableId,nextPlayerRecord);
-    
-    const columnHeaders = getColumnNames(currentTable) //Get the headers from the table
-    for (let j = 0;j < columnHeaders.length;j++) {
+    const originalPlayerBin = getBinaryReferenceData(currentTable.header.tableId, 0);
+    const newPlayerBin = getBinaryReferenceData(mainPlayerTable.header.tableId, nextPlayerRecord);
+
+    const columnHeaders = getColumnNames(currentTable); //Get the headers from the table
+    for (let j = 0; j < columnHeaders.length; j++) {
       let currentCol = columnHeaders[j];
       mainPlayerTable.records[nextPlayerRecord][currentCol] = currentTable.records[0][currentCol];
     }
@@ -1402,29 +1428,30 @@ async function fixPlayerTables(franchise, forceFix = false) {
       const currentRelatedTable = franchise.getTableById(currentTableId);
       await currentRelatedTable.readRecords();
 
-      const currentRelatedHeaders = getColumnNames(currentRelatedTable) //Get the headers from the table
-
+      const currentRelatedHeaders = getColumnNames(currentRelatedTable); //Get the headers from the table
 
       try {
-        for (let n = 0; n < currentRelatedHeaders.length;n++) {
-          for (let row = 0; row < currentRelatedTable.header.recordCapacity; row++) { // Iterate through the table rows
-              let currentCol = currentRelatedHeaders[n];
-              if (currentRelatedTable.records[row].fields[currentCol]["isReference"]) {
-                if (currentRelatedTable.records[row][currentCol] === originalPlayerBin) {
-                  currentRelatedTable.records[row][currentCol] = newPlayerBin;
-                  //console.log(`${currentCol} ${currentRelatedTable.header.name} ${currentTableId} ${row}`)
-                }
+        for (let n = 0; n < currentRelatedHeaders.length; n++) {
+          for (let row = 0; row < currentRelatedTable.header.recordCapacity; row++) {
+            // Iterate through the table rows
+            let currentCol = currentRelatedHeaders[n];
+            if (currentRelatedTable.records[row].fields[currentCol]["isReference"]) {
+              if (currentRelatedTable.records[row][currentCol] === originalPlayerBin) {
+                currentRelatedTable.records[row][currentCol] = newPlayerBin;
+                //console.log(`${currentCol} ${currentRelatedTable.header.name} ${currentTableId} ${row}`)
               }
+            }
           }
-       }
-      } catch (e) { // If there's an error, it's okay to just continue
+        }
+      } catch (e) {
+        // If there's an error, it's okay to just continue
         continue;
       }
     }
   }
 
   console.log("Successfully merged all extra player tables into the main player table.");
-};
+}
 
 /**
  * Grants user control to the specified team.
@@ -1432,7 +1459,7 @@ async function fixPlayerTables(franchise, forceFix = false) {
  * @param {string} teamRow - The row of the team in the Team table.
  * @param {Object} franchise - Franchise Object.
  * @param {string} controlLevel - The level of control to grant ('None', 'Commissioner').
- * @param {Array<Object>} controlSettings - Array of control settings. 
+ * @param {Array<Object>} controlSettings - Array of control settings.
  *                                          Reference USER_CONTROL_SETTINGS/CPU_CONTROL_SETTINGS in FranchiseUtils for the structure
  * @param {boolean} setAsDefault - Whether to set this user as the 'Owner' user.
  * @returns {Promise<void>}
@@ -1445,7 +1472,14 @@ async function takeControl(teamRow, franchise, controlLevel, controlSettings, se
   const coachTable = franchise.getTableByUniqueId(tables.coachTable);
   const ownerTable = franchise.getTableByUniqueId(tables.ownerTable);
   const teamSettingTable = franchise.getTableByUniqueId(tables.teamSettingTable);
-  await readTableRecords([franchiseUserTable,franchiseUsersArray,teamTable,coachTable,ownerTable,teamSettingTable]);
+  await readTableRecords([
+    franchiseUserTable,
+    franchiseUsersArray,
+    teamTable,
+    coachTable,
+    ownerTable,
+    teamSettingTable,
+  ]);
 
   const teamRecord = teamTable.records[teamRow];
   const teamBinary = getBinaryReferenceData(teamTable.header.tableId, teamRow);
@@ -1465,106 +1499,130 @@ async function takeControl(teamRow, franchise, controlLevel, controlSettings, se
   //    removeControl(fakeTeam, franchise);
   //});
 
-  let currTeamRecord = franchiseUserTable.records.find(record => record.Team === teamBinary);
+  let currTeamRecord = franchiseUserTable.records.find((record) => record.Team === teamBinary);
   let row = null;
-  
+
   if (currTeamRecord == undefined) {
-      row = franchiseUserTable.records.filter(record => record.isEmpty)[0].index;
-      franchiseUserTable.records[row].TeamSetting = teamRecord.TeamSettingRef;
-      franchiseUserTable.records[row].Team = teamBinary;
-      let userBinary = null;
+    row = franchiseUserTable.records.filter((record) => record.isEmpty)[0].index;
+    franchiseUserTable.records[row].TeamSetting = teamRecord.TeamSettingRef;
+    franchiseUserTable.records[row].Team = teamBinary;
+    let userBinary = null;
 
-      // Check if the current team has a Head Coach
-      const coachRecord = coachTable.records.find(record => 
-          record.Position === 'HeadCoach' &&
-          record.ContractStatus === 'Signed' &&
-          !record.isEmpty &&
-          record.TeamIndex === teamRecord.TeamIndex
-      );
-      
-      if (coachRecord) {
-          userBinary = getBinaryReferenceData(coachTable.header.tableId,coachRecord.index);
-          coachRecord.IsUserControlled = true;
+    // Check if the current team has a Head Coach
+    const coachRecord = coachTable.records.find(
+      (record) =>
+        record.Position === "HeadCoach" &&
+        record.ContractStatus === "Signed" &&
+        !record.isEmpty &&
+        record.TeamIndex === teamRecord.TeamIndex
+    );
+
+    if (coachRecord) {
+      userBinary = getBinaryReferenceData(coachTable.header.tableId, coachRecord.index);
+      coachRecord.IsUserControlled = true;
+    } else {
+      // Else, get the current teams default Owner
+      const defaultOwnerRow = teamRecord.fields.DefaultOwner.referenceData.rowNumber;
+      userBinary = getBinaryReferenceData(ownerTable.header.tableId, defaultOwnerRow);
+      ownerTable.records[defaultOwnerRow].IsUserControlled = true;
+    }
+
+    franchiseUserTable.records[row].UserEntity = userBinary;
+    franchiseUserTable.records[row].AdminLevel = controlLevel == "None" ? "None" : "Commissioner";
+
+    teamRecord.UserCharacter = userBinary;
+
+    const ownerRecord = franchiseUserTable.records.find((record) => record.AdminLevel === "Owner");
+
+    // We'll need this binary when setting up the Request tables
+    franchiseOwnerBinary = getBinaryReferenceData(franchiseUserTable.header.tableId, ownerRecord.index);
+
+    franchiseUserTable.records[row].UserIdLower = ownerRecord.UserIdLower;
+    franchiseUserTable.records[row].UserIdUpper = ownerRecord.UserIdLower + row;
+    franchiseUserTable.records[row].DefaultRequestActionTimeout = ownerRecord.DefaultRequestActionTimeout;
+
+    franchiseUserTable.records[row].PersonalityTeamPlayerRating = 50;
+    franchiseUserTable.records[row].PersonalityLeaderRating = 50;
+    franchiseUserTable.records[row].PersonalityIntenseRating = 50;
+    franchiseUserTable.records[row].PersonalityEntertainerRating = 50;
+    franchiseUserTable.records[row].ReadyToAdvance = false;
+
+    franchiseUserTable.records[row].NonRepeatableArcsTriggeredArray = ZERO_REF;
+    franchiseUserTable.records[row].DifficultyLevelPlayerWeeklyGoalsArray = ZERO_REF;
+    franchiseUserTable.records[row].FirstTimeAchievement = ZERO_REF;
+
+    // Franchise Users Array
+    franchiseBinary = getBinaryReferenceData(franchiseUserTable.header.tableId, row);
+    const currentUsers = franchiseUsersArray.records[0].fieldsArray.filter((field) => field.value != ZERO_REF);
+    franchiseUsersArray.records[0].fieldsArray.forEach((field, index) => {
+      if (index < currentUsers.length) {
+        field.value = currentUsers[index].value;
+      } else if (index == currentUsers.length) {
+        field.value = franchiseBinary;
       } else {
-          // Else, get the current teams default Owner
-          const defaultOwnerRow = teamRecord.fields.DefaultOwner.referenceData.rowNumber;
-          userBinary = getBinaryReferenceData(ownerTable.header.tableId,defaultOwnerRow);
-          ownerTable.records[defaultOwnerRow].IsUserControlled = true;
+        field.value = ZERO_REF;
       }
-
-      franchiseUserTable.records[row].UserEntity = userBinary;
-      franchiseUserTable.records[row].AdminLevel = controlLevel == 'None' ? 'None' : 'Commissioner';
-
-      teamRecord.UserCharacter = userBinary;
-
-      const ownerRecord = franchiseUserTable.records.find(record => record.AdminLevel === 'Owner');
-
-      // We'll need this binary when setting up the Request tables
-      franchiseOwnerBinary = getBinaryReferenceData(franchiseUserTable.header.tableId, ownerRecord.index);
-      
-      franchiseUserTable.records[row].UserIdLower = ownerRecord.UserIdLower;
-      franchiseUserTable.records[row].UserIdUpper = ownerRecord.UserIdLower + row;
-      franchiseUserTable.records[row].DefaultRequestActionTimeout = ownerRecord.DefaultRequestActionTimeout;
-      
-      franchiseUserTable.records[row].PersonalityTeamPlayerRating = 50;
-      franchiseUserTable.records[row].PersonalityLeaderRating = 50;
-      franchiseUserTable.records[row].PersonalityIntenseRating = 50;
-      franchiseUserTable.records[row].PersonalityEntertainerRating = 50;
-      franchiseUserTable.records[row].ReadyToAdvance = false;
-      
-      franchiseUserTable.records[row].NonRepeatableArcsTriggeredArray = ZERO_REF;
-      franchiseUserTable.records[row].DifficultyLevelPlayerWeeklyGoalsArray = ZERO_REF;
-      franchiseUserTable.records[row].FirstTimeAchievement = ZERO_REF;
-        
-
-      // Franchise Users Array
-      franchiseBinary = getBinaryReferenceData(franchiseUserTable.header.tableId,row);
-      const currentUsers = franchiseUsersArray.records[0].fieldsArray.filter(field => field.value != ZERO_REF);
-      franchiseUsersArray.records[0].fieldsArray.forEach((field, index) => {
-          if (index < currentUsers.length) {
-              field.value = currentUsers[index].value;
-          } else if (index == currentUsers.length) {
-              field.value = franchiseBinary;
-          } else {
-              field.value = ZERO_REF;
-          }
-      });
+    });
   } else {
-      row = currTeamRecord.index;
-  } 
-  
+    row = currTeamRecord.index;
+  }
+
   // Set As Default Owner
   if (setAsDefault) {
     // Find current owner and set a level down
-    const currentOwner = franchiseUserTable.records.find(record => record.AdminLevel === 'Owner');
+    const currentOwner = franchiseUserTable.records.find((record) => record.AdminLevel === "Owner");
     if (currentOwner) {
-      currentOwner.AdminLevel = 'Commissioner';
+      currentOwner.AdminLevel = "Commissioner";
     }
     // Set new record to be owner of franchise file
-    franchiseUserTable.records[row].AdminLevel = 'Owner';
+    franchiseUserTable.records[row].AdminLevel = "Owner";
   }
 
   // Team Control Settings
-  const currRecord = teamSettingTable.records[franchiseUserTable.records[row].fields.TeamSetting.referenceData.rowNumber];    
+  const currRecord =
+    teamSettingTable.records[franchiseUserTable.records[row].fields.TeamSetting.referenceData.rowNumber];
 
-  currRecord.IsTutorialPopupEnabled = controlSettings.find(setting => setting.name === 'IsTutorialPopupEnabled').value;
-  currRecord.IsTradeAndFreeAgencyEnabled = controlSettings.find(setting => setting.name === 'IsTradeAndFreeAgencyEnabled').value;
-  currRecord.IsScoutCollegePlayersEnabled = controlSettings.find(setting => setting.name === 'IsScoutCollegePlayersEnabled').value;
-  currRecord.IsManualAdvancementEnabled = controlSettings.find(setting => setting.name === 'IsManualAdvancementEnabled').value;
-  currRecord.IsManagePracticeRepsEnabled = controlSettings.find(setting => setting.name === 'IsManagePracticeRepsEnabled').value;
-  currRecord.IsInjuryManagementEnabled = controlSettings.find(setting => setting.name === 'IsInjuryManagementEnabled').value;
-  currRecord.IsCPUSignOffseasonFAEnabled = controlSettings.find(setting => setting.name === 'IsCPUSignOffseasonFAEnabled').value;
-  currRecord.IsCPUReSignPlayersEnabled = controlSettings.find(setting => setting.name === 'IsCPUReSignPlayersEnabled').value;
-  currRecord.IsCPUProgressTalentsEnabled = controlSettings.find(setting => setting.name === 'IsCPUProgressTalentsEnabled').value;
-  currRecord.IsCPUProgressPlayersEnabled = controlSettings.find(setting => setting.name === 'IsCPUProgressPlayersEnabled').value;
-  currRecord.IsCPUFillRosterEnabled = controlSettings.find(setting => setting.name === 'IsCPUFillRosterEnabled').value;
-  currRecord.IsCPUCutPlayersEnabled = controlSettings.find(setting => setting.name === 'IsCPUCutPlayersEnabled').value;
-  currRecord.IsManualReorderDepthChartEnabled = controlSettings.find(setting => setting.name === 'IsManualReorderDepthChartEnabled').value;
-  currRecord.SeasonExperience = controlSettings.find(setting => setting.name === 'SeasonExperience').value;
-  
-  
+  currRecord.IsTutorialPopupEnabled = controlSettings.find(
+    (setting) => setting.name === "IsTutorialPopupEnabled"
+  ).value;
+  currRecord.IsTradeAndFreeAgencyEnabled = controlSettings.find(
+    (setting) => setting.name === "IsTradeAndFreeAgencyEnabled"
+  ).value;
+  currRecord.IsScoutCollegePlayersEnabled = controlSettings.find(
+    (setting) => setting.name === "IsScoutCollegePlayersEnabled"
+  ).value;
+  currRecord.IsManualAdvancementEnabled = controlSettings.find(
+    (setting) => setting.name === "IsManualAdvancementEnabled"
+  ).value;
+  currRecord.IsManagePracticeRepsEnabled = controlSettings.find(
+    (setting) => setting.name === "IsManagePracticeRepsEnabled"
+  ).value;
+  currRecord.IsInjuryManagementEnabled = controlSettings.find(
+    (setting) => setting.name === "IsInjuryManagementEnabled"
+  ).value;
+  currRecord.IsCPUSignOffseasonFAEnabled = controlSettings.find(
+    (setting) => setting.name === "IsCPUSignOffseasonFAEnabled"
+  ).value;
+  currRecord.IsCPUReSignPlayersEnabled = controlSettings.find(
+    (setting) => setting.name === "IsCPUReSignPlayersEnabled"
+  ).value;
+  currRecord.IsCPUProgressTalentsEnabled = controlSettings.find(
+    (setting) => setting.name === "IsCPUProgressTalentsEnabled"
+  ).value;
+  currRecord.IsCPUProgressPlayersEnabled = controlSettings.find(
+    (setting) => setting.name === "IsCPUProgressPlayersEnabled"
+  ).value;
+  currRecord.IsCPUFillRosterEnabled = controlSettings.find(
+    (setting) => setting.name === "IsCPUFillRosterEnabled"
+  ).value;
+  currRecord.IsCPUCutPlayersEnabled = controlSettings.find(
+    (setting) => setting.name === "IsCPUCutPlayersEnabled"
+  ).value;
+  currRecord.IsManualReorderDepthChartEnabled = controlSettings.find(
+    (setting) => setting.name === "IsManualReorderDepthChartEnabled"
+  ).value;
+  currRecord.SeasonExperience = controlSettings.find((setting) => setting.name === "SeasonExperience").value;
 }
-
 
 /**
  * Removes user control from the specified team
@@ -1579,27 +1637,27 @@ async function removeControl(teamRow, franchise) {
   const franchiseUsersArray = franchise.getTableByUniqueId(tables.franchiseUsersArray);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
   const teamSettingTable = franchise.getTableByUniqueId(tables.teamSettingTable);
-  await readTableRecords([franchiseUserTable,franchiseUsersArray,teamTable,teamSettingTable]);
-  
+  await readTableRecords([franchiseUserTable, franchiseUsersArray, teamTable, teamSettingTable]);
+
   const teamRecord = teamTable.records[teamRow];
   const teamBinary = getBinaryReferenceData(teamTable.header.tableId, teamRow);
 
-  const currTeamRecord = franchiseUserTable.records.find(record => record.Team == teamBinary);
+  const currTeamRecord = franchiseUserTable.records.find((record) => record.Team == teamBinary);
 
   if (!currTeamRecord) {
     return;
   }
-  
+
   let row = currTeamRecord.index;
   const franchiseBinary = getBinaryReferenceData(franchiseUserTable.header.tableId, row);
 
   // Our row could either be from the Coach table or Owner table. We'll read the table dynamically to be safe
   const coachOwnerRow = currTeamRecord.fields.UserEntity.referenceData.rowNumber;
   const userBinary = currTeamRecord.UserEntity;
-  const coachOwnerTableId = bin2Dec(userBinary.slice(0,15));
+  const coachOwnerTableId = bin2Dec(userBinary.slice(0, 15));
 
   // Team Control Settings
-  const currRecord = teamSettingTable.records[currTeamRecord.fields.TeamSetting.referenceData.rowNumber];    
+  const currRecord = teamSettingTable.records[currTeamRecord.fields.TeamSetting.referenceData.rowNumber];
 
   currRecord.IsTutorialPopupEnabled = false;
   currRecord.IsTradeAndFreeAgencyEnabled = false;
@@ -1614,9 +1672,9 @@ async function removeControl(teamRow, franchise) {
   currRecord.IsCPUFillRosterEnabled = true;
   currRecord.IsCPUCutPlayersEnabled = false;
   currRecord.IsManualReorderDepthChartEnabled = false;
-  currRecord.SeasonExperience = 'SIMPLE';
+  currRecord.SeasonExperience = "SIMPLE";
 
-  // Remove Control         
+  // Remove Control
   currTeamRecord.TeamSetting = ZERO_REF;
   currTeamRecord.Team = ZERO_REF;
   currTeamRecord.StorySideActivityContext = ZERO_REF;
@@ -1629,15 +1687,15 @@ async function removeControl(teamRow, franchise) {
   currTeamRecord.LastWeekCompletedWeeklyGoalsArray = ZERO_REF;
   currTeamRecord.PlayerSpecificDrill = ZERO_REF;
   currTeamRecord.DrillProgress = ZERO_REF;
-  
+
   currTeamRecord.NonRepeatableArcsTriggeredArray = ZERO_REF;
   currTeamRecord.DifficultyLevelPlayerWeeklyGoalsArray = ZERO_REF;
   currTeamRecord.FirstTimeAchievement = ZERO_REF;
-  
+
   currTeamRecord.PersonalityTeamPlayerRating = 0;
   currTeamRecord.PersonalityLeaderRating = 0;
   currTeamRecord.PersonalityIntenseRating = 0;
-  currTeamRecord.PersonalityEntertainerRating = 0;  
+  currTeamRecord.PersonalityEntertainerRating = 0;
 
   currTeamRecord.empty();
 
@@ -1648,10 +1706,9 @@ async function removeControl(teamRow, franchise) {
 
   teamRecord.UserCharacter = ZERO_REF;
   await removeFromTable(franchiseUsersArray, franchiseBinary);
-
 }
 
-async function removeFreeAgentFromTables(franchise, playerBinary) {  
+async function removeFreeAgentFromTables(franchise, playerBinary) {
   const tables = getTablesObject(franchise);
   const playerData = getRowAndTableIdFromRef(playerBinary);
 
@@ -1660,7 +1717,8 @@ async function removeFreeAgentFromTables(franchise, playerBinary) {
 
   const playerRecord = playerTable.records[playerData.row];
 
-  const tableIds = [ // Tables to remove player binary from
+  const tableIds = [
+    // Tables to remove player binary from
     tables.depthChartPlayerTable, // Depth chart array
     tables.draftedPlayersArrayTable, // Drafted players array
     tables.marketedPlayersArrayTable, // Marketed players array
@@ -1670,24 +1728,23 @@ async function removeFreeAgentFromTables(franchise, playerBinary) {
     tables.defenseActiveAbilityArrayTable,
     tables.miniGameCompletedArrayTable, // Minicamp tables
     tables.focusTrainingTable, // Focus training tables
-    tables.proBowlRosterTable // Pro bowl roster
+    tables.proBowlRosterTable, // Pro bowl roster
   ];
 
-
   // Read all tables
-  const tableArray = tableIds.map(id => franchise.getTableByUniqueId(id));
-  await Promise.all(tableArray.map(table => table.readRecords()));
+  const tableArray = tableIds.map((id) => franchise.getTableByUniqueId(id));
+  await Promise.all(tableArray.map((table) => table.readRecords()));
 
   // Remove player binary from each table
-  await Promise.all(tableArray.map(table => removeFromTable(table, playerBinary)));
+  await Promise.all(tableArray.map((table) => removeFromTable(table, playerBinary)));
 }
 
 // Removes a players binary from a table and the associated arrayTable (ie PlayerResignNegotiation and PlayerResignNegotiation[])
 // If table is null, arrayTable will clear the player binary. Else, it would clear the binary of the table row reference.
-async function removePlayerFromTableAndArray(playerBinary, table, arrayTable, column = 'Player') {
-
+async function removePlayerFromTableAndArray(playerBinary, table, arrayTable, column = "Player") {
   if (arrayTable) {
-    try { // If we can't read the tables, they may dynamically generate and not exist at this time
+    try {
+      // If we can't read the tables, they may dynamically generate and not exist at this time
       await arrayTable.readRecords();
     } catch (e) {
       //
@@ -1695,18 +1752,19 @@ async function removePlayerFromTableAndArray(playerBinary, table, arrayTable, co
   }
 
   if (table) {
-    try { // If we can't read the tables, they may dynamically generate and not exist at this time
+    try {
+      // If we can't read the tables, they may dynamically generate and not exist at this time
       await table.readRecords();
     } catch (e) {
       //
     }
 
-    const recordsToEmpty = table.records.filter(record => record[column] === playerBinary);
+    const recordsToEmpty = table.records.filter((record) => record[column] === playerBinary);
     const tableName = table.header.name;
 
     for (const record of recordsToEmpty) {
       record[column] = Constants.ZERO_REF;
-      if (tableName === 'ContractOffer') {
+      if (tableName === "ContractOffer") {
         record.Team = Constants.ZERO_REF;
         record.Contract = Constants.ZERO_REF;
         record.Declined = false;
@@ -1716,25 +1774,25 @@ async function removePlayerFromTableAndArray(playerBinary, table, arrayTable, co
         record.PlayerInterest = 0;
         record.TeamDecision = 0;
       }
-      const binary = getBinaryReferenceData(table.header.tableId,record.index);
-      if (arrayTable) await removeFromTable(arrayTable,binary);
+      const binary = getBinaryReferenceData(table.header.tableId, record.index);
+      if (arrayTable) await removeFromTable(arrayTable, binary);
       record.empty();
     }
   }
   // Else, remove the player binary directly from the array table
   else if (arrayTable) {
-    await removeFromTable(arrayTable,playerBinary);
+    await removeFromTable(arrayTable, playerBinary);
   }
 }
 
-async function removePlayerVisuals(franchise,playerRecord) {
+async function removePlayerVisuals(franchise, playerRecord) {
   const visualsBinary = playerRecord.CharacterVisuals;
-  if (visualsBinary !== ZERO_REF && !visualsBinary.startsWith('1')) {
+  if (visualsBinary !== ZERO_REF && !visualsBinary.startsWith("1")) {
     const characterVisualsRow = bin2Dec(visualsBinary.slice(15));
     // Dynamically get the table ID for CharacterVisuals
     // This is required because if there's too many players/coaches, the game generates more Visuals tables
     // So instead of always calling the main one, we instead dynamically get the table ID through the binary.
-    const characterVisualsTableId = bin2Dec(visualsBinary.slice(0,15));
+    const characterVisualsTableId = bin2Dec(visualsBinary.slice(0, 15));
     const characterVisualsTable = franchise.getTableById(characterVisualsTableId);
     await readTableRecords([characterVisualsTable]);
 
@@ -1749,7 +1807,7 @@ async function removePlayerVisuals(franchise,playerRecord) {
 
 async function deletePlayer(franchise, playerBinary) {
   const gameYear = franchise.schema.meta.gameYear;
-  
+
   const tables = getTablesObject(franchise);
   const playerData = getRowAndTableIdFromRef(playerBinary);
 
@@ -1757,8 +1815,8 @@ async function deletePlayer(franchise, playerBinary) {
   await playerTable.readRecords();
 
   const playerRecord = playerTable.records[playerData.row];
-  await removePlayerVisuals(franchise,playerRecord);
-  
+  await removePlayerVisuals(franchise, playerRecord);
+
   playerRecord.CareerStats = ZERO_REF;
   playerRecord.SeasonStats = ZERO_REF;
   playerRecord.GameStats = ZERO_REF;
@@ -1769,8 +1827,8 @@ async function deletePlayer(franchise, playerBinary) {
   playerRecord.PLYR_ASSETNAME = EMPTY_STRING;
   playerRecord.ContractStatus = CONTRACT_STATUSES.DELETED;
 
-
-  const tableIds = [ // Tables to remove player binary from
+  const tableIds = [
+    // Tables to remove player binary from
     tables.freeAgentTable, // Free agent array
     tables.rosterTable, // Roster array
     tables.depthChartPlayerTable, // Depth chart array
@@ -1778,7 +1836,7 @@ async function deletePlayer(franchise, playerBinary) {
     tables.draftedPlayersArrayTable, // Drafted players array
     tables.marketedPlayersArrayTable, // Marketed players array
     tables.topMarketedPlayers, // Top marketed players array
-    tables.drillCompletedTable // Drill completed array
+    tables.drillCompletedTable, // Drill completed array
   ];
 
   if (gameYear >= YEARS.M25) {
@@ -1789,17 +1847,10 @@ async function deletePlayer(franchise, playerBinary) {
       tables.focusTrainingTable, // Focus training tables
       tables.proBowlRosterTable // Pro bowl roster
     );
-  }
-  else if (gameYear === YEARS.M24) {
-    tableIds.push(
-      tables.afcRosterTable,
-      tables.nfcRosterTable,
-      tables.activeAbilityArrayTable
-    )
+  } else if (gameYear === YEARS.M24) {
+    tableIds.push(tables.afcRosterTable, tables.nfcRosterTable, tables.activeAbilityArrayTable);
 
-    await clearPlayerRefFromTableByUniqueId(franchise,playerBinary, tables.poseTable,false,{});
-
-
+    await clearPlayerRefFromTableByUniqueId(franchise, playerBinary, tables.poseTable, false, {});
   }
 
   const specialTables = {
@@ -1815,24 +1866,25 @@ async function deletePlayer(franchise, playerBinary) {
   //playerMerchTable
 
   // Read all tables
-  const tableArray = tableIds.map(id => franchise.getTableByUniqueId(id));
-  await Promise.all(tableArray.map(table => table.readRecords()));
+  const tableArray = tableIds.map((id) => franchise.getTableByUniqueId(id));
+  await Promise.all(tableArray.map((table) => table.readRecords()));
 
   // Remove player binary from each table
-  await Promise.all(tableArray.map(table => removeFromTable(table, playerBinary)));
+  await Promise.all(tableArray.map((table) => removeFromTable(table, playerBinary)));
 
   for (const key in specialTables) {
     if (specialTables.hasOwnProperty(key)) {
       const keyTable = franchise.getTableByUniqueId(Number(key));
       const arrayTable = franchise.getTableByUniqueId(Number(specialTables[key]));
 
-      try { // If we can't read the tables, they may dynamically generate and not exist at this time
-        await readTableRecords([keyTable,arrayTable]);
+      try {
+        // If we can't read the tables, they may dynamically generate and not exist at this time
+        await readTableRecords([keyTable, arrayTable]);
       } catch (e) {
         continue;
       }
 
-      const recordsToEmpty = keyTable.records.filter(record => record.Player === playerBinary);
+      const recordsToEmpty = keyTable.records.filter((record) => record.Player === playerBinary);
 
       for (const record of recordsToEmpty) {
         record.Player = ZERO_REF;
@@ -1840,18 +1892,26 @@ async function deletePlayer(franchise, playerBinary) {
           record.Team = ZERO_REF;
           record.Contract = ZERO_REF;
         }
-        const binary = getBinaryReferenceData(keyTable.header.tableId,record.index);
-        await removeFromTable(arrayTable,binary);
+        const binary = getBinaryReferenceData(keyTable.header.tableId, record.index);
+        await removeFromTable(arrayTable, binary);
         record.empty();
       }
-
     }
   }
 
   await clearPlayerRefFromTableByName(franchise, playerBinary, "PlayerStatRecord", false, {});
-  await clearPlayerRefFromTableByUniqueId(franchise,playerBinary, tables.transactionHistoryEntry,true,{"OldTeam": ZERO_REF,"NewTeam": ZERO_REF});
-  await clearPlayerRefFromTableByUniqueId(franchise,playerBinary, tables.playerEditTransactionHistoryTable,true,{"OldTeam": ZERO_REF,"NewTeam": ZERO_REF});
-  await clearPlayerRefFromTableByUniqueId(franchise,playerBinary, tables.playerPositionChangeHistoryTable,true,{"OldTeam": ZERO_REF,"NewTeam": ZERO_REF});
+  await clearPlayerRefFromTableByUniqueId(franchise, playerBinary, tables.transactionHistoryEntry, true, {
+    OldTeam: ZERO_REF,
+    NewTeam: ZERO_REF,
+  });
+  await clearPlayerRefFromTableByUniqueId(franchise, playerBinary, tables.playerEditTransactionHistoryTable, true, {
+    OldTeam: ZERO_REF,
+    NewTeam: ZERO_REF,
+  });
+  await clearPlayerRefFromTableByUniqueId(franchise, playerBinary, tables.playerPositionChangeHistoryTable, true, {
+    OldTeam: ZERO_REF,
+    NewTeam: ZERO_REF,
+  });
 
   // Finally, empty the record
   playerRecord.empty();
@@ -1859,29 +1919,37 @@ async function deletePlayer(franchise, playerBinary) {
   // Debugging
   //console.log(`Index ${playerData.row}`);
   //referencedRow = franchise.getReferencesToRecord(playerData.tableId,playerData.row)
-  
+
   //referencedRow.forEach((table) => {
   //  console.log(`${table.tableId}: ${table.name}: ${playerData.row}`)
   //})
-
 }
 
-async function clearPlayerRefFromTableByName(franchise, playerBinary, tableName, emptyRecord = true, defaultColumns = {}) {
-  const tables = franchise.getAllTablesByName(tableName); 
+async function clearPlayerRefFromTableByName(
+  franchise,
+  playerBinary,
+  tableName,
+  emptyRecord = true,
+  defaultColumns = {}
+) {
+  const tables = franchise.getAllTablesByName(tableName);
   const entries = Object.entries(defaultColumns);
 
   for (const table of tables) {
     await table.readRecords();
     const tableColumns = getColumnNames(table);
 
-    const playerRefCol = tableColumns.includes("Player") ? "Player" :
-    tableColumns.includes("playerRef") ? "playerRef" :
-    tableColumns.includes("PosedPlayer") ? "PosedPlayer" :
-    null;
-    
+    const playerRefCol = tableColumns.includes("Player")
+      ? "Player"
+      : tableColumns.includes("playerRef")
+      ? "playerRef"
+      : tableColumns.includes("PosedPlayer")
+      ? "PosedPlayer"
+      : null;
+
     if (!playerRefCol) continue;
 
-    const records = table.records.filter(record => record[playerRefCol] === playerBinary && !record.isEmpty);
+    const records = table.records.filter((record) => record[playerRefCol] === playerBinary && !record.isEmpty);
 
     for (const record of records) {
       for (const [key, value] of entries) {
@@ -1895,20 +1963,29 @@ async function clearPlayerRefFromTableByName(franchise, playerBinary, tableName,
   }
 }
 
-async function clearPlayerRefFromTableByUniqueId(franchise, playerBinary, tableId, emptyRecord = true, defaultColumns = {}) {
+async function clearPlayerRefFromTableByUniqueId(
+  franchise,
+  playerBinary,
+  tableId,
+  emptyRecord = true,
+  defaultColumns = {}
+) {
   const table = franchise.getTableByUniqueId(tableId);
   await table.readRecords();
   const tableColumns = getColumnNames(table);
   const entries = Object.entries(defaultColumns);
 
-  const playerRefCol = tableColumns.includes("Player") ? "Player" :
-   tableColumns.includes("playerRef") ? "playerRef" :
-   tableColumns.includes("PosedPlayer") ? "PosedPlayer" :
-   null;
+  const playerRefCol = tableColumns.includes("Player")
+    ? "Player"
+    : tableColumns.includes("playerRef")
+    ? "playerRef"
+    : tableColumns.includes("PosedPlayer")
+    ? "PosedPlayer"
+    : null;
 
   if (!playerRefCol) return;
 
-  const records = table.records.filter(record => record[playerRefCol] === playerBinary && !record.isEmpty);
+  const records = table.records.filter((record) => record[playerRefCol] === playerBinary && !record.isEmpty);
 
   for (const record of records) {
     for (const [key, value] of entries) {
@@ -1922,31 +1999,29 @@ async function clearPlayerRefFromTableByUniqueId(franchise, playerBinary, tableI
 }
 
 async function deleteExcessFreeAgents(franchise, options = {}) {
-  const {
-    numPlayersToDelete = null,
-    includeDraftPlayers = true,
-  } = options;
+  const { numPlayersToDelete = null, includeDraftPlayers = true } = options;
 
   const tables = getTablesObject(franchise);
 
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   const freeAgentsTable = franchise.getTableByUniqueId(tables.freeAgentTable);
 
-  await readTableRecords([playerTable,freeAgentsTable]);
+  await readTableRecords([playerTable, freeAgentsTable]);
 
-  const activePlayerRecords = playerTable.records.filter((record) =>
-    !record.isEmpty &&
-    isValidPlayer(record, {
-      includeDraftPlayers: includeDraftPlayers,
-      includeFreeAgents: true,
-      includePracticeSquad: true,
-      includeSignedPlayers: true,
-      includeExpiringPlayers: true,
-      includeDeletedPlayers: false,
-      includeCreatedPlayers: false,
-      includeLegends: false,
-      includeNoneTypePlayers: false,
-    })
+  const activePlayerRecords = playerTable.records.filter(
+    (record) =>
+      !record.isEmpty &&
+      isValidPlayer(record, {
+        includeDraftPlayers: includeDraftPlayers,
+        includeFreeAgents: true,
+        includePracticeSquad: true,
+        includeSignedPlayers: true,
+        includeExpiringPlayers: true,
+        includeDeletedPlayers: false,
+        includeCreatedPlayers: false,
+        includeLegends: false,
+        includeNoneTypePlayers: false,
+      })
   );
 
   // Filter only free agents
@@ -1957,16 +2032,11 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
   // Calculate the number of excess players
   const numTotalPlayersDesired = freeAgentsTable.header.numMembers; //Max amount of free agents (this is relevant for a fantasy draft)
   const totalNumCurrentPlayers = activePlayerRecords.length; //Get the current number of players
-  const shouldDeletePlayers = numPlayersToDelete != null && Number.isInteger(numPlayersToDelete) && numPlayersToDelete > 0;
+  const shouldDeletePlayers =
+    numPlayersToDelete != null && Number.isInteger(numPlayersToDelete) && numPlayersToDelete > 0;
 
-
-  const numExtraPlayers = Math.max(
-    totalNumCurrentPlayers - numTotalPlayersDesired,
-    0
-  );
-  const playersToDelete = shouldDeletePlayers
-    ? numPlayersToDelete
-    : numExtraPlayers;
+  const numExtraPlayers = Math.max(totalNumCurrentPlayers - numTotalPlayersDesired, 0);
+  const playersToDelete = shouldDeletePlayers ? numPlayersToDelete : numExtraPlayers;
 
   // Group free agents by position
   const freeAgentsByPosition = freeAgentRecords.reduce((acc, record) => {
@@ -1980,9 +2050,7 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
   const finalRecords = [];
   for (const position in freeAgentsByPosition) {
     const positionGroup = freeAgentsByPosition[position];
-    const sortedByRating = positionGroup.sort(
-      (a, b) => a.OverallRating - b.OverallRating
-    );
+    const sortedByRating = positionGroup.sort((a, b) => a.OverallRating - b.OverallRating);
 
     // Determine minimum threshold (25 for QB, 10 for others)
     const minPlayersThreshold = position === "QB" ? 25 : 10;
@@ -1999,44 +2067,38 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
     .sort((a, b) => a.OverallRating - b.OverallRating)
     .slice(0, Math.min(playersToDelete, finalRecords.length));
 
-    for (const freeAgentRecord of worstFreeAgents) {
-      const currentBinary = getBinaryReferenceData(
-        playerTable.header.tableId,
-        freeAgentRecord.index
+  for (const freeAgentRecord of worstFreeAgents) {
+    const currentBinary = getBinaryReferenceData(playerTable.header.tableId, freeAgentRecord.index);
+
+    // Delete the player
+    await deletePlayer(franchise, currentBinary);
+
+    // Call the next function on currentBinary
+    const references = getPlayerReferences(franchise, playerTable.header.tableId, freeAgentRecord);
+
+    if (references.length !== 0) {
+      if (references.length === 1 && references[0].name === "PlayerMerchandiseImageInfo") continue;
+      console.log(
+        `References remaining for ${freeAgentRecord.FirstName} ${freeAgentRecord.LastName} (Row ${freeAgentRecord.index}).`
       );
-    
-      // Delete the player
-      await deletePlayer(franchise, currentBinary);
-    
-      // Call the next function on currentBinary
-      const references = getPlayerReferences(franchise, playerTable.header.tableId, freeAgentRecord);
-
-      if (references.length !== 0) {
-        if (references.length === 1 && references[0].name === 'PlayerMerchandiseImageInfo') continue;
-        console.log(`References remaining for ${freeAgentRecord.FirstName} ${freeAgentRecord.LastName} (Row ${freeAgentRecord.index}).`);
-        references.forEach((table) => {
-          console.log(`${table.tableId}: ${table.name}`);
-        })
-      }
+      references.forEach((table) => {
+        console.log(`${table.tableId}: ${table.name}`);
+      });
     }
+  }
 
-    await regenerateMarketingTables(franchise);
-    
+  await regenerateMarketingTables(franchise);
 }
 
-
-
-
 async function reorderTeams(franchise) {
-
   const tables = getTablesObject(franchise);
   const leagueTable = franchise.getTableByUniqueId(tables.leagueTable);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
-  await readTableRecords([leagueTable,teamTable]);
+  await readTableRecords([leagueTable, teamTable]);
 
   const sortedTeamsBinary = leagueTable.records[0].SortedTeams;
 
-  const tableId = bin2Dec(sortedTeamsBinary.slice(0,15));  
+  const tableId = bin2Dec(sortedTeamsBinary.slice(0, 15));
   const rowNum = bin2Dec(sortedTeamsBinary.slice(15));
 
   const sortedTeamTable = franchise.getTableById(tableId);
@@ -2045,129 +2107,108 @@ async function reorderTeams(franchise) {
   // Get binary data for all non-empty rows in the teamTable, sorted by DisplayName
   const allRowBinaryData = teamTable.records
     .map((record, index) => ({ record, index })) // Create an array of objects with record and its index
-    .filter(({ record }) => !record.isEmpty && !NFL_CONFERENCES.includes(record.DisplayName) && record.TEAM_VISIBLE ) // Filter out empty records
-    .sort(({ record: a }, { record: b }) => { // Sort by DisplayName
-      const displayNameA = a.DisplayName === '49ers' ? 'FortyNiners' : a.DisplayName;
-      const displayNameB = b.DisplayName === '49ers' ? 'FortyNiners' : b.DisplayName;
+    .filter(({ record }) => !record.isEmpty && !NFL_CONFERENCES.includes(record.DisplayName) && record.TEAM_VISIBLE) // Filter out empty records
+    .sort(({ record: a }, { record: b }) => {
+      // Sort by DisplayName
+      const displayNameA = a.DisplayName === "49ers" ? "FortyNiners" : a.DisplayName;
+      const displayNameB = b.DisplayName === "49ers" ? "FortyNiners" : b.DisplayName;
       return displayNameA.localeCompare(displayNameB);
     })
     .map(({ record, index }) => getBinaryReferenceData(teamTable.header.tableId, index)); // Get the binary
 
-
   const record = sortedTeamTable.records[rowNum];
 
   // One-liner to set the record's fieldsArray values to allRowBinaryData
-  allRowBinaryData.forEach((val, index) => { record.fieldsArray[index].value = val; });
-
+  allRowBinaryData.forEach((val, index) => {
+    record.fieldsArray[index].value = val;
+  });
 }
 
 // Function to approximate the body type based on the visuals JSON
 function approximateBodyType(visualsObject) {
-    // Find the morph loadout for the 'Base' category
-    const morphLoadout = visualsObject.loadouts.find(loadout =>
-        loadout.loadoutCategory === 'Base'
-    );
+  // Find the morph loadout for the 'Base' category
+  const morphLoadout = visualsObject.loadouts.find((loadout) => loadout.loadoutCategory === "Base");
 
-    if (!morphLoadout || !morphLoadout.loadoutElements) {
-        return 'Thin';
-    }
+  if (!morphLoadout || !morphLoadout.loadoutElements) {
+    return "Thin";
+  }
 
-    // Find the 'Gut' morph element
-    const gutMorph = morphLoadout.loadoutElements.find(element =>
-        element.slotType === 'Gut'
-    );
+  // Find the 'Gut' morph element
+  const gutMorph = morphLoadout.loadoutElements.find((element) => element.slotType === "Gut");
 
-    if (!gutMorph || !gutMorph.blends || gutMorph.blends.length === 0) {
-        return 'Thin';
-    }
+  if (!gutMorph || !gutMorph.blends || gutMorph.blends.length === 0) {
+    return "Thin";
+  }
 
-    // Extract blend values
-    const { baseBlend: gutBase, barycentricBlend: gutBarycentric } = gutMorph.blends[0];
+  // Extract blend values
+  const { baseBlend: gutBase, barycentricBlend: gutBarycentric } = gutMorph.blends[0];
 
-    // Return the body type based on blend values
-    if (gutBase <= 0.5) return 'Standard';
-    if (gutBarycentric < 0.5) return 'Thin';
-    if (gutBarycentric < 1.35) return 'Muscular';
-    if (gutBarycentric < 2.70) return 'Heavy';
-    if (gutBarycentric < 2.90) return 'Muscular';
+  // Return the body type based on blend values
+  if (gutBase <= 0.5) return "Standard";
+  if (gutBarycentric < 0.5) return "Thin";
+  if (gutBarycentric < 1.35) return "Muscular";
+  if (gutBarycentric < 2.7) return "Heavy";
+  if (gutBarycentric < 2.9) return "Muscular";
 
-    return 'Thin';
+  return "Thin";
 }
 
 // Function to generate a body type based on player info
-function generateBodyType(playerRecord, gameYear = YEARS.M25)
-{
-  const position = playerRecord['Position'];
-  const height = playerRecord['Height'];
-  const weight = playerRecord['Weight'] + 160;
+function generateBodyType(playerRecord, gameYear = YEARS.M25) {
+  const position = playerRecord["Position"];
+  const height = playerRecord["Height"];
+  const weight = playerRecord["Weight"] + 160;
 
-  if(gameYear >= YEARS.M26 && weight <= 180)
-  {
+  if (gameYear >= YEARS.M26 && weight <= 180) {
     return BODY_TYPES.LEAN;
   }
 
-  if(SPECIAL_TEAM_POSITIONS.includes(position))
-  {
+  if (SPECIAL_TEAM_POSITIONS.includes(position)) {
     return BODY_TYPES.STANDARD;
   }
 
-  if(position === 'QB' || position === 'WR')
-  {
-    if(weight >= 210 && height <= 71)
-    {
+  if (position === "QB" || position === "WR") {
+    if (weight >= 210 && height <= 71) {
       return BODY_TYPES.MUSCULAR;
-    }
-    else if(height >= 76)
-    {
+    } else if (height >= 76) {
       return BODY_TYPES.THIN;
     }
 
     return BODY_TYPES.STANDARD;
   }
 
-  if(OLINE_POSITIONS.includes(position))
-  {
-    if(weight >= 300)
-    {
+  if (OLINE_POSITIONS.includes(position)) {
+    if (weight >= 300) {
       return BODY_TYPES.HEAVY;
     }
 
     return BODY_TYPES.MUSCULAR;
   }
 
-  if(LINEBACKER_POSITIONS.includes(position) || position === 'TE' || position === 'FB')
-  {
+  if (LINEBACKER_POSITIONS.includes(position) || position === "TE" || position === "FB") {
     return BODY_TYPES.MUSCULAR;
   }
 
-  if(DEFENSIVE_LINE_POSITIONS.includes(position))
-  {
-    if(weight >= 275)
-    {
+  if (DEFENSIVE_LINE_POSITIONS.includes(position)) {
+    if (weight >= 275) {
       return BODY_TYPES.HEAVY;
     }
 
     return BODY_TYPES.MUSCULAR;
   }
 
-  if(position === 'HB')
-  {
-    if(weight >= 220)
-    {
+  if (position === "HB") {
+    if (weight >= 220) {
       return BODY_TYPES.MUSCULAR;
-    }
-    else if(weight >= 180)
-    {
+    } else if (weight >= 180) {
       return BODY_TYPES.STANDARD;
     }
 
     return BODY_TYPES.THIN;
   }
 
-  if(DEFENSIVE_BACK_POSITIONS.includes(position))
-  {
-    if(weight >= 180)
-    {
+  if (DEFENSIVE_BACK_POSITIONS.includes(position)) {
+    if (weight >= 180) {
       return BODY_TYPES.STANDARD;
     }
 
@@ -2176,28 +2217,25 @@ function generateBodyType(playerRecord, gameYear = YEARS.M25)
   return BODY_TYPES.STANDARD;
 }
 
-function getBodyType(record, visualsTable)
-{
+function getBodyType(record, visualsTable) {
   const recordBodyType = record["CharacterBodyType"];
   const visualsRow = bin2Dec(record["CharacterVisuals"].slice(15));
   const visualsData = JSON.parse(visualsTable.records[visualsRow].RawData);
 
   // Iterate through each loadout and see if it has a body type slot
   for (const loadout of visualsData.loadouts) {
-    if(loadout.loadoutElements)
-    {
-      for(const loadoutElement of loadout.loadoutElements) {
-        if (loadoutElement.slotType?.toLowerCase() === 'characterbodytype') {
-          let visualsBodyType = loadoutElement.itemAssetName.toLowerCase()
+    if (loadout.loadoutElements) {
+      for (const loadoutElement of loadout.loadoutElements) {
+        if (loadoutElement.slotType?.toLowerCase() === "characterbodytype") {
+          let visualsBodyType = loadoutElement.itemAssetName.toLowerCase();
 
           // Find the key in the BODY_TYPE_ITEMS object
-          const bodyTypeKey = Object.keys(BODY_TYPE_ITEMS).find(key => BODY_TYPE_ITEMS[key] === visualsBodyType);
+          const bodyTypeKey = Object.keys(BODY_TYPE_ITEMS).find((key) => BODY_TYPE_ITEMS[key] === visualsBodyType);
           if (bodyTypeKey) {
             return bodyTypeKey;
           }
 
           return recordBodyType;
-
         }
       }
     }
@@ -2206,29 +2244,26 @@ function getBodyType(record, visualsTable)
   return recordBodyType;
 }
 
-function setBodyType(record, visualsTable, bodyType)
-{
+function setBodyType(record, visualsTable, bodyType) {
   record["CharacterBodyType"] = bodyType;
   const visualsRow = bin2Dec(record["CharacterVisuals"].slice(15));
   const visualsData = JSON.parse(visualsTable.records[visualsRow].RawData);
 
   // Update the visuals data with the new body type
   for (const loadout of visualsData.loadouts) {
-    if(loadout.loadoutElements)
-    {
+    if (loadout.loadoutElements) {
       for (const loadoutElement of loadout.loadoutElements) {
-        if (loadoutElement.slotType?.toLowerCase() === 'characterbodytype') {
-          loadoutElement.itemAssetName = BODY_TYPE_ITEMS[bodyType]
+        if (loadoutElement.slotType?.toLowerCase() === "characterbodytype") {
+          loadoutElement.itemAssetName = BODY_TYPE_ITEMS[bodyType];
         }
       }
     }
   }
-
 }
 
 function getRowAndTableIdFromRef(binary) {
-  const row = getRowFromRef(binary)
-  const tableId = getTableIdFromRef(binary)
+  const row = getRowFromRef(binary);
+  const tableId = getTableIdFromRef(binary);
 
   return { row, tableId };
 }
@@ -2238,7 +2273,7 @@ function getRowFromRef(binary) {
 }
 
 function getTableIdFromRef(binary) {
-  return bin2Dec(binary.slice(0,15));
+  return bin2Dec(binary.slice(0, 15));
 }
 
 /**
@@ -2259,7 +2294,14 @@ async function fixDraftPicks(franchise) {
   const draftManagerTable = franchise.getTableByUniqueId(tables.draftManagerTable);
   const teamTradePackageTable = franchise.getTableByUniqueId(tables.teamTradePackageTable);
   let pickOrderRecord = null;
-  await readTableRecords([draftPickArrayTable, mainDraftPickTable, draftInfoTable, draftPickEventTable, draftManagerTable, teamTradePackageTable]);
+  await readTableRecords([
+    draftPickArrayTable,
+    mainDraftPickTable,
+    draftInfoTable,
+    draftPickEventTable,
+    draftManagerTable,
+    teamTradePackageTable,
+  ]);
 
   const arrayRecord = draftPickArrayTable.records[0];
   const draftInfoRecord = draftInfoTable.records[0];
@@ -2270,7 +2312,7 @@ async function fixDraftPicks(franchise) {
   const draftPickOrderBinary = draftManagerRecord.DraftPickOrder;
 
   if (draftPickOrderBinary !== ZERO_REF) {
-    const pickOrderTable = franchise.getTableById(bin2Dec(draftPickOrderBinary.slice(0, 15)))
+    const pickOrderTable = franchise.getTableById(bin2Dec(draftPickOrderBinary.slice(0, 15)));
     await pickOrderTable.readRecords();
     pickOrderRecord = pickOrderTable.records[0];
   }
@@ -2317,8 +2359,9 @@ async function fixDraftPicks(franchise) {
       draftInfoRecord.CurrentPick = updatedBinary;
     }
 
-    if (pickOrderRecord) { // If the draft pick order table was generated, we have to replace the binary here too
-      columns.forEach(column => {
+    if (pickOrderRecord) {
+      // If the draft pick order table was generated, we have to replace the binary here too
+      columns.forEach((column) => {
         if (pickOrderRecord[column] === binary) {
           pickOrderRecord[column] = updatedBinary;
         }
@@ -2329,13 +2372,13 @@ async function fixDraftPicks(franchise) {
     updateBinaryReferenceInTable(teamTradePackageTable, binary, updatedBinary);
 
     // Update any remaining references
-    let refList = franchise.getReferencesToRecord(currentTable.header.tableId, rowNum)
-    for(const ref of refList) {
+    let refList = franchise.getReferencesToRecord(currentTable.header.tableId, rowNum);
+    for (const ref of refList) {
       const refTable = franchise.getTableById(ref.tableId);
       await refTable.readRecords();
       updateBinaryReferenceInTable(refTable, binary, updatedBinary);
     }
-  
+
     // Empty the record from the other table
     emptyRecord(currentRecord, defaultColumns);
   }
@@ -2406,17 +2449,17 @@ function isValidPlayer(playerRecord, options = {}) {
 
   const yearsPro = playerRecord.YearsPro;
 
-  const meetsMinYears =
-    minYearsPro === null || minYearsPro === -1 || yearsPro >= minYearsPro;
+  const meetsMinYears = minYearsPro === null || minYearsPro === -1 || yearsPro >= minYearsPro;
 
-  const meetsMaxYears =
-    maxYearsPro === null || maxYearsPro === -1 || yearsPro <= maxYearsPro;
+  const meetsMaxYears = maxYearsPro === null || maxYearsPro === -1 || yearsPro <= maxYearsPro;
 
-  return !playerRecord.isEmpty &&
-         !invalidStatuses.has(playerRecord.ContractStatus) &&
-         (includeLegends || !playerRecord.IsLegend) &&
-         meetsMinYears &&
-         meetsMaxYears;
+  return (
+    !playerRecord.isEmpty &&
+    !invalidStatuses.has(playerRecord.ContractStatus) &&
+    (includeLegends || !playerRecord.IsLegend) &&
+    meetsMinYears &&
+    meetsMaxYears
+  );
 }
 
 /**
@@ -2424,7 +2467,7 @@ function isValidPlayer(playerRecord, options = {}) {
  *
  * @param {Object} playerRecord - The player record to validate.
  * @returns {boolean} - True if the player is a valid draft player.
- * 
+ *
  * @see {@link isValidPlayer} For detailed option descriptions.
  */
 function isValidDraftPlayer(playerRecord) {
@@ -2433,7 +2476,7 @@ function isValidDraftPlayer(playerRecord) {
     includeSignedPlayers: false,
     includeFreeAgents: false,
     includePracticeSquad: false,
-    includeExpiringPlayers: false
+    includeExpiringPlayers: false,
   });
 }
 
@@ -2453,10 +2496,9 @@ function isValidRookie(playerRecord, options = {}) {
     ...options,
     includeDraftPlayers: false,
     minYearsPro: 0,
-    maxYearsPro: 0
+    maxYearsPro: 0,
   });
 }
-
 
 function isReferenceColumn(record, column, includeZeroRef = false, includeFtcRefs = false) {
   const field = record.fields[column];
@@ -2469,17 +2511,17 @@ function isReferenceColumn(record, column, includeZeroRef = false, includeFtcRef
   if (!includeZeroRef && currentValue === ZERO_REF) return false;
 
   // Check if we should skip the FTC references check (those starting with '1')
-  if (!includeFtcRefs && currentValue.startsWith('1')) return false;
+  if (!includeFtcRefs && currentValue.startsWith("1")) return false;
 
   // If none of the conditions failed, return true
   return true;
-};
+}
 
-function isFtcReference(record,column) {
+function isFtcReference(record, column) {
   const field = record.fields[column];
   const currentValue = record[column];
 
-  return field.isReference && currentValue.startsWith('1');
+  return field.isReference && currentValue.startsWith("1");
 }
 
 /**
@@ -2496,10 +2538,14 @@ function validateGameYears(franchise, validGameYears) {
   const validGameYearsStr = validGameYearsArray.map(String);
 
   if (!validGameYearsStr.includes(fileGameYear)) {
-    console.log(`Selected franchise file is not a Madden ${validGameYearsStr.join(', ')} Franchise File. You tried to use a Madden ${fileGameYear} Franchise File.`);
+    console.log(
+      `Selected franchise file is not a Madden ${validGameYearsStr.join(
+        ", "
+      )} Franchise File. You tried to use a Madden ${fileGameYear} Franchise File.`
+    );
     EXIT_PROGRAM();
   }
-};
+}
 
 /**
  * Exits the program.
@@ -2508,7 +2554,7 @@ function EXIT_PROGRAM() {
   console.log("Enter anything to exit.");
   prompt();
   process.exit(1);
-};
+}
 
 /**
  * Prompts the user with a message and returns a boolean based on their response.
@@ -2523,15 +2569,9 @@ function getYesOrNo(message, allowShortForm = false) {
     console.log(message);
     const input = prompt().trim().toUpperCase();
 
-    if (
-      input === YES_KWD ||
-      (allowShortForm && input === Y_KWD)
-    ) {
+    if (input === YES_KWD || (allowShortForm && input === Y_KWD)) {
       return true;
-    } else if (
-      input === NO_KWD ||
-      (allowShortForm && input === N_KWD)
-    ) {
+    } else if (input === NO_KWD || (allowShortForm && input === N_KWD)) {
       return false;
     } else {
       console.log(`Invalid input. Please enter ${YES_KWD} or ${NO_KWD}.`);
@@ -2539,23 +2579,22 @@ function getYesOrNo(message, allowShortForm = false) {
   }
 }
 
-
 function getYesNoForceQuit(message) {
   while (true) {
-      console.log(message);
-      const input = prompt().trim().toUpperCase();
+    console.log(message);
+    const input = prompt().trim().toUpperCase();
 
-      if (input === YES_KWD) {
-          return YES_KWD;
-      } else if (input === NO_KWD) {
-          return NO_KWD;
-      } else if (input === FORCEQUIT_KWD) {
-        return FORCEQUIT_KWD;
-      } else {
-          console.log(`Invalid input. Please enter ${YES_KWD}, ${NO_KWD}, or ${FORCEQUIT_KWD} .`);
-      }
+    if (input === YES_KWD) {
+      return YES_KWD;
+    } else if (input === NO_KWD) {
+      return NO_KWD;
+    } else if (input === FORCEQUIT_KWD) {
+      return FORCEQUIT_KWD;
+    } else {
+      console.log(`Invalid input. Please enter ${YES_KWD}, ${NO_KWD}, or ${FORCEQUIT_KWD} .`);
+    }
   }
-};
+}
 
 function getSearchValue(message) {
   while (true) {
@@ -2588,7 +2627,7 @@ function getUserInput(message, firstValue, secondValue) {
       console.log(`Invalid input. Please enter ${firstValue} or ${secondValue}.`);
     }
   }
-};
+}
 
 /**
  * Prompts the user to choose a value from a list of valid options and returns the chosen value.
@@ -2598,20 +2637,19 @@ function getUserInput(message, firstValue, secondValue) {
  * @returns {string} - The value chosen by the user (as a string).
  */
 function getUserSelection(message, validValues) {
-  const valueMap = new Map(validValues.map(v => [String(v).toUpperCase(), String(v)]));
+  const valueMap = new Map(validValues.map((v) => [String(v).toUpperCase(), String(v)]));
 
   while (true) {
-    console.log(`${message}\nOptions: ${validValues.join(', ')}`);
+    console.log(`${message}\nOptions: ${validValues.join(", ")}`);
     const input = prompt().trim().toUpperCase();
 
     if (valueMap.has(input)) {
       return input;
     } else {
-      console.log(`Invalid input. Please enter one of the following: ${validValues.join(', ')}`);
+      console.log(`Invalid input. Please enter one of the following: ${validValues.join(", ")}`);
     }
   }
 }
-
 
 /**
  * Prompts the user to choose a number within a specified range and returns the chosen number.
@@ -2635,8 +2673,7 @@ function getUserInputNumber(message, floor, ceiling) {
       console.log(`Invalid input. Please enter a number between ${floor} and ${ceiling}.`);
     }
   }
-};
-
+}
 
 /**
  * Takes in an array and returns a grammatically correct string representation of the list.
@@ -2644,9 +2681,10 @@ function getUserInputNumber(message, floor, ceiling) {
  * @param {Array} list - The array of items to format.
  * @returns {string} - The formatted string representation of the list.
  */
-function formatListString(list)
-{
-  return list.length > 2 ? list.join(', ').replace(/, ([^,]*)$/, ', and $1') : list.join(', ').replace(/, ([^,]*)$/, ' and $1');
+function formatListString(list) {
+  return list.length > 2
+    ? list.join(", ").replace(/, ([^,]*)$/, ", and $1")
+    : list.join(", ").replace(/, ([^,]*)$/, " and $1");
 }
 
 /**
@@ -2657,14 +2695,14 @@ function formatListString(list)
  */
 async function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
 }
 
 function removeKeyFromJson(jsonData, key) {
   if (jsonData.hasOwnProperty(key)) {
-      delete jsonData[key];
+    delete jsonData[key];
   }
 }
 
@@ -2700,7 +2738,7 @@ function getRandomNumber(floor, ceiling) {
  */
 function bin2Dec(binary) {
   return parseInt(binary, 2);
-};
+}
 
 /**
  * Converts a decimal number to a binary string.
@@ -2710,7 +2748,7 @@ function bin2Dec(binary) {
  */
 function dec2bin(dec) {
   return (dec >>> 0).toString(2);
-};
+}
 
 /**
  * Checks if a string contains at least one numeric digit.
@@ -2720,7 +2758,7 @@ function dec2bin(dec) {
  */
 function hasNumber(input) {
   return /\d/.test(input);
-};
+}
 
 function containsNonUTF8(value) {
   if (Buffer.isBuffer(value)) {
@@ -2733,19 +2771,19 @@ function containsNonUTF8(value) {
   } else {
     return false; // Not a Buffer, so not applicable
   }
-};
+}
 
 function removeNonUTF8(value) {
   // Normalize the string and remove diacritics (accents)
-  let normalized = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  
+  let normalized = value.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
   // Remove all non-ASCII characters
-  return normalized.replace(/[^\x00-\x7F]/g, '');
+  return normalized.replace(/[^\x00-\x7F]/g, "");
 }
 
 /**
  * Finds the key associated with a given value in an object.
- * 
+ *
  * @param {Object} obj - The object to search through.
  * @param {*} value - The value to find the associated key for.
  * @returns {string|null} - The key associated with the value, or null if not found.
@@ -2756,7 +2794,7 @@ function findKeyByValue(obj, value) {
       return key;
     }
   }
-  return null;  // Return null if the value is not found
+  return null; // Return null if the value is not found
 }
 
 /**
@@ -2766,9 +2804,9 @@ function findKeyByValue(obj, value) {
  * @returns {string} The cleaned name or empty string if input is null/undefined.
  */
 function removeSuffixes(name) {
-  if (typeof name !== 'string') return '';
-  let cleanName = name.replace(/\./g, '');
-  return cleanName.replace(/\s+(Jr|Sr|II|III|IV|V)$/i, '');
+  if (typeof name !== "string") return "";
+  let cleanName = name.replace(/\./g, "");
+  return cleanName.replace(/\s+(Jr|Sr|II|III|IV|V)$/i, "");
 }
 
 /**
@@ -2778,8 +2816,8 @@ function removeSuffixes(name) {
  * @returns {string} The normalized string or empty string if input is null/undefined.
  */
 function normalizeWhitespace(str) {
-  if (typeof str !== 'string') return '';
-  return str.replace(/\s+/g, ' ').trim();
+  if (typeof str !== "string") return "";
+  return str.replace(/\s+/g, " ").trim();
 }
 
 /**
@@ -2790,19 +2828,19 @@ function normalizeWhitespace(str) {
  * @returns {string} The normalized name, or an empty string if input is invalid.
  */
 function getNormalizedName(name) {
-  let fullName = '';
+  let fullName = "";
 
-  if (typeof name === 'string') {
+  if (typeof name === "string") {
     fullName = name;
   } else if (
     name &&
-    typeof name === 'object' &&
-    typeof name.FirstName === 'string' &&
-    typeof name.LastName === 'string'
+    typeof name === "object" &&
+    typeof name.FirstName === "string" &&
+    typeof name.LastName === "string"
   ) {
     fullName = `${name.FirstName} ${name.LastName}`;
   } else {
-    return ''; // invalid input
+    return ""; // invalid input
   }
 
   // Handle any cases where comma is in the name
@@ -2830,9 +2868,9 @@ function getNormalizedName(name) {
  * normalizeName("");              // ""
  */
 function getNormalizedCommaName(name) {
-  if (!name || typeof name !== 'string') return name;
+  if (!name || typeof name !== "string") return name;
 
-  const parts = name.split(',').map(part => part.trim());
+  const parts = name.split(",").map((part) => part.trim());
   if (parts.length === 2) {
     return `${parts[1]} ${parts[0]}`;
   }
@@ -2842,7 +2880,6 @@ function getNormalizedCommaName(name) {
 
 function getPlayerReferences(franchise, tableId, playerRecord) {
   return franchise.getReferencesToRecord(tableId, playerRecord.index);
-
 }
 
 async function deleteCurrentDraftClass(franchise) {
@@ -2858,32 +2895,36 @@ async function deleteCurrentDraftClass(franchise) {
   const draftBoardEvalTable = franchise.getTableByUniqueId(tables.draftBoardEvalTable);
   const franchiseTable = franchise.getTableByUniqueId(tables.franchiseTable);
 
-  await readTableRecords([playerTable,
+  await readTableRecords([
+    playerTable,
     draftPlayerTable,
     branchingStoryArray,
     draftBoardEvalTable,
     draftBoardEvalArray,
     scoutFocusArray,
     scoutPrivateArray,
-    franchiseTable
+    franchiseTable,
   ]);
-
 
   const draftPlayersRef = franchiseTable.records[0].DraftClassPlayers;
 
-  if (!isReferenceColumn(franchiseTable.records[0],'DraftClassPlayers')) {
-    console.error("Error deleting current draft class from target file. There is no found array table to hold draft player records.");
+  if (!isReferenceColumn(franchiseTable.records[0], "DraftClassPlayers")) {
+    console.error(
+      "Error deleting current draft class from target file. There is no found array table to hold draft player records."
+    );
     EXIT_PROGRAM();
   }
-  
+
   const draftTableArrayId = getRowAndTableIdFromRef(draftPlayersRef).tableId;
 
-  const allDraftPlayers = playerTable.records.filter(record => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.DRAFT); // Get draft players
+  const allDraftPlayers = playerTable.records.filter(
+    (record) => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.DRAFT
+  ); // Get draft players
 
-  const draftFilteredRecords = draftPlayerTable.records.filter(record => !record.isEmpty);
+  const draftFilteredRecords = draftPlayerTable.records.filter((record) => !record.isEmpty);
 
   for (const player of allDraftPlayers) {
-    await deletePlayer(franchise,getBinaryReferenceData(playerTable.header.tableId,player.index));
+    await deletePlayer(franchise, getBinaryReferenceData(playerTable.header.tableId, player.index));
   }
 
   for (const record of draftFilteredRecords) {
@@ -2905,7 +2946,7 @@ async function deleteCurrentDraftClass(franchise) {
     record.CombineFortyYardDash = 0;
     record.CombineOverallGrade = 0;
     record.CombineThreeConeDrill = 0;
-    record.DraftPosition = 'QB';
+    record.DraftPosition = "QB";
     record.ProDayBroadJump = 0;
     record.InitialDraftRank = 0;
     record.TrueOverallRanking = 0;
@@ -2917,34 +2958,36 @@ async function deleteCurrentDraftClass(franchise) {
     record.empty();
   }
 
-
   if (draftTableArrayId !== null && draftTableArrayId !== 0) {
     const draftArrayTable = franchise.getTableById(draftTableArrayId);
     await draftArrayTable.readRecords();
 
-    const tablesToClear = [draftArrayTable,branchingStoryArray,draftBoardEvalArray,scoutFocusArray,scoutPrivateArray];
+    const tablesToClear = [
+      draftArrayTable,
+      branchingStoryArray,
+      draftBoardEvalArray,
+      scoutFocusArray,
+      scoutPrivateArray,
+    ];
 
-    tablesToClear.forEach(table => clearArrayTable(table));
+    tablesToClear.forEach((table) => clearArrayTable(table));
 
-    emptyTable(draftBoardEvalTable, {"OverallValue": 0, "OverallRank": 0, "PlayerRank": 0, "OverallRating": 0});
+    emptyTable(draftBoardEvalTable, { OverallValue: 0, OverallRank: 0, PlayerRank: 0, OverallRating: 0 });
   }
-  
 
   return draftTableArrayId;
-
-};
+}
 
 async function addDraftPlayer(draftPlayerTable, playerTable, playerRecord, index) {
-
   const draftPlayerRow = draftPlayerTable.header.nextRecordToUse;
 
   if (draftPlayerRow > draftPlayerTable.header.recordCapacity) return null;
 
-  const playerBinary = getBinaryReferenceData(playerTable.header.tableId,playerRecord.index);
+  const playerBinary = getBinaryReferenceData(playerTable.header.tableId, playerRecord.index);
   const playerPosition = playerRecord.Position;
   const playerCommentId = playerRecord.PLYR_COMMENT;
 
-  let finalPosition = 'QB';
+  let finalPosition = "QB";
 
   switch (playerPosition) {
     case "HB":
@@ -2970,7 +3013,7 @@ async function addDraftPlayer(draftPlayerTable, playerTable, playerRecord, index
       break;
     case "SS":
     case "FS":
-      finalPosition = "S"
+      finalPosition = "S";
       break;
     default:
       finalPosition = playerPosition;
@@ -3009,22 +3052,21 @@ async function addDraftPlayer(draftPlayerTable, playerTable, playerRecord, index
   draftPlayerRecord.CombineBroadJump = 0;
 
   return draftPlayerRow;
-
 }
 
 function isBlank(str) {
   return !str || str.trim() === EMPTY_STRING;
 }
 
-async function addAssetNames(franchise,appendIndex = false) {
+async function addAssetNames(franchise, appendIndex = false) {
   const tables = getTablesObject(franchise);
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   await playerTable.readRecords();
 
   for (const record of playerTable.records) {
     if (isValidPlayer(record)) {
-      if (isBlank(record.PLYR_ASSETNAME) || (record.PLYR_ASSETNAME === '0')) {
-        const formattedName = removeSuffixes(`${record.LastName}${record.FirstName}`).replace(/\s+/g, '');
+      if (isBlank(record.PLYR_ASSETNAME) || record.PLYR_ASSETNAME === "0") {
+        const formattedName = removeSuffixes(`${record.LastName}${record.FirstName}`).replace(/\s+/g, "");
         let generatedAsset = `${formattedName}_${record.PresentationId}`;
         if (appendIndex) generatedAsset += `_${record.index}`;
         record.PLYR_ASSETNAME = generatedAsset;
@@ -3034,22 +3076,22 @@ async function addAssetNames(franchise,appendIndex = false) {
 }
 
 function startsWithNumber(str) {
-    return /^\d/.test(str);
+  return /^\d/.test(str);
 }
 
 function getCharacterAfterNthUnderscore(str, n) {
-    let currentIndex = -1;
-    for (let i = 0; i < n; i++) {
-        currentIndex = str.indexOf('_', currentIndex + 1); // Find the next underscore
-        if (currentIndex === -1) {
-            return null; // Return null if there aren't enough underscores
-        }
+  let currentIndex = -1;
+  for (let i = 0; i < n; i++) {
+    currentIndex = str.indexOf("_", currentIndex + 1); // Find the next underscore
+    if (currentIndex === -1) {
+      return null; // Return null if there aren't enough underscores
     }
-    // Ensure there is a character after the nth underscore
-    if (currentIndex < str.length - 1) {
-        return str.charAt(currentIndex + 1);
-    }
-    return null; // Return null if no valid character is found
+  }
+  // Ensure there is a character after the nth underscore
+  if (currentIndex < str.length - 1) {
+    return str.charAt(currentIndex + 1);
+  }
+  return null; // Return null if no valid character is found
 }
 
 // Removes morph slot types which have values of 0
@@ -3057,11 +3099,11 @@ function cleanJson(json) {
   let data = typeof json === "string" ? JSON.parse(json) : json;
 
   // Process loadouts
-  data.loadouts.forEach(loadout => {
-    loadout.loadoutElements = loadout.loadoutElements.filter(element => {
+  data.loadouts.forEach((loadout) => {
+    loadout.loadoutElements = loadout.loadoutElements.filter((element) => {
       // Check and clean blends for both Base and non-Base loadouts
       if (element.blends) {
-        element.blends = element.blends.filter(blend => {
+        element.blends = element.blends.filter((blend) => {
           // Remove blends with both barycentricBlend and baseBlend as 0
           if (blend.barycentricBlend === 0) delete blend.barycentricBlend;
           if (blend.baseBlend === 0) delete blend.baseBlend;
@@ -3083,7 +3125,7 @@ function cleanJson(json) {
   });
 
   // Remove the Base loadout if it has no valid elements
-  data.loadouts = data.loadouts.filter(loadout => {
+  data.loadouts = data.loadouts.filter((loadout) => {
     return loadout.loadoutCategory !== "Base" || loadout.loadoutElements.length > 0;
   });
 
@@ -3098,14 +3140,14 @@ function splitDecimal(value) {
   const integerPart = Math.floor(value);
 
   return {
-      integer: integerPart,
-      hasDecimal: isDecimal
+    integer: integerPart,
+    hasDecimal: isDecimal,
   };
 }
 
 function getActiveRecords(table) {
   if (!table || !Array.isArray(table.records)) return [];
-  return table.records.filter(record => !record.isEmpty);
+  return table.records.filter((record) => !record.isEmpty);
 }
 
 async function getCollege(franchise, college) {
@@ -3115,16 +3157,16 @@ async function getCollege(franchise, college) {
   // If the file doesn't exist, create it with an empty array
   if (!fs.existsSync(filePath)) {
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
-    fs.writeFileSync(filePath, '[]', 'utf8'); // <- use array not object
+    fs.writeFileSync(filePath, "[]", "utf8"); // <- use array not object
   }
 
-  const allColleges = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const allColleges = JSON.parse(fs.readFileSync(filePath, "utf8"));
 
   try {
-    const match = allColleges.find(c => c.AssetId === assetId);
+    const match = allColleges.find((c) => c.AssetId === assetId);
     return match ? match.Name : null;
   } catch (err) {
-    console.error('Error finding college:', err);
+    console.error("Error finding college:", err);
     return null;
   }
 }
@@ -3141,7 +3183,7 @@ function getEnumValuesForField(source, fieldName) {
     // If source is a record object with _fields
     const fieldMeta = source?._fields?.[fieldName];
     if (fieldMeta?.offset?.enum) {
-      return fieldMeta.offset.enum._members.map(member => member._name);
+      return fieldMeta.offset.enum._members.map((member) => member._name);
     }
   } catch (err) {
     // ignore and fall through to table check
@@ -3149,9 +3191,9 @@ function getEnumValuesForField(source, fieldName) {
 
   try {
     // If source is a table object with offsetTable
-    const offset = source?.offsetTable?.find(f => f.name === fieldName);
+    const offset = source?.offsetTable?.find((f) => f.name === fieldName);
     if (offset?.enum) {
-      return offset.enum._members.map(member => member._name);
+      return offset.enum._members.map((member) => member._name);
     }
   } catch (err) {
     // ignore and fall through
@@ -3202,9 +3244,7 @@ async function getTableDataAsArray(franchise, table, options = {}) {
   }
 
   const allColumns = getColumnNames(table);
-  const columns = columnsToReturn
-    ? allColumns.filter(col => columnsToReturn.includes(col))
-    : allColumns;
+  const columns = columnsToReturn ? allColumns.filter((col) => columnsToReturn.includes(col)) : allColumns;
 
   const results = [];
 
@@ -3228,12 +3268,11 @@ async function getTableDataAsArray(franchise, table, options = {}) {
       if (convertRefToRowNo && isReferenceColumn(record, col, true)) {
         rowData[col] = value === ZERO_REF ? -1 : getRowFromRef(value);
       } else if (loadReferenceCols && isReferenceColumn(record, col, true) && value !== ZERO_REF) {
-        const {row, tableId} = getRowAndTableIdFromRef(value);
+        const { row, tableId } = getRowAndTableIdFromRef(value);
         const refTable = franchise.getTableById(tableId);
         if (refTable === undefined) {
           rowData[col] = value;
-        }
-        else {
+        } else {
           await refTable.readRecords();
           const refBinary = getBinaryReferenceData(refTable.header.tableId, row);
           const refAsset = bin2Dec(refBinary);
@@ -3271,15 +3310,15 @@ async function getTableDataAsArrayFromId(franchise, tableId, options = {}) {
     includeRow = true,
     includeAssetId = true,
     includeBinary = true,
-    convertRefToRowNo = false
+    convertRefToRowNo = false,
   } = options;
 
-  const table = useUniqueId
-    ? franchise.getTableByUniqueId(tableId)
-    : franchise.getTableById(tableId);
+  const table = useUniqueId ? franchise.getTableByUniqueId(tableId) : franchise.getTableById(tableId);
 
   if (!table) {
-    throw new Error(`Table with ID ${tableId} could not be found using ${useUniqueId ? 'getTableByUniqueId' : 'getTableById'}.`);
+    throw new Error(
+      `Table with ID ${tableId} could not be found using ${useUniqueId ? "getTableByUniqueId" : "getTableById"}.`
+    );
   }
 
   await table.readRecords();
@@ -3288,7 +3327,7 @@ async function getTableDataAsArrayFromId(franchise, tableId, options = {}) {
     includeRow,
     includeAssetId,
     includeBinary,
-    convertRefToRowNo
+    convertRefToRowNo,
   });
 }
 
@@ -3299,14 +3338,14 @@ async function getTableDataAsArrayFromId(franchise, tableId, options = {}) {
  * @param {string} filePath - Full file path where JSON will be saved.
  */
 function convertArrayToJSONFile(data, filePath) {
-  const isValidType = Array.isArray(data) || (data && typeof data === 'object' && data.constructor === Object);
+  const isValidType = Array.isArray(data) || (data && typeof data === "object" && data.constructor === Object);
 
   if (!isValidType) {
-    throw new TypeError('Input must be an array or a plain object.');
+    throw new TypeError("Input must be an array or a plain object.");
   }
 
-  if (typeof filePath !== 'string') {
-    throw new TypeError('File path must be a string.');
+  if (typeof filePath !== "string") {
+    throw new TypeError("File path must be a string.");
   }
 
   const dir = path.dirname(filePath);
@@ -3314,15 +3353,15 @@ function convertArrayToJSONFile(data, filePath) {
   // Ensure directory exists
   fs.mkdir(dir, { recursive: true }, (mkdirErr) => {
     if (mkdirErr) {
-      console.error('Failed to create directory:', mkdirErr);
+      console.error("Failed to create directory:", mkdirErr);
       return;
     }
 
     const jsonData = JSON.stringify(data, null, 2);
 
-    fs.writeFile(filePath, jsonData, 'utf8', (writeErr) => {
+    fs.writeFile(filePath, jsonData, "utf8", (writeErr) => {
       if (writeErr) {
-        console.error('Failed to write JSON file:', writeErr);
+        console.error("Failed to write JSON file:", writeErr);
       } else {
         console.log(`JSON file successfully written to: ${filePath}`);
       }
@@ -3354,129 +3393,162 @@ function loadJsonSafe(filePath, fallback = {}) {
   }
 }
 
+async function getNextZeroedRecordByTableId(franchise, tableId) {
+  return getNextRecordByTableId(franchise, tableId, { zeroInit: true });
+}
+
+async function getNextRecordByTableId(franchise, tableId, options = {}) {
+  const table = franchise.getTableByUniqueId(tableId);
+  await table.readRecords();
+  return getNextRecord(table, options);
+}
+
+async function getNextRecord(table, { zeroInit = false } = {}) {
+  await table.readRecords();
+  const nextRow = table.header.nextRecordToUse;
+  const record = table.records[nextRow];
+
+  if (!record) {
+    throw new Error(`No available records in table ${table.header?.tableId ?? "UNKNOWN"}`);
+  }
+
+  if (zeroInit) {
+    for (const col of FranchiseUtils.getColumnNames(table)) {
+      if (isReferenceColumn(record, col, true, true)) {
+        record[col] = FranchiseUtils.ZERO_REF;
+      }
+    }
+  }
+
+  return record;
+}
+
 module.exports = {
-    init,
-    selectFranchiseFile, // FUNCTIONS
-    selectFranchiseFileAsync,
-    saveFranchiseFile,
-    getSaveFilePath,
-    getGameYear,
-    readTableRecords,
-    getTablesObject,
-    getColumnNames,
-    calculateBestOverall,
-    emptyHistoryTables,
-    removeFromTable,
-    addToArrayTable,
-    emptyCharacterVisualsTable,
-    regenerateMarketingTables,
-    generateActiveAbilityPlayers,
-    emptyAcquisitionTables,
-    emptyResignTable,
-    fillResignTable,
-    regenerateResignTables,
-    emptySignatureTables,
-    emptyRecord,
-    emptyTable,
-    clearArrayTable,
-    addRecordToTable,
-    getPlayersOnTeam,
-    getAvailableJerseyNumbers,
-    recalculateRosterSizes,
-    hasMultiplePlayerTables,
-    fixPlayerTables,
-    takeControl,
-    removeControl,
-    deleteExcessFreeAgents,
-    deletePlayer,
-    deleteCurrentDraftClass,
-    addDraftPlayer,
-    addAssetNames,
-    clearPlayerRefFromTableByName,
-    clearPlayerRefFromTableByUniqueId,
-    reorderTeams,
-    removePlayerVisuals,
-    fixDraftPicks,
-    approximateBodyType,
-    generateBodyType,
-    getBodyType,
-    setBodyType,
-    getRowAndTableIdFromRef,
-    getRowFromRef,
-    getTableIdFromRef,
-    cleanJson,
-    splitDecimal,
-    getPlayerReferences,
-    removeFreeAgentFromTables,
-    getActiveRecords,
-    getEnumValuesForField,
-    getCollege,
-    getTableDataAsArrayFromId,
-    getTableDataAsArray,
-    convertArrayToJSONFile,
+  init,
+  selectFranchiseFile, // FUNCTIONS
+  selectFranchiseFileAsync,
+  saveFranchiseFile,
+  getSaveFilePath,
+  getGameYear,
+  readTableRecords,
+  getTablesObject,
+  getColumnNames,
+  calculateBestOverall,
+  emptyHistoryTables,
+  removeFromTable,
+  addToArrayTable,
+  emptyCharacterVisualsTable,
+  regenerateMarketingTables,
+  generateActiveAbilityPlayers,
+  emptyAcquisitionTables,
+  emptyResignTable,
+  fillResignTable,
+  regenerateResignTables,
+  emptySignatureTables,
+  emptyRecord,
+  emptyTable,
+  clearArrayTable,
+  addRecordToTable,
+  getPlayersOnTeam,
+  getAvailableJerseyNumbers,
+  recalculateRosterSizes,
+  hasMultiplePlayerTables,
+  fixPlayerTables,
+  takeControl,
+  removeControl,
+  deleteExcessFreeAgents,
+  deletePlayer,
+  deleteCurrentDraftClass,
+  addDraftPlayer,
+  addAssetNames,
+  clearPlayerRefFromTableByName,
+  clearPlayerRefFromTableByUniqueId,
+  reorderTeams,
+  removePlayerVisuals,
+  fixDraftPicks,
+  approximateBodyType,
+  generateBodyType,
+  getBodyType,
+  setBodyType,
+  getRowAndTableIdFromRef,
+  getRowFromRef,
+  getTableIdFromRef,
+  cleanJson,
+  splitDecimal,
+  getPlayerReferences,
+  removeFreeAgentFromTables,
+  getActiveRecords,
+  getEnumValuesForField,
+  getCollege,
+  getTableDataAsArrayFromId,
+  getTableDataAsArray,
+  convertArrayToJSONFile,
+  getNextZeroedRecordByTableId,
+  getNextRecordByTableId,
+  getNextRecord,
 
-    getYesOrNo, // UTILITY FUNCTIONS
-    getYesNoForceQuit,
-    getSearchValue,
-    formatListString,
-    shuffleArray,
-    removeKeyFromJson,
-    getUserInput,
-    getUserSelection,
-    getUserInputNumber,
-    getRandomNumber,
-    bin2Dec,
-    dec2bin,
-    hasNumber,
-    removeNonUTF8,
-    containsNonUTF8,
-    findKeyByValue,
-    removeSuffixes,
-    normalizeWhitespace,
-    getNormalizedName,
-    getNormalizedCommaName,
-    isValidPlayer,
-    isValidDraftPlayer,
-    isValidRookie,
-    isReferenceColumn,
-    isFtcReference,
-    validateGameYears,
-    startsWithNumber,
-    getCharacterAfterNthUnderscore,
-    formatHeight,
-    loadJsonSafe,
-    isBlank,
-    EXIT_PROGRAM,
+  getYesOrNo, // UTILITY FUNCTIONS
+  getYesNoForceQuit,
+  getSearchValue,
+  formatListString,
+  shuffleArray,
+  removeKeyFromJson,
+  getUserInput,
+  getUserSelection,
+  getUserInputNumber,
+  getRandomNumber,
+  bin2Dec,
+  dec2bin,
+  hasNumber,
+  removeNonUTF8,
+  containsNonUTF8,
+  findKeyByValue,
+  removeSuffixes,
+  normalizeWhitespace,
+  getNormalizedName,
+  getNormalizedCommaName,
+  isValidPlayer,
+  isValidDraftPlayer,
+  isValidRookie,
+  isReferenceColumn,
+  isFtcReference,
+  validateGameYears,
+  startsWithNumber,
+  getCharacterAfterNthUnderscore,
+  formatHeight,
+  loadJsonSafe,
+  isBlank,
+  EXIT_PROGRAM,
 
-    ZERO_REF, // CONST VARIABLES
-    EMPTY_STRING,
-    YEARS,
-    BASE_FILE_INIT_KWD,
-    FTC_FILE_INIT_KWD,
-    YES_KWD,
-    NO_KWD,
-    FORCEQUIT_KWD,
-    EXTRA_TEAM_NAMES,
-    NFL_CONFERENCES,
-    OFFENSIVE_SKILL_POSITIONS,
-    OLINE_POSITIONS,
-    DEFENSIVE_LINE_POSITIONS,
-    LINEBACKER_POSITIONS,
-    DEFENSIVE_BACK_POSITIONS,
-    ALL_DEFENSIVE_POSITIONS,
-    ALL_OFFENSIVE_POSITIONS,
-    SPECIAL_TEAM_POSITIONS,
-    COACH_SKIN_TONES,
-    COACH_APPAREL,
-    FEMALE_BODY_TYPES,
-    BODY_TYPES,
-    BODY_TYPE_ITEMS,
-    CONTRACT_STATUSES,
-    TABLE_NAMES,
-    SEASON_STAGES,
-    DEBUG_MODE,
-    SAVE_TYPES,
+  ZERO_REF, // CONST VARIABLES
+  EMPTY_STRING,
+  YEARS,
+  BASE_FILE_INIT_KWD,
+  FTC_FILE_INIT_KWD,
+  YES_KWD,
+  NO_KWD,
+  FORCEQUIT_KWD,
+  EXTRA_TEAM_NAMES,
+  NFL_CONFERENCES,
+  OFFENSIVE_SKILL_POSITIONS,
+  OLINE_POSITIONS,
+  DEFENSIVE_LINE_POSITIONS,
+  LINEBACKER_POSITIONS,
+  DEFENSIVE_BACK_POSITIONS,
+  ALL_DEFENSIVE_POSITIONS,
+  ALL_OFFENSIVE_POSITIONS,
+  SPECIAL_TEAM_POSITIONS,
+  COACH_SKIN_TONES,
+  COACH_APPAREL,
+  FEMALE_BODY_TYPES,
+  BODY_TYPES,
+  BODY_TYPE_ITEMS,
+  CONTRACT_STATUSES,
+  TABLE_NAMES,
+  SEASON_STAGES,
+  DEBUG_MODE,
+  SAVE_TYPES,
 
-    USER_CONTROL_SETTINGS, // VARIABLES FOR USER/CPU CONTROL
-    CPU_CONTROL_SETTINGS,
-  };
+  USER_CONTROL_SETTINGS, // VARIABLES FOR USER/CPU CONTROL
+  CPU_CONTROL_SETTINGS,
+};
