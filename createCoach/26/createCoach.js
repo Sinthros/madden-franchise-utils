@@ -1,45 +1,23 @@
 const prompt = require("prompt-sync")();
 const { getBinaryReferenceData } = require("madden-franchise").utilService;
 const fs = require("fs");
+const path = require("path");
 const FranchiseUtils = require("../../Utils/FranchiseUtils");
 const CharacterVisualFunctions = require("../../Utils/characterVisualsLookups/characterVisualFunctions26");
+const os = require("os");
 
-const offPlaybookLookup = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/offensivePlaybooks.json", "utf8")
-);
-const defPlaybookLookup = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/defensivePlaybooks.json", "utf8")
-);
-const philosophyLookup = JSON.parse(fs.readFileSync("lookupFiles/philosophy_lookup.json", "utf8"));
-const offSchemeLookup = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/offensiveSchemes.json", "utf8")
-);
-const defSchemeLookup = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/defensiveSchemes.json", "utf8")
-);
-const allCoachHeads = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/genericCoachHeadsLookup.json", "utf8")
-);
-
-const staffArchetypeLookup = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/coachTalents/StaffArchetype.json", "utf8")
-);
-
-const staffGoals = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/coachTalents/StaffGoals.json", "utf8")
-);
-
-const talentDisplayStatLookup = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/coachTalents/TalentDisplayStat.json", "utf8")
-);
-
-const talentsLookup = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/coachTalents/talents.json", "utf8")
-);
-
-const talentTiersLookup = JSON.parse(
-  fs.readFileSync("../../Utils/JsonLookups/26/coachLookups/coachTalents/TalentTiers.json", "utf8")
-);
+// Lookups
+const offPlaybookLookup = require("../../Utils/JsonLookups/26/coachLookups/offensivePlaybooks.json");
+const defPlaybookLookup = require("../../Utils/JsonLookups/26/coachLookups/defensivePlaybooks.json");
+const philosophyLookup = require("./lookupFiles/philosophy_lookup.json");
+const offSchemeLookup = require("../../Utils/JsonLookups/26/coachLookups/offensiveSchemes.json");
+const defSchemeLookup = require("../../Utils/JsonLookups/26/coachLookups/defensiveSchemes.json");
+const allCoachHeads = require("../../Utils/JsonLookups/26/coachLookups/genericCoachHeadsLookup.json");
+const staffArchetypeLookup = require("../../Utils/JsonLookups/26/coachLookups/coachTalents/StaffArchetype.json");
+const staffGoals = require("../../Utils/JsonLookups/26/coachLookups/coachTalents/StaffGoals.json");
+const talentDisplayStatLookup = require("../../Utils/JsonLookups/26/coachLookups/coachTalents/TalentDisplayStat.json");
+const talentsLookup = require("../../Utils/JsonLookups/26/coachLookups/coachTalents/talents.json");
+const talentTiersLookup = require("../../Utils/JsonLookups/26/coachLookups/coachTalents/TalentTiers.json");
 
 const COACH_ARCHETYPES = ["OffensiveGuru", "DefensiveGenius", "DevelopmentWizard", "MasterMotivator"];
 const MALE_BODY_TYPES = CharacterVisualFunctions.MALE_BODY_TYPES;
@@ -47,20 +25,25 @@ const FEMALE_BODY_TYPES = CharacterVisualFunctions.FEMALE_BODY_TYPES;
 const COACH_POSITIONS = ["HeadCoach", "OffensiveCoordinator", "DefensiveCoordinator"];
 
 const gameYear = FranchiseUtils.YEARS.M26;
-const dir = "./coachPreviews";
-const headsDirName = "coachHeads";
 const flattenedTalentLookup = buildFlattenedTalentLookup();
 const flattenedTalentTierLookup = buildFlattenedTalentTierLookup();
+const allCoachPortraits = Object.values(allCoachHeads); // your JSON
+const allCoachFaces = Object.keys(allCoachHeads);
+const portraitToHeadMap = Object.fromEntries(allCoachFaces.map((face, i) => [allCoachPortraits[i], face]));
 
 console.log(`This program will allow you to create new Free Agent coaches in your Madden ${gameYear} franchise file.`);
 
-fs.rmSync(dir, { recursive: true, force: true }); //Remove this folder if it already exists and recreate it
-if (!fs.existsSync(dir)) {
-  fs.mkdirSync(dir);
-}
+const previewsDir = path.join(process.cwd(), "coachPreviews");
+fs.mkdirSync(previewsDir, { recursive: true });
+const headsDir = path.join(__dirname, "coachHeads"); // this now points to a real folder outside snapshot
 
 const franchise = FranchiseUtils.init(gameYear, { isAutoUnemptyEnabled: true, promptForBackup: true });
 const tables = FranchiseUtils.getTablesObject(franchise);
+
+function loadJson(relativePath) {
+  const fullPath = path.join(__dirname, relativePath);
+  return JSON.parse(fs.readFileSync(fullPath, "utf8"));
+}
 
 function buildFlattenedTalentLookup() {
   const sections = ["GamedayTalentInfo", "PlaysheetTalentInfo", "SeasonTalentInfo"];
@@ -339,20 +322,14 @@ function getBodyType(coachRecord) {
 
 async function setCoachAppearance(coachRecord) {
   try {
-    const allCoachPortraits = Object.values(allCoachHeads); // Get all portrait values from the dictionary
-    const allCoachFaces = Object.keys(allCoachHeads); // Get all face keys from the dictionary
-    const portraitToHeadMap = Object.fromEntries(allCoachFaces.map((face, i) => [allCoachPortraits[i], face])); // Map portraits to their corresponding face keys
+    for (const portrait of allCoachPortraits) {
+      const src = path.join(headsDir, `${portrait}.png`);
+      const dest = path.join(previewsDir, `${portrait}.png`);
 
-    const filteredCoachPortraits = [...allCoachPortraits]; // Filtered list of portraits
-
-    for (let i = 0; i < filteredCoachPortraits.length; i++) {
-      const currentPortrait = filteredCoachPortraits[i];
-      const currentHead = portraitToHeadMap[currentPortrait];
       try {
-        // Get all available coach portrait pngs
-        fs.copyFileSync(`${headsDirName}/${currentPortrait}.png`, `coachPreviews/${currentPortrait}.png`);
-      } catch (e) {
-        // Handle missing files gracefully
+        fs.copyFileSync(src, dest);
+      } catch (err) {
+        console.warn(`Could not copy ${portrait}.png — skipping`, err.message);
       }
     }
 
@@ -362,14 +339,12 @@ async function setCoachAppearance(coachRecord) {
       console.log(
         "Note: You can view previews for these coach portraits in the coachPreviews folder, which has been generated in the folder of this exe."
       );
-      console.log(filteredCoachPortraits.join(", "));
+      console.log(allCoachPortraits.join(", "));
 
       selectedPortrait = prompt(); // Get user input as a string
 
-      if (filteredCoachPortraits.some((portrait) => String(portrait) === selectedPortrait.toLowerCase())) {
-        const exactPortrait = filteredCoachPortraits.find(
-          (portrait) => String(portrait) === selectedPortrait.toLowerCase()
-        );
+      if (allCoachPortraits.some((portrait) => String(portrait) === selectedPortrait.toLowerCase())) {
+        const exactPortrait = allCoachPortraits.find((portrait) => String(portrait) === selectedPortrait.toLowerCase());
         const correspondingHead = portraitToHeadMap[exactPortrait];
 
         coachRecord.FaceShape = "Invalid_";
@@ -502,7 +477,7 @@ function getTalentTierBinaryByIndex(tierRecord, index) {
   if (!tierRecord || typeof tierRecord !== "object") return null;
 
   const tierKeys = Object.keys(tierRecord)
-    .filter(k => k.startsWith("TalentTierInfo"))
+    .filter((k) => k.startsWith("TalentTierInfo"))
     .sort((a, b) => {
       const ai = parseInt(a.replace("TalentTierInfo", ""), 10);
       const bi = parseInt(b.replace("TalentTierInfo", ""), 10);
@@ -583,7 +558,11 @@ async function updateTalents(coachRecord) {
     talentRecord.Tiers = getBinaryReferenceData(talentTierArrayTable.header.tableId, talentTierArrayRecord.index);
 
     const indexToUse = isPlaysheet ? playsheetTalentsRecord.index : gamedayTalentsRecord.index;
-    FranchiseUtils.addToArrayTable(talentArrayTable, getBinaryReferenceData(tableToUse.header.tableId, talentRecord.index), indexToUse);
+    FranchiseUtils.addToArrayTable(
+      talentArrayTable,
+      getBinaryReferenceData(tableToUse.header.tableId, talentRecord.index),
+      indexToUse
+    );
   }
 }
 
@@ -595,7 +574,7 @@ function getTalentTierArrayRecord() {
 
   for (const col of FranchiseUtils.getColumnNames(talentTierArrayTable)) {
     const tierRecord = getTalentTierRecord();
-    tierRecord.TierStatus = col === 'TalentTier0' ? "Owned" : "Purchasable"
+    tierRecord.TierStatus = col === "TalentTier0" ? "Owned" : "Purchasable";
     record[col] = getBinaryReferenceData(talentTierTable.header.tableId, tierRecord.index);
   }
 
@@ -676,11 +655,11 @@ franchise.on("ready", async function () {
       // If no, save and quit
       await franchise.save();
 
-      fs.rmSync(dir, { recursive: true, force: true }); // Remove the coach previews folder
+      fs.rmSync(previewsDir, { recursive: true, force: true }); // Remove the coach previews folder
       console.log("Franchise file successfully saved.");
       FranchiseUtils.EXIT_PROGRAM();
     } else if (prompt === FranchiseUtils.FORCEQUIT_KWD) {
-      fs.rmSync(dir, { recursive: true, force: true }); // Remove the coach previews folder
+      fs.rmSync(previewsDir, { recursive: true, force: true }); // Remove the coach previews folder
       console.log("Exiting without saving your last added coach.");
       FranchiseUtils.EXIT_PROGRAM();
     } else if (prompt === FranchiseUtils.YES_KWD) {

@@ -1,1 +1,0 @@
-nexe --build -i createCoach.js -t x64-14.15.3 -r "../../node_modules/madden-franchise/data/schemas" -r "../../node_modules/madden-franchise/services/lookupFiles/*.json" -r "../../Utils/JsonLookups/*.json" -r "./lookupFiles/*.json" -r "../../Utils/characterVisualsLookups/**" -r "../../Utils/FranchiseUtils.js" -r "./coachHeads/*" -o "CreateCoach.exe" --verbose
