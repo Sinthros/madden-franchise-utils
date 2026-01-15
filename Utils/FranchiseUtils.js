@@ -3403,6 +3403,9 @@ async function getNextRecordByTableId(franchise, tableId, options = {}) {
   return getNextRecord(table, options);
 }
 
+async function getNextZeroedRecord(table) {
+  return getNextRecord(table, { zeroInit: true });
+}
 async function getNextRecord(table, { zeroInit = false } = {}) {
   await table.readRecords();
   const nextRow = table.header.nextRecordToUse;
@@ -3485,6 +3488,7 @@ module.exports = {
   convertArrayToJSONFile,
   getNextZeroedRecordByTableId,
   getNextRecordByTableId,
+  getNextZeroedRecord,
   getNextRecord,
 
   getYesOrNo, // UTILITY FUNCTIONS
