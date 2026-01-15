@@ -3416,9 +3416,9 @@ async function getNextRecord(table, { zeroInit = false } = {}) {
   }
 
   if (zeroInit) {
-    for (const col of FranchiseUtils.getColumnNames(table)) {
+    for (const col of getColumnNames(table)) {
       if (isReferenceColumn(record, col, true, true)) {
-        record[col] = FranchiseUtils.ZERO_REF;
+        record[col] = ZERO_REF;
       }
     }
   }
