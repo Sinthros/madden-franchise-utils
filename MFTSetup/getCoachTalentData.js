@@ -6,45 +6,13 @@ const gameYear = FranchiseUtils.YEARS.M26;
 const franchise = FranchiseUtils.init(gameYear, { isFtcFile: true, promptForBackup: false });
 const tables = FranchiseUtils.getTablesObject(franchise);
 
-function filterNonZeroRefEntries(dataArray, prefix, minimumCount = 4) {
-  const filtered = [];
-
-  for (const entry of dataArray) {
-    const filteredEntry = { Binary: entry.Binary };
-    let hasNonZero = false;
-
-    for (const key in entry) {
-      if (key.startsWith(prefix) && key !== "Binary") {
-        const val = entry[key];
-        if (val !== FranchiseUtils.ZERO_REF) {
-          filteredEntry[key] = val;
-          hasNonZero = true;
-        }
-      }
-    }
-
-    if (hasNonZero) {
-      filtered.push(filteredEntry);
-    }
-  }
-
-  //console.log(filtered)
-  // If nothing made it through, add 1 fallback entry with 4 zeroRef fields
-  if (filtered.length === 0) {
-    const fallback = { Binary: FranchiseUtils.ZERO_REF };
-    for (let i = 0; i < minimumCount; i++) {
-      fallback[`${prefix}${i}`] = FranchiseUtils.ZERO_REF;
-    }
-    filtered.push(fallback);
-  }
-
-  return filtered;
-}
-
-function flattenArray(staffGoals) {
+/**
+ * Flattens grouped lookup tables (Talents, TalentTiers, StaffGoals)
+ */
+function flattenArray(sections) {
   const flattened = new Map();
 
-  for (const [section, records] of Object.entries(staffGoals)) {
+  for (const [section, records] of Object.entries(sections)) {
     if (!Array.isArray(records)) continue;
 
     for (const record of records) {
@@ -58,6 +26,31 @@ function flattenArray(staffGoals) {
   }
 
   return flattened;
+}
+
+/**
+ * Converts TalentInfoArray / TalentTierInfoArray into minimal regeneration JSON:
+ * {
+ *   Binary,
+ *   TalentInfo | TalentTiers: [binary, binary, ...]
+ * }
+ */
+function getMinimalBinaryArray(dataArray, prefix, outputKey) {
+  return dataArray.map((entry) => {
+    const binaries = Object.entries(entry)
+      .filter(([key, val]) => key.startsWith(prefix) && val !== FranchiseUtils.ZERO_REF)
+      .sort((a, b) => {
+        const ai = parseInt(a[0].slice(prefix.length), 10);
+        const bi = parseInt(b[0].slice(prefix.length), 10);
+        return ai - bi;
+      })
+      .map(([, val]) => val);
+
+    return {
+      Binary: entry.Binary,
+      [outputKey]: binaries,
+    };
+  });
 }
 
 franchise.on("ready", async function () {
@@ -98,6 +91,8 @@ franchise.on("ready", async function () {
 
   const staffArchetype = await FranchiseUtils.getTableDataAsArray(franchise, staffArchetypeFtcTable, options);
   const talentInfoArray = await FranchiseUtils.getTableDataAsArray(franchise, talentInfoArrayFtcTable, options);
+  const talentTierInfoArray = await FranchiseUtils.getTableDataAsArray(franchise, talentTierInfoArrayFtcTable, options);
+
   const gamedayTalentInfo = await FranchiseUtils.getTableDataAsArray(franchise, gamedayTalentInfoFtcTable, options);
   const seasonTalentInfo = await FranchiseUtils.getTableDataAsArray(franchise, seasonTalentInfoFtcTable, options);
   const wearAndTearTalentInfo = await FranchiseUtils.getTableDataAsArray(
@@ -106,7 +101,7 @@ franchise.on("ready", async function () {
     options
   );
   const playsheetTalentInfo = await FranchiseUtils.getTableDataAsArray(franchise, playsheetTalentInfoFtcTable, options);
-  const talentTierInfoArray = await FranchiseUtils.getTableDataAsArray(franchise, talentTierInfoArrayFtcTable, options);
+
   const talentTierInfo = await FranchiseUtils.getTableDataAsArray(franchise, talentTierInfoFtcTable, options);
   const playsheetTalentTierInfo = await FranchiseUtils.getTableDataAsArray(
     franchise,
@@ -118,7 +113,9 @@ franchise.on("ready", async function () {
     wearAndTearTalentTierInfoFtcTable,
     options
   );
+
   const talentDisplayStat = await FranchiseUtils.getTableDataAsArray(franchise, talentDisplayStatFtcTable, options);
+
   const staffStatGoal = await FranchiseUtils.getTableDataAsArray(franchise, staffStatGoalFtcTable, options);
   const staffStatGameBasedCumulativeGoal = await FranchiseUtils.getTableDataAsArray(
     franchise,
@@ -127,35 +124,37 @@ franchise.on("ready", async function () {
   );
   const staffDynamicGoal = await FranchiseUtils.getTableDataAsArray(franchise, staffDynamicGoalFtcTable, options);
 
-  const filteredTalentTierInfoArray = filterNonZeroRefEntries(talentTierInfoArray, "TalentTierInfo");
-  const filteredTalentInfoArray = filterNonZeroRefEntries(talentInfoArray, "TalentInfo");
+  // 🔹 Minimal regeneration arrays
+  const minimalTalentInfoArray = getMinimalBinaryArray(talentInfoArray, "TalentInfo", "TalentInfo");
 
-  const talents = {
+  const minimalTalentTiersArray = getMinimalBinaryArray(talentTierInfoArray, "TalentTierInfo", "TalentTiers");
+
+  // 🔹 Flattened lookups
+  const flattenedTalents = flattenArray({
     GamedayTalentInfo: gamedayTalentInfo,
     PlaysheetTalentInfo: playsheetTalentInfo,
     SeasonTalentInfo: seasonTalentInfo,
     WearAndTearTalentInfo: wearAndTearTalentInfo,
-  };
-  const talentTiers = {
+  });
+
+  const flattenedTalentTiers = flattenArray({
     TalentTierInfo: talentTierInfo,
     PlaysheetTalentTierInfo: playsheetTalentTierInfo,
     WearAndTearTalentTierInfo: wearAndTearTalentTierInfo,
-  };
-  const staffGoals = {
+  });
+
+  const flattenedStaffGoals = flattenArray({
     StaffStatGoal: staffStatGoal,
     StaffStatGameBasedCumulativeGoal: staffStatGameBasedCumulativeGoal,
     StaffDynamicGoal: staffDynamicGoal,
-  };
+  });
 
-  const flattenedStaffGoals = flattenArray(staffGoals);
-  const flattenedTalents = flattenArray(talents);
-  const flattenedTalentTiers = flattenArray(talentTiers);
-  console.log(flattenedStaffGoals);
+  // 🔹 Write JSONs
   FranchiseUtils.convertArrayToJSONFile(staffArchetype, "StaffArchetype.json");
   FranchiseUtils.convertArrayToJSONFile(talentDisplayStat, "TalentDisplayStat.json");
   FranchiseUtils.convertArrayToJSONFile(Array.from(flattenedTalents.values()), "Talents.json");
   FranchiseUtils.convertArrayToJSONFile(Array.from(flattenedTalentTiers.values()), "TalentTiers.json");
   FranchiseUtils.convertArrayToJSONFile(Array.from(flattenedStaffGoals.values()), "StaffGoals.json");
-  FranchiseUtils.convertArrayToJSONFile(filteredTalentTierInfoArray, "TalentTiersArray.json");
-  FranchiseUtils.convertArrayToJSONFile(filteredTalentInfoArray, "TalentInfoArray.json");
+  FranchiseUtils.convertArrayToJSONFile(minimalTalentTiersArray, "TalentTiersArray.json");
+  FranchiseUtils.convertArrayToJSONFile(minimalTalentInfoArray, "TalentInfoArray.json");
 });

@@ -10,14 +10,29 @@ const talentTiersLookup = require("../JsonLookups/26/coachLookups/coachTalents/T
 const talentInfoArrayLookup = require("../JsonLookups/26/coachLookups/coachTalents/TalentInfoArray.json");
 const talentTiersArrayLookup = require("../JsonLookups/26/coachLookups/coachTalents/TalentTiersArray.json");
 
-function getNextTalentArrayRecord(franchise, tables) {
+const TALENT_SOURCES = {
+  GAMEDAY: "GamedayTalentInfo",
+  WEARANDTEAR: "WearAndTearTalentInfo",
+  SEASON: "SeasonTalentInfo",
+  PLAYSHEET: "PlaysheetTalentInfo",
+};
+
+const TALENT_TIER_SOURCES = {
+  TALENTTIER: "TalentTierInfo",
+  PLAYSHEET: "PlaysheetTalentTierInfo",
+  WEARANDTEAR: "WearAndTearTalentTierInfo",
+};
+
+const TALENT_TIER_STATUSES = {
+  OWNED: "Owned",
+  NOTOWNED: "NotOwned",
+  PURCHASABLE: "Purchasable",
+  MASTERED: "Mastered",
+};
+
+async function getNextTalentArrayRecord(franchise, tables) {
   const talentArrayTable = franchise.getTableByUniqueId(tables.talentArrayTable);
-  const nextRow = talentArrayTable.header.nextRecordToUse;
-  const record = talentArrayTable.records[nextRow];
-  for (const col of FranchiseUtils.getColumnNames(talentArrayTable)) {
-    record[col] = FranchiseUtils.ZERO_REF;
-  }
-  return record;
+  return await FranchiseUtils.getNextZeroedRecord(talentArrayTable);
 }
 
 function getTalentTierLookupRecord(talent) {
@@ -49,7 +64,7 @@ function processArchetypeTalents(talentInfoRecord) {
 
   for (const [key, binary] of Object.entries(talentInfoRecord)) {
     if (key === "Binary") continue;
-    if (!binary || binary === "00000000000000000000000000000000") continue;
+    if (!binary || binary === FranchiseUtils.ZERO_REF) continue;
 
     const talentRecord = talentsLookup.find((t) => t.Binary === binary);
 
@@ -105,8 +120,8 @@ async function regenerateTalents(franchise, tables, coachRecord) {
   const seasonTalentTable = franchise.getTableByUniqueId(tables.seasonTalentTable);
   const talentTierArrayTable = franchise.getTableByUniqueId(tables.talentTierArrayTable);
 
-  const playsheetTalentsRecord = getNextTalentArrayRecord(franchise, tables);
-  const gamedayTalentsRecord = getNextTalentArrayRecord(franchise, tables);
+  const playsheetTalentsRecord = await getNextTalentArrayRecord(franchise, tables);
+  const gamedayTalentsRecord = await getNextTalentArrayRecord(franchise, tables);
   coachRecord.PlaysheetTalents = getBinaryReferenceData(talentArrayTable.header.tableId, playsheetTalentsRecord.index);
   coachRecord.GamedayTalents = getBinaryReferenceData(talentArrayTable.header.tableId, gamedayTalentsRecord.index);
 
@@ -115,9 +130,9 @@ async function regenerateTalents(franchise, tables, coachRecord) {
 
   for (const talent of talentsList) {
     const source = talent.Source;
-    const isPlaysheet = source === "PlaysheetTalentInfo";
-    const isSeasonTalent = source === "SeasonTalentInfo";
-    const isGamedayTalent = source === "GamedayTalentInfo";
+    const isPlaysheet = source === TALENT_SOURCES.PLAYSHEET;
+    const isSeasonTalent = source === TALENT_SOURCES.SEASON;
+    const isGamedayTalent = source === TALENT_SOURCES.GAMEDAY;
     const tableToUse = isPlaysheet ? playsheetTalentTable : isSeasonTalent ? seasonTalentTable : gamedayTalentTable;
 
     const nextRow = tableToUse.header.nextRecordToUse;
@@ -149,7 +164,7 @@ async function regenerateTalents(franchise, tables, coachRecord) {
     }
 
     // Get talent array record
-    const talentTierArrayRecord = getTalentTierArrayRecord(franchise, tables);
+    const talentTierArrayRecord = await getTalentTierArrayRecord(franchise, tables);
     talentRecord.Tiers = getBinaryReferenceData(talentTierArrayTable.header.tableId, talentTierArrayRecord.index);
 
     const indexToUse = isPlaysheet ? playsheetTalentsRecord.index : gamedayTalentsRecord.index;
@@ -161,25 +176,40 @@ async function regenerateTalents(franchise, tables, coachRecord) {
   }
 }
 
-function getTalentTierArrayRecord(franchise, tables) {
+async function getTalentTierArrayRecord(franchise, tables) {
   const talentTierArrayTable = franchise.getTableByUniqueId(tables.talentTierArrayTable);
   const talentTierTable = franchise.getTableByUniqueId(tables.talentTierTable);
+
+  // Ensure records are loaded
+  await talentTierArrayTable.readRecords();
+  await talentTierTable.readRecords();
+
   const nextRow = talentTierArrayTable.header.nextRecordToUse;
   const record = talentTierArrayTable.records[nextRow];
 
-  for (const col of FranchiseUtils.getColumnNames(talentTierArrayTable)) {
-    const tierRecord = getTalentTierRecord(franchise, tables);
-    tierRecord.TierStatus = col === "TalentTier0" ? "Owned" : "Purchasable";
+  if (!record) {
+    throw new Error(`No available records in TalentTierArray table`);
+  }
+
+  const tierColumns = FranchiseUtils.getColumnNames(talentTierArrayTable);
+
+  for (let index = 0; index < tierColumns.length; index++) {
+    const col = tierColumns[index];
+
+    const tierRecord = await getNextTalentTierRecord(franchise, tables);
+
+    // First tier is always owned
+    tierRecord.TierStatus = index === 0 ? TALENT_TIER_STATUSES.OWNED : TALENT_TIER_STATUSES.PURCHASABLE;
+
     record[col] = getBinaryReferenceData(talentTierTable.header.tableId, tierRecord.index);
   }
 
   return record;
 }
 
-function getTalentTierRecord(franchise, tables) {
+async function getNextTalentTierRecord(franchise, tables) {
   const talentTierTable = franchise.getTableByUniqueId(tables.talentTierTable);
-  const nextRow = talentTierTable.header.nextRecordToUse;
-  return talentTierTable.records[nextRow];
+  return await FranchiseUtils.getNextRecord(talentTierTable);
 }
 
 module.exports = {
