@@ -269,7 +269,7 @@ function selectFranchiseFile(gameYear, isAutoUnemptyEnabled = false, isFtcFile =
 
   if (!defaultPath) {
     console.log(
-      `IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`
+      `IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`,
     );
   }
 
@@ -332,14 +332,14 @@ async function selectFranchiseFileAsync(gameYear, isAutoUnemptyEnabled = false, 
     defaultPath = oneDriveDir;
   } else {
     console.log(
-      `IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`
+      `IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`,
     );
   }
 
   while (true) {
     try {
       console.log(
-        "Please enter the name of your franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit."
+        "Please enter the name of your franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit.",
       );
       let fileName = prompt().trim().replace(/['"]/g, ""); // Remove leading/trailing spaces
 
@@ -374,7 +374,7 @@ function getSaveFilePath(gameYear, saveType = SAVE_TYPES.ROSTER, customMessage =
 
   if (!defaultPath) {
     console.log(
-      `IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`
+      `IMPORTANT! Couldn't find the path to your Madden ${gameYear} save files. Checked: ${documentsDir}, ${oneDriveDir}`,
     );
   }
 
@@ -502,7 +502,7 @@ function getGameYear(validGameYears, customMessage = null) {
 
   while (true) {
     const defaultMessage = `Select the version of Madden your franchise file uses. Valid inputs are ${validGameYears.join(
-      ", "
+      ", ",
     )}. Or, enter 0 to exit.`;
     const message = customMessage !== null ? customMessage : defaultMessage;
     console.log(message);
@@ -568,7 +568,7 @@ function calculateBestOverall(player, gameYear = 25) {
   }
 
   const ovrWeightsPosMap = JSON.parse(
-    fs.readFileSync(path.join(__dirname, "JsonLookups/ovrweightsPosMap.json"), "utf8")
+    fs.readFileSync(path.join(__dirname, "JsonLookups/ovrweightsPosMap.json"), "utf8"),
   );
 
   let newOverall = 0;
@@ -765,7 +765,7 @@ async function regenerateMarketingTables(franchise) {
     const marketedPlayersRow = bin2Dec(teamRecord.MarketedPlayers.slice(15));
     const filteredRecords = playerTable.records.filter((record) => !record.isEmpty); // Filter for where the rows aren't empty
     const bestPersonalityPlayers = filteredRecords.filter(
-      (record) => record.ContractStatus === CONTRACT_STATUSES.SIGNED && record.TeamIndex === teamIndex
+      (record) => record.ContractStatus === CONTRACT_STATUSES.SIGNED && record.TeamIndex === teamIndex,
     ); // Filter nonempty players for where they're signed
 
     // Sort the bestPersonalityPlayers array based on PersonalityRating and then OverallRating
@@ -794,7 +794,7 @@ async function regenerateMarketingTables(franchise) {
 
   let bestPersonalityArray = [];
   let filteredRecords = playerTable.records.filter(
-    (record) => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.SIGNED
+    (record) => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.SIGNED,
   ); // Filter for where the rows aren't empty
 
   // Sort the filteredRecords array based on PersonalityRating and then OverallRating
@@ -822,7 +822,7 @@ async function regenerateMarketingTables(franchise) {
   bestPersonalityArray = [];
 
   filteredRecords = playerTable.records.filter(
-    (record) => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.SIGNED
+    (record) => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.SIGNED,
   ); // Filter for where the rows aren't empty
 
   const topPlayers = filteredRecords
@@ -893,7 +893,7 @@ async function generateActiveAbilityPlayers(franchise) {
 
       const players = playerTable.records.filter(
         (record) =>
-          record.ContractStatus === "Signed" && record.TeamIndex === teamIndex && record.TraitDevelopment === "XFactor"
+          record.ContractStatus === "Signed" && record.TeamIndex === teamIndex && record.TraitDevelopment === "XFactor",
       );
 
       const offensivePlayers = players.filter((record) => OFFENSIVE_SKILL_POSITIONS.includes(record.Position));
@@ -1180,8 +1180,8 @@ function addRecordToTable(record, targetTable, options = {}) {
       const finalValue = zeroColumns.includes(column)
         ? ZERO_REF
         : validColumns && value in validColumns
-        ? validColumns[value]
-        : value;
+          ? validColumns[value]
+          : value;
       targetTableRecord[column] = finalValue;
     }
   }
@@ -1270,7 +1270,7 @@ function getPlayersOnTeam(playerTable, teamIndex, options = {}) {
         includePracticeSquad,
         includeExpiringPlayers,
         includeFreeAgents: false,
-      })
+      }),
   );
 }
 
@@ -1324,7 +1324,7 @@ async function recalculateRosterSizes(playerTable, teamTable) {
     const filteredPlayerRecords = playerTable.records.filter(
       (playerRecord) =>
         isValidPlayer(playerRecord, { includePracticeSquad: false, includeFreeAgents: false }) &&
-        playerRecord.TeamIndex === currentTeamIndex
+        playerRecord.TeamIndex === currentTeamIndex,
     );
 
     filteredPlayerRecords.forEach((playerRecord) => {
@@ -1514,7 +1514,7 @@ async function takeControl(teamRow, franchise, controlLevel, controlSettings, se
         record.Position === "HeadCoach" &&
         record.ContractStatus === "Signed" &&
         !record.isEmpty &&
-        record.TeamIndex === teamRecord.TeamIndex
+        record.TeamIndex === teamRecord.TeamIndex,
     );
 
     if (coachRecord) {
@@ -1583,43 +1583,43 @@ async function takeControl(teamRow, franchise, controlLevel, controlSettings, se
     teamSettingTable.records[franchiseUserTable.records[row].fields.TeamSetting.referenceData.rowNumber];
 
   currRecord.IsTutorialPopupEnabled = controlSettings.find(
-    (setting) => setting.name === "IsTutorialPopupEnabled"
+    (setting) => setting.name === "IsTutorialPopupEnabled",
   ).value;
   currRecord.IsTradeAndFreeAgencyEnabled = controlSettings.find(
-    (setting) => setting.name === "IsTradeAndFreeAgencyEnabled"
+    (setting) => setting.name === "IsTradeAndFreeAgencyEnabled",
   ).value;
   currRecord.IsScoutCollegePlayersEnabled = controlSettings.find(
-    (setting) => setting.name === "IsScoutCollegePlayersEnabled"
+    (setting) => setting.name === "IsScoutCollegePlayersEnabled",
   ).value;
   currRecord.IsManualAdvancementEnabled = controlSettings.find(
-    (setting) => setting.name === "IsManualAdvancementEnabled"
+    (setting) => setting.name === "IsManualAdvancementEnabled",
   ).value;
   currRecord.IsManagePracticeRepsEnabled = controlSettings.find(
-    (setting) => setting.name === "IsManagePracticeRepsEnabled"
+    (setting) => setting.name === "IsManagePracticeRepsEnabled",
   ).value;
   currRecord.IsInjuryManagementEnabled = controlSettings.find(
-    (setting) => setting.name === "IsInjuryManagementEnabled"
+    (setting) => setting.name === "IsInjuryManagementEnabled",
   ).value;
   currRecord.IsCPUSignOffseasonFAEnabled = controlSettings.find(
-    (setting) => setting.name === "IsCPUSignOffseasonFAEnabled"
+    (setting) => setting.name === "IsCPUSignOffseasonFAEnabled",
   ).value;
   currRecord.IsCPUReSignPlayersEnabled = controlSettings.find(
-    (setting) => setting.name === "IsCPUReSignPlayersEnabled"
+    (setting) => setting.name === "IsCPUReSignPlayersEnabled",
   ).value;
   currRecord.IsCPUProgressTalentsEnabled = controlSettings.find(
-    (setting) => setting.name === "IsCPUProgressTalentsEnabled"
+    (setting) => setting.name === "IsCPUProgressTalentsEnabled",
   ).value;
   currRecord.IsCPUProgressPlayersEnabled = controlSettings.find(
-    (setting) => setting.name === "IsCPUProgressPlayersEnabled"
+    (setting) => setting.name === "IsCPUProgressPlayersEnabled",
   ).value;
   currRecord.IsCPUFillRosterEnabled = controlSettings.find(
-    (setting) => setting.name === "IsCPUFillRosterEnabled"
+    (setting) => setting.name === "IsCPUFillRosterEnabled",
   ).value;
   currRecord.IsCPUCutPlayersEnabled = controlSettings.find(
-    (setting) => setting.name === "IsCPUCutPlayersEnabled"
+    (setting) => setting.name === "IsCPUCutPlayersEnabled",
   ).value;
   currRecord.IsManualReorderDepthChartEnabled = controlSettings.find(
-    (setting) => setting.name === "IsManualReorderDepthChartEnabled"
+    (setting) => setting.name === "IsManualReorderDepthChartEnabled",
   ).value;
   currRecord.SeasonExperience = controlSettings.find((setting) => setting.name === "SeasonExperience").value;
 }
@@ -1845,7 +1845,7 @@ async function deletePlayer(franchise, playerBinary) {
       tables.defenseActiveAbilityArrayTable,
       tables.miniGameCompletedArrayTable, // Minicamp tables
       tables.focusTrainingTable, // Focus training tables
-      tables.proBowlRosterTable // Pro bowl roster
+      tables.proBowlRosterTable, // Pro bowl roster
     );
   } else if (gameYear === YEARS.M24) {
     tableIds.push(tables.afcRosterTable, tables.nfcRosterTable, tables.activeAbilityArrayTable);
@@ -1930,7 +1930,7 @@ async function clearPlayerRefFromTableByName(
   playerBinary,
   tableName,
   emptyRecord = true,
-  defaultColumns = {}
+  defaultColumns = {},
 ) {
   const tables = franchise.getAllTablesByName(tableName);
   const entries = Object.entries(defaultColumns);
@@ -1942,10 +1942,10 @@ async function clearPlayerRefFromTableByName(
     const playerRefCol = tableColumns.includes("Player")
       ? "Player"
       : tableColumns.includes("playerRef")
-      ? "playerRef"
-      : tableColumns.includes("PosedPlayer")
-      ? "PosedPlayer"
-      : null;
+        ? "playerRef"
+        : tableColumns.includes("PosedPlayer")
+          ? "PosedPlayer"
+          : null;
 
     if (!playerRefCol) continue;
 
@@ -1968,7 +1968,7 @@ async function clearPlayerRefFromTableByUniqueId(
   playerBinary,
   tableId,
   emptyRecord = true,
-  defaultColumns = {}
+  defaultColumns = {},
 ) {
   const table = franchise.getTableByUniqueId(tableId);
   await table.readRecords();
@@ -1978,10 +1978,10 @@ async function clearPlayerRefFromTableByUniqueId(
   const playerRefCol = tableColumns.includes("Player")
     ? "Player"
     : tableColumns.includes("playerRef")
-    ? "playerRef"
-    : tableColumns.includes("PosedPlayer")
-    ? "PosedPlayer"
-    : null;
+      ? "playerRef"
+      : tableColumns.includes("PosedPlayer")
+        ? "PosedPlayer"
+        : null;
 
   if (!playerRefCol) return;
 
@@ -2021,12 +2021,12 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
         includeCreatedPlayers: false,
         includeLegends: false,
         includeNoneTypePlayers: false,
-      })
+      }),
   );
 
   // Filter only free agents
   const freeAgentRecords = activePlayerRecords.filter(
-    (record) => record.ContractStatus === CONTRACT_STATUSES.FREE_AGENT
+    (record) => record.ContractStatus === CONTRACT_STATUSES.FREE_AGENT,
   );
 
   // Calculate the number of excess players
@@ -2079,7 +2079,7 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
     if (references.length !== 0) {
       if (references.length === 1 && references[0].name === "PlayerMerchandiseImageInfo") continue;
       console.log(
-        `References remaining for ${freeAgentRecord.FirstName} ${freeAgentRecord.LastName} (Row ${freeAgentRecord.index}).`
+        `References remaining for ${freeAgentRecord.FirstName} ${freeAgentRecord.LastName} (Row ${freeAgentRecord.index}).`,
       );
       references.forEach((table) => {
         console.log(`${table.tableId}: ${table.name}`);
@@ -2540,8 +2540,8 @@ function validateGameYears(franchise, validGameYears) {
   if (!validGameYearsStr.includes(fileGameYear)) {
     console.log(
       `Selected franchise file is not a Madden ${validGameYearsStr.join(
-        ", "
-      )} Franchise File. You tried to use a Madden ${fileGameYear} Franchise File.`
+        ", ",
+      )} Franchise File. You tried to use a Madden ${fileGameYear} Franchise File.`,
     );
     EXIT_PROGRAM();
   }
@@ -2605,6 +2605,43 @@ function getSearchValue(message) {
     } else {
       console.log("Input cannot be empty. Please try again.");
     }
+  }
+}
+
+function getStringInput(message, options = {}) {
+  const {
+    toUpper = false, // Convert input to uppercase or not
+    allowEmpty = false, // Is empty input allowed
+    minLength = null, // Minimum length, null = no validation
+    maxLength = null, // Maximum length, null = no validation
+  } = options;
+
+  while (true) {
+    console.log(message);
+    let input = prompt().trim();
+
+    if (!input && !allowEmpty) {
+      console.log("Input cannot be empty. Please try again.");
+      continue;
+    }
+
+    if (input) {
+      if (minLength !== null && input.length < minLength) {
+        console.log(`Input must be at least ${minLength} characters long.`);
+        continue;
+      }
+
+      if (maxLength !== null && input.length > maxLength) {
+        console.log(`Input cannot exceed ${maxLength} characters.`);
+        continue;
+      }
+
+      if (toUpper) {
+        input = input.toUpperCase();
+      }
+    }
+
+    return input;
   }
 }
 
@@ -2910,7 +2947,7 @@ async function deleteCurrentDraftClass(franchise) {
 
   if (!isReferenceColumn(franchiseTable.records[0], "DraftClassPlayers")) {
     console.error(
-      "Error deleting current draft class from target file. There is no found array table to hold draft player records."
+      "Error deleting current draft class from target file. There is no found array table to hold draft player records.",
     );
     EXIT_PROGRAM();
   }
@@ -2918,7 +2955,7 @@ async function deleteCurrentDraftClass(franchise) {
   const draftTableArrayId = getRowAndTableIdFromRef(draftPlayersRef).tableId;
 
   const allDraftPlayers = playerTable.records.filter(
-    (record) => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.DRAFT
+    (record) => !record.isEmpty && record.ContractStatus === CONTRACT_STATUSES.DRAFT,
   ); // Get draft players
 
   const draftFilteredRecords = draftPlayerTable.records.filter((record) => !record.isEmpty);
@@ -3317,7 +3354,7 @@ async function getTableDataAsArrayFromId(franchise, tableId, options = {}) {
 
   if (!table) {
     throw new Error(
-      `Table with ID ${tableId} could not be found using ${useUniqueId ? "getTableByUniqueId" : "getTableById"}.`
+      `Table with ID ${tableId} could not be found using ${useUniqueId ? "getTableByUniqueId" : "getTableById"}.`,
     );
   }
 
@@ -3494,6 +3531,7 @@ module.exports = {
   getYesOrNo, // UTILITY FUNCTIONS
   getYesNoForceQuit,
   getSearchValue,
+  getStringInput,
   formatListString,
   shuffleArray,
   removeKeyFromJson,
