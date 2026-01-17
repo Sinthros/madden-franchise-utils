@@ -33,6 +33,9 @@ const headsDir = path.join(__dirname, "coachHeads"); // this now points to a rea
 
 const franchise = FranchiseUtils.init(gameYear, { isAutoUnemptyEnabled: true, promptForBackup: true });
 const tables = FranchiseUtils.getTablesObject(franchise);
+const isAdvancedEditing = FranchiseUtils.getYesOrNo(
+  "Would you like to enable advanced mode? This will ask additional questions (ie prompting for AssetName). Enter yes or no. Most users can answer no.",
+);
 
 function adjustPresentationId(coachRecord, presentationTable) {
   const record = presentationTable.records[0];
@@ -139,22 +142,30 @@ function setDefaultCoachValues(coachRecord) {
 
 function setCoachName(coachRecord) {
   try {
-    let coachFirstName, coachLastName;
+    const coachFirstName = FranchiseUtils.getStringInput("Enter the first name of the coach.", {
+      allowEmpty: false,
+      capitalizeFirst: true,
+      maxLength: FranchiseUtils.MAX_FIELD_LENGTH.FirstName,
+    });
 
-    while (!coachFirstName) {
-      console.log("Enter the first name of the coach. ");
-      coachFirstName = prompt().trim(); // Remove leading/trailing whitespace
-    }
-
-    while (!coachLastName) {
-      console.log("Enter the last name of the coach. ");
-      coachLastName = prompt().trim(); // Remove leading/trailing whitespace
-    }
+    const coachLastName = FranchiseUtils.getStringInput("Enter the last name of the coach.", {
+      allowEmpty: false,
+      capitalizeFirst: true,
+      maxLength: FranchiseUtils.MAX_FIELD_LENGTH.CoachLastName,
+    });
 
     coachRecord.FirstName = coachFirstName;
     coachRecord.LastName = coachLastName;
 
-    const coachName = `${coachFirstName[0]}. ${coachLastName}`;
+    // Construct the short coach name
+    let coachName = `${coachFirstName[0]}. ${coachLastName}`;
+
+    // Truncate if it exceeds max length
+    const maxNameLength = FranchiseUtils.MAX_FIELD_LENGTH.Name;
+    if (coachName.length > maxNameLength) {
+      coachName = coachName.slice(0, maxNameLength);
+    }
+
     coachRecord.Name = coachName;
 
     return [coachFirstName, coachLastName];
@@ -209,7 +220,7 @@ async function setPlaybooks(coachRecord) {
   try {
     // Precompute case-insensitive philosophy map once
     const philosophyMap = Object.fromEntries(
-      Object.entries(philosophyLookup).map(([key, value]) => [key.toLowerCase(), value])
+      Object.entries(philosophyLookup).map(([key, value]) => [key.toLowerCase(), value]),
     );
 
     while (true) {
@@ -229,7 +240,7 @@ async function setPlaybooks(coachRecord) {
 
       if (!offensive || !defensive) {
         console.log(
-          "Invalid value. Enter only the display name of the team, such as Jets, Titans, etc. Options are not case sensitive."
+          "Invalid value. Enter only the display name of the team, such as Jets, Titans, etc. Options are not case sensitive.",
         );
         continue;
       }
@@ -280,7 +291,7 @@ async function setCoachAppearance(coachRecord) {
     while (true) {
       console.log("Please pick one of the following valid coach heads for this coach.");
       console.log(
-        "Note: You can view previews for these coach portraits in the coachPreviews folder, which has been generated in the folder of this exe."
+        "Note: You can view previews for these coach portraits in the coachPreviews folder, which has been generated in the folder of this exe.",
       );
       console.log(allCoachPortraits.join(", "));
 
@@ -310,6 +321,9 @@ async function setCoachAppearance(coachRecord) {
     } else {
       coachRecord.Type = "Existing";
     }
+
+    if (isAdvancedEditing) {
+    }
   } catch (e) {
     console.warn("ERROR! Exiting program due to; ", e);
     FranchiseUtils.EXIT_PROGRAM();
@@ -332,7 +346,7 @@ async function addCoachToFATable(freeAgentCoachTable, currentCoachBinary) {
           console.log(
             `Warning: There are 64 total slots for free agent coaches and you've now taken up ${
               i + 1
-            } slots out of 64. It's not advisable to completely fill up the Coach FA pool.`
+            } slots out of 64. It's not advisable to completely fill up the Coach FA pool.`,
           );
         }
         freeAgentCoachTable.records[0][`Coach${i}`] = currentCoachBinary;
