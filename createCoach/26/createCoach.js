@@ -323,6 +323,29 @@ async function setCoachAppearance(coachRecord) {
     }
 
     if (isAdvancedEditing) {
+      const message =
+        "Enter the AssetName for the coach. Setting this will override GenericHeadAssetName to MustBeUnique. " +
+        " If you want to enter nothing, just press enter. Only enter an asset name if you know what you're doing.";
+      const assetName = FranchiseUtils.getStringInput(message, {
+        allowEmpty: true,
+        maxLength: FranchiseUtils.MAX_FIELD_LENGTH.AssetName,
+      });
+      if (!FranchiseUtils.isBlank(assetName)) {
+        coachRecord.AssetName = assetName;
+        coachRecord.GenericHeadAssetName = "MustBeUnique";
+        coachRecord.Type = "Existing";
+      }
+
+      const editPortrait = FranchiseUtils.getYesOrNo(
+        "Would you like to manually change the portrait ID? Enter yes or no. Enter no if you're not sure.",
+        true,
+      );
+      if (editPortrait) {
+        const portraitMessage =
+          "Enter the desired portrait ID. 7999 will result in a black silhouette. If you changed your mind, enter -1 to not change the portrait ID.";
+        const portrait = FranchiseUtils.getUserInputNumber(portraitMessage, -1, 8191);
+        if (portrait !== -1) coachRecord.Portrait = portrait;
+      }
     }
   } catch (e) {
     console.warn("ERROR! Exiting program due to; ", e);
