@@ -172,27 +172,32 @@ async function getTalentTierArrayRecord(franchise, tables) {
   const talentTierArrayTable = franchise.getTableByUniqueId(tables.talentTierArrayTable);
   const talentTierTable = franchise.getTableByUniqueId(tables.talentTierTable);
 
+  // Ensure records are loaded
   await talentTierArrayTable.readRecords();
   await talentTierTable.readRecords();
 
-  const record = talentTierArrayTable.records[talentTierArrayTable.header.nextRecordToUse];
+  const nextRow = talentTierArrayTable.header.nextRecordToUse;
+  const record = talentTierArrayTable.records[nextRow];
 
   if (!record) {
-    throw new Error("No available TalentTierArray records");
+    throw new Error(`No available records in TalentTierArray table`);
   }
 
-  const tierCount = FranchiseUtils.getColumnNames(talentTierArrayTable).length;
+  const tierColumns = FranchiseUtils.getColumnNames(talentTierArrayTable);
 
-  for (let i = 0; i < tierCount; i++) {
+  for (let index = 0; index < tierColumns.length; index++) {
+    const col = tierColumns[index];
+
     const tierRecord = await getNextTalentTierRecord(franchise, tables);
-    tierRecord.TierStatus = i === 0 ? TALENT_TIER_STATUSES.OWNED : TALENT_TIER_STATUSES.PURCHASABLE;
 
-    record[`TalentTierInfo${i}`] = getBinaryReferenceData(talentTierTable.header.tableId, tierRecord.index);
+    // First tier is always owned
+    tierRecord.TierStatus = index === 0 ? TALENT_TIER_STATUSES.OWNED : TALENT_TIER_STATUSES.PURCHASABLE;
+
+    record[col] = getBinaryReferenceData(talentTierTable.header.tableId, tierRecord.index);
   }
 
   return record;
 }
-
 async function getNextTalentTierRecord(franchise, tables) {
   const talentTierTable = franchise.getTableByUniqueId(tables.talentTierTable);
   return await FranchiseUtils.getNextRecord(talentTierTable);
