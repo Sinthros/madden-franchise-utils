@@ -36,6 +36,7 @@ const TALENT_TIER_STATUSES = {
 
 async function getNextTalentArrayRecord(franchise, tables) {
   const talentArrayTable = franchise.getTableByUniqueId(tables.talentArrayTable);
+  await talentArrayTable.readRecords();
   return await FranchiseUtils.getNextZeroedRecord(talentArrayTable);
 }
 
@@ -97,6 +98,14 @@ async function regenerateTalents(franchise, tables, coachRecord) {
   const playsheetTalentTable = franchise.getTableByUniqueId(tables.playsheetTalentTable);
   const seasonTalentTable = franchise.getTableByUniqueId(tables.seasonTalentTable);
   const talentTierArrayTable = franchise.getTableByUniqueId(tables.talentTierArrayTable);
+  await FranchiseUtils.readTableRecords([
+    talentArrayTable,
+    gamedayTalentTable,
+    wearAndTearTalentTable,
+    playsheetTalentTable,
+    seasonTalentTable,
+    talentTierArrayTable,
+  ]);
 
   const playsheetTalentsRecord = await getNextTalentArrayRecord(franchise, tables);
   const gamedayTalentsRecord = await getNextTalentArrayRecord(franchise, tables);
@@ -200,6 +209,7 @@ async function getTalentTierArrayRecord(franchise, tables) {
 }
 async function getNextTalentTierRecord(franchise, tables) {
   const talentTierTable = franchise.getTableByUniqueId(tables.talentTierTable);
+  await talentTierTable.readRecords();
   return await FranchiseUtils.getNextRecord(talentTierTable);
 }
 
