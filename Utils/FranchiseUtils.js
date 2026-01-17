@@ -197,6 +197,15 @@ const CPU_CONTROL_SETTINGS = [
   { label: "Season Experience", name: "SeasonExperience", value: "SIMPLE" },
 ];
 
+const MAX_FIELD_LENGTH = {
+  FirstName: 17,
+  LastName: 21,
+  Name: 18,
+  CoachLastName: 18,
+  PLYR_ASSETNAME: 41,
+  AssetName: 41,
+};
+
 /*******************************************************
  *                  GLOBAL FUNCTIONS                   *
  *                                                     *
@@ -2611,6 +2620,7 @@ function getSearchValue(message) {
 function getStringInput(message, options = {}) {
   const {
     toUpper = false, // Convert input to uppercase or not
+    capitalizeFirst = false, // Capitalize only the first character
     allowEmpty = false, // Is empty input allowed
     minLength = null, // Minimum length, null = no validation
     maxLength = null, // Maximum length, null = no validation
@@ -2638,6 +2648,8 @@ function getStringInput(message, options = {}) {
 
       if (toUpper) {
         input = input.toUpperCase();
+      } else if (capitalizeFirst) {
+        input = input.charAt(0).toUpperCase() + input.slice(1);
       }
     }
 
@@ -3590,6 +3602,7 @@ module.exports = {
   SEASON_STAGES,
   DEBUG_MODE,
   SAVE_TYPES,
+  MAX_FIELD_LENGTH,
 
   USER_CONTROL_SETTINGS, // VARIABLES FOR USER/CPU CONTROL
   CPU_CONTROL_SETTINGS,
