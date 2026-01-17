@@ -21,7 +21,7 @@ const COACH_POSITIONS = ["HeadCoach", "OffensiveCoordinator", "DefensiveCoordina
 
 const gameYear = FranchiseUtils.YEARS.M26;
 
-const allCoachPortraits = Object.values(allCoachHeads); // your JSON
+const allCoachPortraits = Object.values(allCoachHeads).sort((a, b) => Number(a) - Number(b));
 const allCoachFaces = Object.keys(allCoachHeads);
 const portraitToHeadMap = Object.fromEntries(allCoachFaces.map((face, i) => [allCoachPortraits[i], face]));
 
