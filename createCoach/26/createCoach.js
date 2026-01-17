@@ -21,9 +21,18 @@ const COACH_POSITIONS = ["HeadCoach", "OffensiveCoordinator", "DefensiveCoordina
 
 const gameYear = FranchiseUtils.YEARS.M26;
 
-const allCoachPortraits = Object.values(allCoachHeads).sort((a, b) => Number(a) - Number(b));
-const allCoachFaces = Object.keys(allCoachHeads);
-const portraitToHeadMap = Object.fromEntries(allCoachFaces.map((face, i) => [allCoachPortraits[i], face]));
+// Convert object to [face, portrait] entries
+const entries = Object.entries(allCoachHeads);
+
+// Sort entries by portrait number
+entries.sort(([, aPortrait], [, bPortrait]) => Number(aPortrait) - Number(bPortrait));
+
+// Unpack sorted portraits and faces
+const allCoachFaces = entries.map(([face]) => face);
+const allCoachPortraits = entries.map(([, portrait]) => portrait);
+
+// Create portrait -> face map
+const portraitToHeadMap = Object.fromEntries(entries.map(([face, portrait]) => [portrait, face]));
 
 console.log(`This program will allow you to create new Free Agent coaches in your Madden ${gameYear} franchise file.`);
 
