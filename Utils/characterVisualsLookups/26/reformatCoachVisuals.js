@@ -4,6 +4,19 @@ const path = require("path");
 const INPUT_FILE = path.join(__dirname, "rawCoachVisuals.json");
 const OUTPUT_FILE = path.join(__dirname, "coachVisualsLookup.json");
 
+function resolveCharacterBodyType(bodyType) {
+  switch (bodyType) {
+    case 1:
+      return "Thin_BodyType";
+    case 2:
+      return "Muscular_BodyType";
+    case 3:
+      return "Heavy_BodyType";
+    default:
+      return "Standard_BodyType";
+  }
+}
+
 function reformatCoachVisuals(inputJson) {
   const output = {};
   const seenAssets = new Set();
@@ -20,33 +33,68 @@ function reformatCoachVisuals(inputJson) {
     }
 
     if (seenAssets.has(assetName)) {
-      console.warn(`Duplicate assetName detected: ${assetName} (coachId ${coachId}), skipping.`);
+      //console.warn(`Duplicate assetName detected: ${assetName} (coachId ${coachId}), skipping.`);
       continue;
     }
 
     seenAssets.add(assetName);
 
-    // Find CoachOnField loadout
-    const coachOnFieldLoadout = (coach.loadouts || []).find(
-      l => l.loadoutType === "CoachOnField"
-    );
+    const loadouts = coach.loadouts || [];
+
+    // ---- CoachOnField ----
+    const coachOnFieldLoadout = loadouts.find((l) => l.loadoutType === "CoachOnField");
 
     if (!coachOnFieldLoadout) {
       console.warn(`No CoachOnField loadout found for ${assetName}`);
     }
 
+    let baseCharacterBodyTypeLoadout = null;
+
+    // Find Base loadout (if any)
+    const baseLoadout = loadouts.find((l) => l.loadoutType === "Base");
+
+    // Try to extract CharacterBodyType
+    const characterBodyTypeElement =
+      baseLoadout?.loadoutElements?.find((el) => el.slotType === "CharacterBodyType") || null;
+
+    if (characterBodyTypeElement) {
+      // Use existing CharacterBodyType only
+      baseCharacterBodyTypeLoadout = {
+        loadoutType: "Base",
+        loadoutCategory: "Base",
+        loadoutElements: [characterBodyTypeElement],
+      };
+    } else {
+      // Missing Base OR missing CharacterBodyType → synthesize
+      const bodyTypeAsset = resolveCharacterBodyType(coach.bodyType);
+
+      baseCharacterBodyTypeLoadout = {
+        loadoutType: "Base",
+        loadoutCategory: "Base",
+        loadoutElements: [
+          {
+            slotType: "CharacterBodyType",
+            itemAssetName: bodyTypeAsset,
+          },
+        ],
+      };
+    }
+
+    // ---- Build output ----
     output[assetName] = {
-      //genericHeadName: coach.genericHeadName,
       //...(coach.bodyType !== undefined && { bodyType: coach.bodyType }),
-      loadouts: coachOnFieldLoadout
-        ? [
-            {
-              loadoutType: "CoachOnField",
-              loadoutCategory: coachOnFieldLoadout.loadoutCategory,
-              loadoutElements: coachOnFieldLoadout.loadoutElements
-            }
-          ]
-        : []
+      loadouts: [
+        ...(coachOnFieldLoadout
+          ? [
+              {
+                loadoutType: "CoachOnField",
+                loadoutCategory: coachOnFieldLoadout.loadoutCategory,
+                loadoutElements: coachOnFieldLoadout.loadoutElements,
+              },
+            ]
+          : []),
+        ...(baseCharacterBodyTypeLoadout ? [baseCharacterBodyTypeLoadout] : []),
+      ],
     };
   }
 
@@ -59,11 +107,7 @@ try {
 
   const reformatted = reformatCoachVisuals(inputJson);
 
-  fs.writeFileSync(
-    OUTPUT_FILE,
-    JSON.stringify(reformatted, null, 2),
-    "utf8"
-  );
+  fs.writeFileSync(OUTPUT_FILE, JSON.stringify(reformatted, null, 2), "utf8");
 
   console.log(`Reformatted JSON written to: ${OUTPUT_FILE}`);
 } catch (err) {

@@ -34,6 +34,16 @@
             "itemAssetName": "Coach_ClipBoard"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Muscular_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -72,6 +82,16 @@
             "itemAssetName": "Coach_ClipBoard"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Heavy_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -106,6 +126,16 @@
             "itemAssetName": "StefanskiKevin_headset_Item"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Thin_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -134,6 +164,16 @@
           {
             "slotType": "EarWear",
             "itemAssetName": "VrabelMike_headset_Item"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Muscular_BodyType"
           }
         ]
       }
@@ -174,6 +214,16 @@
             "itemAssetName": "Coach_ClipBoard"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Heavy_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -206,6 +256,16 @@
           {
             "slotType": "EarWear",
             "itemAssetName": "HarbaughJim_headset_Item"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Muscular_BodyType"
           }
         ]
       }
@@ -242,6 +302,16 @@
             "itemAssetName": "WrightJonathan_headset_Item"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Heavy_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -274,6 +344,16 @@
           {
             "slotType": "EarWear",
             "itemAssetName": "College3_C_NCAA_headset_Item"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
           }
         ]
       }
@@ -310,6 +390,16 @@
             "itemAssetName": "WelterJennifer_C_KO_headset_Item"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -342,6 +432,16 @@
           {
             "slotType": "EarWear",
             "itemAssetName": "AriansBruce_C_KO_headset_Item"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Muscular_BodyType"
           }
         ]
       }
@@ -378,6 +478,16 @@
             "itemAssetName": "GrudenJon_C_KO_headset_Item"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -410,6 +520,16 @@
           {
             "slotType": "EarWear",
             "itemAssetName": "McVaySean_C_KO_headset_Item"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
           }
         ]
       }
@@ -446,6 +566,16 @@
             "itemAssetName": "MahomesPatrick_C_KO_headset_Item"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -478,6 +608,16 @@
           {
             "slotType": "EarWear",
             "itemAssetName": "MaddenJohn_C_KO_headset_Item"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
           }
         ]
       }
@@ -514,6 +654,16 @@
             "itemAssetName": "BeckhamJrOdell_C_KO_headset_Item"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -548,6 +698,16 @@
             "itemAssetName": "YachtyLil_C_KO_headset_Item"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -580,6 +740,16 @@
           {
             "slotType": "PlayCard",
             "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
           }
         ]
       }
@@ -620,6 +790,16 @@
             "itemAssetName": "Coach_ClipBoard"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Heavy_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -658,6 +838,16 @@
             "itemAssetName": "Coach_ClipBoard"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Muscular_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -690,6 +880,16 @@
           {
             "slotType": "EarWear",
             "itemAssetName": "HarbaughJohn_headset_Item"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Muscular_BodyType"
           }
         ]
       }
@@ -730,6 +930,16 @@
             "itemAssetName": "Coach_ClipBoard"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Heavy_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -766,6 +976,16 @@
           {
             "slotType": "PlayCard",
             "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Thin_BodyType"
           }
         ]
       }
@@ -806,6 +1026,16 @@
             "itemAssetName": "Coach_ClipBoard"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -844,6 +1074,16 @@
             "itemAssetName": "Coach_ClipBoard"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Thin_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -876,6 +1116,16 @@
           {
             "slotType": "EarWear",
             "itemAssetName": "MaddenJohn_headset_Item"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
           }
         ]
       }
@@ -912,6 +1162,16 @@
             "itemAssetName": "McDermottSean_headset_Item"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -944,6 +1204,16 @@
           {
             "slotType": "EarWear",
             "itemAssetName": "TomlinMike_headset_Item"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Muscular_BodyType"
           }
         ]
       }
@@ -980,6 +1250,16 @@
             "itemAssetName": "QuinnDan_headset_Item"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Muscular_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -1012,6 +1292,16 @@
           {
             "slotType": "EarWear",
             "itemAssetName": "College1_C_NCAA_headset_Item"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
           }
         ]
       }
@@ -1048,6 +1338,16 @@
             "itemAssetName": "ReidAndy_C_KO_headset_Item"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Heavy_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -1076,6 +1376,16 @@
           {
             "slotType": "EarWear",
             "itemAssetName": "CarrollPete_headset_Item"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
           }
         ]
       }
@@ -1112,6 +1422,16 @@
             "itemAssetName": "SirianniNick_headset_Item"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Muscular_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -1144,6 +1464,16 @@
           {
             "slotType": "LeftShoe",
             "itemAssetName": "CoachWardrobe_NikeZoomInvincible3"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Muscular_BodyType"
           }
         ]
       }
@@ -1184,6 +1514,16 @@
             "itemAssetName": "Coach_ClipBoard"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Thin_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -1220,6 +1560,16 @@
           {
             "slotType": "PlayCard",
             "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Thin_BodyType"
           }
         ]
       }
@@ -1260,6 +1610,16 @@
             "itemAssetName": "Coach_ClipBoard"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Muscular_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -1292,6 +1652,16 @@
           {
             "slotType": "EarWear",
             "itemAssetName": "GannonJonathan_headset_Item"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
           }
         ]
       }
@@ -1332,6 +1702,16 @@
             "itemAssetName": "Coach_ClipBoard"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Thin_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -1368,6 +1748,16 @@
           {
             "slotType": "PlayCard",
             "itemAssetName": "Coach_ClipBoard"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
           }
         ]
       }
@@ -1408,6 +1798,16 @@
             "itemAssetName": "Coach_ClipBoard"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Muscular_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -1440,6 +1840,16 @@
           {
             "slotType": "EarWear",
             "itemAssetName": "MorrisRaheem_headset_Item"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Thin_BodyType"
           }
         ]
       }
@@ -1480,6 +1890,16 @@
             "itemAssetName": "Coach_ClipBoard"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Muscular_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -1516,6 +1936,16 @@
           {
             "slotType": "OuterPants",
             "itemAssetName": "CoachWardrobe_Pants"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
           }
         ]
       }
@@ -1556,6 +1986,16 @@
             "itemAssetName": "CoachWardrobe_Black_Pants"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -1594,6 +2034,16 @@
             "itemAssetName": "CoachWardrobe_Shoe"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -1622,6 +2072,16 @@
           {
             "slotType": "OuterPants",
             "itemAssetName": "CoachWardrobe_Black_Pants"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Standard_BodyType"
           }
         ]
       }
@@ -1660,6 +2120,16 @@
           {
             "slotType": "OuterPants",
             "itemAssetName": "CoachWardrobe_Black_Pants"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Thin_BodyType"
           }
         ]
       }
@@ -1704,6 +2174,16 @@
             "itemAssetName": "Heavy_BodyType"
           }
         ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Heavy_BodyType"
+          }
+        ]
       }
     ]
   },
@@ -1741,6 +2221,16 @@
             "slotType": "HeadWear",
             "itemAssetName": "Hat_None"
           },
+          {
+            "slotType": "CharacterBodyType",
+            "itemAssetName": "Heavy_BodyType"
+          }
+        ]
+      },
+      {
+        "loadoutType": "Base",
+        "loadoutCategory": "Base",
+        "loadoutElements": [
           {
             "slotType": "CharacterBodyType",
             "itemAssetName": "Heavy_BodyType"
