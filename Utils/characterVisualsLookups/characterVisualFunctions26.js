@@ -29,7 +29,11 @@ async function generateCoachVisuals(franchise, tables, coachRecord) {
   // Get current visuals record
   const visualsRecord = await getCharacterVisualsRecord(franchise, tables, coachRecord);
 
-  let visuals = coachVisualsLookup[assetName] || (isFemaleHead(coachRecord) ? baseFemaleVisuals : baseCoachVisuals);
+  let visuals = coachVisualsLookup[assetName];
+  const existingVisuals = visuals !== undefined;
+  if (!existingVisuals) {
+    visuals = (isFemaleHead(coachRecord) ? baseFemaleVisuals : baseCoachVisuals);
+  }
 
   // Clone to avoid mutating shared base visuals
   visuals = structuredClone(visuals);
@@ -44,6 +48,7 @@ async function generateCoachVisuals(franchise, tables, coachRecord) {
     // Prepend new Head loadout
     visuals.loadouts.unshift(buildHeadLoadout(headAssetName));
   }
+
   if (visualsRecord) {
     visualsRecord.RawData = visuals;
   }
