@@ -1,0 +1,8 @@
+{
+    "pkg": {
+        "scripts": ["../../Utils/FranchiseUtils.js", "../../retroSchedules/transferScheduleFromJson.js"],
+        "assets": ["./HW12-16Game.exe", "./lookupFiles/*", "teamLookup.json", "../../retroSchedules/teamLookup.json", "../../node_modules/madden-franchise/data/schemas/**/*", "../../node_modules/madden-franchise/data/interned-strings/**/*", "../../node_modules/madden-franchise/data/zstd-dicts/**/*", "../../node_modules/madden-franchise/services/lookupFiles/*", "../../Utils/JsonLookups/commentary_lookup.json"],
+        "targets": [ "node22-win" ],
+        "outputPath": "."
+    }
+}

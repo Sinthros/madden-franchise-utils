@@ -1,0 +1,428 @@
+[
+  {
+    "teamName": "49ers",
+    "binaryReference": "10000000011011110011001010110011",
+    "assetId": 2154771123,
+    "assetBinReference": 84541440
+  },
+  {
+    "teamName": "AFC",
+    "binaryReference": "10000000011011110011001011010110",
+    "assetId": 2154771158,
+    "assetBinReference": 84541441
+  },
+  {
+    "teamName": "Antlers",
+    "binaryReference": "10000000011011110011001011100000",
+    "assetId": 2154771168,
+    "assetBinReference": 84541442
+  },
+  {
+    "teamName": "Armadillos",
+    "binaryReference": "10000000011011110011001011011101",
+    "assetId": 2154771165,
+    "assetBinReference": 84541443
+  },
+  {
+    "teamName": "Aviators",
+    "binaryReference": "10000000011011110011001011011110",
+    "assetId": 2154771166,
+    "assetBinReference": 84541444
+  },
+  {
+    "teamName": "Bears",
+    "binaryReference": "10000000011011110011001010110100",
+    "assetId": 2154771124,
+    "assetBinReference": 84541445
+  },
+  {
+    "teamName": "Bengals",
+    "binaryReference": "10000000011011110011001010110101",
+    "assetId": 2154771125,
+    "assetBinReference": 84541446
+  },
+  {
+    "teamName": "Bills",
+    "binaryReference": "10000000011011110011001010110110",
+    "assetId": 2154771126,
+    "assetBinReference": 84541447
+  },
+  {
+    "teamName": "Bisons",
+    "binaryReference": "10000000011011110011001011101000",
+    "assetId": 2154771176,
+    "assetBinReference": 84541448
+  },
+  {
+    "teamName": "Black Knights",
+    "binaryReference": "10000000011011110011001011100100",
+    "assetId": 2154771172,
+    "assetBinReference": 84541449
+  },
+  {
+    "teamName": "Blues",
+    "binaryReference": "10000000011011110011001011011011",
+    "assetId": 2154771163,
+    "assetBinReference": 84541450
+  },
+  {
+    "teamName": "Broncos",
+    "binaryReference": "10000000011011110011001010110111",
+    "assetId": 2154771127,
+    "assetBinReference": 84541451
+  },
+  {
+    "teamName": "Browns",
+    "binaryReference": "10000000011011110011001010111000",
+    "assetId": 2154771128,
+    "assetBinReference": 84541452
+  },
+  {
+    "teamName": "Buccaneers",
+    "binaryReference": "10000000011011110011001011011000",
+    "assetId": 2154771160,
+    "assetBinReference": 84541453
+  },
+  {
+    "teamName": "Bulls",
+    "binaryReference": "10000000011011110011001011011010",
+    "assetId": 2154771162,
+    "assetBinReference": 84541454
+  },
+  {
+    "teamName": "Caps",
+    "binaryReference": "10000000011011110011001011011111",
+    "assetId": 2154771167,
+    "assetBinReference": 84541455
+  },
+  {
+    "teamName": "Cardinals",
+    "binaryReference": "10000000011011110011001010111001",
+    "assetId": 2154771129,
+    "assetBinReference": 84541456
+  },
+  {
+    "teamName": "Chargers",
+    "binaryReference": "10000000011011110011001010111010",
+    "assetId": 2154771130,
+    "assetBinReference": 84541457
+  },
+  {
+    "teamName": "Chiefs",
+    "binaryReference": "10000000011011110011001010111011",
+    "assetId": 2154771131,
+    "assetBinReference": 84541458
+  },
+  {
+    "teamName": "Colts",
+    "binaryReference": "10000000011011110011001010111100",
+    "assetId": 2154771132,
+    "assetBinReference": 84541459
+  },
+  {
+    "teamName": "Commanders",
+    "binaryReference": "10000000011011110011001010111101",
+    "assetId": 2154771133,
+    "assetBinReference": 84541460
+  },
+  {
+    "teamName": "Condors",
+    "binaryReference": "10000000011011110011001011110000",
+    "assetId": 2154771184,
+    "assetBinReference": 84541461
+  },
+  {
+    "teamName": "Cowboys",
+    "binaryReference": "10000000011011110011001010111110",
+    "assetId": 2154771134,
+    "assetBinReference": 84541462
+  },
+  {
+    "teamName": "Desperados",
+    "binaryReference": "10000000011011110011001011011001",
+    "assetId": 2154771161,
+    "assetBinReference": 84541463
+  },
+  {
+    "teamName": "Dolphins",
+    "binaryReference": "10000000011011110011001010111111",
+    "assetId": 2154771135,
+    "assetBinReference": 84541464
+  },
+  {
+    "teamName": "Dragons",
+    "binaryReference": "10000000011011110011001011110101",
+    "assetId": 2154771189,
+    "assetBinReference": 84541465
+  },
+  {
+    "teamName": "Dreadnoughts",
+    "binaryReference": "10000000011011110011001011110100",
+    "assetId": 2154771188,
+    "assetBinReference": 84541466
+  },
+  {
+    "teamName": "Eagles",
+    "binaryReference": "10000000011011110011001011000000",
+    "assetId": 2154771136,
+    "assetBinReference": 84541467
+  },
+  {
+    "teamName": "Elks",
+    "binaryReference": "10000000011011110011001011110010",
+    "assetId": 2154771186,
+    "assetBinReference": 84541468
+  },
+  {
+    "teamName": "",
+    "binaryReference": "10000000011011110011001101001011",
+    "assetId": 2154771275,
+    "assetBinReference": 84541469
+  },
+  {
+    "teamName": "Falcons",
+    "binaryReference": "10000000011011110011001011000001",
+    "assetId": 2154771137,
+    "assetBinReference": 84541470
+  },
+  {
+    "teamName": "Free Agents",
+    "binaryReference": "10000000011011110011001011010011",
+    "assetId": 2154771155,
+    "assetBinReference": 84541471
+  },
+  {
+    "teamName": "Giants",
+    "binaryReference": "10000000011011110011001011000010",
+    "assetId": 2154771138,
+    "assetBinReference": 84541472
+  },
+  {
+    "teamName": "Golden Eagles",
+    "binaryReference": "10000000011011110011001011100111",
+    "assetId": 2154771175,
+    "assetBinReference": 84541473
+  },
+  {
+    "teamName": "Hall Of Fame",
+    "binaryReference": "10000000011011110011001011010100",
+    "assetId": 2154771156,
+    "assetBinReference": 84541474
+  },
+  {
+    "teamName": "Huskies",
+    "binaryReference": "10000000011011110011001011110110",
+    "assetId": 2154771190,
+    "assetBinReference": 84541475
+  },
+  {
+    "teamName": "Jaguars",
+    "binaryReference": "10000000011011110011001011000011",
+    "assetId": 2154771139,
+    "assetBinReference": 84541476
+  },
+  {
+    "teamName": "Jets",
+    "binaryReference": "10000000011011110011001011000100",
+    "assetId": 2154771140,
+    "assetBinReference": 84541477
+  },
+  {
+    "teamName": "Lions",
+    "binaryReference": "10000000011011110011001011000101",
+    "assetId": 2154771141,
+    "assetBinReference": 84541478
+  },
+  {
+    "teamName": "Lumberjacks",
+    "binaryReference": "10000000011011110011001011101101",
+    "assetId": 2154771181,
+    "assetBinReference": 84541479
+  },
+  {
+    "teamName": "Monarchs",
+    "binaryReference": "10000000011011110011001011100101",
+    "assetId": 2154771173,
+    "assetBinReference": 84541480
+  },
+  {
+    "teamName": "Mounties",
+    "binaryReference": "10000000011011110011001011110111",
+    "assetId": 2154771191,
+    "assetBinReference": 84541481
+  },
+  {
+    "teamName": "NFC",
+    "binaryReference": "10000000011011110011001011010111",
+    "assetId": 2154771159,
+    "assetBinReference": 84541482
+  },
+  {
+    "teamName": "NFL Greats",
+    "binaryReference": "10000000011011110011001011010101",
+    "assetId": 2154771157,
+    "assetBinReference": 84541483
+  },
+  {
+    "teamName": "Night Hawks",
+    "binaryReference": "10000000011011110011001011101001",
+    "assetId": 2154771177,
+    "assetBinReference": 84541484
+  },
+  {
+    "teamName": "Oilers",
+    "binaryReference": "10000000011011110011001011100010",
+    "assetId": 2154771170,
+    "assetBinReference": 84541485
+  },
+  {
+    "teamName": "Orbits",
+    "binaryReference": "10000000011011110011001011101010",
+    "assetId": 2154771178,
+    "assetBinReference": 84541486
+  },
+  {
+    "teamName": "Packers",
+    "binaryReference": "10000000011011110011001011000110",
+    "assetId": 2154771142,
+    "assetBinReference": 84541487
+  },
+  {
+    "teamName": "Panthers",
+    "binaryReference": "10000000011011110011001011000111",
+    "assetId": 2154771143,
+    "assetBinReference": 84541488
+  },
+  {
+    "teamName": "Patriots",
+    "binaryReference": "10000000011011110011001011001000",
+    "assetId": 2154771144,
+    "assetBinReference": 84541489
+  },
+  {
+    "teamName": "Pioneers",
+    "binaryReference": "10000000011011110011001011110011",
+    "assetId": 2154771187,
+    "assetBinReference": 84541490
+  },
+  {
+    "teamName": "Practice",
+    "binaryReference": "10000000011011110011001011010010",
+    "assetId": 2154771154,
+    "assetBinReference": 84541491
+  },
+  {
+    "teamName": "Raiders",
+    "binaryReference": "10000000011011110011001011001001",
+    "assetId": 2154771145,
+    "assetBinReference": 84541492
+  },
+  {
+    "teamName": "Rams",
+    "binaryReference": "10000000011011110011001011001010",
+    "assetId": 2154771146,
+    "assetBinReference": 84541493
+  },
+  {
+    "teamName": "Ravens",
+    "binaryReference": "10000000011011110011001011001011",
+    "assetId": 2154771147,
+    "assetBinReference": 84541494
+  },
+  {
+    "teamName": "Redwoods",
+    "binaryReference": "10000000011011110011001011110001",
+    "assetId": 2154771185,
+    "assetBinReference": 84541495
+  },
+  {
+    "teamName": "River Hogs",
+    "binaryReference": "10000000011011110011001011101110",
+    "assetId": 2154771182,
+    "assetBinReference": 84541496
+  },
+  {
+    "teamName": "Saints",
+    "binaryReference": "10000000011011110011001011001100",
+    "assetId": 2154771148,
+    "assetBinReference": 84541497
+  },
+  {
+    "teamName": "Seahawks",
+    "binaryReference": "10000000011011110011001011001101",
+    "assetId": 2154771149,
+    "assetBinReference": 84541498
+  },
+  {
+    "teamName": "Sentinels",
+    "binaryReference": "10000000011011110011001011101011",
+    "assetId": 2154771179,
+    "assetBinReference": 84541499
+  },
+  {
+    "teamName": "Shamrocks",
+    "binaryReference": "10000000011011110011001011100001",
+    "assetId": 2154771169,
+    "assetBinReference": 84541500
+  },
+  {
+    "teamName": "Snowhawks",
+    "binaryReference": "10000000011011110011001011101111",
+    "assetId": 2154771183,
+    "assetBinReference": 84541501
+  },
+  {
+    "teamName": "Steamers",
+    "binaryReference": "10000000011011110011001011100110",
+    "assetId": 2154771174,
+    "assetBinReference": 84541502
+  },
+  {
+    "teamName": "Steelers",
+    "binaryReference": "10000000011011110011001011001110",
+    "assetId": 2154771150,
+    "assetBinReference": 84541503
+  },
+  {
+    "teamName": "Texans",
+    "binaryReference": "10000000011011110011001011001111",
+    "assetId": 2154771151,
+    "assetBinReference": 84541504
+  },
+  {
+    "teamName": "Thunderbirds",
+    "binaryReference": "10000000011011110011001011111000",
+    "assetId": 2154771192,
+    "assetBinReference": 84541505
+  },
+  {
+    "teamName": "Tigers",
+    "binaryReference": "10000000011011110011001011011100",
+    "assetId": 2154771164,
+    "assetBinReference": 84541506
+  },
+  {
+    "teamName": "Titans",
+    "binaryReference": "10000000011011110011001011010000",
+    "assetId": 2154771152,
+    "assetBinReference": 84541507
+  },
+  {
+    "teamName": "Vikings",
+    "binaryReference": "10000000011011110011001011010001",
+    "assetId": 2154771153,
+    "assetBinReference": 84541508
+  },
+  {
+    "teamName": "Voyagers",
+    "binaryReference": "10000000011011110011001011100011",
+    "assetId": 2154771171,
+    "assetBinReference": 84541509
+  },
+  {
+    "teamName": "Wizards",
+    "binaryReference": "10000000011011110011001011101100",
+    "assetId": 2154771180,
+    "assetBinReference": 84541510
+  }
+]

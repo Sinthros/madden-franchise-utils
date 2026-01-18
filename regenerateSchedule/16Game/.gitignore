@@ -1,0 +1,6 @@
+*.zip
+solution.json
+GeneratorLog.txt
+regenerateScheduleM24.exe
+regenerateSchedule.exe
+_internal/gurobipy/gurobi.lic
