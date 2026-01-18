@@ -19,7 +19,7 @@ franchise.on('ready', async function () {
   const currentEmptyPlayers = playerTable.emptyRecords.size;
   const playersToDelete = MIN_EMPTY_PLAYERS - currentEmptyPlayers;
     // This prints out empty player table references. if you see refs from 6000 (Marketing table) it's fine
-  for (let currentRow = 0; currentRow < playerTable.header.recordCapacity;currentRow++) {
+  /*for (let currentRow = 0; currentRow < playerTable.header.recordCapacity;currentRow++) {
     if (playerTable.records[currentRow].isEmpty)  {
       referencedRow = franchise.getReferencesToRecord(playerTable.header.tableId,currentRow)
   
@@ -27,7 +27,7 @@ franchise.on('ready', async function () {
         console.log(`${table.tableId}: ${table.name}: ${currentRow}`)
       })
     }
-  }
+  }*/
 
   if (currentEmptyPlayers >= MIN_EMPTY_PLAYERS) {
     console.log(`Your Franchise File already contains enough empty player rows. Your file has ${currentEmptyPlayers} empty rows.`);

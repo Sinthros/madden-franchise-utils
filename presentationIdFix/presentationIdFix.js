@@ -38,7 +38,7 @@ if(fs.existsSync(lookupPath))
 }
 
 // If the game has the dynamic progression tool, inform the user and ask if they want to continue
-if(gameYear !== FranchiseUtils.YEARS.M23)
+if(gameYear !== FranchiseUtils.YEARS.M23 && gameYear < FranchiseUtils.YEARS.M26)
 {
 	console.log("\nWARNING: If you have used the progression tool on this franchise, modifying the presentation ID of players who have a progression path will cause their path to get disrupted, meaning you will have to rerun initial progression next time you run the tool.");
 
@@ -295,11 +295,17 @@ franchise.on('ready', async function () {
 	// Array of players that we will select a new ID for later
 	let playersToRevisit = [];
 
+	// Ask if user wants to edit non-rookies
+	const editRookiesOnly = FranchiseUtils.getYesOrNo("\nDo you want to only update rookie players? (yes/no)");
+
+	// Ask if user wants to generate new assetnames and presentation IDs for players we can't determine an ID for
+	const handleUnresolved = FranchiseUtils.getYesOrNo("\nFor players whose assetnames don't contain a presentation ID, do you want to generate a new assetname and presentation ID for them? If unsure, it is generally safe to say yes. (yes/no)");
+
 	// Iterate through the player table
     for (let i = 0; i < numRows; i++) 
 	{ 
         // If it's an empty row or invalid player, skip this row
-		if (!FranchiseUtils.isValidPlayer(playerTable.records[i]))
+		if (!FranchiseUtils.isValidPlayer(playerTable.records[i]) || (editRookiesOnly && playerTable.records[i]['YearsPro'] > 0))
 		{
 			continue;
         }
@@ -378,13 +384,13 @@ franchise.on('ready', async function () {
     }
 
 	// If we need to pick a new ID and assetname for someone, do so now
-	if(playersToRevisit.length > 0)
+	if(playersToRevisit.length > 0 && handleUnresolved)
 	{
 		handleRemainingPlayers(playerTable, playersToRevisit, presentationIdWhitelist);
 	}
 	
 	// If this is a game with the dynamic progression tool and we've modified non-rookie players, inform the user how many have been updated
-	if(gameYear !== FranchiseUtils.YEARS.M23 && modifiedNonRookieCount > 0)
+	if(gameYear !== FranchiseUtils.YEARS.M23 && gameYear < FranchiseUtils.YEARS.M26 && modifiedNonRookieCount > 0)
 	{
 		console.log(`\n${modifiedNonRookieCount} non-rookie players updated. These players' progression paths will be lost. Next time you run the progression tool, you will need to rerun initial progression.`);
 	}

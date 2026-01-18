@@ -1,1 +1,1 @@
-nexe --build -i fixDuplicateRosterPlayers.js -t x64-14.15.3 -r "../../node_modules/madden-franchise/data/schemas" -r "../../Utils/FranchiseUtils.js" -r "../../node_modules/madden-franchise/services/lookupFiles/*.json" -o "fixDuplicateRosterPlayers.exe" --verbose 
+pkg -c pkgConfig.json fixDuplicateRosterPlayers.js -o fixDuplicateRosterPlayers.exe

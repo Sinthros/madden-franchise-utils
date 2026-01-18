@@ -15,7 +15,8 @@ const rules2023 = JSON.parse(fs.readFileSync('lookupFiles/rules_2023.json'), 'ut
 
 // Set up franchise file
 const validGames = [
-	FranchiseUtils.YEARS.M25
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26
 ];
 const franchise = FranchiseUtils.init(validGames);
 const tables = FranchiseUtils.getTablesObject(franchise);

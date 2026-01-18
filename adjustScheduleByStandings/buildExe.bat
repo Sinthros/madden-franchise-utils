@@ -1,0 +1,1 @@
+pkg -c pkgConfig.json adjustScheduleByStandings.js -o adjustScheduleByStandings.exe
