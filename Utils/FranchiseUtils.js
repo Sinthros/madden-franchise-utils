@@ -2751,6 +2751,37 @@ function getUserSelection(message, validValues) {
 }
 
 /**
+ * Prompts the user to choose a value from a key/value dictionary.
+ * Accepts either the key or the value (case-insensitive) as input.
+ *
+ * @param {string} message - The message to display to the user.
+ * @param {Object<string, string>} optionsMap - Key/value dictionary of options.
+ * @returns {string} - The selected value (dictionary value).
+ */
+function getUserSelectionFromMap(message, optionsMap) {
+  // Normalize inputs to uppercase for comparison
+  const normalizedMap = new Map();
+
+  for (const [key, value] of Object.entries(optionsMap)) {
+    normalizedMap.set(key.toUpperCase(), value);
+    normalizedMap.set(value.toUpperCase(), value);
+  }
+
+  const displayValues = Object.values(optionsMap);
+
+  while (true) {
+    console.log(`${message}\nOptions: ${displayValues.join(", ")}`);
+    const input = prompt().trim().toUpperCase();
+
+    if (normalizedMap.has(input)) {
+      return normalizedMap.get(input);
+    }
+
+    console.log(`Invalid input. Please enter one of the following: ${displayValues.join(", ")}`);
+  }
+}
+
+/**
  * Prompts the user to choose a number within a specified range and returns the chosen number.
  *
  * @param {string} message - The message to display to the user.
@@ -3599,6 +3630,7 @@ module.exports = {
   removeKeyFromJson,
   getUserInput,
   getUserSelection,
+  getUserSelectionFromMap,
   getUserInputNumber,
   getRandomNumber,
   bin2Dec,
