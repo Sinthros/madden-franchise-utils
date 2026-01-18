@@ -1,1 +1,1 @@
-nexe --build -i clearMyFranchiseFingerprint.js -t x64-14.15.3 -r "../../node_modules/madden-franchise/data/schemas" -r "../../Utils/FranchiseUtils.js" -r "../../node_modules/madden-franchise/services/lookupFiles/*.json" -o "clearMyFranchiseFingerprint.exe" --verbose 
+pkg -c pkgConfig.json clearMyFranchiseFingerprint.js -o clearMyFranchiseFingerprint.exe
