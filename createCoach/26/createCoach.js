@@ -397,7 +397,24 @@ async function addCoachToFATable(freeAgentCoachTable, currentCoachBinary) {
 }
 
 async function updateCoachVisual(coachRecord) {
-  const visuals = await CharacterVisualFunctions.generateCoachVisuals(franchise, tables, coachRecord);
+  const visualsRecord = await CharacterVisualFunctions.generateCoachVisuals(franchise, tables, coachRecord);
+  if (isAdvancedEditing) {
+    const headgearMessage =
+      "Would you like to set the coach to have no hat and headset? Enter yes or no. Note that this may be overriden in game depending on the asset/head.";
+    const removeHeadGear = FranchiseUtils.getYesOrNo(headgearMessage, true);
+
+    if (removeHeadGear) {
+      // Parse JSON string → object
+      const visuals = JSON.parse(visualsRecord.RawData);
+
+      CharacterVisualFunctions.updateVisualsSlot(visuals, "HeadWear", "Hat_None");
+
+      CharacterVisualFunctions.updateVisualsSlot(visuals, "EarWear", "UC_Headset_None");
+
+      // Serialize back to string
+      visualsRecord.RawData = JSON.stringify(visuals);
+    }
+  }
 }
 
 function getArchetype(coachRecord) {
