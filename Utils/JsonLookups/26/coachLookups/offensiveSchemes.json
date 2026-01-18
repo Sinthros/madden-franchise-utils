@@ -4,76 +4,87 @@
     "ShortName": "Air Raid",
     "LongName": "Air Raid",
     "Description": "A variant of Spread, Air Raid gives the quarterback control of the play at the line of scrimmage. This offense focuses on passing plays but trusts the quarterback to diagnose the defense and call audibles when running lanes look open.",
-    "Value": "AirRaid"
+    "Value": "AirRaid",
+    "ShortValue": "AR"
   },
   {
     "AssetId": 2147588224,
     "ShortName": "Multiple Power Run",
     "LongName": "Multiple Power Run",
     "Description": "The Multiple Power scheme uses traditional, pulling linemen and lead blockers in the run game to grind through defenses. A quality Field General QB helps convert critical 3rd and short situations.",
-    "Value": "MultiplePowerRun"
+    "Value": "MultiplePowerRun",
+    "ShortValue": "MPR"
   },
   {
     "AssetId": 2147588225,
     "ShortName": "Multiple Zone Run",
     "LongName": "Multiple Zone Run",
     "Description": "The Multiple Zone scheme is a balanced offense that is very difficult for the defense to predict. The team can run out of multiple receiver sets and throw out of power formations.",
-    "Value": "MultipleZoneRun"
+    "Value": "MultipleZoneRun",
+    "ShortValue": "MZR"
   },
   {
     "AssetId": 2147606157,
     "ShortName": "Pistol",
     "LongName": "Pistol",
     "Description": "The Pistol offense allows the quarterback to better read over center with shotgun formations. It punishes unbalanced defensive lines in the running game with the ability to hand the ball off quickly to either side of the field.",
-    "Value": "Pistol"
+    "Value": "Pistol",
+    "ShortValue": "P"
   },
   {
     "AssetId": 2147588228,
     "ShortName": "Run And Shoot",
     "LongName": "Run And Shoot",
     "Description": "The Run N' Shoot depends on high awareness receivers to adjust their routes in response to different coverages. It uses pre-snap motion and multiple receiver formations to help identify coverages.",
-    "Value": "RunAndShoot"
+    "Value": "RunAndShoot",
+    "ShortValue": "RAS"
   },
   {
     "AssetId": 2147588220,
     "ShortName": "Spread",
     "LongName": "Spread",
     "Description": "The Spread offense utilizes shotgun formations with extra receivers to 'spread' defenses horizontally. Scrambler QBs create an extra running threat that pressures both sides of the defense in the run game.",
-    "Value": "Spread"
+    "Value": "Spread",
+    "ShortValue": "S"
   },
   {
     "AssetId": 2147588226,
     "ShortName": "Vertical Power Run",
     "LongName": "Vertical Power Run",
     "Description": "The Vertical Power Run focuses on tempting the defense to load the box with extra defenders via a commitment to the power run game, then punishes them down field with play action and shot passes.",
-    "Value": "VerticalPowerRun"
+    "Value": "VerticalPowerRun",
+    "ShortValue": "VPR"
   },
   {
     "AssetId": 2147588223,
     "ShortName": "Vertical Zone Run",
     "LongName": "Vertical Zone Run",
     "Description": "The Vertical Zone Run uses Agile linemen to create multiple holes for the half-back to choose from and forces the defense into assignment conflicts by taking downfield shots via play-action pass.",
-    "Value": "VerticalZoneRun"
+    "Value": "VerticalZoneRun",
+    "ShortValue": "VZR"
   },
   {
     "AssetId": 2147588227,
     "ShortName": "West Coast Power Run",
     "LongName": "West Coast Power Run",
     "Description": "The West Coast Power Run creates weakness in the defense by stretching it out horizontally with short passing. The half backs then attack those weaknesses for big gains.",
-    "Value": "WestCoastPowerRun"
+    "Value": "WestCoastPowerRun",
+    "ShortValue": "WCPR"
   },
   {
     "AssetId": 2147606127,
     "ShortName": "West Coast Spread",
     "LongName": "West Coast Spread",
     "Description": "The West Coast Spread is designed to keep the defense guessing with a focus on short passing horizontally across the field. With the defense spread thin, the quarterback is looking for openings to scramble while reading his routes.",
-    "Value": "WestCoastSpread"
+    "Value": "WestCoastSpread",
+    "ShortValue": "WCS"
   },
   {
     "AssetId": 2147588222,
     "ShortName": "West Coast Zone Run",
     "LongName": "West Coast Zone Run",
     "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
-    "Value": "WestCoastZoneRun"
+    "Value": "WestCoastZoneRun",
+    "ShortValue": "WCZR"
   }
 ]
