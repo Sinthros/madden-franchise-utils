@@ -23,7 +23,7 @@ franchise.on('ready', async function () {
 	const seasonGameTable = franchise.getTableByUniqueId(tables.seasonGameTable);
 
 	// Read required tables
-	await FranchiseUtils.readTables([teamTable, seasonInfoTable, seasonGameTable]);
+	await FranchiseUtils.readTableRecords([teamTable, seasonInfoTable, seasonGameTable]);
 
 	// Validate that the file is in the correct week
 
