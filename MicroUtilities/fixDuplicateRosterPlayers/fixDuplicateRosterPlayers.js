@@ -2,11 +2,12 @@
 const FranchiseUtils = require('../../Utils/FranchiseUtils');
 
 // Print tool header message
-console.log("This program will fix team rosters containing duplicate player references in a Madden 25 franchise file.\n");
+console.log("This program will fix team rosters containing duplicate player references in a Madden 25 or 26 franchise file.\n");
 
 // Set up franchise file
 const validGames = [
-	FranchiseUtils.YEARS.M25
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26
 ];
 const franchise = FranchiseUtils.init(validGames);
 const tables = FranchiseUtils.getTablesObject(franchise);
