@@ -5,7 +5,7 @@ const path = require("path");
 
 const oldToNewSlotMap = JSON.parse(fs.readFileSync(path.join(__dirname, "./26/newSlotTypeMap.json"), "utf-8"));
 const baseFemaleVisuals = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "./26/baseFemaleCoachVisualLookup.json"), "utf-8")
+  fs.readFileSync(path.join(__dirname, "./26/baseFemaleCoachVisualLookup.json"), "utf-8"),
 );
 const baseCoachVisuals = JSON.parse(fs.readFileSync(path.join(__dirname, "./26/baseCoachVisualLookup.json"), "utf-8"));
 const coachVisualsLookup = JSON.parse(fs.readFileSync(path.join(__dirname, "./26/coachVisualsLookup.json"), "utf-8"));
@@ -32,7 +32,7 @@ async function generateCoachVisuals(franchise, tables, coachRecord) {
   let visuals = coachVisualsLookup[assetName];
   const existingVisuals = visuals !== undefined;
   if (!existingVisuals) {
-    visuals = (isFemaleHead(coachRecord) ? baseFemaleVisuals : baseCoachVisuals);
+    visuals = isFemaleHead(coachRecord) ? baseFemaleVisuals : baseCoachVisuals;
   }
 
   // Clone to avoid mutating shared base visuals
@@ -52,7 +52,7 @@ async function generateCoachVisuals(franchise, tables, coachRecord) {
   if (visualsRecord) {
     visualsRecord.RawData = visuals;
   }
-  return visuals;
+  return visualsRecord;
 }
 
 /**
@@ -77,7 +77,7 @@ async function getCharacterVisualsRecord(franchise, tables, playerOrCoachRecord)
     if (nextRow >= visualsRecordCapcity) {
       console.log("ERROR - The CharacterVisuals table has run out of space. Your changes have not been saved.");
       console.log(
-        `This means that the amount of players + coaches in your Franchise File exceeds ${visualsRecordCapcity}.`
+        `This means that the amount of players + coaches in your Franchise File exceeds ${visualsRecordCapcity}.`,
       );
       FranchiseUtils.EXIT_PROGRAM();
     }
@@ -152,8 +152,24 @@ function buildHeadLoadout(headAssetName) {
   };
 }
 
-module.exports = {
+// Assumes the slot type already exists
+function updateVisualsSlot(visuals, slotType, newItemAssetName) {
+  // Flatten all loadoutElements, but keep references
+  const allElements = visuals.loadouts.flatMap((loadout) => loadout.loadoutElements);
 
+  // Find the element by slotType
+  const element = allElements.find((e) => e.slotType === slotType);
+
+  // Update only if it exists
+  if (element) {
+    element.itemAssetName = newItemAssetName;
+    return true;
+  }
+
+  return false;
+}
+
+module.exports = {
   baseFemaleVisuals,
   baseCoachVisuals,
   coachVisualsLookup,
@@ -166,4 +182,5 @@ module.exports = {
   isFemaleHead,
   shouldAddHeadSection,
   buildHeadLoadout,
+  updateVisualsSlot,
 };
