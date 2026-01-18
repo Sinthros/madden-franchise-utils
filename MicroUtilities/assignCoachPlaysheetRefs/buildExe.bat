@@ -1,0 +1,1 @@
+pkg -c pkgConfig.json assignCoachPlaysheetRefs.js -o assignCoachPlaysheetRefs.exe

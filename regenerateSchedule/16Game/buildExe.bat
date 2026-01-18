@@ -1,0 +1,1 @@
+pkg -c pkgConfig.json regenerateSchedule16Game.js -o regenerateSchedule16Game.exe

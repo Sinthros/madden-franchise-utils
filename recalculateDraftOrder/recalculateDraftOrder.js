@@ -417,9 +417,16 @@ async function calculateTeamDraftPositions(franchise, teamPositions)
     // Concatenat the playoff team order
     const playoffTeams = getPlayoffDraftOrder(teamTable, seasonGameTable, divisionTeamTable);
 
+    const isOldPlayoffFormat = playoffTeams.length === 12;
+
+    if(FranchiseUtils.DEBUG_MODE)
+    {
+        console.log(`NOTE: Using old playoff format. Detected ${playoffTeams.length} playoff teams.`);
+    }
+
     teams = teams.concat(playoffTeams);
 
-    getTiedGroups(teamTable, teams);
+    getTiedGroups(teamTable, teams, isOldPlayoffFormat);
 
     // Assign draft positions 0-31 to the teams
     for(let i = 0; i < 32; i++)
@@ -430,10 +437,11 @@ async function calculateTeamDraftPositions(franchise, teamPositions)
     return teamPositions;
 }
 
-function getTiedGroups(teamTable, teams)
+function getTiedGroups(teamTable, teams, isOldPlayoffFormat)
 {
-    // Iterate through first 18 picks and check for win percentage ties, adding to tiedGroups object with key as win percentage
-    for(let i = 0; i < 18; i++)
+    // Iterate through non-playoff picks and check for win percentage ties, adding to tiedGroups object with key as win percentage
+    const nonPlayoffPicks = isOldPlayoffFormat ? 20 : 18;
+    for(let i = 0; i < nonPlayoffPicks; i++)
     {
         let winPct = teamTable.records[teams[i]]['SeasonWinPct'];
         if(!tiedGroups['reg'][winPct])
@@ -452,8 +460,8 @@ function getTiedGroups(teamTable, teams)
         }
     }
 
-    // Iterate through the next 6 picks and check for win percentage ties, adding to wild card tiedGroups object with key as win percentage
-    for(let i = 18; i < 24; i++)
+    // Iterate through the next picks and check for win percentage ties, adding to wild card tiedGroups object with key as win percentage
+    for(let i = nonPlayoffPicks; i < 24; i++)
     {
         let winPct = teamTable.records[teams[i]]['SeasonWinPct'];
         if(!tiedGroups['wc'][winPct])
