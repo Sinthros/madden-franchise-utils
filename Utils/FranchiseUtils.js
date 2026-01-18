@@ -2733,20 +2733,37 @@ function getUserInput(message, firstValue, secondValue) {
  *
  * @param {string} message - The message to display to the user.
  * @param {Array<string|number>} validValues - An array of valid input options.
+ * @param {Object} options
+ * @param {string} [options.showKeyword="Show"] - Keyword to display all values again.
  * @returns {string} - The value chosen by the user (as a string).
  */
-function getUserSelection(message, validValues) {
+function getUserSelection(message, validValues, options = {}) {
+  const { showKeyword = "Show" } = options;
+
   const valueMap = new Map(validValues.map((v) => [String(v).toUpperCase(), String(v)]));
 
+  const normalizedShow = showKeyword.toUpperCase();
+
   while (true) {
-    console.log(`${message}\nOptions: ${validValues.join(", ")}`);
-    const input = prompt().trim().toUpperCase();
+    console.log(`${message}\n(Type "${showKeyword}" to show all options)`);
+
+    const input = prompt()?.trim().toUpperCase();
+    if (!input) {
+      console.log("Input cannot be empty.");
+      continue;
+    }
+
+    // Show all values on demand
+    if (input === normalizedShow) {
+      console.log(`Options: ${validValues.join(", ")}`);
+      continue;
+    }
 
     if (valueMap.has(input)) {
-      return input;
-    } else {
-      console.log(`Invalid input. Please enter one of the following: ${validValues.join(", ")}`);
+      return valueMap.get(input);
     }
+
+    console.log(`Invalid input. Enter "${showKeyword}" to see options again.`);
   }
 }
 
