@@ -206,6 +206,56 @@ const MAX_FIELD_LENGTH = {
   AssetName: 41,
 };
 
+const MIN_FIELD_VALUES = {
+  Level: 1,
+  LegacyScore: 0,
+  Portrait: 0,
+  CareerLosses: 0,
+  CareerTies: 0,
+  CareerWins: 0,
+  CareerPlayoffsMade: 0,
+  CareerBigWinMargin: 0,
+  CareerBigLossMargin: 0,
+  CareerPlayoffLosses: 0,
+  CareerPlayoffWins: 0,
+  SeasonsWithTeam: 0,
+  AwardPoints: 0,
+  CareerSuperbowlLosses: 0,
+  CareerWinSeasons: 0,
+  CoachAge: 21,
+  YearsCoaching: 0,
+  CareerSuperbowlWins: 0,
+  YearlyAwardCount: 0,
+  SeasLosses: 0,
+  SeasTies: 0,
+  SeasWins: 0,
+};
+
+const MAX_FIELD_VALUES = {
+  Level: 50,
+  LegacyScore: 100000,
+  Portrait: 8191,
+  CareerLosses: 1023,
+  CareerTies: 1023,
+  CareerWins: 1023,
+  CareerPlayoffsMade: 63,
+  CareerBigWinMargin: 255,
+  CareerBigLossMargin: 255,
+  CareerPlayoffLosses: 255,
+  CareerPlayoffWins: 255,
+  SeasonsWithTeam: 50,
+  AwardPoints: 127,
+  CareerSuperbowlLosses: 100,
+  CareerWinSeasons: 127,
+  CoachAge: 85,
+  YearsCoaching: 50,
+  CareerSuperbowlWins: 63,
+  YearlyAwardCount: 31,
+  SeasLosses: 31,
+  SeasTies: 31,
+  SeasWins: 31,
+};
+
 /*******************************************************
  *                  GLOBAL FUNCTIONS                   *
  *                                                     *
@@ -3603,6 +3653,8 @@ module.exports = {
   DEBUG_MODE,
   SAVE_TYPES,
   MAX_FIELD_LENGTH,
+  MIN_FIELD_VALUES,
+  MAX_FIELD_VALUES,
 
   USER_CONTROL_SETTINGS, // VARIABLES FOR USER/CPU CONTROL
   CPU_CONTROL_SETTINGS,
