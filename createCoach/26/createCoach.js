@@ -213,14 +213,24 @@ function setCoachName(coachRecord) {
 function setCoachPosition(coachRecord) {
   const position = FranchiseUtils.getUserSelectionFromMap("Enter the position of the coach", COACH_POSITIONS);
   coachRecord.Position = position;
-  coachRecord.OriginalPosition = position;
+
+  if (isAdvancedEditing) {
+    const originalPosition = FranchiseUtils.getUserSelectionFromMap(
+      "Enter the original position of the coach. This is the position they will be set to if they are fired in game.",
+      COACH_POSITIONS,
+    );
+    coachRecord.OriginalPosition = originalPosition;
+  } else {
+    coachRecord.OriginalPosition = position;
+  }
 }
 
 async function setSchemes(coachRecord) {
   try {
     const selectScheme = (promptMessage, schemes, coachField) => {
       while (true) {
-        const validNames = schemes.map((s) => s.ShortName).join(", ");
+        const validNames = schemes.map((s) => `${s.ShortValue} (${s.ShortName})`).join(", ");
+
         console.log(`${promptMessage} Valid values are: ${validNames}`);
 
         const input = prompt()?.trim().toLowerCase();
@@ -229,7 +239,9 @@ async function setSchemes(coachRecord) {
           continue;
         }
 
-        const selected = schemes.find((s) => s.ShortName.toLowerCase() === input);
+        const selected = schemes.find(
+          (s) => s.ShortName.toLowerCase() === input || s.ShortValue.toLowerCase() === input,
+        );
 
         if (!selected) {
           console.log("Invalid value. Please enter a valid listed value.");
@@ -237,7 +249,6 @@ async function setSchemes(coachRecord) {
         }
 
         coachRecord[coachField] = FranchiseUtils.dec2bin(selected.AssetId);
-
         break;
       }
     };
@@ -494,6 +505,39 @@ async function createNewCoach() {
   await setPlaybooks(coachRecord); // Get playbooks
 
   await setCoachAppearance(coachRecord);
+
+  if (isAdvancedEditing) {
+    const coachStance = FranchiseUtils.getUserSelectionFromMap("Enter the coach stance.", COACH_STANCES);
+    coachRecord.COACH_STANCE = coachStance;
+
+    const age = FranchiseUtils.getUserInputNumber(
+      "Enter the age of the coach.",
+      FranchiseUtils.MIN_FIELD_VALUES.CoachAge,
+      FranchiseUtils.MAX_FIELD_VALUES.CoachAge,
+    );
+    coachRecord.Age = age;
+
+    const level = FranchiseUtils.getUserInputNumber(
+      "Enter the level of the coach.",
+      FranchiseUtils.MIN_FIELD_VALUES.Level,
+      FranchiseUtils.MAX_FIELD_VALUES.Level,
+    );
+    coachRecord.Level = level;
+
+    const legacy = FranchiseUtils.getUserInputNumber(
+      "Enter the legacy score of the coach.",
+      FranchiseUtils.MIN_FIELD_VALUES.LegacyScore,
+      FranchiseUtils.MAX_FIELD_VALUES.LegacyScore,
+    );
+    coachRecord.LegacyScore = legacy;
+
+    const yearsCoaching = FranchiseUtils.getUserInputNumber(
+      "Enter the number of years this coach has been coaching. Enter 0 if you don't know what to enter.",
+      FranchiseUtils.MIN_FIELD_VALUES.YearsCoaching,
+      FranchiseUtils.MAX_FIELD_VALUES.YearsCoaching,
+    );
+    coachRecord.YearsCoaching = yearsCoaching;
+  }
 
   await updateCoachVisual(coachRecord);
 
