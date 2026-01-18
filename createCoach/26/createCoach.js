@@ -68,7 +68,7 @@ const headsDir = path.join(__dirname, "coachHeads"); // this now points to a rea
 const franchise = FranchiseUtils.init(gameYear, { isAutoUnemptyEnabled: true, promptForBackup: true });
 const tables = FranchiseUtils.getTablesObject(franchise);
 const isAdvancedEditing = FranchiseUtils.getYesOrNo(
-  "Would you like to enable advanced mode? This will ask additional questions (ie prompting for AssetName). Enter yes or no. Most users can answer no.",
+  "Would you like to enable advanced mode? This will ask several additional questions (such as AssetName, career stats, etc). Enter yes or no.",
   true,
 );
 
@@ -561,6 +561,8 @@ async function createNewCoach() {
 
   await setPlaybooks(coachRecord); // Get playbooks
 
+  getArchetype(coachRecord);
+
   await setCoachAppearance(coachRecord);
 
   if (isAdvancedEditing) {
@@ -597,6 +599,7 @@ async function createNewCoach() {
 
     const shouldEditStats = FranchiseUtils.getYesOrNo(
       `Would you like to edit ${coachName}'s career stats? Enter yes or no. If you aren't sure, enter no.`,
+      true,
     );
     if (shouldEditStats) {
       editStats(coachRecord);
@@ -604,8 +607,6 @@ async function createNewCoach() {
   }
 
   await updateCoachVisual(coachRecord);
-
-  getArchetype(coachRecord);
 
   await CoachTalentFunctions.regenerateTalents(franchise, tables, coachRecord);
 
