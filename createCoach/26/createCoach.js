@@ -14,11 +14,36 @@ const offSchemeLookup = require("../../Utils/JsonLookups/26/coachLookups/offensi
 const defSchemeLookup = require("../../Utils/JsonLookups/26/coachLookups/defensiveSchemes.json");
 const allCoachHeads = require("../../Utils/JsonLookups/26/coachLookups/genericCoachHeadsLookup.json");
 
-const COACH_ARCHETYPES = ["OffensiveGuru", "DefensiveGenius", "DevelopmentWizard", "MasterMotivator"];
-const MALE_BODY_TYPES = CharacterVisualFunctions.MALE_BODY_TYPES;
-const FEMALE_BODY_TYPES = CharacterVisualFunctions.FEMALE_BODY_TYPES;
-const COACH_POSITIONS = ["HeadCoach", "OffensiveCoordinator", "DefensiveCoordinator"];
+const MALE_BODY_TYPES = {
+  S: "Standard",
+  M: "Muscular",
+  T: "Thin",
+  H: "Heavy",
+};
 
+const FEMALE_BODY_TYPES = {
+  S: "Standard_Alternate",
+  T: "Thin_Alternate",
+};
+
+const COACH_STANCES = {
+  C: "Classic",
+  P: "PlaySheet",
+  H: "HandsOnKnees",
+};
+
+const COACH_POSITIONS = {
+  HC: "HeadCoach",
+  OC: "OffensiveCoordinator",
+  DC: "DefensiveCoordinator",
+};
+
+const COACH_ARCHETYPES = {
+  O: "OffensiveGuru",
+  D: "DefensiveGenius",
+  W: "DevelopmentWizard",
+  M: "MasterMotivator",
+};
 const gameYear = FranchiseUtils.YEARS.M26;
 
 // Convert object to [face, portrait] entries
@@ -44,6 +69,7 @@ const franchise = FranchiseUtils.init(gameYear, { isAutoUnemptyEnabled: true, pr
 const tables = FranchiseUtils.getTablesObject(franchise);
 const isAdvancedEditing = FranchiseUtils.getYesOrNo(
   "Would you like to enable advanced mode? This will ask additional questions (ie prompting for AssetName). Enter yes or no. Most users can answer no.",
+  true,
 );
 
 function adjustPresentationId(coachRecord, presentationTable) {
@@ -111,7 +137,7 @@ function setDefaultCoachValues(coachRecord) {
     coachRecord.SeasWins = 0;
     coachRecord.RegularWinStreak = 0;
     coachRecord.YearsCoaching = 0;
-    coachRecord.Level = 0;
+    coachRecord.Level = 1;
     coachRecord.TeamBuilding = "Balanced";
     coachRecord.LegacyScore = 0;
     coachRecord.Face = 0;
@@ -185,7 +211,7 @@ function setCoachName(coachRecord) {
 }
 
 function setCoachPosition(coachRecord) {
-  const position = FranchiseUtils.getUserSelection("Enter the position of the coach", COACH_POSITIONS);
+  const position = FranchiseUtils.getUserSelectionFromMap("Enter the position of the coach", COACH_POSITIONS);
   coachRecord.Position = position;
   coachRecord.OriginalPosition = position;
 }
@@ -279,7 +305,7 @@ function getBodyType(coachRecord) {
   const options = isFemale ? FEMALE_BODY_TYPES : MALE_BODY_TYPES;
 
   const message = "Select a body type for your coach.";
-  const bodyType = FranchiseUtils.getUserSelection(message, options);
+  const bodyType = FranchiseUtils.getUserSelectionFromMap(message, options);
   coachRecord.CharacterBodyType = bodyType;
 }
 
@@ -418,7 +444,10 @@ async function updateCoachVisual(coachRecord) {
 }
 
 function getArchetype(coachRecord) {
-  const archetype = FranchiseUtils.getUserSelection("Please select an archetype for the coach", COACH_ARCHETYPES);
+  const archetype = FranchiseUtils.getUserSelectionFromMap(
+    "Please select an archetype for the coach",
+    COACH_ARCHETYPES,
+  );
   coachRecord.Archetype = archetype;
 }
 
