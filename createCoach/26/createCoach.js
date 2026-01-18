@@ -462,6 +462,62 @@ function getArchetype(coachRecord) {
   coachRecord.Archetype = archetype;
 }
 
+function editStats(coachRecord) {
+  coachRecord.CareerWins = FranchiseUtils.getUserInputNumber(
+    "Enter the number of career wins.",
+    FranchiseUtils.MIN_FIELD_VALUES.CareerWins,
+    FranchiseUtils.MAX_FIELD_VALUES.CareerWins,
+  );
+
+  coachRecord.CareerLosses = FranchiseUtils.getUserInputNumber(
+    "Enter the number of career losses.",
+    FranchiseUtils.MIN_FIELD_VALUES.CareerLosses,
+    FranchiseUtils.MAX_FIELD_VALUES.CareerLosses,
+  );
+
+  coachRecord.CareerTies = FranchiseUtils.getUserInputNumber(
+    "Enter the number of career ties.",
+    FranchiseUtils.MIN_FIELD_VALUES.CareerTies,
+    FranchiseUtils.MAX_FIELD_VALUES.CareerTies,
+  );
+
+  coachRecord.CareerPlayoffsMade = FranchiseUtils.getUserInputNumber(
+    "Enter the number of career playoffs made.",
+    FranchiseUtils.MIN_FIELD_VALUES.CareerPlayoffsMade,
+    FranchiseUtils.MAX_FIELD_VALUES.CareerPlayoffsMade,
+  );
+
+  coachRecord.CareerPlayoffWins = FranchiseUtils.getUserInputNumber(
+    "Enter the number of career playoff wins.",
+    FranchiseUtils.MIN_FIELD_VALUES.CareerPlayoffWins,
+    FranchiseUtils.MAX_FIELD_VALUES.CareerPlayoffWins,
+  );
+
+  coachRecord.CareerPlayoffLosses = FranchiseUtils.getUserInputNumber(
+    "Enter the number of career playoff losses.",
+    FranchiseUtils.MIN_FIELD_VALUES.CareerPlayoffLosses,
+    FranchiseUtils.MAX_FIELD_VALUES.CareerPlayoffLosses,
+  );
+
+  coachRecord.CareerSuperbowlWins = FranchiseUtils.getUserInputNumber(
+    "Enter the number of career Superbowl wins.",
+    FranchiseUtils.MIN_FIELD_VALUES.CareerSuperbowlWins,
+    FranchiseUtils.MAX_FIELD_VALUES.CareerSuperbowlWins,
+  );
+
+  coachRecord.CareerSuperbowlLosses = FranchiseUtils.getUserInputNumber(
+    "Enter the number of career Superbowl losses.",
+    FranchiseUtils.MIN_FIELD_VALUES.CareerSuperbowlLosses,
+    FranchiseUtils.MAX_FIELD_VALUES.CareerSuperbowlLosses,
+  );
+
+  coachRecord.YearlyAwardCount = FranchiseUtils.getUserInputNumber(
+    "Enter the number of career Coach Of The Year awards.",
+    FranchiseUtils.MIN_FIELD_VALUES.YearlyAwardCount,
+    FranchiseUtils.MAX_FIELD_VALUES.YearlyAwardCount,
+  );
+}
+
 async function createNewCoach() {
   const coachTable = franchise.getTableByUniqueId(tables.coachTable); // Get all the tables we'll need
   const freeAgentCoachTable = franchise.getTableByUniqueId(tables.freeAgentCoachTable);
@@ -497,6 +553,7 @@ async function createNewCoach() {
   setDefaultCoachValues(coachRecord); // Set all default coach values
 
   const [coachFirstName, coachLastName] = setCoachName(coachRecord); // Get coach name from user
+  const coachName = `${coachFirstName} ${coachLastName}`;
 
   setCoachPosition(coachRecord); // Get coach position
 
@@ -511,21 +568,21 @@ async function createNewCoach() {
     coachRecord.COACH_STANCE = coachStance;
 
     const age = FranchiseUtils.getUserInputNumber(
-      "Enter the age of the coach.",
+      `Enter ${coachName}'s age.`,
       FranchiseUtils.MIN_FIELD_VALUES.CoachAge,
       FranchiseUtils.MAX_FIELD_VALUES.CoachAge,
     );
     coachRecord.Age = age;
 
     const level = FranchiseUtils.getUserInputNumber(
-      "Enter the level of the coach.",
+      `Enter ${coachName}'s level.`,
       FranchiseUtils.MIN_FIELD_VALUES.Level,
       FranchiseUtils.MAX_FIELD_VALUES.Level,
     );
     coachRecord.Level = level;
 
     const legacy = FranchiseUtils.getUserInputNumber(
-      "Enter the legacy score of the coach.",
+      `Enter ${coachName}'s legacy score.`,
       FranchiseUtils.MIN_FIELD_VALUES.LegacyScore,
       FranchiseUtils.MAX_FIELD_VALUES.LegacyScore,
     );
@@ -537,6 +594,13 @@ async function createNewCoach() {
       FranchiseUtils.MAX_FIELD_VALUES.YearsCoaching,
     );
     coachRecord.YearsCoaching = yearsCoaching;
+
+    const shouldEditStats = FranchiseUtils.getYesOrNo(
+      `Would you like to edit ${coachName}'s career stats? Enter yes or no. If you aren't sure, enter no.`,
+    );
+    if (shouldEditStats) {
+      editStats(coachRecord);
+    }
   }
 
   await updateCoachVisual(coachRecord);
