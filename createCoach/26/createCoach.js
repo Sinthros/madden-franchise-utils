@@ -581,7 +581,9 @@ async function createNewCoach() {
       FranchiseUtils.MIN_FIELD_VALUES.Level,
       FranchiseUtils.MAX_FIELD_VALUES.Level,
     );
-    coachRecord.Level = level;
+
+    // It's zero based
+    coachRecord.Level = level - 1;
 
     const legacy = FranchiseUtils.getUserInputNumber(
       `Enter ${coachName}'s legacy score.`,
