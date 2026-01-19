@@ -44,6 +44,30 @@ const COACH_ARCHETYPES = {
   W: "DevelopmentWizard",
   M: "MasterMotivator",
 };
+
+const COACH_SPECIALTIES = {
+  QB: "Quarterbacks",
+  RB: "RunningBacks",
+  WR: "Receivers",
+  OL: "OffensiveLine",
+  DL: "DefensiveLine",
+  LB: "Linebackers",
+  S: "Secondary",
+  ST: "SpecialTeams",
+};
+
+const TEAM_BUILDING = {
+  B: "Balanced",
+  D: "ThroughDraft",
+  F: "ThroughFreeAgency",
+};
+
+const TRADING_TENDENCIES = {
+  U: "TradesUp",
+  D: "TradesDown",
+  NA: "DoesNotTrade",
+};
+
 const gameYear = FranchiseUtils.YEARS.M26;
 
 // Convert object to [face, portrait] entries
@@ -218,7 +242,7 @@ function setCoachPosition(coachRecord) {
 
   if (isAdvancedEditing) {
     const originalPosition = FranchiseUtils.getUserSelectionFromMap(
-      "Enter the original position of the coach. This is the position they will be set to if they are fired in game.",
+      "Enter the ORIGINAL position of the coach. This is the position they will be set to if they are FIRED in game.",
       COACH_POSITIONS,
     );
     coachRecord.OriginalPosition = originalPosition;
@@ -605,6 +629,22 @@ async function createNewCoach() {
       `Would you like to edit ${coachName}'s career stats? Enter yes or no. If you aren't sure, enter no.`,
       true,
     );
+
+    coachRecord.COACH_SPECIALTY = FranchiseUtils.getUserSelectionFromMap(
+      `Enter ${coachName}'s specialty.`,
+      COACH_SPECIALTIES,
+    );
+
+    coachRecord.TeamBuilding = FranchiseUtils.getUserSelectionFromMap(
+      `Enter ${coachName}'s team building approach.`,
+      TEAM_BUILDING,
+    );
+
+    coachRecord.TradingTendency = FranchiseUtils.getUserSelectionFromMap(
+      `Enter ${coachName}'s trading tendency`,
+      TRADING_TENDENCIES,
+    );
+
     if (shouldEditStats) {
       editStats(coachRecord);
     }
