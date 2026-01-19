@@ -137,7 +137,7 @@ function setDefaultCoachValues(coachRecord) {
     coachRecord.SeasWins = 0;
     coachRecord.RegularWinStreak = 0;
     coachRecord.YearsCoaching = 0;
-    coachRecord.Level = 1;
+    coachRecord.Level = 0;
     coachRecord.TeamBuilding = "Balanced";
     coachRecord.LegacyScore = 0;
     coachRecord.Face = 0;
