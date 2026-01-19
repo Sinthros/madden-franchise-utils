@@ -155,6 +155,8 @@ function setDefaultCoachValues(coachRecord) {
     coachRecord.COACH_PERFORMANCELEVEL = 0;
     coachRecord.Probation = false;
     coachRecord.TraitExpertScout = false;
+    coachRecord.TradingTendency = "DoesNotTrade";
+    coachRecord.COACH_SPECIALTY = "Quarterbacks";
 
     // New M26 fields
     coachRecord.CurrentPurchasedTalentCosts = 0;
