@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs'); 
 
-const YEAR = 2023;
+const YEAR = 2025;
 const SUFFIX = `/season/${YEAR}/seasontype/2`
 async function fetchAllTeamStats() {
     const browser = await puppeteer.launch();
