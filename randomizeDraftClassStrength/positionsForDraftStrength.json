@@ -2,7 +2,7 @@
     "PositionsInDraftTable": [
         "C",
         "CB",
-        "DE",
+        "EDGE",
         "DT",
         "FB",
         "FS",
@@ -10,28 +10,12 @@
         "HB",
         "K",
         "MLB",
-        "OLB",
+        "WILL/SAM",
         "P",
         "QB",
         "SS",
         "T",
         "TE",
         "WR"
-    ],
-    
-    "PositionsInGame": [
-    "Quarterbacks",
-    "Running Backs",
-    "Wide Receivers",
-    "Tight Ends",
-    "Tackles",
-    "Interior Offensive Line",
-    "Defensive Ends",
-    "Interior Defensive Line",
-    "Linebackers",
-    "Cornerbacks",
-    "Safties",
-    "Kickers",
-    "Punters"
     ]
 }
