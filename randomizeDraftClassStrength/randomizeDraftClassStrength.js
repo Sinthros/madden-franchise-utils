@@ -19,7 +19,8 @@ const allPositions = JSON.parse(fs.readFileSync(path.join(__dirname, './position
 
 //Print tool header message
 console.log("This program can be used to randomize your draft class position strength.\n This is meant to be run before the class is auto-generated in week 1 of the regular season.\n");
-console.log("40% chance to get Normal, 40% chance to get one of Strong or Weak, and a 20% chance to get Very Weak or Very Strong.");
+console.log("40% chance to get Normal, 40% chance to get one of Strong or Weak, and a 20% chance to get Very Weak or Very Strong.\n");
+console.log("This program also adds distinctions between HB/FB, MLB/SAM&WILL, FS/SS, and C/G, all of which will not be reflected in Madden's UI");
 
 //Set up franchise file 
 const validGames = [
