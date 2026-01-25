@@ -1,26 +1,23 @@
 /**
  * @fileoverview Draft class position strength randomizer tool
  * @author clclark01
- * @version 1.0.0
+ * @version 1.0.1
  */
 
-//TODO: plug in user input for each table to allow changes before submitting the update
-//allow re rolls
-//use a preset/reset option
+//TODO: Add the result map to a user input option to allow individual adjustments before saving changes
 
 //Required modules
 const fs = require('fs');
 const path = require('path');
-const prompt = require('prompt-sync')();
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 //Required lookups
 const allPositions = JSON.parse(fs.readFileSync(path.join(__dirname, './positionsForDraftStrength.json')));
 
 //Print tool header message
-console.log("This program can be used to randomize your draft class position strength.\n This is meant to be run before the class is auto-generated in week 1 of the regular season.\n");
-console.log("40% chance to get Normal, 40% chance to get one of Strong or Weak, and a 20% chance to get Very Weak or Very Strong.\n");
-console.log("This program also adds distinctions between HB/FB, MLB/SAM&WILL, FS/SS, and C/G, all of which will not be reflected in Madden's UI");
+console.log("This program can be used to randomize, preset, or reset your draft class positional strength.\nThis is meant to be run before the class is auto-generated in week 1 of the regular season.\n");
+console.log("-40% chance to get Normal\n-40% chance to get Strong OR Weak\n-20% chance to get Very Weak OR Very Strong.\n");
+console.log("There are also added distinctions between:\n-HB/FB\n-MLB/SAM&WILL\n-FS/SS\n-C/G\n*These will not be reflected in Madden's UI\n\n");
 
 //Set up franchise file 
 const validGames = [
@@ -45,6 +42,8 @@ function randomizeDraftPosStrength(veryWeakCounterLimit, veryStrongCounterLimit)
     let affectedCounter = 0;
     let result = new Map();
     let posTable = allPositions.PositionsInDraftTable;
+    let pos = "";
+    let str = "";
 
     for(let i = 0; i < posTable.length; i++)
     {
@@ -98,7 +97,7 @@ function randomizeDraftPosStrength(veryWeakCounterLimit, veryStrongCounterLimit)
         //Output position and strength pairing
         console.log(pos + ": " + rollDraftClassStrengthString + "\n");
         //Trim the asterisk off the strength String
-        let str = rollDraftClassStrengthString.replace(/\*/g, '');
+        str = rollDraftClassStrengthString.replace(/\*/g, '');
         //Replace actual positions w/ positions as they are in table
             if(pos == "EDGE"){
                 pos = "DE";
@@ -113,6 +112,73 @@ console.log("TOTALS: Very Weak: " + veryWeakCounter + "\n" + "Weak: " + weakCoun
 console.log("*" + affectedCounter + " strengths changed.");
 
 return result;
+}
+
+/**
+ * Either preset OR the strength of each draft position
+ * 
+ * @param {String} type "Preset" for recommended preset, "Reset" to reset all to Normal
+ * @returns {Map} A map of each position & each associated strength
+ */
+function presetDraftPosStrength(type) {
+    let result = new Map();
+    if(type == "Reset")
+    {
+        let posTable = allPositions.PositionsInDraftTable;
+        let pos = "";
+        let str = "";
+        for(let i = 0; i < posTable.length; i++)
+            {
+            pos = posTable[i];
+            str = "Normal";
+            console.log(pos + ": " + str + "\n");
+        if(pos == "EDGE")
+            {
+            pos = "DE";
+            }
+        if(pos == "WILL/SAM")
+            {
+            pos = "OLB";
+            }
+        //add result to map
+        result.set(pos, str);
+            }
+        console.log("All positions set to normal.");
+        return result;
+    }
+    if(type == "Preset")
+    {
+        let posTable = allPositions.PositionsInDraftTable;
+        for(let i = 0; i < posTable.length; i++)
+            {
+                let pos = "";
+                let str = "";
+                pos = posTable[i];
+                str = "Normal";
+                if(pos == "CB" || pos == "QB" || pos == "DT" || pos == "HB")
+                {
+                    str = "Weak";
+                }
+                console.log(pos + ": " + str + "\n");
+                if(pos == "EDGE")
+            {
+                pos = "DE";
+            }
+            if(pos == "WILL/SAM")
+            {
+                pos = "OLB";
+            }
+        //add result to map
+            result.set(pos, str);
+            }
+        console.log("All positions preset to recommended.");
+        console.log(result);
+        return result;
+    }
+    else
+    {
+        return null; //error case, caught in main script
+    }
 }
 
 /**
@@ -145,6 +211,7 @@ async function updateDraftClassPosStrengthTable(table, result) {
         //update the table according to the strength from the result map
         table.records[i]["DraftClassStrength"] = strength;
     }
+    return true;
 }
 
 
@@ -156,27 +223,68 @@ franchise.on('ready', async function () {
     // Read required tables
     await FranchiseUtils.readTableRecords([draftClassPosStrengthTable]);
 
-    //Get user input for very weak/very strong limiter
-	const veryWeakCounterLimit = FranchiseUtils.getUserInputNumber("\nPlease enter the limit of 'Very Weak' positions (or 0 for none): ", 0, 17);
-	const veryStrongCounterLimit = FranchiseUtils.getUserInputNumber("\nPlease enter the limit of 'Very Strong' positions (or 0 for none): ", 0, 17);
-    console.log("\n");
+    //initialize map, confirmation (allows for rerolls)
+    let newStrengthPositionMap = new Map();
+    let confirmation = false;
 
-    //initialize result map
-    let newStrengthPositionMap= new Map();
+    //get desired user action
+    getAction1 = "Enter 1 to randomize each positional strength\n";
+    getAction2 = "Enter 2 to reset all positions back to Normal (Default)\n";
+    getAction3 = "Enter 3 to set each positional strength to a recommended preset\n";
+    getActionStr = getAction1 + getAction2 + getAction3;
+    validActions = [1, 2, 3];
 
-    //call draft randomizer logic
-    newStrengthPositionMap = randomizeDraftPosStrength(veryWeakCounterLimit, veryStrongCounterLimit);
+    while(confirmation == false)
+    {
+        let action = 0;
+        newStrengthPositionMap = new Map(); //reset map on rerolls
+        action = parseInt(FranchiseUtils.getUserSelection(getActionStr, validActions));
+        if(action == 1)
+            {
+            //call draft randomizer logic
+            const veryWeakCounterLimit = FranchiseUtils.getUserInputNumber("\nPlease enter the limit of 'Very Weak' positions (or 0 for none): ", 0, 17);
+	        const veryStrongCounterLimit = FranchiseUtils.getUserInputNumber("\nPlease enter the limit of 'Very Strong' positions (or 0 for none): ", 0, 17);
+            console.log("\n");
+            newStrengthPositionMap = randomizeDraftPosStrength(veryWeakCounterLimit, veryStrongCounterLimit);
+            console.log("\n");
+            confirmation = FranchiseUtils.getYesOrNo("Confirm draft class changes?\n(Y)es to save draft class strength\n(N)o to reroll",true);
+            console.log("\n");
+            }
+        if(action == 2)
+            {
+            newStrengthPositionMap = presetDraftPosStrength("Reset");
+            confirmation = FranchiseUtils.getYesOrNo("Confirm draft class changes?\n(Y)es to save draft class strength\n(N)o to reroll",true);
+            console.log("\n");
+            }
+        if(action == 3)
+        {
+            newStrengthPositionMap = presetDraftPosStrength("Preset")
+            confirmation = FranchiseUtils.getYesOrNo("Confirm draft class changes?\n(Y)es to save draft class strength\n(N)o to reroll",true);
+            console.log("\n");
+        }
+        if(action == 0)
+        {
+            console.log("Something went wrong when trying figure out what you wanted to do. :( ");
+            FranchiseUtils.EXIT_PROGRAM();
+        }
+    }
+
+    if(newStrengthPositionMap.size !== draftClassPosStrengthTable.header.recordCapacity) //error check for map creation
+    {
+        console.log("Something went wrong when trying to create the position to strength mapping. :( ");
+        FranchiseUtils.EXIT_PROGRAM();
+    }
 
     //Get result from update call
     result = updateDraftClassPosStrengthTable(draftClassPosStrengthTable, newStrengthPositionMap);
-    if(!result)
+    if(result == false)
     {
-        console.log("Something went wrong when trying to update the DraftClassPosStrength Table");
+        console.log("Something went wrong when trying to update the DraftClassPosStrength Table. :( ");
         FranchiseUtils.EXIT_PROGRAM();
     }
+
     // Program complete, so print success message and exit
     console.log(`\nDraft Board Updated Successfully.\n`);
     await FranchiseUtils.saveFranchiseFile(franchise);
     FranchiseUtils.EXIT_PROGRAM();
-  
 });
