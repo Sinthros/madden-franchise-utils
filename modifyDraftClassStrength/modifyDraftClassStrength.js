@@ -212,7 +212,7 @@ franchise.on('ready', async function () {
     //set up user selection for draft strength settings
     getAction1 = "Enter 1 to randomize each positional strength\n";
     getAction2 = "Enter 2 to reset all positions back to Normal (Default)\n";
-    getAction3 = "Enter 3 to set each positional strength to a recommended preset\n";
+    getAction3 = "Enter 3 to set each positional strength to a recommended preset (CB, HB, QB, DT set to Weak)\n";
     getActionStr = getAction1 + getAction2 + getAction3;
     getVWeakCounterStr = "\nPlease enter the limit of 'Very Weak' positions (0 for all Very Weak --> Weak): ";
     getVStrongCounterStr = "\nPlease enter the limit of 'Very Strong' positions (0 for all Very Strong --> Strong): ";
