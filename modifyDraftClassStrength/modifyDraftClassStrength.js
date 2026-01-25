@@ -5,7 +5,6 @@
  */
 
 //TODO: Add the result map to a user input option to allow individual adjustments before saving changes
-//Test
 
 
 //Required modules
@@ -18,7 +17,7 @@ const allPositions = JSON.parse(fs.readFileSync(path.join(__dirname, './position
 
 //Print tool header message
 console.log("This program can be used to randomize, preset, or reset your draft class positional strength.\nThis is meant to be run before the class is auto-generated in week 1 of the regular season.\n");
-console.log("-40% chance to get Normal\n-40% chance to get Strong OR Weak\n-20% chance to get Very Weak OR Very Strong.\n");
+console.log("Randomizer percentages:\n-40% chance to get Normal\n-40% chance to get Strong OR Weak\n-20% chance to get Very Weak OR Very Strong.\n");
 console.log("There are also added distinctions between:\n-HB/FB\n-MLB/SAM&WILL\n-FS/SS\n-C/G\n*These will not be reflected in Madden's UI\n\n");
 
 //Set up franchise file 
@@ -161,7 +160,6 @@ function presetDraftPosStrength(type) {
             result.set(pos, str);
         }
         console.log("All positions preset to recommended.");
-        console.log(result);
         return result;
     }
     else {
@@ -216,8 +214,8 @@ franchise.on('ready', async function () {
     getAction2 = "Enter 2 to reset all positions back to Normal (Default)\n";
     getAction3 = "Enter 3 to set each positional strength to a recommended preset\n";
     getActionStr = getAction1 + getAction2 + getAction3;
-    getVWeakCounterStr = "\nPlease enter the limit of 'Very Weak' positions (or 0 for none): ";
-    getVStrongCounterStr = "\nPlease enter the limit of 'Very Strong' positions (or 0 for none): ";
+    getVWeakCounterStr = "\nPlease enter the limit of 'Very Weak' positions (0 for all Very Weak --> Weak): ";
+    getVStrongCounterStr = "\nPlease enter the limit of 'Very Strong' positions (0 for all Very Strong --> Strong): ";
     confirmationStr = "Confirm draft class changes?\n(Y)es to save draft class strength\n(N)o to reroll";
 
     validActions = [1, 2, 3];
