@@ -1,1 +1,0 @@
-pkg -c pkgConfig.json randomizeDraftClassStrength.js -o randomizeDraftClassStrength.exe

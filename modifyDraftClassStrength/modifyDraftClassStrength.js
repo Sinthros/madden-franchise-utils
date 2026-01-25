@@ -1,10 +1,12 @@
 /**
- * @fileoverview Draft class position strength randomizer tool
+ * @fileoverview Draft class position strength modifyer tool (randomize, reset, or preset)
  * @author clclark01
- * @version 1.0.1
+ * @version 1.0.0
  */
 
 //TODO: Add the result map to a user input option to allow individual adjustments before saving changes
+//Test
+
 
 //Required modules
 const fs = require('fs');
@@ -45,18 +47,15 @@ function randomizeDraftPosStrength(veryWeakCounterLimit, veryStrongCounterLimit)
     let pos = "";
     let str = "";
 
-    for(let i = 0; i < posTable.length; i++)
-    {
+    for (let i = 0; i < posTable.length; i++) {
         pos = posTable[i];
         let rollDraftClassStrength = FranchiseUtils.getRandomNumber(1, 10);
         let rollDraftClassStrengthString = "";
-            switch(rollDraftClassStrength)
-            {   
+        switch (rollDraftClassStrength) {
             case 1:
                 rollDraftClassStrengthString = "Very_Weak";
                 veryWeakCounter++;
-                if(veryWeakCounter > veryWeakCounterLimit)
-                {
+                if (veryWeakCounter > veryWeakCounterLimit) {
                     veryWeakCounter--;
                     affectedCounter++;
                     weakCounter++;
@@ -83,8 +82,7 @@ function randomizeDraftPosStrength(veryWeakCounterLimit, veryStrongCounterLimit)
             case 10:
                 rollDraftClassStrengthString = "Very_Strong";
                 veryStrongCounter++;
-                if(veryStrongCounter > veryStrongCounterLimit)
-                {
+                if (veryStrongCounter > veryStrongCounterLimit) {
                     veryStrongCounter--;
                     affectedCounter++;
                     strongCounter++;
@@ -93,25 +91,25 @@ function randomizeDraftPosStrength(veryWeakCounterLimit, veryStrongCounterLimit)
                 break;
             default:
                 break;
-            }
+        }
         //Output position and strength pairing
         console.log(pos + ": " + rollDraftClassStrengthString + "\n");
         //Trim the asterisk off the strength String
         str = rollDraftClassStrengthString.replace(/\*/g, '');
         //Replace actual positions w/ positions as they are in table
-            if(pos == "EDGE"){
-                pos = "DE";
-            }
-            if(pos == "WILL/SAM"){
-                pos = "OLB";
-            }
+        if (pos == "EDGE") {
+            pos = "DE";
+        }
+        if (pos == "WILL/SAM") {
+            pos = "OLB";
+        }
         //add result to map
         result.set(pos, str);
     }
-console.log("TOTALS: Very Weak: " + veryWeakCounter + "\n" + "Weak: " + weakCounter + "\n" + "Normal: " + normalCounter + "\n" + "Strong: " + strongCounter + "\n" + "Very Strong: " + veryStrongCounter);
-console.log("*" + affectedCounter + " strengths changed.");
+    console.log("TOTALS: Very Weak: " + veryWeakCounter + "\n" + "Weak: " + weakCounter + "\n" + "Normal: " + normalCounter + "\n" + "Strong: " + strongCounter + "\n" + "Very Strong: " + veryStrongCounter);
+    console.log("*" + affectedCounter + " strengths changed.");
 
-return result;
+    return result;
 }
 
 /**
@@ -122,61 +120,51 @@ return result;
  */
 function presetDraftPosStrength(type) {
     let result = new Map();
-    if(type == "Reset")
-    {
+    if (type == "Reset") {
         let posTable = allPositions.PositionsInDraftTable;
         let pos = "";
         let str = "";
-        for(let i = 0; i < posTable.length; i++)
-            {
+        for (let i = 0; i < posTable.length; i++) {
             pos = posTable[i];
             str = "Normal";
             console.log(pos + ": " + str + "\n");
-        if(pos == "EDGE")
-            {
-            pos = "DE";
+            if (pos == "EDGE") {
+                pos = "DE";
             }
-        if(pos == "WILL/SAM")
-            {
-            pos = "OLB";
+            if (pos == "WILL/SAM") {
+                pos = "OLB";
             }
-        //add result to map
-        result.set(pos, str);
-            }
+            //add result to map
+            result.set(pos, str);
+        }
         console.log("All positions set to normal.");
         return result;
     }
-    if(type == "Preset")
-    {
+    if (type == "Preset") {
         let posTable = allPositions.PositionsInDraftTable;
-        for(let i = 0; i < posTable.length; i++)
-            {
-                let pos = "";
-                let str = "";
-                pos = posTable[i];
-                str = "Normal";
-                if(pos == "CB" || pos == "QB" || pos == "DT" || pos == "HB")
-                {
-                    str = "Weak";
-                }
-                console.log(pos + ": " + str + "\n");
-                if(pos == "EDGE")
-            {
+        for (let i = 0; i < posTable.length; i++) {
+            let pos = "";
+            let str = "";
+            pos = posTable[i];
+            str = "Normal";
+            if (pos == "CB" || pos == "QB" || pos == "DT" || pos == "HB") {
+                str = "Weak";
+            }
+            console.log(pos + ": " + str + "\n");
+            if (pos == "EDGE") {
                 pos = "DE";
             }
-            if(pos == "WILL/SAM")
-            {
+            if (pos == "WILL/SAM") {
                 pos = "OLB";
             }
-        //add result to map
+            //add result to map
             result.set(pos, str);
-            }
+        }
         console.log("All positions preset to recommended.");
         console.log(result);
         return result;
     }
-    else
-    {
+    else {
         return null; //error case, caught in main script
     }
 }
@@ -185,27 +173,23 @@ function presetDraftPosStrength(type) {
  * Updates the draft class positional strength table
  * 
  * @param {Object} table The draftClassPosStrength Table
- * @param {Map} result the Map output from randomizeDraftPosStrength (Position => Strength)
+ * @param {Map} result the Map output from  (Position => Strength)
  * @returns {Boolean} true on success, false on failure
  */
 async function updateDraftClassPosStrengthTable(table, result) {
     rows = table.header.recordCapacity;
-    if(!rows)
-    {
+    if (!rows) {
         return false; //Something went wrong with getting rows in table
     }
     //Iterate through table rows
-    for(i=0; i<rows; i++)
-    {
+    for (i = 0; i < rows; i++) {
         //pull position from table
         pos = table.records[i]["DraftPosition"]; //C, CB, etc
-        if(!pos)
-        {
+        if (!pos) {
             return false; //null check for DraftPosition rows
         }
         strength = result.get(pos);
-        if(!strength)
-        {
+        if (!strength) {
             return false; //null check for missing key in result map
         }
         //update the table according to the strength from the result map
@@ -227,49 +211,47 @@ franchise.on('ready', async function () {
     let newStrengthPositionMap = new Map();
     let confirmation = false;
 
-    //get desired user action
+    //set up user selection for draft strength settings
     getAction1 = "Enter 1 to randomize each positional strength\n";
     getAction2 = "Enter 2 to reset all positions back to Normal (Default)\n";
     getAction3 = "Enter 3 to set each positional strength to a recommended preset\n";
     getActionStr = getAction1 + getAction2 + getAction3;
+    getVWeakCounterStr = "\nPlease enter the limit of 'Very Weak' positions (or 0 for none): ";
+    getVStrongCounterStr = "\nPlease enter the limit of 'Very Strong' positions (or 0 for none): ";
+    confirmationStr = "Confirm draft class changes?\n(Y)es to save draft class strength\n(N)o to reroll";
+
     validActions = [1, 2, 3];
 
-    while(confirmation == false)
-    {
+    while (confirmation == false) { //until the user confirms a selection...
         let action = 0;
         newStrengthPositionMap = new Map(); //reset map on rerolls
-        action = parseInt(FranchiseUtils.getUserSelection(getActionStr, validActions));
-        if(action == 1)
-            {
-            //call draft randomizer logic
-            const veryWeakCounterLimit = FranchiseUtils.getUserInputNumber("\nPlease enter the limit of 'Very Weak' positions (or 0 for none): ", 0, 17);
-	        const veryStrongCounterLimit = FranchiseUtils.getUserInputNumber("\nPlease enter the limit of 'Very Strong' positions (or 0 for none): ", 0, 17);
+        action = parseInt(FranchiseUtils.getUserSelection(getActionStr, validActions)); //get user selection
+        if (action == 1) { //randomizer logic
+            const veryWeakCounterLimit = FranchiseUtils.getUserInputNumber(getVWeakCounterStr, 0, 17);
+            const veryStrongCounterLimit = FranchiseUtils.getUserInputNumber(getVStrongCounterStr, 0, 17);
             console.log("\n");
             newStrengthPositionMap = randomizeDraftPosStrength(veryWeakCounterLimit, veryStrongCounterLimit);
             console.log("\n");
-            confirmation = FranchiseUtils.getYesOrNo("Confirm draft class changes?\n(Y)es to save draft class strength\n(N)o to reroll",true);
-            console.log("\n");
-            }
-        if(action == 2)
-            {
-            newStrengthPositionMap = presetDraftPosStrength("Reset");
-            confirmation = FranchiseUtils.getYesOrNo("Confirm draft class changes?\n(Y)es to save draft class strength\n(N)o to reroll",true);
-            console.log("\n");
-            }
-        if(action == 3)
-        {
-            newStrengthPositionMap = presetDraftPosStrength("Preset")
-            confirmation = FranchiseUtils.getYesOrNo("Confirm draft class changes?\n(Y)es to save draft class strength\n(N)o to reroll",true);
+            confirmation = FranchiseUtils.getYesOrNo(confirmationStr, true);
             console.log("\n");
         }
-        if(action == 0)
-        {
+        if (action == 2) { //reset all to normal
+            newStrengthPositionMap = presetDraftPosStrength("Reset");
+            confirmation = FranchiseUtils.getYesOrNo(confirmationStr, true);
+            console.log("\n");
+        }
+        if (action == 3) { //use recommended preset
+            newStrengthPositionMap = presetDraftPosStrength("Preset")
+            confirmation = FranchiseUtils.getYesOrNo(confirmationStr, true);
+            console.log("\n");
+        }
+        if (action == 0) {
             console.log("Something went wrong when trying figure out what you wanted to do. :( ");
             FranchiseUtils.EXIT_PROGRAM();
         }
     }
 
-    if(newStrengthPositionMap.size !== draftClassPosStrengthTable.header.recordCapacity) //error check for map creation
+    if (newStrengthPositionMap.size !== draftClassPosStrengthTable.header.recordCapacity) //error check for map creation
     {
         console.log("Something went wrong when trying to create the position to strength mapping. :( ");
         FranchiseUtils.EXIT_PROGRAM();
@@ -277,8 +259,7 @@ franchise.on('ready', async function () {
 
     //Get result from update call
     result = updateDraftClassPosStrengthTable(draftClassPosStrengthTable, newStrengthPositionMap);
-    if(result == false)
-    {
+    if (result == false) {
         console.log("Something went wrong when trying to update the DraftClassPosStrength Table. :( ");
         FranchiseUtils.EXIT_PROGRAM();
     }
