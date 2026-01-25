@@ -1,35 +1,56 @@
-const fs = require('fs');
-const path = require('path');
+const path = require("path");
+const fs = require("fs");
 
-// 📍 Change these to match your setup
-const dir = 'C:\\Users\\xxx\\Downloads\\jpgTalentPortraits'; // directory with PNG files
-const csvFile = 'C:\\Users\\xxx\\Downloads\\assetlibrary_talentportraits_brt.csv'; // path to your CSV file
+const FranchiseUtils = require("../Utils/FranchiseUtils");
+
+// Prompt user for inputs
+let dir = FranchiseUtils.getStringInput("Enter the absolute folder path containing the files:");
+let csvFile = FranchiseUtils.getStringInput("Enter the absolute CSV file path:");
+let ext = FranchiseUtils.getStringInput("Enter the file extension (e.g., .jpg, .dds):");
+
+// Remove any quotes from inputs
+dir = dir.replace(/['"]/g, "");
+csvFile = csvFile.replace(/['"]/g, "");
+ext = ext.replace(/['"]/g, "");
+
+// Normalize extension to include dot
+const extension = ext.startsWith(".") ? ext.toLowerCase() : `.${ext.toLowerCase()}`;
 
 // --- Load and parse CSV ---
-const csvData = fs.readFileSync(csvFile, 'utf8')
+if (!fs.existsSync(csvFile)) {
+  console.error(`CSV file not found: ${csvFile}`);
+  process.exit(1);
+}
+
+const csvData = fs
+  .readFileSync(csvFile, "utf8")
   .trim()
-  .split('\n')
+  .split("\n")
   .slice(1) // skip header
-  .map(line => {
-    const [name, id] = line.split(',').map(s => s.trim());
+  .map((line) => {
+    const [name, id] = line.split(",").map((s) => s.trim());
     return { name, id };
   });
 
 // Create a lookup map for fast access
-const nameToId = Object.fromEntries(csvData.map(row => [row.name, row.id]));
+const nameToId = Object.fromEntries(csvData.map((row) => [row.name, row.id]));
 
 // --- Rename files ---
-fs.readdirSync(dir).forEach(file => {
-  if (file.toLowerCase().endsWith('.jpg')) {
-    const baseName = path.parse(file).name; // e.g. Coachhead_2_B_N_20
+if (!fs.existsSync(dir)) {
+  console.error(`Directory not found: ${dir}`);
+  process.exit(1);
+}
+
+fs.readdirSync(dir).forEach((file) => {
+  if (file.toLowerCase().endsWith(extension)) {
+    const baseName = path.parse(file).name;
     const matchId = nameToId[baseName];
 
     if (matchId) {
-      const newFile = `${matchId}.jpg`;
+      const newFile = `${matchId}${extension}`;
       const oldPath = path.join(dir, file);
       const newPath = path.join(dir, newFile);
 
-      // Avoid overwriting if the target already exists
       if (!fs.existsSync(newPath)) {
         fs.renameSync(oldPath, newPath);
         console.log(`Renamed: ${file} → ${newFile}`);
@@ -42,4 +63,4 @@ fs.readdirSync(dir).forEach(file => {
   }
 });
 
-console.log('✅ Renaming complete.');
+console.log("✅ Renaming complete.");
