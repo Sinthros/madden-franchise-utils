@@ -1,0 +1,1 @@
+pkg -c pkgConfig.json modifyDraftClassStrength.js -o modifyDraftClassStrength.exe
