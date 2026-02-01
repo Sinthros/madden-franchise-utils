@@ -8,7 +8,8 @@ const validGameYears = [
   FranchiseUtils.YEARS.M22,
   FranchiseUtils.YEARS.M23,
   FranchiseUtils.YEARS.M24,
-  FranchiseUtils.YEARS.M25
+  FranchiseUtils.YEARS.M25,
+  FranchiseUtils.YEARS.M26
 ];
 
 // Print tool header message

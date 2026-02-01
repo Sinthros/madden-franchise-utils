@@ -6,3 +6,6 @@ generateSchema/output/**
 updateAllRosters/
 spotrac/
 private/
+randomizeDraftClassStrength/test.js
+randomizeDraftClassStrength/test2.js
+modifyDraftClassStrength/test2.js
