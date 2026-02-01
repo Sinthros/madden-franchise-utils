@@ -1,8 +1,0 @@
-node_modules/
-**/*.exe
-.vs/
-**/*.xlsx
-generateSchema/output/**
-updateAllRosters/
-spotrac/
-private/
