@@ -1,0 +1,8 @@
+{
+    "pkg": {
+        "scripts": ["../Utils/FranchiseUtils.js"],
+        "assets": ["./positionsForDraftStrength.json"],
+        "targets": [ "node22-win" ],
+        "outputPath": "."
+    }
+}
