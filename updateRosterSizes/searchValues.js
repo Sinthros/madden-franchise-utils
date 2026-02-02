@@ -7,12 +7,13 @@ const validGameYears = [
   FranchiseUtils.YEARS.M23,
   FranchiseUtils.YEARS.M24,
   FranchiseUtils.YEARS.M25,
+  FranchiseUtils.YEARS.M26,
 ];
 
 console.log("This program allows you to search all text fields across all tables for values containing the text you supply to search.");
 
-const isFtc = FranchiseUtils.getYesOrNo("Is your file an FTC file? Enter yes or no. If you don't know what this means, enter no.");
-const includeEmptyRows = FranchiseUtils.getYesOrNo("Should empty rows be included in the search? Enter yes or no. If you don't know what this means, enter yes.");
+const isFtc = FranchiseUtils.getYesOrNo("Is your file an FTC file? Enter yes or no. If you don't know what this means, enter no.", true);
+const includeEmptyRows = FranchiseUtils.getYesOrNo("Should empty rows be included in the search? Enter yes or no. If you don't know what this means, enter yes.", true);
 
 const franchise = FranchiseUtils.init(validGameYears, {promptForBackup: false, isFtcFile: isFtc});
 
@@ -54,7 +55,7 @@ franchise.on("ready", async function () {
       }
     }
   } while (
-    FranchiseUtils.getYesOrNo("Would you like to search for another term? Enter yes or no.")
+    FranchiseUtils.getYesOrNo("Would you like to search for another term? Enter yes or no.", true)
   );
 
   FranchiseUtils.EXIT_PROGRAM();
