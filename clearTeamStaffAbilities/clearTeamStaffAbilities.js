@@ -54,16 +54,27 @@ franchise.on('ready', async function () {
 		{
 			console.log(`${teamList[i].rowNum} - ${teamList[i].teamRecord.DisplayName}`);
 		}
+		console.log(`999 - ALL TEAMS (Use with caution)`);
 
 		console.log("\nPlease enter the number of the team you want to clear abilities for:");
 		userSelection = parseInt(prompt());
 
-		if(isNaN(userSelection) || userSelection < 0 || !teamList.find(team => team.rowNum === userSelection))
+		if(isNaN(userSelection) || userSelection < 0 || (!teamList.find(team => team.rowNum === userSelection) && userSelection !== 999))
 		{
 			console.log("Invalid selection. Please try again.\n");
 		}
+
+		if(userSelection === 999)
+		{
+			const confirm = FranchiseUtils.getYesOrNo("Are you sure you want to clear abilities for ALL TEAMS? This action cannot be undone. (yes/no): ");
+
+			if(!confirm)
+			{
+				userSelection = NaN; // Force re-prompt
+			}
+		}
 	}
-	while(isNaN(userSelection) || userSelection < 0 || !teamList.find(team => team.rowNum === userSelection));
+	while(isNaN(userSelection) || userSelection < 0 || (!teamList.find(team => team.rowNum === userSelection) && userSelection !== 999));
 
 	const selectedTeam = teamTable.records[userSelection];
 
@@ -74,6 +85,33 @@ franchise.on('ready', async function () {
 	const defensiveCoachRow = FranchiseUtils.getRowFromRef(selectedTeam.DefensiveCoordinator);
 
 	const coachesToUpdate = [headCoachRow, offensiveCoachRow, defensiveCoachRow];
+
+	if(userSelection === 999)
+	{
+		for(const teamEntry of teamList)
+		{
+			const teamRecord = teamEntry.teamRecord;
+
+			const headCoachRow = FranchiseUtils.getRowFromRef(teamRecord.HeadCoach);
+			const offensiveCoachRow = FranchiseUtils.getRowFromRef(teamRecord.OffensiveCoordinator);
+			const defensiveCoachRow = FranchiseUtils.getRowFromRef(teamRecord.DefensiveCoordinator);
+
+			if(!coachesToUpdate.includes(headCoachRow))
+			{
+				coachesToUpdate.push(headCoachRow);
+			}
+
+			if(!coachesToUpdate.includes(offensiveCoachRow))
+			{
+				coachesToUpdate.push(offensiveCoachRow);
+			}
+
+			if(!coachesToUpdate.includes(defensiveCoachRow))
+			{
+				coachesToUpdate.push(defensiveCoachRow);
+			}
+		}
+	}
 
 	for(const coachRow of coachesToUpdate)
 	{
