@@ -1,0 +1,1 @@
+pkg -c pkgConfig.json coachIncubator.js -o coachIncubator.exe

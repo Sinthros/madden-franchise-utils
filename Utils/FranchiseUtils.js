@@ -3573,6 +3573,15 @@ async function getNextRecord(table, { zeroInit = false } = {}) {
   return record;
 }
 
+function getPlayerTags(playerRecord) {
+  const tags = [];
+
+  tags.push(playerRecord.Tag1);
+  tags.push(playerRecord.Tag2);
+
+  return tags.filter((tag) => tag !== "NoRole");
+}
+
 module.exports = {
   init,
   selectFranchiseFile, // FUNCTIONS
@@ -3637,6 +3646,7 @@ module.exports = {
   getNextRecordByTableId,
   getNextZeroedRecord,
   getNextRecord,
+  getPlayerTags,
 
   getYesOrNo, // UTILITY FUNCTIONS
   getYesNoForceQuit,

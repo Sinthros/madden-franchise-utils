@@ -1,30 +1,31 @@
 // Required modules
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const fs = require('fs');
+const path = require('path');
 const prompt = require('prompt-sync')();
 
-// Print tool header message
-console.log("This program will update player jersey numbers in a franchise file to follow a given year's rules. Only Madden 25 is supported.\n");
-
 // Required lookups
-const posMap = JSON.parse(fs.readFileSync('lookupFiles/posMap.json'), 'utf-8');
-const retiredNumbers = JSON.parse(fs.readFileSync('lookupFiles/retiredNumbers.json'), 'utf-8');
-const rules2020pre = JSON.parse(fs.readFileSync('lookupFiles/rules_2020pre.json'), 'utf-8');
-const rules2021 = JSON.parse(fs.readFileSync('lookupFiles/rules_2021.json'), 'utf-8');
-const rules2023 = JSON.parse(fs.readFileSync('lookupFiles/rules_2023.json'), 'utf-8');
-
+const posMap = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/posMap.json')), 'utf-8');
+const retiredNumbers = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/retiredNumbers.json')), 'utf-8');
+const rules2020pre = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/rules_2020pre.json')), 'utf-8');
+const rules2021 = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/rules_2021.json')), 'utf-8');
+const rules2023 = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/rules_2023.json')), 'utf-8');
 // Set up franchise file
 const validGames = [
 	FranchiseUtils.YEARS.M25,
 	FranchiseUtils.YEARS.M26
 ];
+
+// Print tool header message
+console.log(`This program will update player jersey numbers in a franchise file to follow a given year's rules. Madden ${FranchiseUtils.formatListString(validGames)} files are supported.\n`);
+
 const franchise = FranchiseUtils.init(validGames);
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 /**
  * Gets a valid jersey number for a player based on the given set of rules and available numbers on the player's team (if applicable)
  * 
- * @param {Object} playerRecord The player record to update
+ * @param {FranchiseFileRecord} playerRecord The player record to update
  * @param {Object} availableAndUnavailableNums A mapping of available and unavailable jersey numbers for the player's team, or pass in null if the player is a free agent
  * @param {Object} rules The set of rules to follow for jersey numbers by position
  * @returns {number} A valid jersey number for the player
@@ -102,7 +103,7 @@ function isRetiredJerseyNum(jerseyNum, teamIndex, year)
 /**
  * Given a player record, checks if the player's jersey number is valid based on the given rules and is not retired
  * 
- * @param {*} playerRecord The player record to check
+ * @param {FranchiseFileRecord} playerRecord The player record to check
  * @param {*} rules The set of rules to follow for jersey numbers by position
  * @param {*} year The year (for checking retired numbers)
  * @returns {boolean} True if the player's jersey number is valid based on the given rules and is not retired, false otherwise 
@@ -119,6 +120,7 @@ function isValidJerseyNum(playerRecord, rules, year)
 
 	if(!posMap.hasOwnProperty(pos))
 	{
+		console.log(pos);
 		return false;
 	}
 
@@ -216,6 +218,11 @@ franchise.on('ready', async function () {
 		teamIndices.push(teamRecord['TeamIndex']);
 		teamPlayersMap[teamRecord['TeamIndex']] = [];
 		teamAvailableAndUnavailableNums[teamRecord['TeamIndex']] = [[], []];
+
+		if((currYear < 2023 && useYearRules) || (!useYearRules && (currRules === rules2020pre || currRules === rules2021)))
+		{
+			teamAvailableAndUnavailableNums[teamRecord['TeamIndex']][1].push(0);
+		}
 	}
 
 	// Count of players found to be wearing retired numbers
@@ -306,7 +313,12 @@ franchise.on('ready', async function () {
 			let playerIndex = teamPlayers[j];
 			let playerRecord = playerTable.records[playerIndex];
 
-			playerRecord['JerseyNum'] = getValidJerseyNum(playerRecord, teamAvailableAndUnavailableNums[teamIndex], currRules);
+			playerRecord['JerseyNum'] = await getValidJerseyNum(playerRecord, teamAvailableAndUnavailableNums[teamIndex], currRules);
+
+			if(FranchiseUtils.DEBUG_MODE && playerRecord['JerseyNum'] === 0 && currYear < 2023)
+			{
+				console.log(`Error: Assigned jersey number 0 to player ${playerRecord['FirstName']} ${playerRecord['LastName']} on team ${teamIndex} in year ${currYear}, which is not allowed.`);
+			}
 
 			teamAvailableAndUnavailableNums[teamIndex][1].push(playerRecord['JerseyNum']);
 
