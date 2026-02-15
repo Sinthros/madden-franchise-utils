@@ -1,10 +1,11 @@
 const FranchiseUtils = require("../Utils/FranchiseUtils");
 const prompt = require("prompt-sync")();
-const UNDEFINED_TABLE_MSG =
-  "Unable to load any table matching the name/ID provided.";
+const UNDEFINED_TABLE_MSG = "Unable to load any table matching the name/ID provided.";
 const EXIT_KWD = "EXIT";
 const PRINT_KWD = "PRINT";
 const PRINTALL_KWD = "PRINTALL";
+const PRINTALLENUM_KWD = "PRINTALLENUM";
+const PRINTALLCOLENUMS_KWD = "PRINTALLCOLENUM";
 
 const validGameYears = [
   FranchiseUtils.YEARS.M20,
@@ -17,7 +18,7 @@ const validGameYears = [
 ];
 
 console.log(
-  "This program will allow you to select any table by name or ID, and then will let you select a column to get valid schema values for."
+  "This program will allow you to select any table by name or ID, and then will let you select a column to get valid schema values for.",
 );
 
 const franchise = FranchiseUtils.init(validGameYears, {
@@ -27,7 +28,7 @@ const franchise = FranchiseUtils.init(validGameYears, {
 async function getTable(franchise) {
   while (true) {
     console.log(
-      "Please enter a table name or table ID to check (For example, Player or 4220). Table name is case sensitive."
+      "Please enter a table name or table ID to check (For example, Player or 4220). Table name is case sensitive.",
     );
     let tableId = prompt().trim();
     let table;
@@ -35,9 +36,7 @@ async function getTable(franchise) {
     if (!isNaN(parseInt(tableId, 10))) {
       tableId = parseInt(tableId, 10);
       // Check for either the ID or the unique ID
-      table =
-        franchise.getTableById(tableId) ||
-        franchise.getTableByUniqueId(tableId);
+      table = franchise.getTableById(tableId) || franchise.getTableByUniqueId(tableId);
     } else {
       table = franchise.getTableByName(tableId);
     }
@@ -67,15 +66,11 @@ function printColumnTypes(table) {
     let tsType;
 
     if (enumField) {
-      tsType = "string"; // or `'EnumName'` if you want to customize it
+      const enumName = toPascalCase(column);
+      tsType = enumName;
     } else if (isReference) {
       tsType = "ReferenceField";
-    } else if (
-      type === "int" ||
-      type === "s_int" ||
-      type === "uint" ||
-      type === "float"
-    ) {
+    } else if (type === "int" || type === "s_int" || type === "uint" || type === "float") {
       tsType = "number";
     } else if (type === "bool") {
       tsType = "boolean";
@@ -100,7 +95,7 @@ function getTableField(table) {
 
   while (true) {
     console.log(
-      `Select a column from ${table.header.name} to get data for. If you want to print out the column names, enter 'print'. Enter 'printall' to print all column names and types. Enter 'exit' to stop searching for columns in this table.`
+      `Select a column from ${table.header.name} to get data for. If you want to print out the column names, enter 'print'. Enter 'printall' to print all column names and types. Enter 'exit' to stop searching for columns in this table.`,
     );
     const columnName = prompt().trim();
 
@@ -121,43 +116,45 @@ function getTableField(table) {
       continue;
     }
 
-    if (columnName.toUpperCase() === "PRINTALLENUM") {
+    if (columnName.toUpperCase() === PRINTALLENUM_KWD) {
       printAllEnumValues(table);
       continue;
     }
 
+    if (columnName.toUpperCase() === PRINTALLCOLENUMS_KWD) {
+      printAllColumnNamesEnum(table);
+      continue;
+    }
     const lowerCaseColumnName = columnName.toLowerCase();
     const columnIndex = lowerCaseColumnNames.indexOf(lowerCaseColumnName);
 
     if (columnIndex !== -1) {
       const actualColumnName = columnNames[columnIndex];
       const fieldOffset = record._fields[actualColumnName].offset;
-      const {
-        enum: enumField,
-        isReference,
-        type,
-        minValue,
-        maxValue,
-        maxLength,
-      } = fieldOffset;
+      const { enum: enumField, isReference, type, minValue, maxValue, maxLength } = fieldOffset;
       const isEnum = enumField !== undefined;
       const isInt = type === "int" || type === "s_int";
       const isString = type === "string";
       const isBool = type === "bool";
 
       if (isEnum) {
-        console.log(
-          `The field ${actualColumnName} has an enum of valid values. These values are as follows:`
-        );
-        const csvString =
-          '"' +
-          enumField._members.map((member) => member._name).join('","') +
-          '"';
+        const enumName = actualColumnName; // or customize this if you want PascalCase
+
+        const enumValues = enumField._members.map((member) => member._name);
+
+        console.log(`The field ${actualColumnName} has an enum of valid values. These values are as follows:`);
+
+        // Existing CSV output
+        const csvString = '"' + enumValues.join('","') + '"';
         console.log(csvString);
-      } else if (isReference) {
-        console.log(
-          `The field ${actualColumnName} is a reference of type ${type}`
-        );
+
+        // New: TypeScript enum output
+        console.log(`\nexport enum ${enumName} {`);
+        enumValues.forEach((value) => {
+          const safeKey = value.replace(/[^a-zA-Z0-9_]/g, "_");
+          console.log(`  ${safeKey} = '${value}',`);
+        });
+        console.log("}\n");
       } else if (isInt) {
         console.log(`The field ${actualColumnName} is an int.`);
         console.log(`Min value: ${minValue}`);
@@ -166,9 +163,7 @@ function getTableField(table) {
         console.log(`The field ${actualColumnName} is a string.`);
         console.log(`Max length: ${maxLength}`);
       } else if (isBool) {
-        console.log(
-          `The field ${actualColumnName} is a boolean. Valid values are true or false.`
-        );
+        console.log(`The field ${actualColumnName} is a boolean. Valid values are true or false.`);
       } else {
         console.log(`The field ${actualColumnName} has an unknown type.`);
       }
@@ -178,62 +173,64 @@ function getTableField(table) {
   }
 }
 
+function toPascalCase(str) {
+  return str.replace(/[_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : "")).replace(/^(.)/, (c) => c.toUpperCase());
+}
+
 function printAllEnumValues(table) {
   const record = table.records[0];
   const columns = Object.keys(record._fields);
 
-  let minValues = {};
-  let maxValues = {};
-  let maxLengths = {};
+  let foundAny = false;
+
+  console.log(`\n===== TypeScript Enums for table: ${table.header.name} =====\n`);
 
   for (const column of columns) {
     const field = record._fields[column].offset;
+    const { enum: enumField } = field;
 
-    const {
-      enum: enumField,
-      isReference,
-      type,
-      minValue,
-      maxValue,
-      maxLength,
-    } = field;
+    if (!enumField) continue;
 
-    // ---- Skip enums and references ----
-    if (enumField || isReference) continue;
+    foundAny = true;
 
-    // ---- Number fields (int, uint, float) ----
-    if (["int", "s_int", "uint", "float"].includes(type)) {
-      if (typeof minValue === "number") minValues[column] = minValue;
-      if (typeof maxValue === "number") maxValues[column] = maxValue;
-      continue;
-    }
+    const enumName = toPascalCase(column);
+    const enumValues = enumField._members.map((m) => m._name);
 
-    // ---- String fields ----
-    if (type === "string" && typeof maxLength === "number") {
-      maxLengths[column] = maxLength;
-    }
+    //console.log(`// Column: ${column}`);
+    console.log(`export enum ${enumName} {`);
+
+    enumValues.forEach((value) => {
+      // Exclude anything ending with "_" except "Invalid_"
+      if (value.endsWith("_") && value !== "Invalid_") return;
+
+      const safeKey = value.replace(/[^a-zA-Z0-9_]/g, "_");
+      const finalKey = /^\d/.test(safeKey) ? `_${safeKey}` : safeKey;
+
+      console.log(`  ${finalKey} = '${value}',`);
+    });
+
+    console.log("}\n");
   }
 
-  // ---- Print results ----
-  console.log("\n===== MinFieldValues (auto-generated) =====");
-  console.log("export enum MinFieldValues {");
-  Object.entries(minValues).forEach(([key, value]) =>
-    console.log(`  ${key} = ${value},`)
-  );
-  console.log("}");
+  if (!foundAny) {
+    console.log("No enum columns found on this table.\n");
+  }
+}
 
-  console.log("\n===== MaxFieldValues (auto-generated) =====");
-  console.log("export enum MaxFieldValues {");
-  Object.entries(maxValues).forEach(([key, value]) =>
-    console.log(`  ${key} = ${value},`)
-  );
-  console.log("}");
+function printAllColumnNamesEnum(table) {
+  const record = table.records[0];
+  const columns = Object.keys(record._fields);
 
-  console.log("\n===== MaxFieldLength (auto-generated) =====");
-  console.log("export enum MaxFieldLength {");
-  Object.entries(maxLengths).forEach(([key, value]) =>
-    console.log(`  ${key} = ${value},`)
-  );
+  console.log(`\n===== Column Name Enum for table: ${table.header.name} =====\n`);
+  console.log(`export enum ColumnNames {`);
+
+  columns.forEach((col) => {
+    const safeKey = col.replace(/[^a-zA-Z0-9_]/g, "_");
+    const finalKey = /^\d/.test(safeKey) ? `_${safeKey}` : safeKey;
+
+    console.log(`  ${finalKey} = '${col}',`);
+  });
+
   console.log("}\n");
 }
 
