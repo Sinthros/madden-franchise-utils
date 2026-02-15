@@ -51,7 +51,7 @@ franchise.on('ready', async function () {
 	
 	
 	// Program complete, so print success message, save the franchise file, and exit
-	console.log("\nAll duplicate players successfully cleared.\n");
+	console.log("\nAll missing coach playsheet refs assigned successfully.\n");
     await FranchiseUtils.saveFranchiseFile(franchise);
 	FranchiseUtils.EXIT_PROGRAM();
   
