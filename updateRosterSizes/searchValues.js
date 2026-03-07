@@ -43,7 +43,7 @@ franchise.on("ready", async function () {
           const { enum: enumField, isReference, type, minValue, maxValue, maxLength } = fieldOffset;
           const isEnum = enumField !== undefined;
           
-          if (fieldOffset.type === "string" || fieldOffset.type === "int" || isEnum) {
+          if (fieldOffset.type === "string" || fieldOffset.type === "int" || isEnum || isReference) {
             const cellValue = String(record[column]).toLowerCase();
             if (cellValue.includes(searchValue)) {
               console.log(
@@ -55,7 +55,8 @@ franchise.on("ready", async function () {
       }
     }
   } while (
-    FranchiseUtils.getYesOrNo("Would you like to search for another term? Enter yes or no.", true)
+    true
+    //FranchiseUtils.getYesOrNo("Would you like to search for another term? Enter yes or no.", true)
   );
 
   FranchiseUtils.EXIT_PROGRAM();

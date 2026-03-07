@@ -2639,15 +2639,19 @@ function getYesOrNo(message, allowShortForm = false) {
 }
 
 function getYesNoForceQuit(message) {
+  return getYesNoForceQuitShort(message, false);
+}
+
+function getYesNoForceQuitShort(message, allowShortForm = false) {
   while (true) {
     console.log(message);
     const input = prompt().trim().toUpperCase();
 
-    if (input === YES_KWD) {
+    if (input === YES_KWD || (allowShortForm && input === Y_KWD)) {
       return YES_KWD;
-    } else if (input === NO_KWD) {
+    } else if (input === NO_KWD || (allowShortForm && input === N_KWD)) {
       return NO_KWD;
-    } else if (input === FORCEQUIT_KWD) {
+    } else if (input === FORCEQUIT_KWD || (allowShortForm && input === "F")) {
       return FORCEQUIT_KWD;
     } else {
       console.log(`Invalid input. Please enter ${YES_KWD}, ${NO_KWD}, or ${FORCEQUIT_KWD} .`);
@@ -3351,6 +3355,39 @@ function getEnumValuesForField(source, fieldName) {
 }
 
 /**
+ * Resolves an asset binary back to its originating table + row.
+ *
+ * @param {Franchise} franchise
+ * @param {string} binaryAssetId - Binary form of the assetId
+ * @returns {{ tableId: number, row: number, assetId: number, assetRef: number } | null}
+ */
+function resolveBinaryToTableRow(franchise, binaryAssetId) {
+  const assetId = bin2Dec(binaryAssetId);
+
+  // Build reverse lookup: assetId -> assetRef
+  let assetRef;
+  for (const asset of franchise.assetTable) {
+    if (asset.assetId === assetId) {
+      assetRef = asset.reference;   // <- this is your 265158657
+      console.log(assetRef)
+      break;
+    }
+  }
+
+  if (assetRef === undefined) return null;
+
+  const info = franchise.getReferenceFromAssetId(assetId)
+  console.log(info)
+  // assetRef is decimal form of the binary reference
+  const binaryRef = dec2bin(assetRef);
+  console.log(binaryRef)
+
+  const { tableId, row } = getRowAndTableIdFromRef(binaryRef);
+
+  return { tableId, row, assetId, assetRef };
+}
+
+/**
  * Extracts structured data from a franchise table, including optional asset metadata.
  *
  * @param {Franchise} franchise - The loaded franchise object.
@@ -3647,9 +3684,11 @@ module.exports = {
   getNextZeroedRecord,
   getNextRecord,
   getPlayerTags,
+  resolveBinaryToTableRow,
 
   getYesOrNo, // UTILITY FUNCTIONS
   getYesNoForceQuit,
+  getYesNoForceQuitShort,
   getSearchValue,
   getStringInput,
   formatListString,
