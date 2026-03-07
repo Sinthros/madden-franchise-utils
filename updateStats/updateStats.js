@@ -3,15 +3,15 @@ const xlsx = require("xlsx");
 const fs = require("fs");
 const prompt = require('prompt-sync')();
 const STRING_SIMILARITY = require('string-similarity');
-const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
+const { getBinaryReferenceData } = require('madden-franchise').utilService;
 const SEASON_STATS = xlsx.readFile("./players.xlsx");
 const CAREER_STATS = xlsx.readFile("./players-career.xlsx");
 const OUTPUT_FILE = "asset_lookup_test.json";
 const LOOKUP_FILE = JSON.parse(fs.readFileSync(OUTPUT_FILE, 'utf8'));
-const COLLEGES = require('../Utils/JsonLookups/25/colleges.json');
+const COLLEGES = require('../Utils/JsonLookups/26/colleges.json');
 const axios = require('axios');
 const cheerio = require('cheerio');
-const YEAR = 2011//new Date();
+const YEAR = 2025//new Date();
 
 const DEFAULT_COLUMNS = [
     "BLITZ_YARDS", "DEEPPASS_YARDS", "DEFDEEPPASS_YARDS", 
@@ -45,7 +45,7 @@ const TEAM_MAPPING = {
 
 
 const validGameYears = [
-  FranchiseUtils.YEARS.M25,
+  FranchiseUtils.YEARS.M26,
 ];
 
 
@@ -173,7 +173,7 @@ async function updateStats(franchise, isCareer) {
     const currentYear = seasonInfoTable.records[0].CurrentYear;
 
     // Process players in batches with delay
-    //await processPlayersInBatches(players, isCareer, 400);
+    await processPlayersInBatches(players, isCareer, 400);
 
     const playersInLookupFile = players.filter(player => {
         const link = String(player.PLAYERLINK); // Ensure consistent type
@@ -182,12 +182,11 @@ async function updateStats(franchise, isCareer) {
 
     for (const player of playersInLookupFile) {
         const assetName = LOOKUP_FILE[player.PLAYERLINK];  // Assuming asset names are stored in the lookup file
-        console.log(assetName)
 
         const playerRecord = getPlayerRecord(playerTable, assetName);
 
         // We don't update stats for O-Line
-        if (!playerRecord || FranchiseUtils.OLINE_POSITIONS.includes(playerRecord.Position)) continue;
+        if (!playerRecord || FranchiseUtils.OLINE_POSITIONS.includes(playerRecord.Position) || playerRecord.Position === "LS") continue;
 
         let newRecord = await ensureStatColumn(playerRecord, statColumn, franchise, player, isCareer);
 
@@ -202,6 +201,7 @@ async function updateStats(franchise, isCareer) {
             : await getOrCreateSeasonRecord(statsRecord, player, playerRecord, currentYear, franchise);
 
         if (!finalRecord) {
+            console.log(finalRecord)
             console.log(playerRecord.PLYR_ASSETNAME);
             continue;
         }
@@ -320,9 +320,9 @@ async function getOrCreateSeasonRecord(statsRecord, player, playerRecord, curren
 async function checkPlayerTable(pfrPlayer, teamIndices, isCareer) {
     const playerTable = franchise.getTableByUniqueId(tables.playerTable);
     const teamTable = franchise.getTableByUniqueId(tables.teamTable);
-    const maxPlayerYear = parseInt(pfrPlayer.MAXYEAR,10);
+    const maxPlayerYear = isCareer ? parseInt(pfrPlayer.MAXYEAR,10) : YEAR;
 
-    if (maxPlayerYear < 2000) return -1;
+    if (isCareer && maxPlayerYear < 2000) return -1;
     const pfrAge = getAge(pfrPlayer.AGE);
     const finalSeason = maxPlayerYear > YEAR ? maxPlayerYear - (maxPlayerYear - YEAR) : maxPlayerYear;
     const finalPfrAge = pfrAge ? YEAR - finalSeason + pfrAge : pfrAge;

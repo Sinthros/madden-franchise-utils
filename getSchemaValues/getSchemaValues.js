@@ -6,6 +6,7 @@ const PRINT_KWD = "PRINT";
 const PRINTALL_KWD = "PRINTALL";
 const PRINTALLENUM_KWD = "PRINTALLENUM";
 const PRINTALLCOLENUMS_KWD = "PRINTALLCOLENUM";
+const PRINTALLMINMAX_KWD = "PRINTALLMINMAX";
 
 const validGameYears = [
   FranchiseUtils.YEARS.M20,
@@ -95,8 +96,15 @@ function getTableField(table) {
 
   while (true) {
     console.log(
-      `Select a column from ${table.header.name} to get data for. If you want to print out the column names, enter 'print'. Enter 'printall' to print all column names and types. Enter 'exit' to stop searching for columns in this table.`,
+      `Select a column from ${table.header.name} to get data for. 
+    Enter 'print' to print column names. 
+    Enter 'printall' to print all column names and types. 
+    Enter 'printallenum' to print all enums. 
+    Enter 'printallcolenum' to print ColumnNames enum. 
+    Enter 'printallminmax' to print MinFieldValues / MaxFieldValues.
+    Enter 'exit' to stop searching for columns in this table.`,
     );
+
     const columnName = prompt().trim();
 
     if (columnName.toUpperCase() === EXIT_KWD) {
@@ -123,6 +131,10 @@ function getTableField(table) {
 
     if (columnName.toUpperCase() === PRINTALLCOLENUMS_KWD) {
       printAllColumnNamesEnum(table);
+      continue;
+    }
+    if (columnName.toUpperCase() === PRINTALLMINMAX_KWD) {
+      printAllMinMaxValues(table);
       continue;
     }
     const lowerCaseColumnName = columnName.toLowerCase();
@@ -232,6 +244,38 @@ function printAllColumnNamesEnum(table) {
   });
 
   console.log("}\n");
+}
+
+function printAllMinMaxValues(table) {
+  const record = table.records[0];
+  const columns = Object.keys(record._fields);
+
+  const minEntries = [];
+  const maxEntries = [];
+
+  for (const col of columns) {
+    const field = record._fields[col].offset;
+    const { type, minValue, maxValue } = field;
+
+    const isNumeric = type === "int" || type === "s_int" || type === "uint" || type === "float";
+    if (!isNumeric) continue;
+
+    if (typeof minValue === "number") {
+      minEntries.push(`  ${col} = ${minValue},`);
+    }
+
+    if (typeof maxValue === "number") {
+      maxEntries.push(`  ${col} = ${maxValue},`);
+    }
+  }
+
+  console.log(`export enum MinFieldValues {`);
+  minEntries.forEach((l) => console.log(l));
+  console.log(`}\n`);
+
+  console.log(`export enum MaxFieldValues {`);
+  maxEntries.forEach((l) => console.log(l));
+  console.log(`}\n`);
 }
 
 franchise.on("ready", async function () {
