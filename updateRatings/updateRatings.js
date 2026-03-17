@@ -3,6 +3,7 @@ const FranchiseUtils = require('../Utils/FranchiseUtils');
 const validGameYears = [
   FranchiseUtils.YEARS.M24,
   FranchiseUtils.YEARS.M25,
+  FranchiseUtils.YEARS.M26,
 ];
 
 console.log("This program will update player ratings from one franchise file into another.");
@@ -49,7 +50,7 @@ sourceFranchise.on('ready', async function () {
             record[col] = sourceRecord[col];
           }
         }
-        const {newOverall, newArchetype} = FranchiseUtils.calculateBestOverall(record);
+        const {newOverall, newArchetype} = FranchiseUtils.calculateBestOverall(record, targetFranchise.schema.meta.gameyear);
         record.PlayerType = newArchetype;
         record.OverallRating = newOverall;
         //console.log(`${record.PLYR_ASSETNAME} ${record.FirstName} ${record.LastName}`);

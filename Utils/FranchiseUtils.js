@@ -2141,6 +2141,7 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
         `References remaining for ${freeAgentRecord.FirstName} ${freeAgentRecord.LastName} (Row ${freeAgentRecord.index}).`,
       );
       references.forEach((table) => {
+        if (table.name === 'HistoryEntry') return;
         console.log(`${table.tableId}: ${table.name}`);
       });
     }

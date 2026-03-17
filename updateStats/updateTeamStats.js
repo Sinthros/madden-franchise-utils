@@ -1,10 +1,11 @@
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 const fs = require("fs");
-const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
+const { getBinaryReferenceData } = require("madden-franchise").utilService;
 const LOOKUP_FILE = JSON.parse(fs.readFileSync("team_stats.json", 'utf8'));
 
 const validGameYears = [
   FranchiseUtils.YEARS.M25,
+  FranchiseUtils.YEARS.M26,
 ];
 
 
@@ -26,7 +27,7 @@ franchise.on('ready', async function () {
   await teamTable.readRecords();
 
   for (const record of teamTable.records) {
-    if (record.isEmpty && !record.TEAM_VISIBLE) continue;
+    if (record.isEmpty || !record.TEAM_VISIBLE) continue;
 
     const fullName = `${record.LongName} ${record.DisplayName}`;
 

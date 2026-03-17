@@ -1,27 +1,24 @@
-const FranchiseUtils = require('../Utils/FranchiseUtils');
-const StartTodayUtils = require('./StartTodayUtils');
-const axios = require('axios');
-const cheerio = require('cheerio');
-const fs = require('fs');
-const path = require('path');
-const prompt = require('prompt-sync')();
+const FranchiseUtils = require("../Utils/FranchiseUtils");
+const StartTodayUtils = require("./StartTodayUtils");
+const axios = require("axios");
+const cheerio = require("cheerio");
+const fs = require("fs");
+const path = require("path");
+const prompt = require("prompt-sync")();
 
-const BASE_DEPTH_CHART_URL = 'https://www.ourlads.com/nfldepthcharts/';
+const BASE_DEPTH_CHART_URL = "https://www.ourlads.com/nfldepthcharts/";
 const ASSET_FILE_NAME = "ourlads_assetlookup.json";
 const COL_JERSEYNUM = "#";
 const COL_PLAYERNAME = "Player";
 const COL_AGE = "Age";
 const COL_COLLEGE = "School";
-const COL_YEARSPRO = "NFL Exp."
+const COL_YEARSPRO = "NFL Exp.";
 const COL_POSITION = "Pos.";
 const COL_URL = "URL";
 
 const COLS_TO_KEEP = [COL_JERSEYNUM, COL_PLAYERNAME, COL_AGE, COL_COLLEGE, COL_YEARSPRO, COL_POSITION, COL_URL];
 
-const validGameYears = [
-  FranchiseUtils.YEARS.M24,
-  FranchiseUtils.YEARS.M25,
-];
+const validGameYears = [FranchiseUtils.YEARS.M24, FranchiseUtils.YEARS.M25, FranchiseUtils.YEARS.M26];
 
 console.log("This program will update jersey numbers for all players, based on Ourlads.com");
 const franchise = FranchiseUtils.init(validGameYears);
@@ -32,10 +29,10 @@ const FILE_PATH = path.join(__dirname, `${String(franchise.schema.meta.gameYear)
 // If the file doesn't exist, create it with an empty object
 if (!fs.existsSync(FILE_PATH)) {
   fs.mkdirSync(path.dirname(FILE_PATH), { recursive: true });
-  fs.writeFileSync(FILE_PATH, '{}', 'utf8');
+  fs.writeFileSync(FILE_PATH, "{}", "utf8");
 }
 
-const ALL_ASSETS = JSON.parse(fs.readFileSync(FILE_PATH, 'utf8'));
+const ALL_ASSETS = JSON.parse(fs.readFileSync(FILE_PATH, "utf8"));
 
 async function getTeamLinks() {
   try {
@@ -44,22 +41,23 @@ async function getTeamLinks() {
 
     const teamLinks = [];
 
-    $('.page-content-wrapper').each((i, elem) => {
-      $(elem).find('a').each((j, linkElem) => {
-        const link = $(linkElem).attr('href');
+    $(".page-content-wrapper").each((i, elem) => {
+      $(elem)
+        .find("a")
+        .each((j, linkElem) => {
+          const link = $(linkElem).attr("href");
 
-        if (link === '#' || !link.includes('roster/')) {
-          return;
-        }
+          if (link === "#" || !link.includes("roster/")) {
+            return;
+          }
 
-        teamLinks.push(`${BASE_DEPTH_CHART_URL}${link}`);
-      });
+          teamLinks.push(`${BASE_DEPTH_CHART_URL}${link}`);
+        });
     });
 
     return teamLinks;
-
   } catch (error) {
-    console.error('Error fetching team links:', error);
+    console.error("Error fetching team links:", error);
   }
 }
 
@@ -68,74 +66,79 @@ async function parseTeamRoster(teamUrl) {
     const response = await axios.get(teamUrl);
     const $ = cheerio.load(response.data);
 
-    const teamCity = $('span.pt-team-city').text().trim();
-    const teamName = $('span.pt-team-name').text().trim();
+    const teamCity = $("span.pt-team-city").text().trim();
+    const teamName = $("span.pt-team-name").text().trim();
     const fullTeamName = `${teamCity} ${teamName}`;
 
     const headers = [];
-    $('#page-content-wrapper th').each((i, el) => {
+    $("#page-content-wrapper th").each((i, el) => {
       headers.push($(el).text().trim());
     });
 
-    const skipSections = ['Practice Squad', 'Free Agents / Cap Casualties', 'Reserves'].map(s =>
-      s.toLowerCase()
-    );
+    const skipSections = ["Practice Squad", "Free Agents / Cap Casualties", "Reserves"].map((s) => s.toLowerCase());
 
     let skipPlayers = false;
     const players = [];
 
     // Always skip first 2 rows to get to the player data
-    $('#page-content-wrapper tr').slice(2).each((i, row) => {
-      const $row = $(row);
-      const colspanCell = $row.find('td[colspan]').first();
+    $("#page-content-wrapper tr")
+      .slice(2)
+      .each((i, row) => {
+        const $row = $(row);
+        const colspanCell = $row.find("td[colspan]").first();
 
-      if (colspanCell.length) {
-        const sectionLabel = colspanCell.text().trim().toLowerCase();
-        skipPlayers = skipSections.includes(sectionLabel);
-        return; // always skip label rows
-      }
+        if (colspanCell.length) {
+          const sectionLabel = colspanCell.text().trim().toLowerCase();
+          skipPlayers = skipSections.includes(sectionLabel);
+          return; // always skip label rows
+        }
 
-      if (skipPlayers) return;
+        if (skipPlayers) return;
 
-      const cells = $row.find('td');
+        const cells = $row.find("td");
 
-      if (cells.length === headers.length) {
-        const rowObj = {};
+        // Skip UFA players (green class on anchor)
+        if ($row.find("a.lc_green").length) {
+          return;
+        }
+        if ($row.find("a.lc_black").length) {
+          return;
+        }
+        if ($row.find("a.lc_grey").length) {
+          return;
+        }
+        if (cells.length === headers.length) {
+          const rowObj = {};
 
-        headers.forEach((header, index) => {
-          const cell = $(cells[index]);
+          headers.forEach((header, index) => {
+            const cell = $(cells[index]);
 
-          if (header === COL_PLAYERNAME) {
-            const playerAnchor = cell.find('a');
-            rowObj[COL_PLAYERNAME] = FranchiseUtils.getNormalizedCommaName(playerAnchor.text().trim());
+            if (header === COL_PLAYERNAME) {
+              const playerAnchor = cell.find("a");
 
-            const href = playerAnchor.attr('href');
-            rowObj[COL_URL] = href
-              ? (href.startsWith('http') ? href : `https://www.ourlads.com${href}`)
-              : null;
-          } else {
-            rowObj[header] = cell.text().trim();
-          }
-        });
+              rowObj[COL_PLAYERNAME] = FranchiseUtils.getNormalizedCommaName(playerAnchor.text().trim());
 
-        players.push(rowObj);
-      }
-    });
+              const href = playerAnchor.attr("href");
+              rowObj[COL_URL] = href ? (href.startsWith("http") ? href : `https://www.ourlads.com${href}`) : null;
+            } else {
+              rowObj[header] = cell.text().trim();
+            }
+          });
+
+          players.push(rowObj);
+        }
+      });
 
     return {
       team: fullTeamName,
       url: teamUrl,
       players: players
-        .map(player =>
-          Object.fromEntries(
-            Object.entries(player).filter(([key]) => COLS_TO_KEEP.includes(key))
-          )
-        )
+        .map((player) => Object.fromEntries(Object.entries(player).filter(([key]) => COLS_TO_KEEP.includes(key))))
         .sort((a, b) => {
           const aHasNum = !FranchiseUtils.isBlank(a[COL_JERSEYNUM]);
           const bHasNum = !FranchiseUtils.isBlank(b[COL_JERSEYNUM]);
-          return (aHasNum === bHasNum) ? 0 : aHasNum ? -1 : 1;
-        })
+          return aHasNum === bHasNum ? 0 : aHasNum ? -1 : 1;
+        }),
     };
   } catch (err) {
     console.error(`Error parsing ${teamUrl}:`, err.message);
@@ -150,9 +153,7 @@ function setJerseyNum(playerRecord, teamIndex, jerseyNum = null) {
 
   if (!availableJerseyNums.includes(currentJerseyNum) && teamIndex === playerRecord.TeamIndex) {
     const teamPlayers = FranchiseUtils.getPlayersOnTeam(playerTable, teamIndex);
-    const isDuplicate = teamPlayers.some(
-      p => p !== playerRecord && p.JerseyNum == currentJerseyNum
-    );
+    const isDuplicate = teamPlayers.some((p) => p !== playerRecord && p.JerseyNum == currentJerseyNum);
 
     if (!isDuplicate && !availableJerseyNums.includes(currentJerseyNum)) {
       availableJerseyNums.push(currentJerseyNum);
@@ -184,9 +185,9 @@ function assignJerseyWithConflictResolution(playerRecord, teamIndex) {
   // Get taken numbers from other players (exclude current player)
   const takenNumbers = new Set(
     teamPlayers
-      .filter(p => p.index !== playerRecord.index)
-      .map(p => Number(p.JerseyNum))
-      .filter(num => !Number.isNaN(num))
+      .filter((p) => p.index !== playerRecord.index)
+      .map((p) => Number(p.JerseyNum))
+      .filter((num) => !Number.isNaN(num)),
   );
 
   // Build available numbers 0-99 excluding takenNumbers
@@ -211,7 +212,7 @@ function assignJerseyWithConflictResolution(playerRecord, teamIndex) {
   const message = `Enter a jersey number (0–99) for ${playerRecord.FirstName} ${playerRecord.LastName}. Current number is ${playerRecord.JerseyNum}`;
 
   while (true) {
-    console.log(`${message}\nAvailable: ${availableJerseyNums.join(', ')}`);
+    console.log(`${message}\nAvailable: ${availableJerseyNums.join(", ")}`);
     const input = prompt().trim();
 
     const selectedNum = Number(input);
@@ -221,9 +222,7 @@ function assignJerseyWithConflictResolution(playerRecord, teamIndex) {
     }
 
     // Find ALL players with this jersey number (excluding current player)
-    const conflicts = teamPlayers.filter(p =>
-      p !== playerRecord && Number(p.JerseyNum) === selectedNum
-    );
+    const conflicts = teamPlayers.filter((p) => p !== playerRecord && Number(p.JerseyNum) === selectedNum);
 
     if (conflicts.length === 0) {
       // No conflicts — safe to assign
@@ -236,7 +235,10 @@ function assignJerseyWithConflictResolution(playerRecord, teamIndex) {
       console.log(`- ${conflict.FirstName} ${conflict.LastName}`);
     }
 
-    const resolve = FranchiseUtils.getYesOrNo(`Do you want to reassign and assign ${selectedNum} to ${playerRecord.FirstName} ${playerRecord.LastName}?`, true);
+    const resolve = FranchiseUtils.getYesOrNo(
+      `Do you want to reassign and assign ${selectedNum} to ${playerRecord.FirstName} ${playerRecord.LastName}?`,
+      true,
+    );
     if (!resolve) {
       continue;
     }
@@ -250,7 +252,6 @@ function assignJerseyWithConflictResolution(playerRecord, teamIndex) {
     return;
   }
 }
-
 
 /**
  * Handles assigning a player to a position by checking cache or running a fuzzy search.
@@ -268,15 +269,12 @@ async function handlePlayer(player, teamIndex) {
   if (ALL_ASSETS.hasOwnProperty(url)) {
     const asset = ALL_ASSETS[url];
     if (!FranchiseUtils.isBlank(asset)) {
-      const assetRowIndex = playerTable.records.findIndex(
-        record => record.PLYR_ASSETNAME === asset
-      );
+      const assetRowIndex = playerTable.records.findIndex((record) => record.PLYR_ASSETNAME === asset);
       if (assetRowIndex !== -1) {
         const playerRecord = playerTable.records[assetRowIndex];
         if (!FranchiseUtils.isBlank(jerseyNum)) {
           playerRecord.JerseyNum = jerseyNum;
-        }
-        else {
+        } else {
           assignJerseyWithConflictResolution(playerRecord, teamIndex);
         }
       }
@@ -291,8 +289,8 @@ async function handlePlayer(player, teamIndex) {
     age: player[COL_AGE],
     college: player[COL_COLLEGE],
     position: player[COL_POSITION],
-    yearsPro: player[COL_YEARSPRO]
-  }
+    yearsPro: player[COL_YEARSPRO],
+  };
 
   // Try high similarity first
   result = await StartTodayUtils.searchForPlayer(
@@ -302,7 +300,7 @@ async function handlePlayer(player, teamIndex) {
     0.95,
     skippedPlayers,
     teamIndex,
-    options
+    options,
   );
 
   // Retry with lower threshold if no match
@@ -314,7 +312,7 @@ async function handlePlayer(player, teamIndex) {
       0.64,
       skippedPlayers,
       teamIndex,
-      options
+      options,
     );
   }
 
@@ -322,9 +320,8 @@ async function handlePlayer(player, teamIndex) {
     const playerRecord = playerTable.records[result];
     ALL_ASSETS[url] = playerRecord.PLYR_ASSETNAME;
     if (!FranchiseUtils.isBlank(jerseyNum)) {
-        playerRecord.JerseyNum = jerseyNum;
-    }
-    else {
+      playerRecord.JerseyNum = jerseyNum;
+    } else {
       assignJerseyWithConflictResolution(playerRecord, jerseyNum);
     }
   } else {
@@ -332,7 +329,7 @@ async function handlePlayer(player, teamIndex) {
   }
 }
 
-function resolveDuplicateJerseyNumbers(playerTable, teamIndex, teamName = '') {
+function resolveDuplicateJerseyNumbers(playerTable, teamIndex, teamName = "") {
   let duplicatesExist = true;
 
   while (duplicatesExist) {
@@ -356,10 +353,10 @@ function resolveDuplicateJerseyNumbers(playerTable, teamIndex, teamName = '') {
     for (const [jerseyNum, playersWithSameNum] of jerseyMap.entries()) {
       if (playersWithSameNum.length > 1) {
         duplicatesExist = true;
-        console.log(`Duplicate jersey number ${jerseyNum} detected on ${teamName || 'team index ' + teamIndex}.`);
-        
-        console.log('Players with this number:');
-        playersWithSameNum.forEach(player => {
+        console.log(`Duplicate jersey number ${jerseyNum} detected on ${teamName || "team index " + teamIndex}.`);
+
+        console.log("Players with this number:");
+        playersWithSameNum.forEach((player) => {
           console.log(`- ${player.FirstName} ${player.LastName}`);
         });
 
@@ -374,11 +371,7 @@ function resolveDuplicateJerseyNumbers(playerTable, teamIndex, teamName = '') {
   }
 }
 
-
-
-
-
-franchise.on('ready', async function () {
+franchise.on("ready", async function () {
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
   await FranchiseUtils.readTableRecords([playerTable, teamTable]);
@@ -391,14 +384,14 @@ franchise.on('ready', async function () {
     const teamRecord = StartTodayUtils.getTeamRecordByFullName(teamName, teamTable);
     const teamIndex = teamRecord === null ? -1 : teamRecord.TeamIndex;
     for (const player of players) {
-        await handlePlayer(player, teamIndex);
+      await handlePlayer(player, teamIndex);
     }
     // After each team save the asset file to be safe
-    fs.writeFileSync(FILE_PATH, JSON.stringify(ALL_ASSETS, null, 2), 'utf8');
+    fs.writeFileSync(FILE_PATH, JSON.stringify(ALL_ASSETS, null, 2), "utf8");
     resolveDuplicateJerseyNumbers(playerTable, teamIndex, teamName);
   }
 
-  fs.writeFileSync(FILE_PATH, JSON.stringify(ALL_ASSETS, null, 2), 'utf8');
+  fs.writeFileSync(FILE_PATH, JSON.stringify(ALL_ASSETS, null, 2), "utf8");
   console.log("Jersey numbers have been updated.");
   await FranchiseUtils.saveFranchiseFile(franchise);
   FranchiseUtils.EXIT_PROGRAM();

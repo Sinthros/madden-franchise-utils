@@ -161,7 +161,7 @@ async function updateCoachVisual(coachRecord) {
 franchise.on("ready", async function () {
   const coachTable = franchise.getTableByUniqueId(tables.coachTable);
   await coachTable.readRecords();
-  for (const record of FranchiseUtils.getActiveRecords(coachTable)) {
+  /*for (const record of FranchiseUtils.getActiveRecords(coachTable)) {
     if (!POSITIONS.includes(record.Position) || !CONTRACT_STATUSES.includes(record.ContractStatus)) continue;
     const message = `Would you like to update visuals for ${record.Position} ${record.FirstName} ${record.LastName}? Enter y or n, or f to exit the loop entirely`;
     const result = FranchiseUtils.getYesNoForceQuitShort(message, true);
@@ -169,9 +169,22 @@ franchise.on("ready", async function () {
     if (result === FranchiseUtils.NO_KWD) continue;
     await setCoachAppearance(record);
     await updateCoachVisual(record);
+  }*/
+
+  while (true) {
+    const index = FranchiseUtils.getUserInputNumber(
+      "Select the index of the coach record you want to edit. Enter -1 to quit.",
+      -1,
+      469,
+    );
+    if (index === -1) break;
+    const record = coachTable.records[index];
+    if (!record) continue;
+
+    await setCoachAppearance(record);
+    await updateCoachVisual(record);
   }
   await FranchiseUtils.saveFranchiseFile(franchise);
   FranchiseUtils.EXIT_PROGRAM();
   fs.rmSync(previewsDir, { recursive: true, force: true }); // Remove the coach previews folder
-  
 });
