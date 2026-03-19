@@ -1,6 +1,6 @@
 const FranchiseUtils = require("../Utils/FranchiseUtils");
 const { tables } = require("../Utils/FranchiseTableId");
-const { getBinaryReferenceData } = require("madden-franchise/services/utilService");
+const { getBinaryReferenceData } = require('madden-franchise').utilService;
 const fs = require("fs");
 
 const signatureAbilities = {
@@ -135,5 +135,5 @@ franchise.on("ready", async function () {
     }
   }
 
-  writeJSON(signatureAbilities, "abilities.json");
+  writeJSON(signatureAbilities, "abilitieswtf.json");
 });

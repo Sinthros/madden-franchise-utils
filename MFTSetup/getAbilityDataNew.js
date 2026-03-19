@@ -1,6 +1,6 @@
 const FranchiseUtils = require("../Utils/FranchiseUtils");
 const { tables } = require("../Utils/FranchiseTableId");
-const { getBinaryReferenceData } = require("madden-franchise/services/utilService");
+const { getBinaryReferenceData } = require("madden-franchise").utilService;
 const fs = require("fs");
 
 const signatureAbilities = {
@@ -80,17 +80,17 @@ franchise.on("ready", async function () {
       PositionSignatureAbilityArray,
       PositionSignatureAbility,
       sigRow["ActiveSignatures"],
-      PositionSignatureAbilityArray.header.recordCapacity
+      PositionSignatureAbilityArray.header.recordCapacity,
     );
 
     const passive = extractAbilityIndices(
       PositionSignatureAbilityArray,
       PositionSignatureAbility,
       sigRow["PassiveSignatures"],
-      PositionSignatureAbilityArray.header.numMembers
+      PositionSignatureAbilityArray.header.numMembers,
     );
 
-    const xFactorRows = active.map(a => a.abilityRow);
+    const xFactorRows = active.map((a) => a.abilityRow);
 
     signatureAbilities[key].XFactorAbilities = [];
     signatureAbilities[key].SuperStarAbilities = [];
@@ -101,33 +101,48 @@ franchise.on("ready", async function () {
       const ability = SignatureAbility.records[abilityRow];
       if (!ability?.Name || ability.Name.trim() === "") continue;
 
-      const abilityType =
-        xFactorRows.includes(abilityRow) ? "XFactorAbilities" : "SuperStarAbilities";
+      const abilityType = xFactorRows.includes(abilityRow) ? "XFactorAbilities" : "SuperStarAbilities";
 
       const posAbilityRecord = PositionSignatureAbility.records[posAbilityRow];
 
       const binRef = getBinaryReferenceData(tableId, posAbilityRow);
       const assetRef = FranchiseUtils.bin2Dec(binRef);
 
-      const assetId = allAssets.find(a => a.reference === assetRef)?.assetId;
+      const assetId = allAssets.find((a) => a.reference === assetRef)?.assetId;
       const finalBin = FranchiseUtils.dec2bin(assetId, 2);
 
       signatureAbilities[key][abilityType].push({
+        assetId,
+        binary: finalBin,
         Ability: ability.Name,
         GUID: ability.GUID,
-        Description: ability.Description,
-        binaryReference: finalBin,
-        assetId,
-        assetBinReference: assetRef,
+        Description: ability.Description, 
         Disable: posAbilityRecord?.Disable ?? null,
         ArchetypeRequirement: posAbilityRecord?.ArchetypeRequirement ?? null,
         MaxSlotPosition: posAbilityRecord?.MaxSlotPosition ?? null,
         MinSlotPosition: posAbilityRecord?.MinSlotPosition ?? null,
         OVRRequirement: posAbilityRecord?.OVRRequirement ?? null,
         DraftPositionRequirement: posAbilityRecord?.DraftPositionRequirement ?? null,
+        IconId: ability.IconId,
       });
     }
   }
+  const flatAbilities = [];
 
-  writeJSON(signatureAbilities, "abilities.json");
+  for (const [positionKey, positionData] of Object.entries(signatureAbilities)) {
+    const position = positionKey.replace("SignatureAbilities", "");
+
+    for (const ability of positionData.XFactorAbilities ?? []) {
+      const { assetId, binary, ...rest } = ability;
+      flatAbilities.push({ assetId, binary, position, activeAbility: true, ...rest });
+    }
+
+    for (const ability of positionData.SuperStarAbilities ?? []) {
+      const { assetId, binary, ...rest } = ability;
+      flatAbilities.push({ assetId, binary, position, activeAbility: false, ...rest });
+    }
+  }
+
+  writeJSON(flatAbilities, "abilities.json");
+  
 });
