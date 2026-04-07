@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 const FranchiseUtils = require("../Utils/FranchiseUtils");
 const prompt = require("prompt-sync")();
 const UNDEFINED_TABLE_MSG = "Unable to load any table matching the name/ID provided.";
@@ -7,7 +9,7 @@ const PRINTALL_KWD = "PRINTALL";
 const PRINTALLENUM_KWD = "PRINTALLENUM";
 const PRINTALLCOLENUMS_KWD = "PRINTALLCOLENUM";
 const PRINTALLMINMAX_KWD = "PRINTALLMINMAX";
-
+const GENERATESCHEMA_KWD = "GENERATESCHEMA";
 const validGameYears = [
   FranchiseUtils.YEARS.M20,
   FranchiseUtils.YEARS.M21,
@@ -17,15 +19,12 @@ const validGameYears = [
   FranchiseUtils.YEARS.M25,
   FranchiseUtils.YEARS.M26,
 ];
-
 console.log(
   "This program will allow you to select any table by name or ID, and then will let you select a column to get valid schema values for.",
 );
-
 const franchise = FranchiseUtils.init(validGameYears, {
   promptForBackup: false,
 });
-
 async function getTable(franchise) {
   while (true) {
     console.log(
@@ -33,15 +32,12 @@ async function getTable(franchise) {
     );
     let tableId = prompt().trim();
     let table;
-
     if (!isNaN(parseInt(tableId, 10))) {
       tableId = parseInt(tableId, 10);
-      // Check for either the ID or the unique ID
       table = franchise.getTableById(tableId) || franchise.getTableByUniqueId(tableId);
     } else {
       table = franchise.getTableByName(tableId);
     }
-
     if (typeof table !== "undefined") {
       await table.readRecords();
       return table;
@@ -50,22 +46,17 @@ async function getTable(franchise) {
     }
   }
 }
-
 function printColumnTypes(table) {
   const record = table.records[0];
   const columnNames = Object.keys(record._fields);
-
   console.log(`TypeScript field types for table: ${table.header.name}`);
   console.log(`----------------------------------------------------`);
-
   columnNames.forEach((column) => {
     const fieldOffset = record._fields[column].offset;
     const enumField = fieldOffset.enum;
     const isReference = fieldOffset.isReference;
     const type = fieldOffset.type;
-
     let tsType;
-
     if (enumField) {
       const enumName = toPascalCase(column);
       tsType = enumName;
@@ -78,13 +69,11 @@ function printColumnTypes(table) {
     } else if (type === "string") {
       tsType = "string";
     } else {
-      tsType = "any"; // fallback for unknown/custom types
+      tsType = "any";
     }
-
     console.log(`${column}: ${tsType},`);
   });
 }
-
 function getTableField(table) {
   const record = table.records[0];
   const columnNames = Object.keys(record._fields);
@@ -93,7 +82,6 @@ function getTableField(table) {
   console.log(`Table Name: ${table.header.name}`);
   console.log(`Table ID: ${table.header.tableId}`);
   console.log(`Table Unique ID: ${table.header.uniqueId}`);
-
   while (true) {
     console.log(
       `Select a column from ${table.header.name} to get data for. 
@@ -102,15 +90,13 @@ function getTableField(table) {
     Enter 'printallenum' to print all enums. 
     Enter 'printallcolenum' to print ColumnNames enum. 
     Enter 'printallminmax' to print MinFieldValues / MaxFieldValues.
+    Enter 'generateschema' to generate a full .enums.ts schema file.
     Enter 'exit' to stop searching for columns in this table.`,
     );
-
     const columnName = prompt().trim();
-
     if (columnName.toUpperCase() === EXIT_KWD) {
       break;
     }
-
     if (columnName.toUpperCase() === PRINT_KWD) {
       const chunkSize = 10;
       for (let i = 0; i < columnNames.length; i += chunkSize) {
@@ -118,17 +104,14 @@ function getTableField(table) {
       }
       continue;
     }
-
     if (columnName.toUpperCase() === PRINTALL_KWD) {
       printColumnTypes(table);
       continue;
     }
-
     if (columnName.toUpperCase() === PRINTALLENUM_KWD) {
       printAllEnumValues(table);
       continue;
     }
-
     if (columnName.toUpperCase() === PRINTALLCOLENUMS_KWD) {
       printAllColumnNamesEnum(table);
       continue;
@@ -137,9 +120,12 @@ function getTableField(table) {
       printAllMinMaxValues(table);
       continue;
     }
+    if (columnName.toUpperCase() === GENERATESCHEMA_KWD) {
+      generateSchemaFile(table);
+      continue;
+    }
     const lowerCaseColumnName = columnName.toLowerCase();
     const columnIndex = lowerCaseColumnNames.indexOf(lowerCaseColumnName);
-
     if (columnIndex !== -1) {
       const actualColumnName = columnNames[columnIndex];
       const fieldOffset = record._fields[actualColumnName].offset;
@@ -148,19 +134,12 @@ function getTableField(table) {
       const isInt = type === "int" || type === "s_int";
       const isString = type === "string";
       const isBool = type === "bool";
-
       if (isEnum) {
-        const enumName = actualColumnName; // or customize this if you want PascalCase
-
+        const enumName = actualColumnName;
         const enumValues = enumField._members.map((member) => member._name);
-
         console.log(`The field ${actualColumnName} has an enum of valid values. These values are as follows:`);
-
-        // Existing CSV output
         const csvString = '"' + enumValues.join('","') + '"';
         console.log(csvString);
-
-        // New: TypeScript enum output
         console.log(`\nexport enum ${enumName} {`);
         enumValues.forEach((value) => {
           const safeKey = value.replace(/[^a-zA-Z0-9_]/g, "_");
@@ -184,110 +163,142 @@ function getTableField(table) {
     }
   }
 }
-
 function toPascalCase(str) {
   return str.replace(/[_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : "")).replace(/^(.)/, (c) => c.toUpperCase());
 }
-
 function printAllEnumValues(table) {
   const record = table.records[0];
   const columns = Object.keys(record._fields);
-
   let foundAny = false;
-
   console.log(`\n===== TypeScript Enums for table: ${table.header.name} =====\n`);
-
   for (const column of columns) {
     const field = record._fields[column].offset;
     const { enum: enumField } = field;
-
     if (!enumField) continue;
-
     foundAny = true;
-
     const enumName = toPascalCase(column);
     const enumValues = enumField._members.map((m) => m._name);
-
-    //console.log(`// Column: ${column}`);
     console.log(`export enum ${enumName} {`);
-
     enumValues.forEach((value) => {
-      // Exclude anything ending with "_" except "Invalid_"
       if (value.endsWith("_") && value !== "Invalid_") return;
-
       const safeKey = value.replace(/[^a-zA-Z0-9_]/g, "_");
       const finalKey = /^\d/.test(safeKey) ? `_${safeKey}` : safeKey;
-
       console.log(`  ${finalKey} = '${value}',`);
     });
-
     console.log("}\n");
   }
-
   if (!foundAny) {
     console.log("No enum columns found on this table.\n");
   }
 }
-
 function printAllColumnNamesEnum(table) {
   const record = table.records[0];
   const columns = Object.keys(record._fields);
-
   console.log(`\n===== Column Name Enum for table: ${table.header.name} =====\n`);
   console.log(`export enum ColumnNames {`);
-
   columns.forEach((col) => {
     const safeKey = col.replace(/[^a-zA-Z0-9_]/g, "_");
     const finalKey = /^\d/.test(safeKey) ? `_${safeKey}` : safeKey;
-
     console.log(`  ${finalKey} = '${col}',`);
   });
-
   console.log("}\n");
 }
-
 function printAllMinMaxValues(table) {
   const record = table.records[0];
   const columns = Object.keys(record._fields);
-
   const minEntries = [];
   const maxEntries = [];
-
   for (const col of columns) {
     const field = record._fields[col].offset;
     const { type, minValue, maxValue } = field;
-
     const isNumeric = type === "int" || type === "s_int" || type === "uint" || type === "float";
     if (!isNumeric) continue;
-
     if (typeof minValue === "number") {
       minEntries.push(`  ${col} = ${minValue},`);
     }
-
     if (typeof maxValue === "number") {
       maxEntries.push(`  ${col} = ${maxValue},`);
     }
   }
-
   console.log(`export enum MinFieldValues {`);
   minEntries.forEach((l) => console.log(l));
   console.log(`}\n`);
-
   console.log(`export enum MaxFieldValues {`);
   maxEntries.forEach((l) => console.log(l));
   console.log(`}\n`);
 }
 
+function generateSchemaFile(table) {
+  const tableName = table.header.name;
+  const fileName = tableName.charAt(0).toLowerCase() + tableName.slice(1) + ".enums.ts";
+  const outputPath = path.join(__dirname, fileName);
+  const record = table.records[0];
+  const columns = Object.keys(record._fields);
+  const lines = [];
+
+  lines.push(`// Auto-generated schema for table: ${tableName}`);
+  lines.push(`// Table ID: ${table.header.tableId} | Unique ID: ${table.header.uniqueId}`);
+  lines.push(``);
+
+  // ColumnNames enum
+  lines.push(`export enum ColumnNames {`);
+  columns.forEach((col) => {
+    const safeKey = col.replace(/[^a-zA-Z0-9_]/g, "_");
+    const finalKey = /^\d/.test(safeKey) ? `_${safeKey}` : safeKey;
+    lines.push(`  ${finalKey} = '${col}',`);
+  });
+  lines.push(`}`);
+  lines.push(``);
+
+  // MinFieldValues / MaxFieldValues
+  const minEntries = [];
+  const maxEntries = [];
+  for (const col of columns) {
+    const field = record._fields[col].offset;
+    const { type, minValue, maxValue } = field;
+    const isNumeric = type === "int" || type === "s_int" || type === "uint" || type === "float";
+    if (!isNumeric) continue;
+    if (typeof minValue === "number") minEntries.push(`  ${col} = ${minValue},`);
+    if (typeof maxValue === "number") maxEntries.push(`  ${col} = ${maxValue},`);
+  }
+  lines.push(`export enum MinFieldValues {`);
+  minEntries.forEach((l) => lines.push(l));
+  lines.push(`}`);
+  lines.push(``);
+  lines.push(`export enum MaxFieldValues {`);
+  maxEntries.forEach((l) => lines.push(l));
+  lines.push(`}`);
+  lines.push(``);
+
+  // Column enums
+  for (const column of columns) {
+    const field = record._fields[column].offset;
+    const { enum: enumField } = field;
+    if (!enumField) continue;
+    const enumName = toPascalCase(column);
+    const enumValues = enumField._members.map((m) => m._name);
+    lines.push(`export enum ${enumName} {`);
+    enumValues.forEach((value) => {
+      if (value.endsWith("_") && value !== "Invalid_") return;
+      const safeKey = value.replace(/[^a-zA-Z0-9_]/g, "_");
+      const finalKey = /^\d/.test(safeKey) ? `_${safeKey}` : safeKey;
+      lines.push(`  ${finalKey} = '${value}',`);
+    });
+    lines.push(`}`);
+    lines.push(``);
+  }
+
+  fs.writeFileSync(outputPath, lines.join("\n"), "utf8");
+  console.log(`\nSchema file written to: ${outputPath}\n`);
+}
 franchise.on("ready", async function () {
   let continueLoop;
   do {
     const table = await getTable(franchise);
     getTableField(table);
-
     const message = "Do you want to select another table? Enter yes or no.";
     const response = FranchiseUtils.getYesOrNo(message);
     continueLoop = response;
   } while (continueLoop);
-
   FranchiseUtils.EXIT_PROGRAM();
 });

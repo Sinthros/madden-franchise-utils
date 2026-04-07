@@ -6,3 +6,4 @@ generateSchema/output/**
 updateAllRosters/
 spotrac/
 private/
+getSchemaValues/*.ts
