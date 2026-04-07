@@ -3302,7 +3302,7 @@ function getActiveRecords(table) {
   return table.records.filter((record) => !record.isEmpty);
 }
 
-async function getCollege(franchise, college) {
+function getCollege(franchise, college) {
   const assetId = bin2Dec(college);
   const filePath = path.join(__dirname, `JsonLookups/${String(franchise.schema.meta.gameYear)}/colleges.json`);
 
@@ -3316,7 +3316,7 @@ async function getCollege(franchise, college) {
 
   try {
     const match = allColleges.find((c) => c.AssetId === assetId);
-    return match ? match.Name : null;
+    return match?.Name ?? null;
   } catch (err) {
     console.error("Error finding college:", err);
     return null;

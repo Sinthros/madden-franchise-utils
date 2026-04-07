@@ -1,48 +1,40 @@
-const FranchiseUtils = require('../Utils/FranchiseUtils');
+const FranchiseUtils = require("../Utils/FranchiseUtils");
 const xlsx = require("xlsx");
-const fs = require("fs");
-const COLLEGES = JSON.parse(fs.readFileSync('../Utils/JsonLookups/25/colleges.json', 'utf8'));
 
-const validGameYears = [
-  FranchiseUtils.YEARS.M25,
-];
+const validGameYears = [FranchiseUtils.YEARS.M25, FranchiseUtils.YEARS.M26];
 
 console.log("This program will export some draft player info to Excel.");
 
-const franchise = FranchiseUtils.init(validGameYears, {promptForBackup: false});
+const franchise = FranchiseUtils.init(validGameYears, { promptForBackup: false });
 const tables = FranchiseUtils.getTablesObject(franchise);
 
-function getCollege(college) {
-  const assetId = FranchiseUtils.bin2Dec(college);
-
-  try {
-      return COLLEGES.find(college => college.AssetId === assetId).Name;
-  } catch(err) {
-    console.log(err);
-    return null;
-  }
-}
-
-franchise.on('ready', async function () {
-
+franchise.on("ready", async function () {
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   await FranchiseUtils.readTableRecords([playerTable]);
   // Filter, sort, and map draft players
   const draftPlayers = playerTable.records
-    .filter(record => FranchiseUtils.isValidDraftPlayer(record))
+    .filter((record) => FranchiseUtils.isValidDraftPlayer(record))
     .sort((a, b) => {
       if (a.PLYR_DRAFTROUND !== b.PLYR_DRAFTROUND) {
         return a.PLYR_DRAFTROUND - b.PLYR_DRAFTROUND;
       }
       return a.PLYR_DRAFTPICK - b.PLYR_DRAFTPICK;
     })
-    .map(record => ({
-      Name: `${record.FirstName} ${record.LastName}`,
+    .map((record) => ({
+      FirstName: record.FirstName,
+      LastName: record.LastName,
+      FullName: `${record.FirstName} ${record.LastName}`,
+      AssetName: record.PLYR_ASSETNAME,
+      Position: record.Position,
+      Weight: `${record.Weight + 160} lbs`,
+      Height: FranchiseUtils.formatHeight(record.Height),
+      Overall: record.OverallRating,
+      College: FranchiseUtils.getCollege(franchise, record.College),
       DraftRound: record.PLYR_DRAFTROUND,
       DraftPick: record.PLYR_DRAFTPICK,
-      Position: record.Position,
-      Overall: record.OverallRating,
-      College: getCollege(record.College)
+
+      CurrentPortrait: record.PLYR_PORTRAIT,
+      NewPortrait: null,
     }));
 
   // Convert to worksheet and save as Excel file
@@ -57,6 +49,3 @@ franchise.on('ready', async function () {
   console.log(`Excel file saved as ${filePath}`);
   FranchiseUtils.EXIT_PROGRAM();
 });
-
-
-
