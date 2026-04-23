@@ -16,6 +16,7 @@ const ASSET_FILE_NAME = "espn_assetlookup.json";
 const validGameYears = [
   FranchiseUtils.YEARS.M24,
   FranchiseUtils.YEARS.M25,
+  FranchiseUtils.YEARS.M26,
 ];
 
 console.log("This program will update player positions for all players, based on ESPN Depth Charts.");
