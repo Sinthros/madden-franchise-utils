@@ -3,14 +3,15 @@ const FranchiseUtils = require('../Utils/FranchiseUtils');
 const prompt = require('prompt-sync')();
 const validGameYears = [
     FranchiseUtils.YEARS.M24,
-    FranchiseUtils.YEARS.M25
+    FranchiseUtils.YEARS.M25,
+    FranchiseUtils.YEARS.M26
 ];
 
 console.log(`This program will set the current season year. Madden ${FranchiseUtils.formatListString(validGameYears)} franchise files are supported.`);
 
 // Super Bowl dictionary: maps each year to the Super Bowl number
 const superBowlMap = {};
-for (let year = 1966, superBowl = 1; year <= 2024; year++, superBowl++) {
+for (let year = 1966, superBowl = 1; year <= 2026; year++, superBowl++) {
   superBowlMap[year] = superBowl;
 }
 
@@ -26,10 +27,10 @@ async function promptForYear() {
     year = parseInt(inputYear, 10);
 
     // Validate year
-    if (!Number.isNaN(year) && year >= 1966 && year <= 2024) { // Restrict to years in the Super Bowl map
+    if (!Number.isNaN(year) && year >= 1966 && year <= 2026) { // Restrict to years in the Super Bowl map
       break;
     } else {
-      console.log("Invalid input. Please enter a year between 1966 and 2024.");
+      console.log("Invalid input. Please enter a year between 1966 and 2026.");
     }
   }
   return year;
