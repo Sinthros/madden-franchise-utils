@@ -34,6 +34,7 @@ function getTeamRecordByShortName(shortName, teamTable) {
 }
 
 function getTeamRecordByIndex(teamIndex, teamTable) {
+  if (teamIndex === -1) return null;
   const teamRecord = teamTable.records.find(
     record => !record.isEmpty &&
     record.TeamIndex === teamIndex && !FranchiseUtils.NFL_CONFERENCES.includes(record.DisplayName)
@@ -200,7 +201,7 @@ async function searchForPlayer(
     const finalMaddenName = FranchiseUtils.getNormalizedName(player);
 
     const isExactNameAndTeamMatch =
-      normalizedPlayerName === finalMaddenName && teamName === playerTeamName;
+      normalizedPlayerName === finalMaddenName && (teamName === playerTeamName || teamIndex === -1);
 
     // Only do FA match if the age and college is provided
     const isFAMatch =
