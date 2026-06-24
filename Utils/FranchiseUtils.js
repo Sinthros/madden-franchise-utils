@@ -34,6 +34,7 @@ const YEARS = {
   M24: 24,
   M25: 25,
   M26: 26,
+  M27: 27,
 };
 
 // TYPES OF SAVE FILES
