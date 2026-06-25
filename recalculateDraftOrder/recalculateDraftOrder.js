@@ -419,7 +419,7 @@ async function calculateTeamDraftPositions(franchise, teamPositions)
 
     const isOldPlayoffFormat = playoffTeams.length === 12;
 
-    if(FranchiseUtils.DEBUG_MODE)
+    if(FranchiseUtils.DEBUG_MODE && isOldPlayoffFormat)
     {
         console.log(`NOTE: Using old playoff format. Detected ${playoffTeams.length} playoff teams.`);
     }
@@ -645,10 +645,10 @@ franchise.on('ready', async function () {
     // Number of rows in the draft pick table
     const numRows = draftPickTable.header.recordCapacity;
 
-    // Make sure the file is in staff week
-    if(!(seasonInfoTable.records[0]['CurrentWeekType'] === 'OffSeason' && seasonInfoTable.records[0]['CurrentOffseasonStage'] === 1))
+    // Make sure the file is in the offseason pre-draft
+    if(!(seasonInfoTable.records[0]['CurrentWeekType'] === 'OffSeason' && seasonInfoTable.records[0]['CurrentOffseasonStage'] <= 9))
     {
-        console.log("\nThis file is not in Staff Week. This tool can only be run during Staff Week.");
+        console.log("\nThis file is not in the offseason pre-draft. This tool can only be run during the offseason pre-draft.");
         FranchiseUtils.EXIT_PROGRAM();
     }
 
