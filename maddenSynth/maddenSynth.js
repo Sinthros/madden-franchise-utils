@@ -6,18 +6,19 @@ const path = require('path');
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 // Required lookups
-const ratingTypes = (JSON.parse(fs.readFileSync(`lookupFiles/ratingTypes.json`, 'utf-8')));
-const positionGroups = (JSON.parse(fs.readFileSync(`lookupFiles/positionGroups.json`, 'utf-8')));
-const allPositions = (JSON.parse(fs.readFileSync(`lookupFiles/allPositions.json`, 'utf-8')));
+const ratingTypes = (JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles', 'ratingTypes.json'), 'utf-8')));
+const positionGroups = (JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles', 'positionGroups.json'), 'utf-8')));
+const allPositions = (JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles', 'allPositions.json'), 'utf-8')));
 
 // Supported game years
 const validGameYears = [
 	FranchiseUtils.YEARS.M24,
-	FranchiseUtils.YEARS.M25
+	FranchiseUtils.YEARS.M25,
+	FranchiseUtils.YEARS.M26,
 ];
 
 // Version number constant
-const VERSION = 'v3.0';
+const VERSION = 'v4.0';
 
 // Print tool header message
 console.log(`Welcome to MaddenSynth ${VERSION}! This is a customizable franchise scenario generator for Madden ${FranchiseUtils.formatListString(validGameYears)}.\n`);
@@ -629,7 +630,7 @@ async function handleRatingChangeScenario(scenario)
 	const currentArchetype = playerTable.records[randPlayerRow]['PlayerType'];
 
 	// Recalculate overall and archetype to account for new ratings
-	const {newOverall, newArchetype} = FranchiseUtils.calculateBestOverall(playerTable.records[randPlayerRow]);
+	const {newOverall, newArchetype} = FranchiseUtils.calculateBestOverall(playerTable.records[randPlayerRow], gameYear);
 	playerTable.records[randPlayerRow]['OverallRating'] = newOverall;
 	playerTable.records[randPlayerRow]['PlayerType'] = newArchetype;
 
@@ -1366,7 +1367,7 @@ function getPositionGroupSelection()
 async function getInjurySelection()
 {
 	// Load the injury types from the lookup file
-	let injuryTypes = (JSON.parse(fs.readFileSync(`lookupFiles/injuryTypes.json`, 'utf-8')));
+	let injuryTypes = (JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles', 'injuryTypes.json'), 'utf-8')));
 	let injuryTypeKeys = Object.keys(injuryTypes);
 
 	// Display the list of injury types to the user

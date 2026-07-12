@@ -1,58 +1,62 @@
-const axios = require('axios');
-const cheerio = require('cheerio');
-const URL = 'https://www.tankathon.com/nfl/past_drafts/2025';
-const FORFEITED_KWD = 'forfeited';
-const COMP_KWD = 'compensatory';
-const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
+const axios = require("axios");
+const cheerio = require("cheerio");
+const URL = "https://www.tankathon.com/nfl/past_drafts/2026";
+const FORFEITED_KWD = "forfeited";
+const COMP_KWD = "compensatory";
+const { getBinaryReferenceData } = require("madden-franchise").utilService;
 
+const FranchiseUtils = require("../Utils/FranchiseUtils");
 
-const FranchiseUtils = require('../Utils/FranchiseUtils');
+const validGameYears = [FranchiseUtils.YEARS.M25, FranchiseUtils.YEARS.M26];
 
-const validGameYears = [
-  FranchiseUtils.YEARS.M25,
-];
-
+const TEAM_ALIASES = {
+  ARI: "AZ",
+};
 
 const franchise = FranchiseUtils.init(validGameYears);
 const tables = FranchiseUtils.getTablesObject(franchise);
+
+function resolveTeamName(name) {
+  return TEAM_ALIASES[name] ?? name;
+}
 
 async function getDraftPicks() {
   const { data } = await axios.get(URL);
   const $ = cheerio.load(data);
 
-  let currentRoundLabel = '';
+  let currentRoundLabel = "";
   let inCompRound = false;
   let pick = 0;
   const results = {};
   const forfeitedTeams = [];
 
-  $('#mock-draft-board-container')
-    .find('.mock-round-label.nfl, .mock-row.nfl')
+  $("#mock-draft-board-container")
+    .find(".mock-round-label.nfl, .mock-row.nfl")
     .each((_, el) => {
       const elem = $(el);
 
-      if (elem.hasClass('mock-round-label')) {
+      if (elem.hasClass("mock-round-label")) {
         currentRoundLabel = elem.text().trim();
         inCompRound = currentRoundLabel.toLowerCase().includes(COMP_KWD);
         return;
       }
 
-      if (elem.hasClass('mock-row')) {
+      if (elem.hasClass("mock-row")) {
         if (inCompRound) return;
 
-        const logoDiv = elem.find('.mock-row-logo');
-        const teamImg = logoDiv.find('img.nba-30'); // current team
-        const tradeImg = logoDiv.find('img.mock-trade'); // traded from team
+        const logoDiv = elem.find(".mock-row-logo");
+        const teamImg = logoDiv.find("img.nba-30"); // current team
+        const tradeImg = logoDiv.find("img.mock-trade"); // traded from team
 
-        const team = teamImg.attr('alt')?.trim();
-        const tradeSrc = tradeImg.attr('src') || '';
+        const team = teamImg.attr("alt")?.trim();
+        const tradeSrc = tradeImg.attr("src") || "";
         const tradedFromMatch = tradeSrc.match(/\/nfl\/(\w+)\.svg$/);
         const tradedFromRaw = tradedFromMatch?.[1]?.toUpperCase();
-        const tradedFrom = tradedFromRaw === 'WSH' ? 'WAS' : tradedFromRaw;
+        const tradedFrom = tradedFromRaw === "WSH" ? "WAS" : tradedFromRaw;
 
-        const schoolPositions = elem.find('.mock-row-school-position');
-        const schoolPosText = schoolPositions[0]?.children?.[0]?.data?.trim().toLowerCase() || '';
-        const finalTeam = team === 'WSH' ? 'WAS' : team;
+        const schoolPositions = elem.find(".mock-row-school-position");
+        const schoolPosText = schoolPositions[0]?.children?.[0]?.data?.trim().toLowerCase() || "";
+        const finalTeam = team === "WSH" ? "WAS" : team;
 
         if (!finalTeam) return;
 
@@ -79,7 +83,7 @@ async function getDraftPicks() {
   return results;
 }
 
-franchise.on('ready', async function () {
+franchise.on("ready", async function () {
   const draftPickTable = franchise.getTableByUniqueId(tables.draftPickTable);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
   await FranchiseUtils.readTableRecords([draftPickTable, teamTable]);
@@ -105,8 +109,8 @@ franchise.on('ready', async function () {
     }
 
     const { team, tradedFrom } = draftPick;
-    const currentRef = teamBinaryDict[team];
-    const tradedRef = teamBinaryDict[tradedFrom];
+    const currentRef = teamBinaryDict[resolveTeamName(team)];
+    const tradedRef = teamBinaryDict[resolveTeamName(tradedFrom)];
 
     if (currentRef) {
       record.CurrentTeam = currentRef;
