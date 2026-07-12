@@ -1,4 +1,4 @@
-const { getBinaryReferenceData } = require('madden-franchise/services/utilService');
+const { getBinaryReferenceData } = require('madden-franchise').utilService;
 const FranchiseUtils = require('../Utils/FranchiseUtils');
 
 const BROWNS_TEAM_INDEX = 5;
@@ -40,11 +40,12 @@ const TEAM_DEBUT_YEARS = {
   '36': 1961
 }
 
-const DRAFT_LENGTH = 223;
 const PICKS_PER_ROUND = 32;
+const DRAFT_LENGTH = 223;
 
 const validGameYears = [
-  FranchiseUtils.YEARS.M25
+  FranchiseUtils.YEARS.M25,
+  FranchiseUtils.YEARS.M26
 ];
 
 console.log("This program will adjust draft picks for retro franchise files. This program MUST be run in the Offseason.");
@@ -117,17 +118,20 @@ franchise.on('ready', async function () {
     }
   }
 
-  // Sort active picks by Round and PickNumber
-  activeDraftPicks.sort((a, b) => {
+  const sortDraftPicks = (a, b) => {
     if (a.Round !== b.Round) return a.Round - b.Round;
     return a.PickNumber - b.PickNumber;
-  });
+  };
+
+  // Sort picks by Round and PickNumber before moving inactive picks to the end
+  activeDraftPicks.sort(sortDraftPicks);
+  inactiveDraftPicks.sort(sortDraftPicks);
 
   // Set up the combined array of active and inactive picks
   const allDraftPicks = [...activeDraftPicks, ...inactiveDraftPicks];
 
   // Initialize counters for pick assignments
-  let overallPick = 0; // From 0 to 223, this is what actually gets set
+  let overallPick = 0; // From 0 to 222, this is what actually gets set
   let roundPick = 0; // Use this to determine when to increment currentRound
   let currentRound = 0; // Use to set record.Round
 
@@ -151,6 +155,4 @@ franchise.on('ready', async function () {
   await FranchiseUtils.saveFranchiseFile(franchise);
   FranchiseUtils.EXIT_PROGRAM();
 });
-
-
 
