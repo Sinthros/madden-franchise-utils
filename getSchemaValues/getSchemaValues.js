@@ -10,6 +10,7 @@ const PRINTALLENUM_KWD = "PRINTALLENUM";
 const PRINTALLCOLENUMS_KWD = "PRINTALLCOLENUM";
 const PRINTALLMINMAX_KWD = "PRINTALLMINMAX";
 const GENERATESCHEMA_KWD = "ALL";
+const EXPORTJSON_KWD = "EXPORT";
 const validGameYears = [
   FranchiseUtils.YEARS.M20,
   FranchiseUtils.YEARS.M21,
@@ -25,9 +26,13 @@ console.log(
   "This program will allow you to select any table by name or ID, and then will let you select a column to get valid schema values for.",
 );
 
-const franchise = FranchiseUtils.init(validGameYears, {
-  promptForBackup: false,
-});
+const franchise = FranchiseUtils.init(
+  validGameYears,
+  {
+    promptForBackup: false,
+  },
+  [FranchiseUtils.GAME_TYPES.MADDEN, FranchiseUtils.GAME_TYPES.CFB],
+);
 
 async function getTable(franchise) {
   while (true) {
@@ -88,7 +93,7 @@ function printColumnTypes(table) {
   });
 }
 
-function getTableField(table) {
+async function getTableField(table) {
   const record = table.records[0];
   const columnNames = Object.keys(record._fields);
   const lowerCaseColumnNames = columnNames.map((name) => name.toLowerCase());
@@ -107,6 +112,7 @@ function getTableField(table) {
     Enter 'printallcolenum' to print ColumnNames enum. 
     Enter 'printallminmax' to print MinFieldValues / MaxFieldValues.
     Enter 'all' to generate a full .enums.ts schema file.
+    Enter 'export' to export this table's data to a JSON file.
     Enter 'exit' to stop searching for columns in this table.`,
     );
 
@@ -144,6 +150,11 @@ function getTableField(table) {
 
     if (columnName.toUpperCase() === GENERATESCHEMA_KWD) {
       generateSchemaFile(table);
+      continue;
+    }
+
+    if (columnName.toUpperCase() === EXPORTJSON_KWD) {
+      await exportTableToJson(franchise, table);
       continue;
     }
 
@@ -190,6 +201,18 @@ function getTableField(table) {
       console.log(`Column '${columnName}' does not exist. Please try again.`);
     }
   }
+}
+
+/**
+ * Exports the given table's data to a JSON file using FranchiseUtils'
+ * getTableDataAsArray, writing to an `exports/` folder alongside this
+ * script named after the table (e.g. exports/Player.json).
+ */
+async function exportTableToJson(franchise, table) {
+  const tableName = table.header.name;
+  const outputPath = path.join(__dirname, "exports", `${franchise.gameType}`, `${tableName}.json`);
+  const data = await FranchiseUtils.getTableDataAsArray(franchise, table);
+  FranchiseUtils.convertArrayToJSONFile(data, outputPath);
 }
 
 function toPascalCase(str) {
@@ -313,7 +336,7 @@ franchise.on("ready", async function () {
 
   do {
     const table = await getTable(franchise);
-    getTableField(table);
+    await getTableField(table);
     const message = "Do you want to select another table? Enter yes or no.";
     const response = FranchiseUtils.getYesOrNo(message, true);
     continueLoop = response;

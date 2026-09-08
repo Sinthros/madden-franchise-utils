@@ -7,3 +7,4 @@ updateAllRosters/
 spotrac/
 private/
 getSchemaValues/*.ts
+getSchemaValues/exports/**

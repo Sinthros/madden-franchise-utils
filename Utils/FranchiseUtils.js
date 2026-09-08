@@ -3576,8 +3576,7 @@ async function extractRecordData(franchise, table, record, options = {}) {
   const binRef = getBinaryReferenceData(table.header.tableId, record.index);
   const assetRef = bin2Dec(binRef);
   const assetId = map.get(assetRef);
-  if (assetId === undefined) return null;
-  const binary = dec2bin(assetId, 2);
+  const binary = assetId === undefined ? null : dec2bin(assetId, 2);
 
   const rowData = {};
   if (includeRow) rowData.Row = record.index;
@@ -3703,23 +3702,12 @@ function convertArrayToJSONFile(data, filePath) {
 
   const dir = path.dirname(filePath);
 
-  // Ensure directory exists
-  fs.mkdir(dir, { recursive: true }, (mkdirErr) => {
-    if (mkdirErr) {
-      console.error("Failed to create directory:", mkdirErr);
-      return;
-    }
+  fs.mkdirSync(dir, { recursive: true });
 
-    const jsonData = JSON.stringify(data, null, 2);
+  const jsonData = JSON.stringify(data, null, 2);
+  fs.writeFileSync(filePath, jsonData, "utf8");
 
-    fs.writeFile(filePath, jsonData, "utf8", (writeErr) => {
-      if (writeErr) {
-        console.error("Failed to write JSON file:", writeErr);
-      } else {
-        console.log(`JSON file successfully written to: ${filePath}`);
-      }
-    });
-  });
+  console.log(`JSON file successfully written to: ${filePath}`);
 }
 
 function formatHeight(height) {
