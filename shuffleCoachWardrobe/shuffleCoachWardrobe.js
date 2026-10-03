@@ -6,11 +6,12 @@ const path = require('path');
 // Valid game years
 const validYears = [
 	FranchiseUtils.YEARS.M25,
-	FranchiseUtils.YEARS.M26
+	FranchiseUtils.YEARS.M26,
+	FranchiseUtils.YEARS.M27
 ];
 
 // Print tool header message
-console.log(`This program will update wardrobe for all head coaches. It is recommended to run this tool every week during the season. Only Madden ${FranchiseUtils.formatListString(validYears)} franchise files are supported.\n`);
+console.log(`This program will update wardrobe for all coaches. It is recommended to run this tool every week during the season. Only Madden ${FranchiseUtils.formatListString(validYears)} franchise files are supported.\n`);
 
 // Set up franchise file
 const franchise = FranchiseUtils.init(validYears, {isAutoUnemptyEnabled: true});
@@ -110,7 +111,7 @@ async function enumerateHeadCoaches(coachTable, headCoachRows)
     for (let i = 0; i < numRows; i++) 
 	{ 
         // If it's an empty row or invalid coach, skip this row
-		if(coachTable.records[i].isEmpty || coachTable.records[i]['CharacterVisuals'] === FranchiseUtils.ZERO_REF || coachTable.records[i]['Position'] !== "HeadCoach" || (coachTable.records[i].OffensivePlaybook === FranchiseUtils.ZERO_REF && coachTable.records[i].DefensivePlaybook === FranchiseUtils.ZERO_REF))
+		if(coachTable.records[i].isEmpty || coachTable.records[i]['CharacterVisuals'] === FranchiseUtils.ZERO_REF /*|| coachTable.records[i]['Position'] !== "HeadCoach"*/ || (coachTable.records[i].OffensivePlaybook === FranchiseUtils.ZERO_REF && coachTable.records[i].DefensivePlaybook === FranchiseUtils.ZERO_REF))
 		{
 			continue;
 		}
