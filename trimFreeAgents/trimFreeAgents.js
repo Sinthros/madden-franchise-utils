@@ -3,7 +3,7 @@ const { tables } = require('../Utils/FranchiseTableId');
 
 const MIN_EMPTY_PLAYERS = 650;
 
-const validGameYears = [FranchiseUtils.YEARS.M24,FranchiseUtils.YEARS.M25, FranchiseUtils.YEARS.M26];
+const validGameYears = [FranchiseUtils.YEARS.M24,FranchiseUtils.YEARS.M25, FranchiseUtils.YEARS.M26, FranchiseUtils.YEARS.M27];
 
 console.log("This program will delete the lowest rated free agent players from your file in order to ensure you have enough empty player table rows.");
 console.log("You only need to use this if you're having an issue importing a custom Draft Class.");
