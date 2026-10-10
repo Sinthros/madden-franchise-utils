@@ -3,7 +3,7 @@ const { getBinaryReferenceData } = require("madden-franchise").utilService;
 const fs = require("fs");
 const path = require("path");
 const FranchiseUtils = require("../../Utils/FranchiseUtils");
-const CharacterVisualFunctions = require("../../Utils/characterVisualsLookups/characterVisualFunctions26");
+const CharacterVisualFunctions = require("../../Utils/characterVisualsLookups/characterVisualFunctions27");
 const CoachTalentFunctions = require("../../Utils/coachTalentUtils/coachTalentFunctions27");
 
 // Lookups
@@ -487,10 +487,9 @@ async function updateCoachVisual(coachRecord) {
 }
 
 function getArchetype(coachRecord) {
-  const archetype = FranchiseUtils.getUserSelectionFromMap(
-    "Please select an archetype for the coach",
-    COACH_ARCHETYPES,
-  );
+  let archetype = FranchiseUtils.getUserSelectionFromMap("Please select an archetype for the coach", COACH_ARCHETYPES);
+  // EA Nonsense
+  if (archetype === "OffensiveGuru") archetype = "First";
   coachRecord.Archetype = archetype;
 }
 

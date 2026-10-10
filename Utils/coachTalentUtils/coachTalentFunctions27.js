@@ -13,7 +13,7 @@ const lookups = {
 const SUPPORTED_SOURCES = [TALENT_SOURCES.GAMEDAY, TALENT_SOURCES.SEASON, TALENT_SOURCES.PLAYSHEET];
 
 async function attachTalentArrays({ franchise, tables, coachRecord, playsheetArrayRef, gamedayArrayRef }) {
-  const staffTalentsTable = franchise.getTableByUniqueId(tables.staffTalentsTable);
+  const staffTalentsTable = franchise.getTableByUniqueId(tables.coachingTalentsTable);
   await staffTalentsTable.readRecords();
   const staffTalentsRecord = await FranchiseUtils.getNextZeroedRecord(staffTalentsTable);
   staffTalentsRecord.PlaysheetTalents = playsheetArrayRef;
