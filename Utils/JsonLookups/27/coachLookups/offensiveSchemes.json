@@ -4,7 +4,8 @@
     "ShortName": "Air Raid",
     "LongName": "Air Raid",
     "Description": "A variant of Spread, Air Raid gives the quarterback control of the play at the line of scrimmage. This offense focuses on passing plays but trusts the quarterback to diagnose the defense and call audibles when running lanes look open.",
-    "Value": "AirRaid"
+    "Value": "AirRaid",
+    "ShortValue": "AR"
   },
   {
     "AssetId": 2147588224,
@@ -14,91 +15,7 @@
     "Value": "MultiplePowerRun"
   },
   {
-    "AssetId": 2160779780,
-    "ShortName": "Multiple Power Run",
-    "LongName": "Multiple Power Run",
-    "Description": "The Multiple Power scheme uses traditional, pulling linemen and lead blockers in the run game to grind through defenses. A quality Field General QB helps convert critical 3rd and short situations.",
-    "Value": "MultiplePowerRun"
-  },
-  {
-    "AssetId": 2160779781,
-    "ShortName": "Multiple Power Run",
-    "LongName": "Multiple Power Run",
-    "Description": "The Multiple Power scheme uses traditional, pulling linemen and lead blockers in the run game to grind through defenses. A quality Field General QB helps convert critical 3rd and short situations.",
-    "Value": "MultiplePowerRun"
-  },
-  {
-    "AssetId": 2160779777,
-    "ShortName": "Multiple Power Run",
-    "LongName": "Multiple Power Run",
-    "Description": "The Multiple Power scheme uses traditional, pulling linemen and lead blockers in the run game to grind through defenses. A quality Field General QB helps convert critical 3rd and short situations.",
-    "Value": "MultiplePowerRun"
-  },
-  {
-    "AssetId": 2160779791,
-    "ShortName": "Multiple Power Run",
-    "LongName": "Multiple Power Run",
-    "Description": "The Multiple Power scheme uses traditional, pulling linemen and lead blockers in the run game to grind through defenses. A quality Field General QB helps convert critical 3rd and short situations.",
-    "Value": "MultiplePowerRun"
-  },
-  {
-    "AssetId": 2160779819,
-    "ShortName": "Multiple Power Run",
-    "LongName": "Multiple Power Run",
-    "Description": "The Multiple Power scheme uses traditional, pulling linemen and lead blockers in the run game to grind through defenses. A quality Field General QB helps convert critical 3rd and short situations.",
-    "Value": "MultiplePowerRun"
-  },
-  {
-    "AssetId": 2160779817,
-    "ShortName": "Multiple Power Run",
-    "LongName": "Multiple Power Run",
-    "Description": "The Multiple Power scheme uses traditional, pulling linemen and lead blockers in the run game to grind through defenses. A quality Field General QB helps convert critical 3rd and short situations.",
-    "Value": "MultiplePowerRun"
-  },
-  {
-    "AssetId": 2160779829,
-    "ShortName": "Multiple Power Run",
-    "LongName": "Multiple Power Run",
-    "Description": "The Multiple Power scheme uses traditional, pulling linemen and lead blockers in the run game to grind through defenses. A quality Field General QB helps convert critical 3rd and short situations.",
-    "Value": "MultiplePowerRun"
-  },
-  {
-    "AssetId": 2160779789,
-    "ShortName": "Multiple Power Run",
-    "LongName": "Multiple Power Run",
-    "Description": "The Multiple Power scheme uses traditional, pulling linemen and lead blockers in the run game to grind through defenses. A quality Field General QB helps convert critical 3rd and short situations.",
-    "Value": "MultiplePowerRun"
-  },
-  {
     "AssetId": 2147588225,
-    "ShortName": "Multiple Zone Run",
-    "LongName": "Multiple Zone Run",
-    "Description": "The Multiple Zone scheme is a balanced offense that is very difficult for the defense to predict. The team can run out of multiple receiver sets and throw out of power formations.",
-    "Value": "MultipleZoneRun"
-  },
-  {
-    "AssetId": 2160779811,
-    "ShortName": "Multiple Zone Run",
-    "LongName": "Multiple Zone Run",
-    "Description": "The Multiple Zone scheme is a balanced offense that is very difficult for the defense to predict. The team can run out of multiple receiver sets and throw out of power formations.",
-    "Value": "MultipleZoneRun"
-  },
-  {
-    "AssetId": 2160779813,
-    "ShortName": "Multiple Zone Run",
-    "LongName": "Multiple Zone Run",
-    "Description": "The Multiple Zone scheme is a balanced offense that is very difficult for the defense to predict. The team can run out of multiple receiver sets and throw out of power formations.",
-    "Value": "MultipleZoneRun"
-  },
-  {
-    "AssetId": 2160779841,
-    "ShortName": "Multiple Zone Run",
-    "LongName": "Multiple Zone Run",
-    "Description": "The Multiple Zone scheme is a balanced offense that is very difficult for the defense to predict. The team can run out of multiple receiver sets and throw out of power formations.",
-    "Value": "MultipleZoneRun"
-  },
-  {
-    "AssetId": 2160779783,
     "ShortName": "Multiple Zone Run",
     "LongName": "Multiple Zone Run",
     "Description": "The Multiple Zone scheme is a balanced offense that is very difficult for the defense to predict. The team can run out of multiple receiver sets and throw out of power formations.",
@@ -133,13 +50,6 @@
     "Value": "VerticalPowerRun"
   },
   {
-    "AssetId": 2160779795,
-    "ShortName": "Vertical Power Run",
-    "LongName": "Vertical Power Run",
-    "Description": "The Vertical Power Run focuses on tempting the defense to load the box with extra defenders via a commitment to the power run game, then punishes them down field with play action and shot passes.",
-    "Value": "VerticalPowerRun"
-  },
-  {
     "AssetId": 2147588223,
     "ShortName": "Vertical Zone Run",
     "LongName": "Vertical Zone Run",
@@ -154,48 +64,6 @@
     "Value": "WestCoastPowerRun"
   },
   {
-    "AssetId": 2160779807,
-    "ShortName": "West Coast Power Run",
-    "LongName": "West Coast Power Run",
-    "Description": "The West Coast Power Run creates weakness in the defense by stretching it out horizontally with short passing. The half backs then attack those weaknesses for big gains.",
-    "Value": "WestCoastPowerRun"
-  },
-  {
-    "AssetId": 2160779797,
-    "ShortName": "West Coast Power Run",
-    "LongName": "West Coast Power Run",
-    "Description": "The West Coast Power Run creates weakness in the defense by stretching it out horizontally with short passing. The half backs then attack those weaknesses for big gains.",
-    "Value": "WestCoastPowerRun"
-  },
-  {
-    "AssetId": 2160779805,
-    "ShortName": "West Coast Power Run",
-    "LongName": "West Coast Power Run",
-    "Description": "The West Coast Power Run creates weakness in the defense by stretching it out horizontally with short passing. The half backs then attack those weaknesses for big gains.",
-    "Value": "WestCoastPowerRun"
-  },
-  {
-    "AssetId": 2160779815,
-    "ShortName": "West Coast Power Run",
-    "LongName": "West Coast Power Run",
-    "Description": "The West Coast Power Run creates weakness in the defense by stretching it out horizontally with short passing. The half backs then attack those weaknesses for big gains.",
-    "Value": "WestCoastPowerRun"
-  },
-  {
-    "AssetId": 2160779801,
-    "ShortName": "West Coast Power Run",
-    "LongName": "West Coast Power Run",
-    "Description": "The West Coast Power Run creates weakness in the defense by stretching it out horizontally with short passing. The half backs then attack those weaknesses for big gains.",
-    "Value": "WestCoastPowerRun"
-  },
-  {
-    "AssetId": 2160779793,
-    "ShortName": "West Coast Power Run",
-    "LongName": "West Coast Power Run",
-    "Description": "The West Coast Power Run creates weakness in the defense by stretching it out horizontally with short passing. The half backs then attack those weaknesses for big gains.",
-    "Value": "WestCoastPowerRun"
-  },
-  {
     "AssetId": 2147606127,
     "ShortName": "West Coast Spread",
     "LongName": "West Coast Spread",
@@ -204,97 +72,6 @@
   },
   {
     "AssetId": 2147588222,
-    "ShortName": "West Coast Zone Run",
-    "LongName": "West Coast Zone Run",
-    "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
-    "Value": "WestCoastZoneRun"
-  },
-  {
-    "AssetId": 2160779809,
-    "ShortName": "West Coast Zone Run",
-    "LongName": "West Coast Zone Run",
-    "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
-    "Value": "WestCoastZoneRun"
-  },
-  {
-    "AssetId": 2160779787,
-    "ShortName": "West Coast Zone Run",
-    "LongName": "West Coast Zone Run",
-    "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
-    "Value": "WestCoastZoneRun"
-  },
-  {
-    "AssetId": 2160779821,
-    "ShortName": "West Coast Zone Run",
-    "LongName": "West Coast Zone Run",
-    "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
-    "Value": "WestCoastZoneRun"
-  },
-  {
-    "AssetId": 2160779827,
-    "ShortName": "West Coast Zone Run",
-    "LongName": "West Coast Zone Run",
-    "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
-    "Value": "WestCoastZoneRun"
-  },
-  {
-    "AssetId": 2160779799,
-    "ShortName": "West Coast Zone Run",
-    "LongName": "West Coast Zone Run",
-    "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
-    "Value": "WestCoastZoneRun"
-  },
-  {
-    "AssetId": 2160779785,
-    "ShortName": "West Coast Zone Run",
-    "LongName": "West Coast Zone Run",
-    "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
-    "Value": "WestCoastZoneRun"
-  },
-  {
-    "AssetId": 2160779831,
-    "ShortName": "West Coast Zone Run",
-    "LongName": "West Coast Zone Run",
-    "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
-    "Value": "WestCoastZoneRun"
-  },
-  {
-    "AssetId": 2160779825,
-    "ShortName": "West Coast Zone Run",
-    "LongName": "West Coast Zone Run",
-    "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
-    "Value": "WestCoastZoneRun"
-  },
-  {
-    "AssetId": 2160779803,
-    "ShortName": "West Coast Zone Run",
-    "LongName": "West Coast Zone Run",
-    "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
-    "Value": "WestCoastZoneRun"
-  },
-  {
-    "AssetId": 2160779823,
-    "ShortName": "West Coast Zone Run",
-    "LongName": "West Coast Zone Run",
-    "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
-    "Value": "WestCoastZoneRun"
-  },
-  {
-    "AssetId": 2160779837,
-    "ShortName": "West Coast Zone Run",
-    "LongName": "West Coast Zone Run",
-    "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
-    "Value": "WestCoastZoneRun"
-  },
-  {
-    "AssetId": 2160779835,
-    "ShortName": "West Coast Zone Run",
-    "LongName": "West Coast Zone Run",
-    "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
-    "Value": "WestCoastZoneRun"
-  },
-  {
-    "AssetId": 2160779833,
     "ShortName": "West Coast Zone Run",
     "LongName": "West Coast Zone Run",
     "Description": "The West Coast Zone Run is designed to utilize short passing to keep possession of the ball. In the run game, offensive linemen use quickness and combination blocks to spring HB's through gaps.",
