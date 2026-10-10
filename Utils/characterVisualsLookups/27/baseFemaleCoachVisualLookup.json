@@ -2,8 +2,7 @@
   "loadouts": [
     {
       "loadoutCategory": "CoachApparel",
-      "loadoutType": "Misc",
-      "outfitType": "Field",
+      "loadoutType": "CoachOnField",
       "loadoutElements": [
         {
           "itemAssetName": "CoachWardrobe_NikeAirMax90Black",
@@ -18,7 +17,7 @@
           "slotType": "OuterPants"
         },
         {
-          "itemAssetName": "UC_Headset_1",
+          "itemAssetName": "CoachWardrobe_Headset_2",
           "slotType": "EarWear"
         },
         {
@@ -26,7 +25,7 @@
           "slotType": "OuterShirt"
         },
         {
-          "itemAssetName": "UC_None",
+          "itemAssetName": "Hat_None",
           "slotType": "HeadWear"
         }
       ]
