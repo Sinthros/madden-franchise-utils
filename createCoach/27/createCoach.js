@@ -185,7 +185,7 @@ function setDefaultCoachValues(coachRecord) {
     coachRecord.DefenseAudibles = FranchiseUtils.ZERO_REF;
     coachRecord.ExperiencePoints = 0;
 
-    // New M26 fields
+    // M26 fields
     coachRecord.CurrentPurchasedTalentCosts = 0;
     coachRecord.IndexInUnlockList = 0;
     coachRecord.COACH_ADAPTIVE_AI = "Aggressive";
@@ -467,22 +467,21 @@ function addCoachToFATable(freeAgentCoachTable, currentCoachBinary) {
 }
 async function updateCoachVisual(coachRecord) {
   const visualsRecord = await CharacterVisualFunctions.generateCoachVisuals(franchise, tables, coachRecord);
+  let removeHeadGear = !CharacterVisualFunctions.isHSHeadName(coachRecord.GenericHeadAssetName);
   if (isAdvancedEditing) {
     const headgearMessage =
       "Would you like to set the coach to have no hat and headset? Enter yes or no. Note that this may be overriden in game depending on the asset/head.";
-    const removeHeadGear = FranchiseUtils.getYesOrNo(headgearMessage, true);
+    if (!removeHeadGear) removeHeadGear = FranchiseUtils.getYesOrNo(headgearMessage, true);
+  }
+  if (removeHeadGear) {
+    const visuals = JSON.parse(visualsRecord.RawData);
 
-    if (removeHeadGear) {
-      // Parse JSON string → object
-      const visuals = JSON.parse(visualsRecord.RawData);
+    CharacterVisualFunctions.updateVisualsSlot(visuals, "HeadWear", "Hat_None");
 
-      CharacterVisualFunctions.updateVisualsSlot(visuals, "HeadWear", "Hat_None");
+    CharacterVisualFunctions.updateVisualsSlot(visuals, "EarWear", "UC_Headset_None");
 
-      CharacterVisualFunctions.updateVisualsSlot(visuals, "EarWear", "UC_Headset_None");
-
-      // Serialize back to string
-      visualsRecord.RawData = JSON.stringify(visuals);
-    }
+    // Serialize back to string
+    visualsRecord.RawData = JSON.stringify(visuals);
   }
 }
 
@@ -630,11 +629,6 @@ async function createNewCoach() {
     );
     coachRecord.YearsCoaching = yearsCoaching;
 
-    const shouldEditStats = FranchiseUtils.getYesOrNo(
-      `Would you like to edit ${coachName}'s career stats? Enter yes or no. If you aren't sure, enter no.`,
-      true,
-    );
-
     coachRecord.COACH_SPECIALTY = FranchiseUtils.getUserSelectionFromMap(
       `Enter ${coachName}'s specialty.`,
       COACH_SPECIALTIES,
@@ -648,6 +642,11 @@ async function createNewCoach() {
     coachRecord.TradingTendency = FranchiseUtils.getUserSelectionFromMap(
       `Enter ${coachName}'s trading tendency`,
       TRADING_TENDENCIES,
+    );
+
+    const shouldEditStats = FranchiseUtils.getYesOrNo(
+      `Would you like to edit ${coachName}'s career stats? Enter yes or no. If you aren't sure, enter no.`,
+      true,
     );
 
     if (shouldEditStats) {
