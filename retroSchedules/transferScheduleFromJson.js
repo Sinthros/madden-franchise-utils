@@ -25,7 +25,7 @@ function setFranchise(franchiseObj) {
   tables = FranchiseUtils.getTablesObject(franchiseObj);
   if(franchise.schema.meta.gameYear >= FranchiseUtils.YEARS.M27)
   {
-    const teamLookupPath27 = path.resolve(__dirname, 'lookupFiles', `teamLookup_27.json`);
+    const teamLookupPath27 = path.resolve(__dirname, `teamLookup_27.json`);
     teamLookup = JSON.parse(fs.readFileSync(teamLookupPath27, 'utf8'));
   }
 }
