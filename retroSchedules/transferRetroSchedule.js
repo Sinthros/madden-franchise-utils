@@ -14,7 +14,8 @@ const autoUnempty = true;
 const validGames = [
 	FranchiseUtils.YEARS.M24,
 	FranchiseUtils.YEARS.M25,
-  FranchiseUtils.YEARS.M26
+  FranchiseUtils.YEARS.M26,
+  FranchiseUtils.YEARS.M27
 ];
 
 console.log("In this program, you can insert any previous year's NFL schedule into your Franchise File.");
@@ -26,7 +27,7 @@ const franchise = FranchiseUtils.init(validGames, {isAutoUnemptyEnabled: autoUne
 const tables = FranchiseUtils.getTablesObject(franchise);
 
 let minYear = 1970;
-let maxYear = 2025;
+let maxYear = 2026;
 // Dynamically determine min and max year from folder
 const files = fs.readdirSync(directoryPath);
 const years = files.map(file => {
