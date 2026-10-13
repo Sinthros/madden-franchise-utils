@@ -1,0 +1,67 @@
+[
+  {
+    "Binary": "10000000101011001101111100011110",
+    "DisplayString": "",
+    "DisplayStat": "TeamPassing"
+  },
+  {
+    "Binary": "10000000101011001101111100100001",
+    "DisplayString": "<teamshortname> Offense: <stat1> Sacks Allowed, <stat2> Rushing Yards, <stat3> Rush TDs",
+    "DisplayStat": "OffensiveLine"
+  },
+  {
+    "Binary": "10000000101101010000001110100011",
+    "DisplayString": "",
+    "DisplayStat": "None"
+  },
+  {
+    "Binary": "10000000101011001101111100100011",
+    "DisplayString": "<oppteamshortname> Passing: <stat1>/<stat2>, <stat3> Yds, <stat4> TD, <stat5> INT",
+    "DisplayStat": "TeamPassDefense"
+  },
+  {
+    "Binary": "10000000101011001101111100011111",
+    "DisplayString": "<teamshortname> Passing: <stat1>/<stat2>, <stat3> Yds, <stat4> TD, <stat5> INT",
+    "DisplayStat": "TeamPassing"
+  },
+  {
+    "Binary": "10000000101011001101111100100100",
+    "DisplayString": "<oppteamshortname> Rushing: <stat1> Rush, <stat2> Yards, <stat3> TD",
+    "DisplayStat": "TeamRushDefense"
+  },
+  {
+    "Binary": "10000000101011001101111100100000",
+    "DisplayString": "<teamshortname> Rushing: <stat1> Rush, <stat2> Yards, <stat3> TD",
+    "DisplayStat": "TeamRushing"
+  },
+  {
+    "Binary": "10000000101011001101111100100110",
+    "DisplayString": "<player>: <stat1>/<stat2>, <stat3> Yds, <stat4> TD, <stat5> INT",
+    "DisplayStat": "TopPasserOpponent"
+  },
+  {
+    "Binary": "10000000101011001101111100100101",
+    "DisplayString": "<player>: <stat1>/<stat2>, <stat3> Yds, <stat4> TD, <stat5> INT",
+    "DisplayStat": "TopPasserUser"
+  },
+  {
+    "Binary": "10000000101011001101111100101000",
+    "DisplayString": "<player>: <stat1> Rush, <stat2> Yards, <stat3> TD, <stat4> YPC",
+    "DisplayStat": "TopRusherUser"
+  },
+  {
+    "Binary": "10000000101011001101111100100111",
+    "DisplayString": "<player>: <stat1> Rush, <stat2> Yards, <stat3> TD, <stat4> YPC",
+    "DisplayStat": "TopRusherUser"
+  },
+  {
+    "Binary": "10000000101011001101111100100010",
+    "DisplayString": "<teamshortname> Defense: <stat1> Sacks, <stat2> Rush Yds Allowed, <stat3> Rush TDs Allowed",
+    "DisplayStat": "Trenches"
+  },
+  {
+    "Binary": "10000000101101010000001110100101",
+    "DisplayString": "",
+    "DisplayStat": "None"
+  }
+]

@@ -3776,6 +3776,12 @@ function getPlayerTags(playerRecord) {
   return tags.filter((tag) => tag !== "NoRole");
 }
 
+function isArrayTableFull(table, row = 0) {
+  const record = table.records[row];
+  const columns = getColumnNames(table);
+  return columns.every((col) => record[col] !== ZERO_REF);
+}
+
 module.exports = {
   init,
   selectFranchiseFile, // FUNCTIONS
@@ -3846,6 +3852,7 @@ module.exports = {
   getNextRecord,
   getPlayerTags,
   resolveBinaryToTableRow,
+  isArrayTableFull,
 
   getYesOrNo, // UTILITY FUNCTIONS
   getYesNoForceQuit,
