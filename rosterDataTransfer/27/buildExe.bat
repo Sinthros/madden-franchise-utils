@@ -1,0 +1,1 @@
+pkg -c pkgConfig.json rosterDataTransfer.js -o rosterDataTransfer.exe

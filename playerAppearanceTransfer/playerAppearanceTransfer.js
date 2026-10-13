@@ -5,20 +5,24 @@ const FranchiseUtils = require('../Utils/FranchiseUtils');
 console.log("This program will copy appearance from players in a source franchise file to the same players in a target franchise file.\n");
 
 // Set up franchise file
+const validGameTypes = [FranchiseUtils.GAME_TYPES.MADDEN, FranchiseUtils.GAME_TYPES.CFB];
 const validGames = [
 	FranchiseUtils.YEARS.M25,
-	FranchiseUtils.YEARS.M26
+	FranchiseUtils.YEARS.M26,
+	FranchiseUtils.YEARS.M27
 ];
-const sourceFranchise = FranchiseUtils.init(validGames, {promptForBackup: false, customFranchiseMessage: "Please enter the name of your source franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit."});
+const sourceFranchise = FranchiseUtils.init(validGames, {promptForBackup: false, customFranchiseMessage: "Please enter the name of your source franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit."}, validGameTypes);
 
 // Make sure target franchise is always same game year as source, since compatibility across game years isn't guaranteed.
-const targetFranchise = FranchiseUtils.init(sourceFranchise.schema.meta.gameYear, {promptForBackup: false, customFranchiseMessage: "Please enter the name of your target franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit."});
+const targetFranchise = FranchiseUtils.init(sourceFranchise.schema.meta.gameYear, {promptForBackup: false, customFranchiseMessage: "Please enter the name of your target franchise file. Either give the full path of the file OR just give the file name (such as CAREER-BEARS) if it's in your Documents folder. Or, enter 0 to exit."}, sourceFranchise.gameType);
 
 const SOURCE_TABLES = FranchiseUtils.getTablesObject(sourceFranchise);
 const TARGET_TABLES = FranchiseUtils.getTablesObject(targetFranchise);
 
+const IS_CFB = sourceFranchise.gameType === FranchiseUtils.GAME_TYPES.CFB;
+
 let visualsLookup = {};
-let includeDraftPlayers = FranchiseUtils.getYesOrNo("\nDo you want to include the Draft Class - requires players in both classes to have the same asset name? (yes/no)");
+let includeDraftPlayers = IS_CFB ? false : FranchiseUtils.getYesOrNo("\nDo you want to include the Draft Class - requires players in both classes to have the same asset name? (yes/no)");
 
 sourceFranchise.on('ready', async function () {
 	targetFranchise.on('ready', async function () {
@@ -39,7 +43,10 @@ sourceFranchise.on('ready', async function () {
 		{
 			if (!FranchiseUtils.isValidPlayer(sourcePlayerTable.records[i], {includeDraftPlayers: includeDraftPlayers}))
 			{
-				continue;
+				if(!IS_CFB || sourcePlayerTable.records[i].isEmpty)
+				{
+					continue;
+				}
 			}
 
 			let sourcePlayerVisualsRow = FranchiseUtils.bin2Dec(sourcePlayerTable.records[i]['CharacterVisuals'].slice(15));
@@ -59,7 +66,10 @@ sourceFranchise.on('ready', async function () {
 			// If it's an empty row or invalid player, skip this row
 			if (!FranchiseUtils.isValidPlayer(targetPlayerTable.records[i], {includeDraftPlayers: includeDraftPlayers}))
 			{
-				continue;
+				if(!IS_CFB || targetPlayerTable.records[i].isEmpty)
+				{
+					continue;
+				}
 			}
 			
 			// Figure out which row in the character visuals table corresponds to this player

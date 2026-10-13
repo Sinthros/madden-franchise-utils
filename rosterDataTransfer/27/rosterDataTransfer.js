@@ -1,45 +1,20 @@
 // Required modules
-const FranchiseUtils = require('../Utils/FranchiseUtils');
+const FranchiseUtils = require('../../Utils/FranchiseUtils');
 const path = require('path');
 const MaddenRosterHelper = require('madden-file-tools/helpers/MaddenRosterHelper');
 const fs = require('fs');
 
-const bodyTypeLookup = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/26/bodyTypeLookup.json'), 'utf8'));
-const positionLookup = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/26/PPOSLookup.json'), 'utf8'));
-const newSlotLookup = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/26/slotsLookup.json'), 'utf8'));
+const bodyTypeLookup = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/bodyTypeLookup.json'), 'utf8'));
+const positionLookup = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/PPOSLookup.json'), 'utf8'));
+const newSlotLookup = JSON.parse(fs.readFileSync(path.join(__dirname, 'lookupFiles/slotsLookup.json'), 'utf8'));
 
-console.log("This tool will allow you to transfer your Madden 25 roster file's player data into a Madden 26 roster file. It is advised that you use the latest official EA roster as the target roster.\n");
+console.log("This tool will allow you to transfer your Madden 26 roster file's player data into a Madden 27 roster file. It is advised that you use the latest official EA roster as the target roster.\n");
 
-const sourceRosterPath = FranchiseUtils.getSaveFilePath(FranchiseUtils.YEARS.M25, FranchiseUtils.SAVE_TYPES.ROSTER);
-const targetRosterPath = FranchiseUtils.getSaveFilePath(FranchiseUtils.YEARS.M26, FranchiseUtils.SAVE_TYPES.ROSTER);
+const sourceRosterPath = FranchiseUtils.getSaveFilePath(FranchiseUtils.YEARS.M26, FranchiseUtils.SAVE_TYPES.ROSTER);
+const targetRosterPath = FranchiseUtils.getSaveFilePath(FranchiseUtils.YEARS.M27, FranchiseUtils.SAVE_TYPES.ROSTER);
 
 const sourceRoster = new MaddenRosterHelper();
 const targetRoster = new MaddenRosterHelper();
-
-const oldToNewSlotMap = {
-  1: 0, // Facemask to facemask
-  64: 142, // ThighGear to LeftThighWear
-  31: 108, // Undershirt to InnerShirt
-  4: 125, // JerseyStyle to OuterShirt
-  22: 114, // LeftHandgear to LeftHandWear
-  23: 115, // RightHandgear to RightHandWear
-  21: 120, // LeftWristGear to LeftWristWear
-  53: 121, // RightWristGear to RightWristWear
-  19: 117, // RightElbowGear to RightElbowWear
-  20: 116, // LeftElbowGear to LeftElbowWear
-  13: 112, // LeftCalf to LeftCalfWear 
-  14: 113, // RightCalf to RightCalfWear
-  16: 110, // LeftArm to LeftArmWear
-  17: 111, // RightArm to RightArmWear
-  27: 127, // Handwarmer to WaistWear
-  28: 101, // HandwarmerMod to WaistWearOverride
-  61: 106, // GearHelmet to HeadWear
-  5: 122, // Mouthpiece to MouthWear
-  8: 109, // GearSocks to InnerSocks
-  60: 118, // KneeItem to KneeWear
-  52: 103, // NoseStrip to EyeWear
-  63: 107, // BottomBase to InnerPants
-}
 
 async function addRosterPlayers(rosterPlayerTable, rosterVisualsTable, numToAdd) {
   const newPGID = getHighestPGID(rosterPlayerTable) + 1;
@@ -71,7 +46,7 @@ function getHighestPGID(rosterPlayerTable) {
   return highestPGID;
 }
 
-async function handlePlayerRecords(sourcePlayerTable, targetPlayerTable, sourceVisualsTable, targetVisualsTable) {
+async function handlePlayerRecords(sourcePlayerTable, targetPlayerTable, sourceVisualsTable, targetVisualsTable, targetContractsTable) {
   const fieldsToSkip = ['PGID', 'POID'];
 
   for (let i = 0; i < sourcePlayerTable.records.length; i++) {
@@ -89,13 +64,18 @@ async function handlePlayerRecords(sourcePlayerTable, targetPlayerTable, sourceV
 
     await handleVisualsRecord(sourcePlayer.POID, targetPlayerTable.records[i].POID, sourceVisualsTable, targetVisualsTable);
 
-    const bodyType = bodyTypeLookup[generateBodyType(targetPlayerTable.records[i], 26)];
+    if(sourcePlayer.TGID !== 1009)
+      await handleContractRecord(i, targetPlayerTable.records[i].PGID, sourcePlayer, targetContractsTable);
+
+    
+    const bodyType = bodyTypeLookup[generateBodyType(targetPlayerTable.records[i], 27)];
 
     targetPlayerTable.records[i].PCBT = bodyType;
     const visualsRecord = targetVisualsTable.records.find(record => record.index === targetPlayerTable.records[i].POID);
     if (visualsRecord) {
       visualsRecord.BTYP = bodyType;
     }
+    
   }
 }
 
@@ -113,7 +93,7 @@ async function handleVisualsRecord(sourcePOID, targetPOID, sourceVisualsTable, t
     }
     targetVisuals.fields[field].value = sourceVisuals.fields[field].value;
   }
-
+  /*
   for(let i = targetVisuals.fields['LOUT'].value.numEntries - 1; i >= 0; i--)
   {
     targetVisuals.fields['LOUT'].value.removeRecord(i);
@@ -127,6 +107,52 @@ async function handleVisualsRecord(sourcePOID, targetPOID, sourceVisualsTable, t
 
   // Fix slot types for M26
   await fixSlotTypes(targetVisuals.fields['LOUT'].value);
+  */
+
+  targetVisuals.fields['LOUT'].value = sourceVisuals.fields['LOUT'].value;
+}
+
+async function handleTeamRecords(sourceTeamTable, targetTeamTable) {
+  const fieldsToSkip = [];
+
+  for (let i = 0; i < sourceTeamTable.records.length; i++) {
+    const sourceTeam = sourceTeamTable.records[i];
+    const targetTeam = targetTeamTable.records[i];
+
+    // Iterate through every field in the source team record
+    for (const field of Object.keys(sourceTeam.fields)) {
+      // Skip over certain fields we don't want to copy
+      if (fieldsToSkip.includes(field)) continue;
+
+      if (Object.keys(targetTeam.fields).includes(field)) {
+        targetTeam.fields[field].value = sourceTeam.fields[field].value;
+      }
+    }
+  }
+}
+
+async function handleContractRecord(index, targetPGID, sourcePlayer, targetContractsTable) {
+  if(index >= targetContractsTable.records.length) {
+    targetContractsTable.addRecord(targetContractsTable.records[0].deepCopyRecord(null, new WeakMap(), true));
+    index = targetContractsTable.records.length - 1; // Update index to point to the newly added record
+  }
+  
+  const targetContract = targetContractsTable.records[index];
+  targetContract.PGID = targetPGID;
+
+  for (const field of Object.keys(targetContract.fields)) {
+    if(field === 'PGID') continue;
+
+    if (Object.keys(sourcePlayer.fields).includes(field)) {
+      targetContract.fields[field].value = sourcePlayer.fields[field].value;
+    }
+  }
+
+  targetContract.CNTC = 0;
+  targetContract.CTVY = 0;
+  targetContract.CSGY = 0;
+
+  targetContract.CTCY = Math.max(0, sourcePlayer.PVCO);
 }
 
 async function fixSlotTypes(loadouts) {
@@ -222,6 +248,15 @@ async function clearAllInjuries(injuryTable) {
   }
 }
 
+async function clearAllDna(dnaTable) {
+  const numRecords = dnaTable.numEntries;
+
+  for (let i = numRecords - 1; i >= 0; i--) {
+    //dnaTable.removeRecord(i);
+    dnaTable.records[i].PGID = 0;
+  }
+}
+
 async function removeRosterPlayers(rosterPlayerTable, rosterVisualsTable, numToRemove) {
   for (let i = 0; i < numToRemove; i++) {
     const playerToRemove = rosterPlayerTable.records[rosterPlayerTable.records.length - 1];
@@ -238,14 +273,23 @@ sourceRoster.load(sourceRosterPath).then(async () => {
   const sourcePlayerTable = sourceRoster.file.PLAY;
   const targetPlayerTable = targetRoster.file.PLAY;
 
-  const sourceVisualsTable = sourceRoster.file.PLEX;
+  const sourceTeamTable = sourceRoster.file.TEAM;
+  const targetTeamTable = targetRoster.file.TEAM;
+
+  const sourceVisualsTable = sourceRoster.file.BLOB.records[0].BLBM;
   const targetVisualsTable = targetRoster.file.BLOB.records[0].BLBM;
+
+  const targetContractsTable = targetRoster.file.PLCT;
 
   const sourcePlayerCount = sourcePlayerTable.records.length;
   const targetPlayerCount = targetPlayerTable.records.length;
 
   if (targetRoster.file.INJY) {
     await clearAllInjuries(targetRoster.file.INJY);
+  }
+
+  if(targetRoster.file.PRSN) {
+    await clearAllDna(targetRoster.file.PRSN);
   }
 
   if (sourcePlayerCount > targetPlayerCount) {
@@ -259,7 +303,9 @@ sourceRoster.load(sourceRosterPath).then(async () => {
     await removeRosterPlayers(targetPlayerTable, targetVisualsTable, playersToRemove);
   }
 
-  await handlePlayerRecords(sourcePlayerTable, targetPlayerTable, sourceVisualsTable, targetVisualsTable);
+  await handlePlayerRecords(sourcePlayerTable, targetPlayerTable, sourceVisualsTable, targetVisualsTable, targetContractsTable);
+
+  await handleTeamRecords(sourceTeamTable, targetTeamTable);
 
   console.log("\nRoster transferred successfully.");
   console.log("\nIMPORTANT: Please note that you will have to manually reorder the depth chart in-game for each team before using the roster. Otherwise, you may run into crashes/other issues.\n");
