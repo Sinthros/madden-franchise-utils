@@ -1943,10 +1943,10 @@ async function removePlayerFromTableAndArray(playerBinary, table, arrayTable, co
     const tableName = table.header.name;
 
     for (const record of recordsToEmpty) {
-      record[column] = Constants.ZERO_REF;
+      record[column] = ZERO_REF;
       if (tableName === "ContractOffer") {
-        record.Team = Constants.ZERO_REF;
-        record.Contract = Constants.ZERO_REF;
+        record.Team = ZERO_REF;
+        record.Contract = ZERO_REF;
         record.Declined = false;
         record.IsNegotiated = false;
         record.IsSigned = false;
