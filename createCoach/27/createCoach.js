@@ -96,6 +96,13 @@ const isAdvancedEditing = FranchiseUtils.getYesOrNo(
   true,
 );
 
+const isMinimalEditing =
+  !isAdvancedEditing &&
+  FranchiseUtils.getYesOrNo(
+    "Would you like to enable MINIMAL mode? This will ONLY ask for the coach name and age. This is for those who want to create many coaches quickly and then edit in another tool such as the MyFranchise Tool.",
+    true,
+  );
+
 function adjustPresentationId(coachRecord, presentationTable) {
   const record = presentationTable.records[0];
   const presentationId = record.PresentationId;
@@ -266,6 +273,11 @@ async function setSchemes(coachRecord) {
     const selectScheme = (promptMessage, schemes, coachField) => {
       while (true) {
         const validNames = schemes.map((s) => `${s.ShortValue} (${s.ShortName})`).join(", ");
+        if (isMinimalEditing) {
+          const selected = schemes[0];
+          coachRecord[coachField] = FranchiseUtils.dec2bin(selected.AssetId);
+          break;
+        }
 
         console.log(`${promptMessage} Valid values are: ${validNames}`);
 
@@ -306,15 +318,18 @@ async function setPlaybooks(coachRecord) {
     );
 
     while (true) {
-      console.log("Which team's playbooks should this coach use (Bears, 49ers, etc)? ");
-      const input = prompt()?.trim();
+      let teamKey = "bears";
+      if (!isMinimalEditing) {
+        console.log("Which team's playbooks should this coach use (Bears, 49ers, etc)? ");
+        const input = prompt()?.trim();
 
-      if (!input) {
-        console.log("Please enter a team name.");
-        continue;
+        if (!input) {
+          console.log("Please enter a team name.");
+          continue;
+        }
+
+        teamKey = input.toLowerCase();
       }
-
-      const teamKey = input.toLowerCase();
 
       // Find playbooks by ShortName
       const offensive = offPlaybookLookup.find((p) => p.ShortName.toLowerCase() === teamKey);
@@ -351,8 +366,10 @@ function getBodyType(coachRecord) {
 
   const options = isFemale ? FEMALE_BODY_TYPES : MALE_BODY_TYPES;
 
-  const message = "Select a body type for your coach.";
-  const bodyType = FranchiseUtils.getUserSelectionFromMap(message, options);
+  let bodyType = Object.values(options)[0];
+  if (!isMinimalEditing) {
+    bodyType = FranchiseUtils.getUserSelectionFromMap("Select a body type for your coach.", options);
+  }
   coachRecord.CharacterBodyType = bodyType;
 }
 
@@ -369,15 +386,17 @@ async function setCoachAppearance(coachRecord) {
       }
     }
 
-    let selectedPortrait;
+    let selectedPortrait = "339";
     while (true) {
-      console.log("Please pick one of the following valid coach heads for this coach.");
-      console.log(
-        "Note: You can view previews for these coach portraits in the coachPreviews folder, which has been generated in the folder of this exe.",
-      );
-      console.log(allCoachPortraits.join(", "));
+      if (!isMinimalEditing) {
+        console.log("Please pick one of the following valid coach heads for this coach.");
+        console.log(
+          "Note: You can view previews for these coach portraits in the coachPreviews folder, which has been generated in the folder of this exe.",
+        );
+        console.log(allCoachPortraits.join(", "));
 
-      selectedPortrait = prompt(); // Get user input as a string
+        selectedPortrait = prompt(); // Get user input as a string
+      }
 
       if (allCoachPortraits.some((portrait) => String(portrait) === selectedPortrait.toLowerCase())) {
         const exactPortrait = allCoachPortraits.find((portrait) => String(portrait) === selectedPortrait.toLowerCase());
@@ -658,7 +677,7 @@ async function createNewCoach() {
 
   await CoachTalentFunctions.regenerateTalents(franchise, tables, coachRecord);
 
-  await addCoachToFATable(freeAgentCoachTable, coachBinary);
+  addCoachToFATable(freeAgentCoachTable, coachBinary);
 
   console.log(`Successfully created ${coachRecord.Position} ${coachFirstName} ${coachLastName}!`);
 }
