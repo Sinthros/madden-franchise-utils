@@ -100,6 +100,7 @@ function reformatCoachVisuals(inputJson) {
     // ---- Build output ----
     output[assetName] = {
       //...(coach.bodyType !== undefined && { bodyType: coach.bodyType }),
+      ...(coach.skinTone !== undefined && coach.skinTone !== null && { skinTone: coach.skinTone }),
       loadouts: [
         ...(coachOnFieldLoadout
           ? [
