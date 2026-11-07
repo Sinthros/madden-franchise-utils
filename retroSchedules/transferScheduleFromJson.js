@@ -265,7 +265,7 @@ async function processGame(game, seasonGameTable, weekStartOccurrences,numGamesH
 
     const isRegularSeasonPractice = record.SeasonWeekType === 'RegularSeason' && record.IsPractice === true;
 
-    if (!record.isEmpty && VALID_WEEK_TYPES.includes(record['SeasonWeekType']) && !handledRows.includes(j) && !(isRegularSeasonPractice)) {
+    if (!record.isEmpty && VALID_WEEK_TYPES.includes(record['SeasonWeekType']) && !handledRows.includes(j) && !(isRegularSeasonPractice) && record.GameStatus === "Unplayed") {
       resetGameRecordValues(record);
 
       record.HomeTeam = homeTeam;
