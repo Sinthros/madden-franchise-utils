@@ -3782,6 +3782,43 @@ function isArrayTableFull(table, row = 0) {
   return columns.every((col) => record[col] !== ZERO_REF);
 }
 
+// >= M27 only
+async function getPlayerContract(franchise, playerRecord) {
+  const ref = playerRecord?.Contract;
+  if (!ref || ref === ZERO_REF) return null;
+
+  const { tableId, row } = getRowAndTableIdFromRef(ref);
+  const contractTable = franchise.getTableById(tableId);
+  await contractTable.readRecords();
+  const contract = contractTable?.records[row];
+  if (!contract || contract.isEmpty) return null;
+  return contract;
+}
+
+async function getPlayerMindset(franchise, playerRecord) {
+  if (playerRecord.ContractStatus === CONTRACT_STATUSES.FREE_AGENT) return "FindATeam";
+  if (playerRecord.ContractStatus === CONTRACT_STATUSES.SIGNED) {
+    const contract = await getPlayerContract(franchise, playerRecord);
+    if (!contract) return null;
+
+    const yearsRemaining = contract.Length - contract.CurrentYear;
+    if (yearsRemaining > 1) return "Content";
+    if (yearsRemaining === 1) return "WantsContractExtension";
+  }
+  return "Content";
+}
+
+/**
+ * Sets the player's Mindset to the expected value, if one applies.
+ * @returns {boolean} true if the Mindset changed
+ */
+async function regeneratePlayerMindset(franchise, playerRecord) {
+  const mindset = await getPlayerMindset(franchise, playerRecord);
+  if (!mindset || playerRecord.Mindset === mindset) return false;
+  playerRecord.Mindset = mindset;
+  return true;
+}
+
 module.exports = {
   init,
   selectFranchiseFile, // FUNCTIONS
@@ -3851,6 +3888,9 @@ module.exports = {
   getNextZeroedRecord,
   getNextRecord,
   getPlayerTags,
+  getPlayerContract,
+  getPlayerMindset,
+  regeneratePlayerMindset,
   resolveBinaryToTableRow,
   isArrayTableFull,
 
