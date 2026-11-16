@@ -8,3 +8,4 @@ spotrac/
 private/
 getSchemaValues/*.ts
 getSchemaValues/exports/**
+soundtrack/**
