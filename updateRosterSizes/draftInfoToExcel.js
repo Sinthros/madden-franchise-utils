@@ -1,7 +1,7 @@
 const FranchiseUtils = require("../Utils/FranchiseUtils");
 const xlsx = require("xlsx");
 
-const validGameYears = [FranchiseUtils.YEARS.M25, FranchiseUtils.YEARS.M26];
+const validGameYears = [FranchiseUtils.YEARS.M25, FranchiseUtils.YEARS.M26, FranchiseUtils.YEARS.M27];
 
 console.log("This program will export some draft player info to Excel.");
 

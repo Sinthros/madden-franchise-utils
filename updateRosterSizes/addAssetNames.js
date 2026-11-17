@@ -8,13 +8,14 @@ const validGameYears = [
   FranchiseUtils.YEARS.M24,
   FranchiseUtils.YEARS.M25,
   FranchiseUtils.YEARS.M26,
+  FranchiseUtils.YEARS.M27,
 ];
 
 console.log("This program will generate asset names for all players who don't currently have one.");
 
 const franchise = FranchiseUtils.init(validGameYears, { promptForBackup: true });
 
-async function addAssetNames(franchise, appendIndex = true) {
+async function addAssetNames(franchise, appendIndex = false) {
   const tables = FranchiseUtils.getTablesObject(franchise);
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   await playerTable.readRecords();
@@ -26,10 +27,7 @@ async function addAssetNames(franchise, appendIndex = true) {
       record.PLYR_ASSETNAME = "";
 
       if (FranchiseUtils.isBlank(record.PLYR_ASSETNAME) || record.PLYR_ASSETNAME === "0") {
-        const formattedName = FranchiseUtils.removeSuffixes(`${record.LastName}${record.FirstName}`).replace(
-          /\s+/g,
-          "",
-        );
+        const formattedName = FranchiseUtils.getNormalizedNamePreserveCase(`${record.LastName} ${record.FirstName}`);
 
         let generatedAsset = `${formattedName}_${record.PresentationId}`;
         if (appendIndex) generatedAsset += `_${record.index}`;

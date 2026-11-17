@@ -3165,6 +3165,38 @@ function getNormalizedName(name) {
 }
 
 /**
+ * Normalizes a name by removing suffixes and special characters,
+ * cleaning whitespace, and preserving original casing.
+ *
+ * Accepts either a string or an object with FirstName/LastName properties.
+ *
+ * @param {string|object|null|undefined} name - The name to normalize.
+ * @returns {string} The normalized name, or an empty string if input is invalid.
+ */
+function getNormalizedNamePreserveCase(name) {
+  let fullName = "";
+
+  if (typeof name === "string") {
+    fullName = name;
+  } else if (
+    name &&
+    typeof name === "object" &&
+    typeof name.FirstName === "string" &&
+    typeof name.LastName === "string"
+  ) {
+    fullName = `${name.FirstName} ${name.LastName}`;
+  } else {
+    return "";
+  }
+
+  fullName = getNormalizedCommaName(fullName);
+  const noSuffix = removeSuffixes(fullName);
+  const normalizedWhitespace = normalizeWhitespace(noSuffix);
+
+  return normalizedWhitespace.replace(/[^a-zA-Z0-9]/g, "");
+}
+
+/**
  * Normalizes a name from "Last, First" format to "First Last".
  *
  * - If the input is null, undefined, or not a string, it returns the original value.
@@ -3916,6 +3948,7 @@ module.exports = {
   removeSuffixes,
   normalizeWhitespace,
   getNormalizedName,
+  getNormalizedNamePreserveCase,
   getNormalizedCommaName,
   isValidPlayer,
   isValidDraftPlayer,
