@@ -8,6 +8,7 @@ const FranchiseUtils = require('../Utils/FranchiseUtils');
 const validGameYears = [
   FranchiseUtils.YEARS.M25,
   FranchiseUtils.YEARS.M26,
+  FranchiseUtils.YEARS.M27,
 ];
 
 

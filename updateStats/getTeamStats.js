@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs'); 
 
-const YEAR = 2025;
+const YEAR = 2026;
 const SUFFIX = `/season/${YEAR}/seasontype/2`
 async function fetchAllTeamStats() {
     const browser = await puppeteer.launch();
@@ -167,7 +167,7 @@ fetchAllTeamStats()
             if (err) {
                 console.error('Error writing to file', err);
             } else {
-                console.log('Data written to output.json');
+                console.log('Data written to team_stat.json');
             }
         });
     })

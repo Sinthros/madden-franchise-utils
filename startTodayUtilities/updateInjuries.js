@@ -15,16 +15,66 @@ const COL_INJURYSTATUS = "Injury Status";
 const COL_POSITION = "Position";
 const COL_URL = "URL";
 
+const MAX_INJURY_WEEKS = 63;
+
 const TEAM_NAME_MAP = {
   JAC: "JAX",
   ARI: "AZ",
 };
 
 let INJURY_TYPES = [];
+let INJURY_TYPES_SORTED = [];
 
-const INJURY_TYPES_TO_REMOVE = ["Invalid_", "Max_", "DoNotUse"];
+const INJURY_TYPES_TO_REMOVE = ["Invalid_", "Max_", "DoNotUse", "Count_"];
 
-const validGameYears = [FranchiseUtils.YEARS.M24, FranchiseUtils.YEARS.M25, FranchiseUtils.YEARS.M26];
+// Maps CBS "Injury" text (lowercase) to the game enum values worth suggesting
+const CBS_INJURY_PATTERNS = {
+  ankle: /^Ankle(?!Achilles)/,
+  achilles: /^AnkleAchilles/,
+  back: /^Back/,
+  biceps: /^Arm(Strained|Torn)Bicep$/,
+  triceps: /^Arm(Strained|Torn)Tricep$/,
+  forearm: /^ArmForearm/,
+  elbow: /^Elbow/,
+  hand: /^Hand(?!Wrist|Finger|Thumb)/,
+  finger: /^HandFinger/,
+  thumb: /^HandThumb/,
+  wrist: /^HandWrist/,
+  foot: /^Foot/,
+  toe: /^Foot(BrokenToe|TurfToe)$/,
+  heel: /^Foot(Contusion|Fracture|StressFracture|FractureCoupleGames)$/,
+  calf: /^LegCalfStrain$/,
+  groin: /^LegGroin/,
+  hamstring: /^LegHamstring/,
+  quadriceps: /^LegQuad/,
+  thigh: /^Leg(Quad|Hamstring|BrokenFemur)/,
+  shin: /^Leg(Tibia|Fibula)Broken$/,
+  "lower leg": /^Leg(Calf|Tibia|Fibula)/,
+  leg: /^Leg/,
+  hip: /^Hip/,
+  knee: /^Knee/,
+  "knee - acl": /^KneeACL/,
+  "knee - mcl": /^KneeMCL/,
+  "knee - pcl": /^KneePCL/,
+  "knee - acl + mcl": /^Knee(ACL|MCL)/,
+  "knee - meniscus": /^KneeCartilageTear$/,
+  neck: /^Neck/,
+  shoulder: /^Shoulder/,
+  chest: /^Rib(Pectoral|BruiseSternum|BruisedRibs|WindKnockedOut)/,
+  pectoral: /^RibPectoral/,
+  ribs: /^Rib(BruisedRibs|BrokenRibs|BruiseSternum|WindKnockedOut)$/,
+  abdomen: /^RibAbdominal/,
+  oblique: /^RibAbdominal/,
+};
+
+const SHOW_ALL_OPTION = "ALL";
+
+const validGameYears = [
+  FranchiseUtils.YEARS.M24,
+  FranchiseUtils.YEARS.M25,
+  FranchiseUtils.YEARS.M26,
+  FranchiseUtils.YEARS.M27,
+];
 
 console.log("This program will update injuries for all players, based on CBS Sports.");
 const ONLY_IR_PLAYERS = FranchiseUtils.getYesOrNo("Should only IR players be included? Enter yes or no.");
@@ -39,6 +89,16 @@ const DEFAULT_INJURY_WEEKS =
     "Would you like to set a default injury week amount for all IR players (For use in Preseason week 1 for example)? Enter yes or no.",
   )
     ? FranchiseUtils.getUserInputNumber(`How many weeks should IR players be injured?`, 0, 63)
+    : -1;
+
+// TODO, come back and make this based on the SeasonInfo table directly
+const CURRENT_WEEK =
+  DEFAULT_INJURY_WEEKS === -1
+    ? FranchiseUtils.getUserInputNumber(
+        "What regular season or playoff week are you starting from? (Used to calculate injury length from CBS's expected return week)",
+        1,
+        23,
+      )
     : -1;
 
 const franchise = FranchiseUtils.init(validGameYears);
@@ -184,6 +244,63 @@ async function parsePlayerProfile(url) {
   }
 }
 
+
+function getCandidateInjuries(cbsInjury) {
+  const key = (cbsInjury || "").toLowerCase().trim();
+  let pattern = CBS_INJURY_PATTERNS[key];
+
+  if (!pattern) {
+    // Fallback: longest key contained in the CBS text, e.g. "Knee - ACL (partial)"
+    const match = Object.keys(CBS_INJURY_PATTERNS)
+      .sort((a, b) => b.length - a.length)
+      .find((k) => key.includes(k));
+    pattern = match ? CBS_INJURY_PATTERNS[match] : null;
+  }
+  if (!pattern) return [];
+
+  return INJURY_TYPES_SORTED.filter((v) => pattern.test(v));
+}
+
+function pickInjuryType(name, cbsInjury) {
+  const candidates = getCandidateInjuries(cbsInjury);
+
+  if (candidates.length > 0) {
+    const choice = FranchiseUtils.getUserSelection(`Select the injury type for ${name} (CBS says: ${cbsInjury})`, [
+      ...candidates,
+      SHOW_ALL_OPTION,
+    ]);
+    if (choice !== SHOW_ALL_OPTION) return choice;
+  }
+
+  return FranchiseUtils.getUserSelection(`Select the injury type for ${name}`, INJURY_TYPES_SORTED);
+}
+
+
+function getSuggestedWeeks(statusText) {
+  if (CURRENT_WEEK === -1) return null;
+
+  const match = (statusText || "").match(/Expected Return\s*-\s*Week\s*(\d+)/i);
+  if (!match) return null;
+
+  const returnWeek = parseInt(match[1], 10);
+  return Math.max(0, Math.min(MAX_INJURY_WEEKS, returnWeek - CURRENT_WEEK));
+}
+
+function getInjuryWeeks(name, statusText) {
+  if (DEFAULT_INJURY_WEEKS !== -1) return DEFAULT_INJURY_WEEKS;
+
+  const suggested = getSuggestedWeeks(statusText);
+  if (suggested !== null) {
+    const accept = FranchiseUtils.getYesOrNo(
+      `CBS expects ${name} back after ${suggested} week(s) (starting from week ${CURRENT_WEEK}). Use ${suggested}? Enter yes or no`,
+      true,
+    );
+    if (accept) return suggested;
+  }
+
+  return FranchiseUtils.getUserInputNumber(`How many weeks should ${name} be injured?`, 0, MAX_INJURY_WEEKS);
+}
+
 /**
  * Prompts the user to assign injury details to a player.
  *
@@ -207,19 +324,16 @@ function selectInjury(injuryRecord, playerRecord) {
 
   console.log(`Player: ${name}. Position: ${position}. Injury: ${injury}. Status: ${status}. Last updated: ${updated}`);
 
-  const selectedInjury = FranchiseUtils.getUserSelection(`Select the injury type for ${name}`, INJURY_TYPES);
-  const finalInjury = selectedInjury === "ACL" ? "KneeACLCompleteTear" : selectedInjury;
+  const finalInjury = pickInjuryType(name, injury);
 
-  const weeksInjured =
-    DEFAULT_INJURY_WEEKS !== -1
-      ? DEFAULT_INJURY_WEEKS
-      : FranchiseUtils.getUserInputNumber(`How many weeks should ${name} be injured?`, 0, 63);
+  const weeksInjured = getInjuryWeeks(name, status);
 
   const isInjuredReserve = ONLY_IR_PLAYERS
     ? true
     : FranchiseUtils.getYesOrNo(`Should ${name} be placed on IR? Enter yes or no`, true);
 
   playerRecord.InjuryType = finalInjury;
+  playerRecord.InjurySide = "NA";
   playerRecord.MinInjuryDuration = weeksInjured;
   playerRecord.MaxInjuryDuration = weeksInjured;
   playerRecord.TotalInjuryDuration = weeksInjured;
@@ -301,10 +415,11 @@ franchise.on("ready", async function () {
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
   await FranchiseUtils.readTableRecords([playerTable, teamTable]);
+
   INJURY_TYPES = FranchiseUtils.getEnumValuesForField(playerTable, "InjuryType").filter(
     (item) => !INJURY_TYPES_TO_REMOVE.includes(item) && !item.startsWith("First") && !item.startsWith("Last"),
   );
-  INJURY_TYPES.push("ACL");
+  INJURY_TYPES_SORTED = [...INJURY_TYPES].sort((a, b) => a.localeCompare(b));
 
   for (const report of injuryReport) {
     const shortName = report.shortName;

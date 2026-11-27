@@ -9,3 +9,6 @@ private/
 getSchemaValues/*.ts
 getSchemaValues/exports/**
 soundtrack/**
+adjustGameScores/**
+mergeXml/**
+portraits/**

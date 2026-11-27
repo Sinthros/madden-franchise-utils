@@ -2268,7 +2268,9 @@ async function deleteExcessFreeAgents(franchise, options = {}) {
     }
   }
 
-  await regenerateMarketingTables(franchise);
+  if (franchise.schema.meta.gameYear <= 26) {
+    await regenerateMarketingTables(franchise);
+  }
 }
 
 async function reorderTeams(franchise) {
@@ -3827,16 +3829,73 @@ async function getPlayerContract(franchise, playerRecord) {
   return contract;
 }
 
+const EXTENSION_ROLES = new Set([
+  "FutureHoF",
+  "FranchiseQB",
+  "QBofFuture",
+  "ElitePlayer",
+  "RisingStar",
+  "ImpactStarter",
+  "BorderlineStarter",
+]);
+
+// normal: min OVR + max age | elite: min OVR + max age (exception)
+const EXTENSION_REQUIREMENTS = {
+  QB: { normal: { ovr: 79, maxAge: 32 }, elite: { ovr: 90, maxAge: 34 } },
+  HB: { normal: { ovr: 85, maxAge: 26 }, elite: { ovr: 95, maxAge: 27 } },
+  WR: { normal: { ovr: 85, maxAge: 26 }, elite: { ovr: 90, maxAge: 27 } },
+  TE: { normal: { ovr: 82, maxAge: 26 }, elite: { ovr: 88, maxAge: 27 } },
+  LT: { normal: { ovr: 85, maxAge: 28 }, elite: { ovr: 88, maxAge: 29 } },
+  LG: { normal: { ovr: 80, maxAge: 28 }, elite: { ovr: 88, maxAge: 29 } },
+  C: { normal: { ovr: 80, maxAge: 28 }, elite: { ovr: 88, maxAge: 29 } },
+  RG: { normal: { ovr: 80, maxAge: 28 }, elite: { ovr: 88, maxAge: 29 } },
+  RT: { normal: { ovr: 80, maxAge: 28 }, elite: { ovr: 88, maxAge: 29 } },
+  LE: { normal: { ovr: 85, maxAge: 26 }, elite: { ovr: 90, maxAge: 27 } },
+  RE: { normal: { ovr: 85, maxAge: 26 }, elite: { ovr: 90, maxAge: 27 } },
+  DT: { normal: { ovr: 85, maxAge: 26 }, elite: { ovr: 88, maxAge: 27 } },
+  LOLB: { normal: { ovr: 85, maxAge: 26 }, elite: { ovr: 88, maxAge: 27 } },
+  MLB: { normal: { ovr: 85, maxAge: 26 }, elite: { ovr: 88, maxAge: 27 } },
+  ROLB: { normal: { ovr: 85, maxAge: 26 }, elite: { ovr: 88, maxAge: 27 } },
+  CB: { normal: { ovr: 85, maxAge: 26 }, elite: { ovr: 90, maxAge: 27 } },
+  FS: { normal: { ovr: 85, maxAge: 26 }, elite: { ovr: 90, maxAge: 27 } },
+  SS: { normal: { ovr: 85, maxAge: 26 }, elite: { ovr: 90, maxAge: 27 } },
+};
+
+function qualifiesForExtension(playerRecord) {
+  if (!EXTENSION_ROLES.has(playerRecord.Role)) return false;
+
+  const req = EXTENSION_REQUIREMENTS[playerRecord.Position];
+  if (!req) return false;
+
+  const ovr = playerRecord.OverallRating;
+  const age = playerRecord.Age;
+
+  const meetsNormal = ovr >= req.normal.ovr && age <= req.normal.maxAge;
+  const meetsElite = ovr >= req.elite.ovr && age <= req.elite.maxAge;
+
+  return meetsNormal || meetsElite;
+}
+
 async function getPlayerMindset(franchise, playerRecord) {
   if (playerRecord.ContractStatus === CONTRACT_STATUSES.FREE_AGENT) return "FindATeam";
+  return "Content";
+
   if (playerRecord.ContractStatus === CONTRACT_STATUSES.SIGNED) {
     const contract = await getPlayerContract(franchise, playerRecord);
     if (!contract) return null;
 
     const yearsRemaining = contract.Length - contract.CurrentYear;
-    if (yearsRemaining > 1) return "Content";
-    if (yearsRemaining === 1) return "WantsContractExtension";
+
+    // Preseason: only 1 or 2 years remaining can trigger an ask, and both
+    // require a qualifying role plus the position OVR/age requirements.
+    // (The "every player with 1 year left can ask" rule is offseason-only.)
+    if (yearsRemaining === 1 || yearsRemaining === 2) {
+      return qualifiesForExtension(playerRecord) ? "WantsContractExtension" : "Content";
+    }
+
+    return "Content";
   }
+
   return "Content";
 }
 

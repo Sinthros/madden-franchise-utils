@@ -8,10 +8,10 @@ const SEASON_STATS = xlsx.readFile("./players.xlsx");
 const CAREER_STATS = xlsx.readFile("./players-career.xlsx");
 const OUTPUT_FILE = "asset_lookup_test.json";
 const LOOKUP_FILE = JSON.parse(fs.readFileSync(OUTPUT_FILE, "utf8"));
-const COLLEGES = require("../Utils/JsonLookups/26/colleges.json");
+const COLLEGES = require("../Utils/JsonLookups/27/colleges.json");
 const axios = require("axios");
 const cheerio = require("cheerio");
-const YEAR = 2025; //new Date();
+const YEAR = 2026; //new Date();
 
 const DEFAULT_COLUMNS = [
   "BLITZ_YARDS",
@@ -96,7 +96,7 @@ const TEAM_MAPPING = {
   "Free Agent": 32,
 };
 
-const validGameYears = [FranchiseUtils.YEARS.M26];
+const validGameYears = [FranchiseUtils.YEARS.M26, FranchiseUtils.YEARS.M27];
 
 console.log("This program will recalculate all player season/career stats based on an input file you provide.");
 
@@ -210,6 +210,15 @@ async function processPlayersInBatches(players, isCareer, batchSize = 5) {
   }
 }
 
+async function getSeasonTeamIndex(playerRecord, player) {
+  if (playerRecord.TeamIndex !== 32) return playerRecord.TeamIndex;
+
+  const teamIndices = await getTeamIndices(String(player.TEAM ?? ""));
+
+  // If they played for multiple teams (e.g. "CHI,ATL"), use the last one listed.
+  return teamIndices.length > 0 ? teamIndices[teamIndices.length - 1] : playerRecord.TeamIndex;
+}
+
 async function updateStats(franchise, isCareer) {
   const playerTable = franchise.getTableByUniqueId(tables.playerTable);
   const teamTable = franchise.getTableByUniqueId(tables.teamTable);
@@ -269,9 +278,11 @@ async function updateStats(franchise, isCareer) {
       }
     }
     if (!isCareer) {
+      const seasonTeamIndex = await getSeasonTeamIndex(playerRecord, player);
+
       finalRecord.SEAS_YEAR = currentYear;
-      finalRecord.YEARBYYEARTEAMINDEX = playerRecord.TeamIndex;
-      finalRecord.TeamPrefixName = getTeamShortName(teamTable, playerRecord.TeamIndex);
+      finalRecord.YEARBYYEARTEAMINDEX = seasonTeamIndex;
+      finalRecord.TeamPrefixName = getTeamShortName(teamTable, seasonTeamIndex);
     }
 
     // Update final record with player data

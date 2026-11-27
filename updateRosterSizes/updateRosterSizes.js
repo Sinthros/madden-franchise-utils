@@ -8,6 +8,7 @@ const validGameYears = [
   FranchiseUtils.YEARS.M24,
   FranchiseUtils.YEARS.M25,
   FranchiseUtils.YEARS.M26,
+  FranchiseUtils.YEARS.M27,
 ];
 
 console.log("This program will calculate all roster sizes for all teams.");

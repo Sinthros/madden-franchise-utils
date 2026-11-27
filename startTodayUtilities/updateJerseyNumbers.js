@@ -18,7 +18,12 @@ const COL_URL = "URL";
 
 const COLS_TO_KEEP = [COL_JERSEYNUM, COL_PLAYERNAME, COL_AGE, COL_COLLEGE, COL_YEARSPRO, COL_POSITION, COL_URL];
 
-const validGameYears = [FranchiseUtils.YEARS.M24, FranchiseUtils.YEARS.M25, FranchiseUtils.YEARS.M26];
+const validGameYears = [
+  FranchiseUtils.YEARS.M24,
+  FranchiseUtils.YEARS.M25,
+  FranchiseUtils.YEARS.M26,
+  FranchiseUtils.YEARS.M27,
+];
 
 console.log("This program will update jersey numbers for all players, based on Ourlads.com");
 const franchise = FranchiseUtils.init(validGameYears);

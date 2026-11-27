@@ -47,5 +47,4 @@ franchise.on("ready", async function () {
   xlsx.writeFile(workbook, filePath);
 
   console.log(`Excel file saved as ${filePath}`);
-  FranchiseUtils.EXIT_PROGRAM();
 });
